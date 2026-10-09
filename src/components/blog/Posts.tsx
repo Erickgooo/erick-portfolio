@@ -1,3 +1,4 @@
+import { isProtectedPath } from "@/resources/protectedRoutes";
 import { getPosts } from "@/utils/utils";
 import { Grid } from "@once-ui-system/core";
 import Post from "./Post";
@@ -8,6 +9,8 @@ interface PostsProps {
   thumbnail?: boolean;
   direction?: "row" | "column";
   exclude?: string[];
+  /** Set on public pages: leaves out posts whose own page is password-protected. */
+  hideProtected?: boolean;
 }
 
 export function Posts({
@@ -16,8 +19,13 @@ export function Posts({
   thumbnail = false,
   exclude = [],
   direction,
+  hideProtected = false,
 }: PostsProps) {
   let allBlogs = getPosts(["src", "app", "blog", "posts"]);
+
+  if (hideProtected) {
+    allBlogs = allBlogs.filter((post) => !isProtectedPath(`/blog/${post.slug}`));
+  }
 
   // Exclude by slug (exact match)
   if (exclude.length) {
@@ -37,7 +45,14 @@ export function Posts({
       {displayedBlogs.length > 0 && (
         <Grid columns={columns} s={{ columns: 1 }} fillWidth marginBottom="40" gap="16">
           {displayedBlogs.map((post) => (
-            <Post key={post.slug} post={post} thumbnail={thumbnail} direction={direction} />
+            // Only slug and metadata: Post is a client component, so the MDX body
+            // would otherwise be serialized into every page that lists the post.
+            <Post
+              key={post.slug}
+              post={{ slug: post.slug, metadata: post.metadata }}
+              thumbnail={thumbnail}
+              direction={direction}
+            />
           ))}
         </Grid>
       )}

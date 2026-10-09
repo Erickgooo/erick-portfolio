@@ -111,6 +111,13 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Service temporarily unavailable." }, { status: 503 });
   }
 
+  // Browsers can only send a cross-site JSON request after a CORS preflight,
+  // which this route never approves. Requiring the header stops other sites
+  // from spending the Gemini quota through their visitors' browsers.
+  if (!req.headers.get("content-type")?.toLowerCase().startsWith("application/json")) {
+    return NextResponse.json({ error: "Invalid request." }, { status: 415 });
+  }
+
   // Rate limit per client IP
   const rate = chatLimiter.consume(getClientIp(req));
 
@@ -125,9 +132,10 @@ export async function POST(req: NextRequest) {
   let message: string;
   try {
     const body = await req.json();
-    message = String(body.message ?? "")
-      .trim()
-      .slice(0, MSG_MAX_CHARS);
+    if (typeof body?.message !== "string") {
+      return NextResponse.json({ error: "Invalid request." }, { status: 400 });
+    }
+    message = body.message.trim().slice(0, MSG_MAX_CHARS);
   } catch {
     return NextResponse.json({ error: "Invalid request." }, { status: 400 });
   }

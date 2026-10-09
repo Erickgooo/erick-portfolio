@@ -13,13 +13,24 @@ const encoder = new TextEncoder();
 export const AUTH_COOKIE = "authToken";
 export const AUTH_TTL_SECONDS = 60 * 60; // 1 hour
 
+/** Longest token we will even look at; real tokens are ~57 characters. */
+const MAX_TOKEN_LENGTH = 128;
+
 /**
- * Secret used to sign tokens. Prefer a dedicated AUTH_SECRET; fall back to the
- * page password so existing deployments keep working without extra config.
+ * Key material used to sign tokens. Prefer a dedicated AUTH_SECRET; fall back
+ * to the page password so existing deployments keep working without extra
+ * config.
+ *
+ * When AUTH_SECRET is set the password is mixed in as well, so changing
+ * PAGE_ACCESS_PASSWORD immediately invalidates every session issued under the
+ * old one instead of leaving them valid until they expire.
  */
 function getSecret(): string | null {
-  const secret = process.env.AUTH_SECRET || process.env.PAGE_ACCESS_PASSWORD;
-  return secret ? secret : null;
+  const password = process.env.PAGE_ACCESS_PASSWORD;
+  const authSecret = process.env.AUTH_SECRET;
+
+  if (authSecret) return `${authSecret}:${password ?? ""}`;
+  return password ? password : null;
 }
 
 function base64UrlEncode(bytes: ArrayBuffer): string {
@@ -69,12 +80,14 @@ export async function createAuthToken(): Promise<string | null> {
 /** Verify a token's signature and expiry. Never throws. */
 export async function verifyAuthToken(token: string | undefined | null): Promise<boolean> {
   const secret = getSecret();
-  if (!secret || !token) return false;
+  if (!secret || !token || token.length > MAX_TOKEN_LENGTH) return false;
 
   const separator = token.lastIndexOf(".");
   if (separator <= 0) return false;
 
   const expiresAt = token.slice(0, separator);
+  if (!/^[0-9]{1,16}$/.test(expiresAt)) return false;
+
   const signature = base64UrlDecode(token.slice(separator + 1));
   if (!signature) return false;
 

@@ -1,5 +1,6 @@
 import { DecodeText } from "@/components/motion/DecodeText";
 import { GlowTrack } from "@/components/motion/GlowTrack";
+import { isProtectedPath } from "@/resources/protectedRoutes";
 import { coverImage, formatIndex, parseMetric, sortProjects } from "@/utils/projects";
 import { getPosts } from "@/utils/utils";
 import { Heading, Row, SmartLink, Text } from "@once-ui-system/core";
@@ -7,9 +8,18 @@ import Image from "next/image";
 import Link from "next/link";
 import styles from "./FeaturedProject.module.scss";
 
+interface FeaturedProjectProps {
+  /** Set on public pages: leaves out projects whose own page is password-protected. */
+  hideProtected?: boolean;
+}
+
 /** Latest project as a spec sheet. Its image is the shared-element origin for the case study. */
-export function FeaturedProject() {
-  const [project] = sortProjects(getPosts(["src", "app", "work", "projects"]));
+export function FeaturedProject({ hideProtected = false }: FeaturedProjectProps) {
+  let projects = getPosts(["src", "app", "work", "projects"]);
+  if (hideProtected) {
+    projects = projects.filter((post) => !isProtectedPath(`/work/${post.slug}`));
+  }
+  const [project] = sortProjects(projects);
   if (!project) return null;
   const { title, summary, images, link, metric: rawMetric } = project.metadata;
   const cover = coverImage(images);

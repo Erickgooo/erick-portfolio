@@ -11,6 +11,7 @@ import { DecodeText } from "@/components/motion/DecodeText";
 import { KineticText } from "@/components/motion/KineticText";
 import { Reveal } from "@/components/motion/Reveal";
 import { about, baseURL, home, person, routes } from "@/resources";
+import { isProtectedPath } from "@/resources/protectedRoutes";
 import { Avatar, Badge, Button, Heading, Meta, Row, Schema, Text } from "@once-ui-system/core";
 
 export async function generateMetadata() {
@@ -126,7 +127,7 @@ export default function Home() {
 
       <HomeSection index={idx("featured")} total={total}>
         <Reveal>
-          <FeaturedProject />
+          <FeaturedProject hideProtected={!isProtectedPath("/")} />
         </Reveal>
         <Row fillWidth horizontal="center" paddingBottom="24">
           <Button
@@ -148,7 +149,7 @@ export default function Home() {
             Latest from the blog
           </Heading>
           <Reveal>
-            <Posts range={[1, 2]} columns="2" />
+            <Posts range={[1, 2]} columns="2" hideProtected={!isProtectedPath("/")} />
           </Reveal>
         </HomeSection>
       )}

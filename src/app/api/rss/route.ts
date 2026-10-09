@@ -1,4 +1,5 @@
 import { baseURL, blog, person } from "@/resources";
+import { isProtectedPath } from "@/resources/protectedRoutes";
 import { getPosts } from "@/utils/utils";
 import { NextResponse } from "next/server";
 
@@ -13,7 +14,10 @@ function escapeXml(value: unknown): string {
 }
 
 export async function GET() {
-  const posts = getPosts(["src", "app", "blog", "posts"]);
+  // Password-protected posts are left out: titles and summaries are content too.
+  const posts = getPosts(["src", "app", "blog", "posts"]).filter(
+    (post) => !isProtectedPath(`/blog/${post.slug}`),
+  );
 
   // Sort posts by date (newest first)
   const sortedPosts = posts.sort((a, b) => {
