@@ -66,7 +66,8 @@ test("mo-io matches the absence of view() support", async ({ page }) => {
 });
 
 test("the page background is flat black in the dark theme, with no pattern", async ({ page }) => {
-  await page.emulateMedia({ colorScheme: "dark" });
+  // The saved theme, not colour-scheme emulation: Playwright's Firefox ignores the latter here.
+  await page.addInitScript(() => localStorage.setItem("data-theme", "dark"));
   await page.goto("/about");
   const bg = await page.evaluate(() => ({
     color: getComputedStyle(document.body).backgroundColor,

@@ -1,4 +1,4 @@
-import type { Locator, Page, Request } from "@playwright/test";
+import { type Locator, type Page, type Request, expect } from "@playwright/test";
 
 export const ROUTES = [
   { name: "home", path: "/" },
@@ -35,8 +35,13 @@ export async function measureCLS(page: Page, settleMs = 3500): Promise<number> {
 
 /** A visible header link; on phones the links live in the menu, which is opened first. */
 export async function headerLink(page: Page, name: string): Promise<Locator> {
-  const burger = page.getByRole("button", { name: "Open menu" });
-  if (await burger.isVisible()) await burger.click();
+  const burger = page.locator('header button[aria-controls="site-menu"]');
+  if (await burger.isVisible()) {
+    // A navigation closes the menu a tick after the URL changes; let that settle
+    // first, or the link handed back would belong to a menu that is about to close.
+    await expect(burger).toHaveAttribute("aria-expanded", "false");
+    await burger.click();
+  }
   return page.locator("header").getByRole("link", { name, exact: true });
 }
 
