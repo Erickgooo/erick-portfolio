@@ -20,9 +20,7 @@
     "@once-ui-system/core": "^1.4.27",
     "@vercel/analytics": "^2.0.1",
     "classnames": "^2.5.1",
-    "cookie": "^1.0.2",
     "gray-matter": "^4.0.3",
-    "lint-staged": "^16.1.5",
     "next": "^15.3.1",
     "next-mdx-remote": "^6.0.0",
     "react": "19.0.0",
@@ -38,12 +36,13 @@
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",
     "@playwright/test": "1.63.0",
-    "@types/cookie": "^0.6.0",
     "@types/node": "^20.17.30",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "eslint": "^9.25.0",
+    "eslint-config-next": "^15.5.27",
     "lighthouse": "12.8.2",
+    "lint-staged": "^16.4.0",
     "typescript": "^5.8.3",
     "tzdata": "^1.0.44"
   }
