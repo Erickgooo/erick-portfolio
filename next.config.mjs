@@ -95,15 +95,14 @@ const nextConfig = {
   pageExtensions: ["ts", "tsx", "md", "mdx"],
   transpilePackages: ["next-mdx-remote"],
   poweredByHeader: false,
+  // Source maps would publish the original, commented source of every client bundle.
+  productionBrowserSourceMaps: false,
   images: {
     formats: ["image/avif", "image/webp"],
-    remotePatterns: [
-      {
-        protocol: "https",
-        hostname: "www.google.com",
-        pathname: "**",
-      },
-    ],
+    // No remote hosts: every optimized image is a local file. An entry here
+    // turns /_next/image into a proxy for that host, so add one only for a
+    // host you actually load images from, with the narrowest pathname.
+    remotePatterns: [],
   },
   sassOptions: {
     compiler: "modern",

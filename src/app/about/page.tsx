@@ -199,6 +199,7 @@ export default function About() {
                         weight="default"
                         variant="secondary"
                         target="_blank"
+                        rel="noopener noreferrer"
                         download
                       />
                     </Row>
@@ -209,6 +210,7 @@ export default function About() {
                         icon="document"
                         variant="secondary"
                         target="_blank"
+                        rel="noopener noreferrer"
                         download
                       />
                     </Row>
