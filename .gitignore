@@ -46,3 +46,14 @@ next-env.d.ts
 /test-results/
 /playwright-report/
 /.perf/
+
+# graphify knowledge graph (regenerated locally)
+/graphify-out/
+
+# security audit reports — never publish vulnerability notes in a public repo
+security-audit.local.md
+*.local.md
+
+# local agent state: personal permission allowlists and nested worktrees
+/.claude/settings.local.json
+/.claude/worktrees/
