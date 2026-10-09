@@ -53,8 +53,7 @@
       /* Elements already on screen at load finish immediately. The end is capped in
          viewport units: a block taller than the viewport would otherwise stay half
          revealed (and, on the full tier, slightly blurred) until most of it had entered. */
-      animation-range: entry calc(var(--i, 0) * 4%)
-        entry min(calc(60% + var(--i, 0) * 4%), 30vh);
+      animation-range: entry calc(var(--i, 0) * 4%) entry min(calc(60% + var(--i, 0) * 4%), 30vh);
     }
     [data-reveal="left"] {
       animation-name: mo-reveal-left;
