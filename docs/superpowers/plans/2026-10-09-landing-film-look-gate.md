@@ -72,7 +72,7 @@
 **Interfaces:**
 - Produces: `FilmBeat { id: string; start: number; end: number }`, `SectionBox { id: string; top: number; height: number }`, `FILM_DURATION: number`, `FILM_BEATS: FilmBeat[]`, `filmTimeAt(beats: FilmBeat[], boxes: SectionBox[]): number`, `veilAt(time: number): number`. Rutas públicas `/video/home-film.mp4`, `/video/home-film-m.mp4`, `/images/film/hero.webp`, `/images/film/hero-m.webp`.
 
-- [ ] **Step 1: Test que falla**
+- [x] **Step 1: Test que falla**
 
 `tests/unit/filmMap.spec.ts`:
 ```ts
@@ -132,12 +132,12 @@ test("the veil darkens during the white flashes", () => {
 });
 ```
 
-- [ ] **Step 2: Verlo fallar**
+- [x] **Step 2: Verlo fallar**
 
 Run: `npx playwright test --project=unit tests/unit/filmMap.spec.ts`
 Expected: FAIL, `Cannot find module '../../src/components/film/filmMap'`.
 
-- [ ] **Step 3: Implementación**
+- [x] **Step 3: Implementación**
 
 `src/components/film/filmMap.ts`:
 ```ts
@@ -198,12 +198,12 @@ export function veilAt(time: number): number {
 }
 ```
 
-- [ ] **Step 4: Verlo pasar**
+- [x] **Step 4: Verlo pasar**
 
 Run: `npx playwright test --project=unit tests/unit/filmMap.spec.ts`
 Expected: `6 passed`.
 
-- [ ] **Step 5: Script de codificación**
+- [x] **Step 5: Script de codificación**
 
 `scripts/media/encode-film.sh`:
 ```bash
@@ -231,7 +231,7 @@ ls -la "$OUT"/home-film*.mp4 "$IMG"/hero*.webp
 Run: `bash scripts/media/encode-film.sh`
 Expected: cuatro archivos. `home-film.mp4` ≤ 15 728 640 bytes y `home-film-m.mp4` ≤ 12 582 912 bytes. Si alguno se pasa, subir su `-crf` en 1 y repetir.
 
-- [ ] **Step 6: Mirar los fotogramas**
+- [x] **Step 6: Mirar los fotogramas**
 
 ```bash
 S=.perf/film-check; mkdir -p $S
@@ -239,7 +239,7 @@ ffmpeg -v error -y -i public/video/home-film.mp4 -vf "select='eq(n\,0)+eq(n\,47)
 ```
 Abrir `$S/beats.jpg`, `public/images/film/hero.webp` y `hero-m.webp` con la herramienta Read. Comprobar: (a) el póster no es un fotograma negro ni un fundido; (b) los fotogramas 94/96 y 210/212 son planos distintos, es decir, los cortes de 3.17 s y 7.03 s caen donde dice `FILM_BEATS`. Si un corte está corrido, ajustar `start`/`end` en `filmMap.ts` y los números del test del Step 1 al valor real, y repetir el Step 4.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 git add scripts/media/encode-film.sh public/video/home-film.mp4 public/video/home-film-m.mp4 public/images/film/hero.webp public/images/film/hero-m.webp src/components/film/filmMap.ts tests/unit/filmMap.spec.ts
@@ -259,7 +259,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 **Interfaces:**
 - Produces: variables CSS `--ease-fluid`, `--dur-xl`, `--shift-l` y `--cobalt` (ya existía) en `:root`. `--font-heading`, `--font-body` y `--font-code` siguen existiendo con los mismos nombres.
 
-- [ ] **Step 1: Test que falla**
+- [x] **Step 1: Test que falla**
 
 En `tests/e2e/motion-boot.spec.ts`, reemplazar el test `the page background is a single blueprint grid at <= 8% opacity` por:
 ```ts
@@ -290,12 +290,12 @@ test("headings and body use Geist; figures use Geist Mono", async ({ page }) => 
 });
 ```
 
-- [ ] **Step 2: Verlo fallar**
+- [x] **Step 2: Verlo fallar**
 
 Run: `npm run build && npx playwright test --project=chromium tests/e2e/motion-boot.spec.ts`
 Expected: FAIL en los dos tests nuevos (`rgb(11, 11, 15)` y `Space Grotesk`).
 
-- [ ] **Step 3: Fuentes**
+- [x] **Step 3: Fuentes**
 
 `src/app/fonts.ts`, reemplazar el import y las tres declaraciones (conservar el comentario sobre los preloads en Windows; cambiar su primera línea por la de abajo):
 ```ts
@@ -324,7 +324,7 @@ export const code = Geist_Mono({
 ```
 Borrar el comentario largo sobre JetBrains Mono y el CLS de About: ya no aplica.
 
-- [ ] **Step 4: Neutros planos y tokens de movimiento**
+- [x] **Step 4: Neutros planos y tokens de movimiento**
 
 `src/resources/custom.css`:
 - `--scheme-neutral-100: #0b0b0f;` → `--scheme-neutral-100: #000000;`
@@ -370,7 +370,7 @@ Borrar el comentario largo sobre JetBrains Mono y el CLS de About: ya no aplica.
 
 `src/app/layout.tsx`: quitar la línea `className="blueprint-bg"` del `<Column as="body">`.
 
-- [ ] **Step 5: Verlo pasar y regenerar las capturas del intro**
+- [x] **Step 5: Verlo pasar y regenerar las capturas del intro**
 
 ```bash
 npm run build && npx playwright test --project=chromium tests/e2e/motion-boot.spec.ts tests/e2e/reveal.spec.ts
@@ -384,7 +384,7 @@ curl -s http://localhost:3100/about | grep -o 'rel="preload"[^>]*as="font"[^>]*'
 ```
 (En Windows da 0 por el bug de Next; en ese caso contar los `.woff2` de `.next/static/media`: deben ser los de Geist y Geist Mono, ninguno de Space Grotesk, Inter o JetBrains.)
 
-- [ ] **Step 6: Gates y commit**
+- [x] **Step 6: Gates y commit**
 
 ```bash
 npx @biomejs/biome check src --max-diagnostics=0 && node scripts/quality/biome-gate.mjs HEAD && npx tsc --noEmit
@@ -407,7 +407,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Consumes: `--ease-fluid`, `--cobalt` (Task 2).
 - Produces: `headerLink(page: Page, name: string): Promise<Locator>` en `tests/e2e/helpers.ts`. El header es `position: fixed` y no ocupa espacio en el flujo; `.main-content-wrapper` reserva 96 px arriba.
 
-- [ ] **Step 1: Test que falla**
+- [x] **Step 1: Test que falla**
 
 `tests/e2e/nav.spec.ts`:
 ```ts
@@ -464,12 +464,12 @@ test.describe("mobile menu", () => {
 });
 ```
 
-- [ ] **Step 2: Verlo fallar**
+- [x] **Step 2: Verlo fallar**
 
 Run: `npx playwright test --project=chromium --project=mobile-chromium tests/e2e/nav.spec.ts`
 Expected: FAIL (`header nav` no existe; no hay botón «Open menu»).
 
-- [ ] **Step 3: Header**
+- [x] **Step 3: Header**
 
 En `src/components/Header.tsx`, conservar `TimeDisplay` y su `export default` tal cual, y reemplazar el componente `Header` y los imports por:
 ```tsx
@@ -789,7 +789,7 @@ $ease: var(--ease-fluid);
 }
 ```
 
-- [ ] **Step 4: Helper y specs que hacían clic en el header**
+- [x] **Step 4: Helper y specs que hacían clic en el header**
 
 En `tests/e2e/helpers.ts` añadir (y `Locator` al import de tipos):
 ```ts
@@ -817,14 +817,14 @@ Localizar los usos: `grep -n 'header' tests/e2e/view-transitions.spec.ts tests/e
 ```
 - `scripts/perf/inp.mjs`: el mismo par de líneas antes de su clic en el enlace del header.
 
-- [ ] **Step 5: Verlo pasar**
+- [x] **Step 5: Verlo pasar**
 
 ```bash
 npm run build && npx playwright test --project=chromium --project=mobile-chromium tests/e2e/nav.spec.ts tests/e2e/view-transitions.spec.ts tests/e2e/a11y-names.spec.ts tests/e2e/smoke.spec.ts
 ```
 Expected: todo en verde.
 
-- [ ] **Step 6: Gates y commit**
+- [x] **Step 6: Gates y commit**
 
 ```bash
 npx @biomejs/biome check src --max-diagnostics=0 && node scripts/quality/biome-gate.mjs HEAD && npx tsc --noEmit
@@ -850,7 +850,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Consumes: `FilmBeat`, `SectionBox`, `FILM_BEATS`, `FILM_DURATION`, `filmTimeAt`, `veilAt` y las rutas de assets (Task 1); `--ease-fluid`, `--cobalt` (Task 2); header fijo y `padding-top` del wrapper (Task 3).
 - Produces: `<ScrollFilm src srcMobile poster posterMobile beats duration>{children}</ScrollFilm>`; `<FilmSection beat={string} screens={number}>{children}</FilmSection>`; `landing` (`hero.headline`, `hero.subline`, `hero.risk`, `cta.label`, `tagline: string[]`); `<CallButton />`. Atributos DOM: `[data-film-root]`, `[data-film-ready]` (cuando el clip ya pintó), `[data-film-video]`, `[data-film-stage]`, `[data-film-beat="<id>"]`, `[data-cta="primary"]`. La línea de tiempo CSS `--film-section` queda definida en cada `<section>` para sus descendientes.
 
-- [ ] **Step 1: Test que falla**
+- [x] **Step 1: Test que falla**
 
 `tests/e2e/film.spec.ts`:
 ```ts
@@ -1018,12 +1018,12 @@ for (const width of [390, 859, 861, 1024, 1440]) {
 }
 ```
 
-- [ ] **Step 2: Verlo fallar**
+- [x] **Step 2: Verlo fallar**
 
 Run: `npx playwright test --project=chromium tests/e2e/film.spec.ts`
 Expected: FAIL (no existe `[data-film-root]`; el HTML no contiene el titular nuevo).
 
-- [ ] **Step 3: CSP**
+- [x] **Step 3: CSP**
 
 `next.config.mjs`: `"media-src 'self'",` → `"media-src 'self' blob:",` y añadir a la lista del comentario de la CSP:
 ```js
@@ -1031,7 +1031,7 @@ Expected: FAIL (no existe `[data-film-root]`; el HTML no contiene el titular nue
 ```
 Si `tests/e2e/ssr-content.spec.ts` (`csp is intact outside webkit-localhost`) compara el texto de `media-src`, actualizarlo al valor nuevo.
 
-- [ ] **Step 4: Copy**
+- [x] **Step 4: Copy**
 
 `src/resources/landing.ts`:
 ```ts
@@ -1048,7 +1048,7 @@ export const landing = {
 } as const;
 ```
 
-- [ ] **Step 5: `FilmSection` y `ScrollFilm`**
+- [x] **Step 5: `FilmSection` y `ScrollFilm`**
 
 `src/components/film/FilmSection.tsx`:
 ```tsx
@@ -1310,7 +1310,7 @@ export function ScrollFilm({
 }
 ```
 
-- [ ] **Step 6: Hero, CTA y página**
+- [x] **Step 6: Hero, CTA y página**
 
 `src/components/landing/CallButton.tsx`:
 ```tsx
@@ -1575,7 +1575,7 @@ export default function Home() {
 }
 ```
 
-- [ ] **Step 7: Retirar los tests de la Home vieja**
+- [x] **Step 7: Retirar los tests de la Home vieja**
 
 ```bash
 git rm tests/e2e/home-rail.spec.ts tests/e2e/decode.spec.ts tests/e2e/lazy-video.spec.ts
@@ -1588,7 +1588,7 @@ git rm tests/e2e/home-rail.spec.ts tests/e2e/decode.spec.ts tests/e2e/lazy-video
 
 Los componentes viejos (`HomeRail`, `FeaturedProject`, `LazyVideo`, etc.) siguen en el árbol sin uso; su borrado es del Plan B.
 
-- [ ] **Step 8: Verlo pasar**
+- [x] **Step 8: Verlo pasar**
 
 ```bash
 npm run build 2>&1 | tee .perf/build-film-hero.txt | grep -E '^(┌|├|└) [○●] /(about|work|gallery|blog/\[slug\])? '
@@ -1603,7 +1603,7 @@ let el = document.querySelector("[data-film-stage]"); while ((el = el.parentElem
 ```
 y corregir ese ancestro, no el escenario.
 
-- [ ] **Step 9: Gates y commit**
+- [x] **Step 9: Gates y commit**
 
 ```bash
 npx @biomejs/biome check src --max-diagnostics=0 && node scripts/quality/biome-gate.mjs HEAD && npx tsc --noEmit
@@ -1629,7 +1629,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Consumes: `FilmSection` y la línea de tiempo `--film-section` (Task 4); `landing.tagline` (Task 4); `FILM_BEATS` ya incluye `tagline` (Task 1); `MotionRuntime` añade `.is-in` a los `[data-mo-io]` visibles (ya existe).
 - Produces: `<Tagline />`; atributos `[data-tagline]` y `[data-tagline-word]`.
 
-- [ ] **Step 1: Test que falla**
+- [x] **Step 1: Test que falla**
 
 `tests/e2e/tagline.spec.ts`:
 ```ts
@@ -1690,12 +1690,12 @@ test("reduced motion: every word is lit from the start", async ({ page }) => {
 });
 ```
 
-- [ ] **Step 2: Verlo fallar**
+- [x] **Step 2: Verlo fallar**
 
 Run: `npx playwright test --project=chromium tests/e2e/tagline.spec.ts`
 Expected: FAIL (`[data-tagline]` no existe).
 
-- [ ] **Step 3: Implementación**
+- [x] **Step 3: Implementación**
 
 `src/components/landing/Tagline.tsx`:
 ```tsx
@@ -1810,14 +1810,14 @@ y dentro del `@media (min-width: 768px)` existente:
 
 `src/app/page.tsx`: importar `import { Tagline } from "@/components/landing/Tagline";` y poner `<Tagline />` justo después de `<Hero />` dentro de `<ScrollFilm>`.
 
-- [ ] **Step 4: Verlo pasar**
+- [x] **Step 4: Verlo pasar**
 
 ```bash
 npm run build && npx playwright test --project=chromium --project=mobile-chromium --project=firefox --project=webkit tests/e2e/tagline.spec.ts tests/e2e/film.spec.ts
 ```
 Expected: todo en verde. Si `words light up in reading order` falla con todas las opacidades en 1, la línea de tiempo `--film-section` no está llegando a las palabras: comprobar en DevTools que `.section` tiene `view-timeline-name` y que el nombre no fue reescrito por CSS Modules.
 
-- [ ] **Step 5: Gates y commit**
+- [x] **Step 5: Gates y commit**
 
 ```bash
 npx @biomejs/biome check src --max-diagnostics=0 && node scripts/quality/biome-gate.mjs HEAD && npx tsc --noEmit
@@ -1834,7 +1834,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 **Files:**
 - Modify: `docs/superpowers/plans/2026-10-09-landing-film-look-gate.md` (casillas)
 
-- [ ] **Step 1: Gates completos**
+- [x] **Step 1: Gates completos**
 
 ```bash
 npx @biomejs/biome check src --max-diagnostics=0 2>&1 | tail -2
@@ -1845,11 +1845,11 @@ node scripts/quality/csp-check.mjs
 ```
 Expected: todo en verde, `csp-check OK`, First Load JS de cada ruta ≤ base + 10 kB. Un fallo de `networkidle` en Firefox bajo carga se repite aislado (`--project=firefox <spec> --repeat-each=2`) antes de darlo por bueno.
 
-- [ ] **Step 2: Mirar la página**
+- [x] **Step 2: Mirar la página**
 
 Con `npm run start -- -p 3100` arriba, capturar con Playwright (script puntual en `.perf/`, sin commitear) la Home en 1440×900 y 390×844, tema oscuro, tras esperar a que `intro-pending` desaparezca y `[data-film-ready]` exista, en estos puntos de scroll: 0; mitad del hero; inicio, mitad y final del tagline; y el bloque plano. Además el menú móvil abierto y `/about` en desktop. Abrir cada PNG con Read y comprobar a ojo: texto legible sobre el video en todos los puntos, sin cortes ni solapes, nav en píldora centrada, wordmark y titulares en Geist, palabras del tagline a medio encender en el punto medio.
 
-- [ ] **Step 3: Marcar casillas, push y Preview**
+- [x] **Step 3: Marcar casillas, push y Preview**
 
 Marcar las casillas de las Tasks 1–6 de este plan e incluirlas en un commit `docs:`.
 ```bash
