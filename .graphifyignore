@@ -1,0 +1,27 @@
+# Graphify: exclusiones de magic-portfolio (sintaxis de .gitignore).
+# Se suma a .gitignore; cuando dos reglas chocan gana la última.
+
+# Copias de trabajo y configuración local de herramientas
+.claude/
+.superpowers/
+.vercel/
+.vscode/
+.perf/
+
+# Artefactos de pruebas
+test-results/
+playwright-report/
+*-snapshots/
+
+# Binarios y archivos generados sin valor para el grafo
+*.mp4
+*.webm
+*.mov
+*.log
+*.diff
+*.tsbuildinfo
+
+# Fuentes de marca: .gitignore las deja fuera del repo, pero sí van al grafo
+!/16.9 - LOGO COMPLETO.png
+!/Logo - Favicon.png
+!/Manual_Marca_Personal_Erick_Mahecha_2026.pdf
