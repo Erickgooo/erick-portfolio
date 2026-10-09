@@ -1,4 +1,4 @@
-import { protectedRoutes } from "@/resources/protectedRoutes";
+import { isProtectedPath } from "@/resources/protectedRoutes";
 import { AUTH_COOKIE, verifyAuthToken } from "@/utils/auth";
 import { type NextRequest, NextResponse } from "next/server";
 
@@ -11,25 +11,20 @@ import { type NextRequest, NextResponse } from "next/server";
  * content never leaves the server unauthenticated.
  */
 
-const PROTECTED_PATHS = Object.entries(protectedRoutes)
-  .filter(([, enabled]) => enabled)
-  .map(([path]) => path);
-
-function isProtected(pathname: string): boolean {
-  return PROTECTED_PATHS.some((path) => pathname === path || pathname.startsWith(`${path}/`));
-}
-
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  if (!isProtected(pathname)) {
+  if (!isProtectedPath(pathname)) {
     return NextResponse.next();
   }
 
   const token = request.cookies.get(AUTH_COOKIE)?.value;
 
   if (await verifyAuthToken(token)) {
-    return NextResponse.next();
+    const response = NextResponse.next();
+    // Authenticated responses must not be stored by shared caches or the CDN.
+    response.headers.set("Cache-Control", "private, no-store");
+    return response;
   }
 
   // Rewrite (not redirect) so the URL is preserved and RouteGuard can show the
@@ -39,10 +34,16 @@ export async function middleware(request: NextRequest) {
 
   const response = NextResponse.rewrite(url);
   response.headers.set("Cache-Control", "no-store");
+  response.headers.set("X-Robots-Tag", "noindex, nofollow");
   return response;
 }
 
 export const config = {
-  // Skip static assets and Next internals; auth endpoints handle their own checks.
-  matcher: ["/((?!_next/static|_next/image|favicon.ico|api/|images/|.*\\.[\\w]+$).*)"],
+  // Run on every page request. Only Next internals, API routes (which do their
+  // own checks) and files with a known static-asset extension are skipped.
+  // The extension list is an allowlist on purpose: excluding "anything with a
+  // dot" would also skip `/work.rsc`-style payload URLs.
+  matcher: [
+    "/((?!_next/static|_next/image|api/|images/|.*\\.(?:png|jpe?g|webp|avif|gif|svg|ico|mp4|webm|pdf|woff2?)$).*)",
+  ],
 };

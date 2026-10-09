@@ -1,14 +1,21 @@
 import { ProjectCard } from "@/components";
+import { isProtectedPath } from "@/resources/protectedRoutes";
 import { getPosts } from "@/utils/utils";
 import { Column } from "@once-ui-system/core";
 
 interface ProjectsProps {
   range?: [number, number?];
   exclude?: string[];
+  /** Set on public pages: leaves out projects whose own page is password-protected. */
+  hideProtected?: boolean;
 }
 
-export function Projects({ range, exclude }: ProjectsProps) {
+export function Projects({ range, exclude, hideProtected = false }: ProjectsProps) {
   let allProjects = getPosts(["src", "app", "work", "projects"]);
+
+  if (hideProtected) {
+    allProjects = allProjects.filter((post) => !isProtectedPath(`/work/${post.slug}`));
+  }
 
   // Exclude by slug (exact match)
   if (exclude && exclude.length > 0) {
@@ -33,7 +40,9 @@ export function Projects({ range, exclude }: ProjectsProps) {
           images={post.metadata.images}
           title={post.metadata.title}
           description={post.metadata.summary}
-          content={post.content}
+          // A flag, not the body: ProjectCard is a client component, so every prop
+          // is serialized into the HTML of whichever page lists the project.
+          hasContent={post.content.trim().length > 0}
           avatars={post.metadata.team?.map((member) => ({ src: member.avatar })) || []}
           link={post.metadata.link || ""}
           metric={post.metadata.metric || ""}

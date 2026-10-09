@@ -3,6 +3,7 @@ import { Posts } from "@/components/blog/Posts";
 import { LazyVideo } from "@/components/home/LazyVideo";
 import { Projects } from "@/components/work/Projects";
 import { about, baseURL, home, person, routes } from "@/resources";
+import { isProtectedPath } from "@/resources/protectedRoutes";
 import {
   Avatar,
   Badge,
@@ -144,7 +145,7 @@ export default function Home() {
         </Column>
       </Column>
       <RevealFx translateY="16" delay={0.6}>
-        <Projects range={[1, 1]} />
+        <Projects range={[1, 1]} hideProtected={!isProtectedPath("/")} />
       </RevealFx>
       {routes["/blog"] && (
         <Column fillWidth gap="24" marginBottom="l">
@@ -158,7 +159,7 @@ export default function Home() {
               </Heading>
             </Row>
             <Row flex={3} paddingX="20">
-              <Posts range={[1, 2]} columns="2" />
+              <Posts range={[1, 2]} columns="2" hideProtected={!isProtectedPath("/")} />
             </Row>
           </Row>
           <Row fillWidth paddingLeft="64" horizontal="end">
