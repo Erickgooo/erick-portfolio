@@ -86,6 +86,64 @@ test.describe("scrubbing", () => {
   });
 });
 
+const BEATS = [
+  "hero",
+  "tagline",
+  "problem",
+  "solution",
+  "benefit-1",
+  "benefit-2",
+  "benefit-3",
+  "benefit-4",
+  "process",
+];
+
+test("every film section has a beat", async ({ page }) => {
+  await page.goto("/");
+  const ids = await page
+    .locator("[data-film-beat]")
+    .evaluateAll((els) => els.map((el) => el.getAttribute("data-film-beat")));
+  expect(ids).toEqual(BEATS);
+});
+
+test("the last film section ends the video", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== "chromium", "one engine is enough for the mapping");
+  await page.goto("/");
+  await introDone(page);
+  await filmReady(page);
+  // Scroll to where the stage unpins: the last section's bottom edge at the viewport's bottom edge.
+  await page.evaluate(() => {
+    const el = document.querySelector('[data-film-beat="process"]') as HTMLElement;
+    const top = el.getBoundingClientRect().top + window.scrollY;
+    window.scrollTo({ top: top + el.offsetHeight - window.innerHeight, behavior: "instant" });
+  });
+  await expect.poll(() => filmTime(page), { timeout: 10000 }).toBeGreaterThan(24.5);
+});
+
+test("each benefit shows its figure and links to its case study", async ({ page }) => {
+  await page.goto("/");
+  const benefits = page.locator("[data-benefit]");
+  await expect(benefits).toHaveCount(4);
+  const figures = await benefits.locator("[data-benefit-figure]").allTextContents();
+  expect(figures).toEqual(["338K+", "3.92x", "85%", "48h"]);
+  const links = await benefits
+    .locator("a")
+    .evaluateAll((els) => els.map((a) => a.getAttribute("href")));
+  expect(links).toEqual([
+    "/work/quick-metal-shop-viral-videos",
+    "/work/ai-powered-ad-creatives",
+    "/work/leadbot-ai",
+    "/work/quick-metal-shop-arquiexpo",
+  ]);
+});
+
+test("the argument is in the server HTML", async ({ request }) => {
+  const html = await (await request.get("/")).text();
+  expect(html).toContain("none of them talk to each other");
+  expect(html).toContain("Content at agency scale.");
+  expect(html).toContain("How I work");
+});
+
 const mp4Requests = (page: Page) => {
   const urls: string[] = [];
   page.on("request", (request) => {

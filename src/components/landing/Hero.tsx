@@ -6,7 +6,7 @@ import styles from "./landing.module.scss";
 
 export function Hero() {
   return (
-    <FilmSection beat="hero" screens={2}>
+    <FilmSection beat="hero" screens={2} fade={false}>
       <div className={styles.hero}>
         <h1 className={styles.headline}>{landing.hero.headline}</h1>
         <p className={styles.subline}>{landing.hero.subline}</p>

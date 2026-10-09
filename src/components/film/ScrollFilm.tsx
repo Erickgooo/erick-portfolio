@@ -31,12 +31,14 @@ export function ScrollFilm({
   children,
 }: ScrollFilmProps) {
   const rootRef = useRef<HTMLDivElement>(null);
+  const stageRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
     const root = rootRef.current;
+    const stage = stageRef.current;
     const video = videoRef.current;
-    if (!root || !video) return;
+    if (!root || !stage || !video) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     if (document.documentElement.dataset.fx === "lite") return;
 
@@ -60,7 +62,7 @@ export function ScrollFilm({
 
     const tick = () => {
       frame = 0;
-      const target = Math.min(last, filmTimeAt(beats, measure()));
+      const target = Math.min(last, filmTimeAt(beats, measure(), stage.offsetHeight));
       current += (target - current) * 0.2;
       if (Math.abs(target - current) < 0.004) current = target;
       root.style.setProperty("--film-veil", String(veilAt(current)));
@@ -133,7 +135,7 @@ export function ScrollFilm({
 
   return (
     <div ref={rootRef} className={styles.film} data-film-root="">
-      <div className={styles.stage} data-film-stage="" aria-hidden="true">
+      <div ref={stageRef} className={styles.stage} data-film-stage="" aria-hidden="true">
         <picture>
           <source media="(max-width: 860px)" srcSet={posterMobile} />
           <img src={poster} alt="" className={styles.media} fetchPriority="high" />

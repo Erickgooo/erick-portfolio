@@ -153,6 +153,136 @@ $ease: var(--ease-fluid);
   }
 }
 
+.statement,
+.benefit,
+.process {
+  display: grid;
+  gap: 16px;
+  justify-items: start;
+  max-width: 680px;
+}
+
+.process {
+  gap: 40px;
+  max-width: none;
+}
+
+.label {
+  margin: 0;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  font-weight: 600;
+  color: #c7ccd1;
+}
+
+.statementText {
+  margin: 0;
+  font-family: var(--font-heading), sans-serif;
+  font-size: 1.875rem;
+  line-height: 2.25rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+.figure {
+  display: grid;
+  gap: 4px;
+  margin: 0;
+}
+
+.figureValue {
+  font-family: var(--font-code), monospace;
+  font-size: 3.75rem;
+  line-height: 1;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  /* The Cobalto text step for dark surfaces (brand-700): the exact #2d5bff is too dim over footage. */
+  color: #6688ff;
+}
+
+.figureUnit {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: #c7ccd1;
+}
+
+.benefitTitle {
+  margin: 8px 0 0;
+  font-family: var(--font-heading), sans-serif;
+  font-size: 1.875rem;
+  line-height: 2.25rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+.benefitBody {
+  margin: 0;
+  font-size: 1.125rem;
+  line-height: 1.75rem;
+  color: #dcdddf;
+  text-wrap: pretty;
+}
+
+/* A text link, not a button: the page keeps a single call to action. */
+.home .caseLink {
+  font-size: 1rem;
+  line-height: 1.5rem;
+  font-weight: 600;
+  color: #ffffff;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
+  transition: color 700ms $ease;
+}
+
+.home .caseLink:hover {
+  color: #a6baff;
+}
+
+.home .caseLink:focus-visible {
+  outline: 2px solid #ffffff;
+  outline-offset: 2px;
+}
+
+.steps {
+  display: grid;
+  gap: 32px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.step {
+  display: grid;
+  gap: 8px;
+  align-content: start;
+}
+
+.stepNumber {
+  font-family: var(--font-code), monospace;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  font-weight: 600;
+  color: #6688ff;
+}
+
+.stepName {
+  margin: 0;
+  font-family: var(--font-heading), sans-serif;
+  font-size: 1.5rem;
+  line-height: 2rem;
+  font-weight: 600;
+}
+
+.stepText {
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.5rem;
+  color: #dcdddf;
+}
+
 .flat {
   box-sizing: border-box;
   width: 100%;
@@ -175,6 +305,25 @@ $ease: var(--ease-fluid);
   .tagline {
     font-size: 3.75rem;
     line-height: 1;
+  }
+
+  .statementText {
+    font-size: 3rem;
+    line-height: 1;
+  }
+
+  .figureValue {
+    font-size: 6rem;
+  }
+
+  .benefitTitle {
+    font-size: 2.25rem;
+    line-height: 2.5rem;
+  }
+
+  .steps {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 48px;
   }
 
   .stats {
