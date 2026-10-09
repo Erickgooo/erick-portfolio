@@ -235,7 +235,7 @@ Expected: cuatro archivos. `home-film.mp4` ≤ 15 728 640 bytes y `home-film-m.m
 
 ```bash
 S=.perf/film-check; mkdir -p $S
-ffmpeg -v error -y -i public/video/home-film.mp4 -vf "select='eq(n\,0)+eq(n\,47)+eq(n\,94)+eq(n\,96)+eq(n\,154)+eq(n\,156)+eq(n\,210)+eq(n\,212)',scale=480:-2,tile=4x2:padding=6" -vsync 0 -frames:v 1 $S/beats.jpg
+ffmpeg -v error -y -i public/video/home-film.mp4 -vf "select='eq(n\,0)+eq(n\,47)+eq(n\,94)+eq(n\,96)+eq(n\,154)+eq(n\,156)+eq(n\,210)+eq(n\,212)',scale=480:-2,tile=4x2:padding=6" -fps_mode passthrough -frames:v 1 $S/beats.jpg
 ```
 Abrir `$S/beats.jpg`, `public/images/film/hero.webp` y `hero-m.webp` con la herramienta Read. Comprobar: (a) el póster no es un fotograma negro ni un fundido; (b) los fotogramas 94/96 y 210/212 son planos distintos, es decir, los cortes de 3.17 s y 7.03 s caen donde dice `FILM_BEATS`. Si un corte está corrido, ajustar `start`/`end` en `filmMap.ts` y los números del test del Step 1 al valor real, y repetir el Step 4.
 
