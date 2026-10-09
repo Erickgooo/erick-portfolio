@@ -111,6 +111,15 @@ test.describe("home video", () => {
     // autoplays reliably here (see the first test above).
     test.skip(browserName !== "chromium", "one engine is enough for this toggle-button check");
     await page.goto("/");
+    // Wait for the intro to hand off: while its overlay intercepts the pointer,
+    // Playwright retries the click with fresh scrolls, each of which re-crosses
+    // the IntersectionObserver threshold and can resume the video after the pause.
+    await expect
+      .poll(
+        () => page.evaluate(() => document.documentElement.classList.contains("intro-pending")),
+        { timeout: 8000 },
+      )
+      .toBe(false);
     const wrap = page.locator('[data-testid="home-video"]');
     const video = wrap.locator("video");
     await wrap.scrollIntoViewIfNeeded();
