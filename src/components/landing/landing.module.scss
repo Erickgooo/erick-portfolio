@@ -1,0 +1,141 @@
+$ease: var(--ease-fluid);
+
+.home {
+  width: 100%;
+}
+
+.hero {
+  display: grid;
+  gap: 24px;
+  justify-items: start;
+}
+
+.headline {
+  max-width: 680px;
+  margin: 0;
+  font-family: var(--font-heading), sans-serif;
+  font-size: 2.25rem;
+  line-height: 2.5rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+  /* The one gradient the system allows: on the hero heading's text, never on a background. */
+  background: linear-gradient(90deg, #ffffff, #9b9b9b);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.subline {
+  max-width: 680px;
+  margin: 0;
+  font-size: 1.125rem;
+  line-height: 1.75rem;
+  color: #dcdddf;
+  text-wrap: pretty;
+}
+
+.action {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px;
+}
+
+/* Scoped under .home: Once UI colours every `a:not(.button)` at specificity (0,1,1). */
+.home .cta {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 12px;
+  border-radius: 9999px;
+  background: var(--cobalt);
+  color: #f4f5f7;
+  font-size: 1rem;
+  line-height: 1.5rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background-color 700ms $ease, transform 700ms $ease;
+}
+
+.home .cta:hover {
+  background: #2549cb;
+  color: #f4f5f7;
+}
+
+.home .cta:active {
+  transform: scale(0.98);
+}
+
+.home .cta:focus-visible {
+  outline: 2px solid #ffffff;
+  outline-offset: 2px;
+}
+
+.risk {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: #c7ccd1;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(2, max-content);
+  gap: 16px 40px;
+  margin: 24px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.stat {
+  display: grid;
+  gap: 4px;
+}
+
+.statValue {
+  font-family: var(--font-code), monospace;
+  font-size: 1.5rem;
+  line-height: 2rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.statLabel {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: #c7ccd1;
+}
+
+.flat {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 1120px;
+  margin-inline: auto;
+  padding: 96px 24px;
+}
+
+@media (min-width: 768px) {
+  .headline {
+    font-size: 3.75rem;
+    line-height: 1;
+  }
+
+  .subline {
+    font-size: 1.25rem;
+    line-height: 1.75rem;
+  }
+
+  .stats {
+    grid-template-columns: repeat(4, max-content);
+  }
+
+  .statValue {
+    font-size: 1.875rem;
+    line-height: 2.25rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .home .cta {
+    transition: none;
+  }
+}

@@ -1,0 +1,20 @@
+.section {
+  min-height: calc(var(--screens) * 100vh);
+  min-height: calc(var(--screens) * 100svh);
+  /* Descendants animate against the section, which keeps moving while .pin is stuck. */
+  view-timeline-name: --film-section;
+}
+
+.pin {
+  position: sticky;
+  top: 0;
+  display: grid;
+  align-content: center;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 1120px;
+  min-height: 100vh;
+  min-height: 100svh;
+  margin-inline: auto;
+  padding: 96px 24px 48px;
+}

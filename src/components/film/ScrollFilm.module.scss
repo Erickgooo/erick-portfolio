@@ -1,0 +1,49 @@
+.film {
+  position: relative;
+  width: 100%;
+  /* The film is always dark footage, so its copy is light in both themes. */
+  color: #ffffff;
+  --film-veil: 0.58;
+}
+
+.stage {
+  position: sticky;
+  top: 0;
+  z-index: 0;
+  height: 100vh;
+  /* The large viewport: the stage must not resize when a phone's URL bar slides. */
+  height: 100lvh;
+  overflow: hidden;
+  background: #000000;
+}
+
+.media {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.video {
+  opacity: 0;
+}
+
+.film[data-film-ready] .video {
+  opacity: 1;
+}
+
+/* A flat veil, never a gradient: keeps the copy readable over bright footage. */
+.veil {
+  position: absolute;
+  inset: 0;
+  background: #000000;
+  opacity: var(--film-veil);
+}
+
+.track {
+  position: relative;
+  z-index: 1;
+  margin-top: -100vh;
+  margin-top: -100lvh;
+}

@@ -15,16 +15,12 @@ test("intro-pending clears when the intro starts fading (~4 s), not at the 7 s b
   expect(elapsed).toBeLessThan(5500);
 });
 
-test("while the intro plays, hero animations are paused but the h1 is visible", async ({
-  page,
-}) => {
+test("while the intro plays the h1 is already in the page", async ({ page }) => {
   await page.goto("/");
-  const state = await page.$eval("h1 [data-kinetic-word]", (w) => ({
-    playState: getComputedStyle(w).animationPlayState,
-    opacity: getComputedStyle(w).opacity,
-  }));
-  expect(state.playState).toBe("paused");
-  expect(state.opacity).toBe("1");
+  expect(
+    await page.evaluate(() => document.documentElement.classList.contains("intro-pending")),
+  ).toBe(true);
+  await expect(page.locator("h1")).toBeVisible();
 });
 
 test("the IntroLoader still ignores prefers-reduced-motion (brand exemption)", async ({ page }) => {

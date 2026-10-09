@@ -1,13 +1,7 @@
 import type { Page } from "@playwright/test";
 import { expect, test } from "./fixtures";
 
-const CASES = [
-  { path: "/about", text: "Erick Mahecha" },
-  {
-    path: "/",
-    text: "I Build Marketing Infrastructure From Zero. And Make It Outperform Full Departments.",
-  },
-];
+const CASES = [{ path: "/about", text: "Erick Mahecha" }];
 
 async function copyH1(page: Page) {
   return page.evaluate(() => {
@@ -28,20 +22,27 @@ for (const c of CASES) {
     await expect(page.getByRole("heading", { level: 1 })).toHaveAccessibleName(c.text);
   });
 
-  test(`${c.path}: animated words are aria-hidden and separated by real spaces`, async ({ page }) => {
+  test(`${c.path}: animated words are aria-hidden and separated by real spaces`, async ({
+    page,
+  }) => {
     await page.goto(c.path);
     const words = page.locator("h1 [data-kinetic-words]");
     await expect(words).toHaveAttribute("aria-hidden", "true");
     expect(await words.textContent()).toBe(c.text);
   });
 
-  test(`${c.path}: copying the h1 yields the text once, with spaces`, async ({ page, browserName }) => {
+  test(`${c.path}: copying the h1 yields the text once, with spaces`, async ({
+    page,
+    browserName,
+  }) => {
     test.skip(browserName !== "chromium", "selection API assertion is Chromium-only");
     await page.goto(c.path);
     expect(await copyH1(page)).toBe(c.text);
   });
 
-  test(`${c.path}: h1 words are fully opaque and unclipped from the first frame`, async ({ page }) => {
+  test(`${c.path}: h1 words are fully opaque and unclipped from the first frame`, async ({
+    page,
+  }) => {
     await page.goto(c.path);
     const state = await page.$eval("h1", (h) => {
       const words = [...h.querySelectorAll<HTMLElement>("[data-kinetic-word]")];

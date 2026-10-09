@@ -1,4 +1,4 @@
-import type { Locator, Page } from "@playwright/test";
+import type { Locator, Page, Request } from "@playwright/test";
 
 export const ROUTES = [
   { name: "home", path: "/" },
@@ -38,4 +38,42 @@ export async function headerLink(page: Page, name: string): Promise<Locator> {
   const burger = page.getByRole("button", { name: "Open menu" });
   if (await burger.isVisible()) await burger.click();
   return page.locator("header").getByRole("link", { name, exact: true });
+}
+
+/**
+ * A stand-in for `waitForLoadState("networkidle")` that ignores `blob:` requests.
+ * Chromium keeps a Blob-backed media resource open for as long as a video element
+ * may read from it, so a page with the home film never reaches Playwright's own
+ * idle state. Call before navigating; await the returned function afterwards.
+ */
+export function trackNetwork(page: Page) {
+  const pending = new Set<Request>();
+  let lastActivity = Date.now();
+  const settle = (request: Request) => {
+    pending.delete(request);
+    lastActivity = Date.now();
+  };
+  page.on("request", (request) => {
+    if (request.url().startsWith("blob:")) return;
+    pending.add(request);
+    lastActivity = Date.now();
+  });
+  page.on("requestfinished", settle);
+  page.on("requestfailed", settle);
+  // Requests cancelled by a navigation (e.g. link prefetches) report neither event.
+  page.on("framenavigated", (frame) => {
+    if (frame === page.mainFrame()) pending.clear();
+  });
+
+  return async (quietMs = 500, timeout = 30_000) => {
+    await page.waitForLoadState("load");
+    const deadline = Date.now() + timeout;
+    while (pending.size > 0 || Date.now() - lastActivity < quietMs) {
+      if (Date.now() > deadline) {
+        const urls = [...pending].map((request) => request.url()).join(", ");
+        throw new Error(`network did not go idle within ${timeout} ms: ${urls}`);
+      }
+      await page.waitForTimeout(100);
+    }
+  };
 }

@@ -100,6 +100,11 @@
   padding-top: 96px !important;
 }
 
+/* The home film is full bleed and starts under the header. */
+.main-content-wrapper:has([data-film-root]) {
+  padding: 0 !important;
+}
+
 /* Visually hidden, still read by assistive tech. user-select:none keeps copy /
    paste from duplicating text rendered twice (e.g. KineticText). */
 .sr-only {

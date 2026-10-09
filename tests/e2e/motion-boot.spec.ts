@@ -38,7 +38,9 @@ test("missing deviceMemory (Safari) is ignored, not treated as low", async ({ pa
   expect(await fx(page)).toBe("full");
 });
 
-test("intro-pending only on Home and cleared by the 7 s backstop at the latest", async ({ page }) => {
+test("intro-pending only on Home and cleared by the 7 s backstop at the latest", async ({
+  page,
+}) => {
   await page.goto("/about");
   expect(
     await page.evaluate(() => document.documentElement.classList.contains("intro-pending")),
@@ -87,16 +89,4 @@ test("headings and body use Geist; figures use Geist Mono", async ({ page }) => 
   expect(fonts.heading).toContain("Geist");
   expect(fonts.body).toContain("Geist");
   expect(fonts.code).toContain("Geist Mono");
-});
-
-test("lite tier: no autoplay on the home video, play button offered", async ({ page }) => {
-  await page.addInitScript(() => {
-    Object.defineProperty(navigator, "hardwareConcurrency", { get: () => 2 });
-  });
-  await page.goto("/");
-  const wrap = page.locator('[data-testid="home-video"]');
-  await wrap.scrollIntoViewIfNeeded();
-  await page.waitForTimeout(800);
-  expect(await wrap.locator("video").evaluate((v: HTMLVideoElement) => v.paused)).toBe(true);
-  await expect(wrap.getByRole("button", { name: /play/i })).toBeVisible();
 });

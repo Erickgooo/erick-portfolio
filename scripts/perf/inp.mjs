@@ -56,7 +56,8 @@ for (const [name, act] of Object.entries(SCENARIOS)) {
     new PerformanceObserver((l) => { for (const e of l.getEntries()) window.__long.push(Math.round(e.duration)); })
       .observe({ type: "longtask", buffered: true });`);
   await page.goto(BASE + PATHS[name]);
-  await page.waitForLoadState("networkidle");
+  // "load", not "networkidle": Chromium keeps the home film's blob: request open.
+  await page.waitForLoadState("load");
   await page.waitForTimeout(6000); // let the Home intro finish
   await page.evaluate(() => {
     window.__long = [];

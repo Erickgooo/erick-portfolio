@@ -41,10 +41,3 @@ test.describe("touch devices", () => {
     expect(t === "none" || t === "matrix(1, 0, 0, 1, 0, 0)").toBe(true);
   });
 });
-
-test("featured project is a spec sheet whose image is the morph origin", async ({ page }) => {
-  await page.goto("/");
-  const img = page.locator("[data-featured-project] img[data-vt-name^='project-']");
-  await expect(img).toHaveCount(1);
-  await expect(page.locator("[data-featured-project] h2")).toHaveCount(1);
-});
