@@ -63,15 +63,30 @@ test("mo-io matches the absence of view() support", async ({ page }) => {
   expect(moIo).toBe(!supports);
 });
 
-test("the page background is a single blueprint grid at <= 8% opacity", async ({ page }) => {
+test("the page background is flat black in the dark theme, with no pattern", async ({ page }) => {
+  await page.emulateMedia({ colorScheme: "dark" });
   await page.goto("/about");
-  const bg = await page.evaluate(() => {
-    const cs = getComputedStyle(document.body, "::before");
-    return { opacity: Number(cs.opacity), image: cs.backgroundImage };
+  const bg = await page.evaluate(() => ({
+    color: getComputedStyle(document.body).backgroundColor,
+    pattern: getComputedStyle(document.body, "::before").backgroundImage,
+  }));
+  expect(bg.color).toBe("rgb(0, 0, 0)");
+  expect(bg.pattern).toBe("none");
+});
+
+test("headings and body use Geist; figures use Geist Mono", async ({ page }) => {
+  await page.goto("/about");
+  const fonts = await page.evaluate(() => {
+    const root = getComputedStyle(document.documentElement);
+    return {
+      heading: root.getPropertyValue("--font-heading"),
+      body: root.getPropertyValue("--font-body"),
+      code: root.getPropertyValue("--font-code"),
+    };
   });
-  expect(bg.opacity).toBeLessThanOrEqual(0.08);
-  expect(bg.image).toContain("linear-gradient");
-  expect(await page.locator('[class*="spotlightWrapper"]').count()).toBe(0);
+  expect(fonts.heading).toContain("Geist");
+  expect(fonts.body).toContain("Geist");
+  expect(fonts.code).toContain("Geist Mono");
 });
 
 test("lite tier: no autoplay on the home video, play button offered", async ({ page }) => {

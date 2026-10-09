@@ -1,4 +1,4 @@
-/* ─── Motion system — Blueprint → Live System ──────────────────────────────
+/* ─── Motion system ────────────────────────────────────────────────────────
    CSS-first: scroll-driven animations where supported, an IntersectionObserver
    fallback under html.mo-io, transform/opacity only, and a reduced-motion
    escape hatch for everything (the IntroLoader is exempt by brand decision). */
@@ -10,27 +10,15 @@
   --dur-l: 700ms;
   --ease-precise: cubic-bezier(0.2, 0, 0, 1);
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --dur-xl: 800ms;
+  /* Heavy, fluid curve used by every new transition (landing skill, B7). */
+  --ease-fluid: cubic-bezier(0.32, 0.72, 0, 1);
+  --shift-l: 64px;
   --shift-s: 8px;
   --shift-m: 16px;
   /* Grafito line for blueprint strokes, and the single brand accent. */
   --line: color-mix(in srgb, #6e7681 55%, transparent);
   --cobalt: #2d5bff;
-}
-
-/* ─── Blueprint Grid (Manual §5.3.4) — the ONE background pattern, ≤ 8% ──── */
-.blueprint-bg {
-  position: relative;
-}
-.blueprint-bg::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  z-index: 0;
-  background-image: linear-gradient(to right, #6e7681 1px, transparent 1px),
-    linear-gradient(to bottom, #6e7681 1px, transparent 1px);
-  background-size: 64px 64px;
-  opacity: 0.08;
 }
 
 /* ─── Reveal ───────────────────────────────────────────────────────────── */
@@ -71,6 +59,28 @@
   }
 }
 
+/* Full tier only: entries also come out of a blur. Lite keeps opacity/translate. */
+@keyframes mo-reveal-up-blur {
+  from {
+    opacity: 0;
+    transform: translateY(var(--shift-l));
+    filter: blur(12px);
+    animation-timing-function: var(--ease-fluid);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+    filter: blur(0);
+  }
+}
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    html[data-fx="full"] [data-reveal]:not([data-reveal="left"]) {
+      animation-name: mo-reveal-up-blur;
+    }
+  }
+}
+
 /* Fallback: html.mo-io is set only without view() support and without RM. */
 html.mo-io [data-reveal] {
   transition: opacity var(--dur-m) var(--ease-out), transform var(--dur-m) var(--ease-out);
@@ -93,6 +103,7 @@ html.mo-io [data-reveal="left"]:not(.is-in) {
     transition: none !important;
     opacity: 1 !important;
     transform: none !important;
+    filter: none !important;
   }
 }
 

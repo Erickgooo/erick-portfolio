@@ -106,7 +106,6 @@ export default async function RootLayout({
           as="body"
           background="page"
           fillWidth
-          className="blueprint-bg"
           style={{ minHeight: "100vh", position: "relative" }}
           margin="0"
           padding="0"
