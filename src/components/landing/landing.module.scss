@@ -105,6 +105,54 @@ $ease: var(--ease-fluid);
   color: #c7ccd1;
 }
 
+.tagline {
+  max-width: 680px;
+  margin: 0;
+  font-family: var(--font-heading), sans-serif;
+  font-size: 2.25rem;
+  line-height: 2.5rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.taglineLine {
+  display: block;
+  text-wrap: balance;
+}
+
+@keyframes word-on {
+  from {
+    opacity: 0.3;
+    animation-timing-function: var(--ease-fluid);
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  /* The section is 2.5 screens tall and its content is pinned from 28% to 72% of
+     its pass through the viewport; the words light up across that pinned stretch. */
+  @supports (animation-timeline: view()) {
+    .word {
+      animation: word-on linear both;
+      animation-timeline: --film-section;
+      animation-range: cover calc(28% + var(--w) / var(--n) * 36%) cover
+        calc(34% + var(--w) / var(--n) * 36%);
+    }
+  }
+
+  :global(html.mo-io) .word {
+    opacity: 0.3;
+    transition: opacity 700ms var(--ease-fluid);
+    transition-delay: calc(var(--w) * 70ms);
+  }
+
+  :global(html.mo-io) .tagline:global(.is-in) .word {
+    opacity: 1;
+  }
+}
+
 .flat {
   box-sizing: border-box;
   width: 100%;
@@ -122,6 +170,11 @@ $ease: var(--ease-fluid);
   .subline {
     font-size: 1.25rem;
     line-height: 1.75rem;
+  }
+
+  .tagline {
+    font-size: 3.75rem;
+    line-height: 1;
   }
 
   .stats {

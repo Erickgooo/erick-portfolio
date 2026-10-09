@@ -77,3 +77,15 @@ export function trackNetwork(page: Page) {
     }
   };
 }
+
+/**
+ * Resolves once the Home intro has handed off. Until then its overlay intercepts
+ * the pointer and the body is scroll-locked, which also freezes scroll timelines.
+ */
+export async function introDone(page: Page) {
+  await page.waitForFunction(
+    () => !document.documentElement.classList.contains("intro-pending"),
+    null,
+    { timeout: 8000 },
+  );
+}

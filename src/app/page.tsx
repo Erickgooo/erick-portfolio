@@ -2,6 +2,7 @@ import { CallToAction, Mailchimp } from "@/components";
 import { ScrollFilm } from "@/components/film/ScrollFilm";
 import { FILM_BEATS, FILM_DURATION } from "@/components/film/filmMap";
 import { Hero } from "@/components/landing/Hero";
+import { Tagline } from "@/components/landing/Tagline";
 import styles from "@/components/landing/landing.module.scss";
 import { about, baseURL, home, person } from "@/resources";
 import { Meta, Schema } from "@once-ui-system/core";
@@ -41,6 +42,7 @@ export default function Home() {
         duration={FILM_DURATION}
       >
         <Hero />
+        <Tagline />
       </ScrollFilm>
       <div className={styles.flat}>
         <CallToAction />

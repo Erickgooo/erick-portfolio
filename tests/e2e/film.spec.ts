@@ -1,16 +1,10 @@
 import type { Page } from "@playwright/test";
 import { expect, test } from "./fixtures";
+import { introDone } from "./helpers";
 
 const HEADLINE =
   "I build your marketing engine from zero and make it outperform a full department.";
 const CALENDAR = "https://calendly.com/santiagomahecha2328/30min";
-
-const introDone = (page: Page) =>
-  expect
-    .poll(() => page.evaluate(() => document.documentElement.classList.contains("intro-pending")), {
-      timeout: 8000,
-    })
-    .toBe(false);
 
 const filmReady = (page: Page) =>
   expect
@@ -33,7 +27,7 @@ const scrollIntoBeat = (page: Page, beat: string, progress: number) =>
     ([id, p]) => {
       const el = document.querySelector(`[data-film-beat="${id}"]`) as HTMLElement;
       const top = el.getBoundingClientRect().top + window.scrollY;
-      window.scrollTo(0, top + el.offsetHeight * (p as number));
+      window.scrollTo({ top: top + el.offsetHeight * (p as number), behavior: "instant" });
     },
     [beat, progress] as const,
   );
