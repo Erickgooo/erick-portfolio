@@ -1,4 +1,5 @@
 # Disruptive Redesign Implementation Plan (Plan 2 de 2)
+n> **CANCELADO desde la Task 14 (2026-10-09).** Erick rechazó en CP2 la dirección «Blueprint → Live System». Las tareas 14–22 no se ejecutan. Sigue el spec `docs/superpowers/specs/2026-10-09-landing-film-home-design.md`.
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
