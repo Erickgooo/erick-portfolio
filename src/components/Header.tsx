@@ -1,11 +1,11 @@
 "use client";
 
+import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { type CSSProperties, useEffect, useRef, useState } from "react";
 
-import { Fade, Flex, Line, Row, ToggleButton } from "@once-ui-system/core";
-
-import { about, blog, display, gallery, person, routes, work } from "@/resources";
+import { about, blog, display, gallery, routes, work } from "@/resources";
+import { EMIcon } from "@/resources/EMIcon";
 import styles from "./Header.module.scss";
 import { ThemeToggle } from "./ThemeToggle";
 
@@ -60,164 +60,86 @@ const TimeDisplay: React.FC<TimeDisplayProps> = ({ timeZone, locale = "en-GB" })
 
 export default TimeDisplay;
 
+const NAV = [
+  { href: "/about", label: about.label },
+  { href: "/work", label: work.label },
+  { href: "/blog", label: blog.label },
+  { href: "/gallery", label: gallery.label },
+] as const;
+
 export const Header = () => {
   const pathname = usePathname() ?? "";
+  const [open, setOpen] = useState(false);
+  const burgerRef = useRef<HTMLButtonElement>(null);
+  const links = NAV.filter((link) => routes[link.href]);
+  const current = (href: string) => (pathname.startsWith(href) ? "page" : undefined);
+
+  // A navigation always leaves the menu closed.
+  // biome-ignore lint/correctness/useExhaustiveDependencies: pathname is the trigger, not an input
+  useEffect(() => setOpen(false), [pathname]);
+
+  useEffect(() => {
+    if (!open) return;
+    document.body.style.overflow = "hidden";
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key !== "Escape") return;
+      setOpen(false);
+      burgerRef.current?.focus();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => {
+      document.body.style.overflow = "";
+      window.removeEventListener("keydown", onKey);
+    };
+  }, [open]);
 
   return (
-    <>
-      <Fade s={{ hide: true }} fillWidth position="fixed" height="80" zIndex={9} />
-      <Fade
-        hide
-        s={{ hide: false }}
-        fillWidth
-        position="fixed"
-        bottom="0"
-        to="top"
-        height="80"
-        zIndex={9}
-      />
-      <Row
-        fitHeight
-        className={styles.position}
-        position="sticky"
-        as="header"
-        zIndex={9}
-        fillWidth
-        padding="8"
-        horizontal="center"
-        data-border="rounded"
-        style={{ viewTransitionName: "site-header" }}
-        s={{
-          position: "fixed",
-        }}
-      >
-        <Row paddingLeft="12" fillWidth vertical="center" textVariant="body-default-s">
-          {display.location && <Row s={{ hide: true }}>{person.location}</Row>}
-        </Row>
-        <Row fillWidth horizontal="center">
-          <Row
-            background="page"
-            border="neutral-alpha-weak"
-            radius="m-4"
-            shadow="l"
-            padding="4"
-            horizontal="center"
-            zIndex={1}
+    <header className={styles.header} style={{ viewTransitionName: "site-header" }}>
+      <nav className={styles.pill} aria-label="Main">
+        {routes["/"] && (
+          <Link
+            href="/"
+            className={styles.brand}
+            aria-label="Erick Mahecha — Home"
+            aria-current={pathname === "/" ? "page" : undefined}
           >
-            <Row gap="4" vertical="center" textVariant="body-default-s" suppressHydrationWarning>
-              {routes["/"] && (
-                <ToggleButton
-                  prefixIcon="brand"
-                  href="/"
-                  aria-label="Erick Mahecha — Home"
-                  selected={pathname === "/"}
-                />
-              )}
-              <Line background="neutral-alpha-medium" vert maxHeight="24" />
-              {routes["/about"] && (
-                <>
-                  <Row s={{ hide: true }}>
-                    <ToggleButton
-                      prefixIcon="person"
-                      href="/about"
-                      label={about.label}
-                      selected={pathname === "/about"}
-                    />
-                  </Row>
-                  <Row hide s={{ hide: false }}>
-                    <ToggleButton
-                      prefixIcon="person"
-                      href="/about"
-                      aria-label={about.label}
-                      selected={pathname === "/about"}
-                    />
-                  </Row>
-                </>
-              )}
-              {routes["/work"] && (
-                <>
-                  <Row s={{ hide: true }}>
-                    <ToggleButton
-                      prefixIcon="grid"
-                      href="/work"
-                      label={work.label}
-                      selected={pathname.startsWith("/work")}
-                    />
-                  </Row>
-                  <Row hide s={{ hide: false }}>
-                    <ToggleButton
-                      prefixIcon="grid"
-                      href="/work"
-                      aria-label={work.label}
-                      selected={pathname.startsWith("/work")}
-                    />
-                  </Row>
-                </>
-              )}
-              {routes["/blog"] && (
-                <>
-                  <Row s={{ hide: true }}>
-                    <ToggleButton
-                      prefixIcon="book"
-                      href="/blog"
-                      label={blog.label}
-                      selected={pathname.startsWith("/blog")}
-                    />
-                  </Row>
-                  <Row hide s={{ hide: false }}>
-                    <ToggleButton
-                      prefixIcon="book"
-                      href="/blog"
-                      aria-label={blog.label}
-                      selected={pathname.startsWith("/blog")}
-                    />
-                  </Row>
-                </>
-              )}
-              {routes["/gallery"] && (
-                <>
-                  <Row s={{ hide: true }}>
-                    <ToggleButton
-                      prefixIcon="gallery"
-                      href="/gallery"
-                      label={gallery.label}
-                      selected={pathname.startsWith("/gallery")}
-                    />
-                  </Row>
-                  <Row hide s={{ hide: false }}>
-                    <ToggleButton
-                      prefixIcon="gallery"
-                      href="/gallery"
-                      aria-label={gallery.label}
-                      selected={pathname.startsWith("/gallery")}
-                    />
-                  </Row>
-                </>
-              )}
-              {display.themeSwitcher && (
-                <>
-                  <Line background="neutral-alpha-medium" vert maxHeight="24" />
-                  <ThemeToggle />
-                </>
-              )}
-            </Row>
-          </Row>
-        </Row>
-        <Flex fillWidth horizontal="end" vertical="center">
-          <Flex
-            paddingRight="12"
-            horizontal="end"
-            vertical="center"
-            textVariant="body-default-s"
-            gap="20"
-          >
-            <Flex s={{ hide: true }}>
-              {display.time && <TimeDisplay timeZone={person.timeZone} />}
-            </Flex>
-          </Flex>
-        </Flex>
-        <span aria-hidden="true" className={styles.sweep} />
-      </Row>
-    </>
+            <EMIcon />
+          </Link>
+        )}
+        <ul className={styles.links}>
+          {links.map((link) => (
+            <li key={link.href}>
+              <Link href={link.href} className={styles.link} aria-current={current(link.href)}>
+                {link.label}
+              </Link>
+            </li>
+          ))}
+        </ul>
+        {display.themeSwitcher && <ThemeToggle />}
+        <button
+          ref={burgerRef}
+          type="button"
+          className={styles.burger}
+          aria-expanded={open}
+          aria-controls="site-menu"
+          aria-label={open ? "Close menu" : "Open menu"}
+          onClick={() => setOpen((value) => !value)}
+        >
+          <span />
+          <span />
+        </button>
+      </nav>
+      <div id="site-menu" className={styles.menu} data-open={open} inert={!open}>
+        <ul className={styles.menuList}>
+          {links.map((link, i) => (
+            <li key={link.href} style={{ "--i": i } as CSSProperties}>
+              <Link href={link.href} className={styles.menuLink} aria-current={current(link.href)}>
+                {link.label}
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </header>
   );
 };

@@ -68,3 +68,21 @@ test("reduced motion: nothing is transformed or faded", async ({ page }) => {
   );
   expect(moving).toBe(0);
 });
+
+test("blocks in view at load are sharp, not left mid-blur", async ({ page }) => {
+  // A block taller than the viewport finishes its entry range late; a sub-pixel
+  // blur left on running text reads as a rendering fault.
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/about");
+  await page.waitForTimeout(700);
+  const filters = await page.$$eval("[data-reveal]", (els) =>
+    els
+      .filter((el) => {
+        const r = el.getBoundingClientRect();
+        return r.bottom > 0 && r.top < window.innerHeight * 0.6;
+      })
+      .map((el) => getComputedStyle(el).filter),
+  );
+  expect(filters.length).toBeGreaterThan(0);
+  for (const f of filters) expect(["none", "blur(0px)"]).toContain(f);
+});

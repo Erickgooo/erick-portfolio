@@ -112,7 +112,6 @@ export default async function RootLayout({
           horizontal="center"
         >
           <IntroLoader />
-          <Flex fillWidth minHeight="16" s={{ hide: true }} />
           <Header />
           <Flex
             zIndex={0}

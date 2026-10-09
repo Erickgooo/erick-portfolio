@@ -14,6 +14,8 @@ const BASE = process.env.INP_BASE_URL ?? "http://localhost:3100";
 const SCENARIOS = {
   home: async (page) => {
     // Mobile viewport: only the icon variant is visible; it carries the accessible name.
+    const burger = page.getByRole("button", { name: "Open menu" });
+    if (await burger.isVisible()) await burger.click();
     await page.locator("header").getByRole("link", { name: "Projects" }).click();
     await page.waitForURL("**/work");
   },

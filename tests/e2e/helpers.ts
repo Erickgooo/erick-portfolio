@@ -1,4 +1,4 @@
-import type { Page } from "@playwright/test";
+import type { Locator, Page } from "@playwright/test";
 
 export const ROUTES = [
   { name: "home", path: "/" },
@@ -31,4 +31,11 @@ export async function measureCLS(page: Page, settleMs = 3500): Promise<number> {
       }),
     settleMs,
   );
+}
+
+/** A visible header link; on phones the links live in the menu, which is opened first. */
+export async function headerLink(page: Page, name: string): Promise<Locator> {
+  const burger = page.getByRole("button", { name: "Open menu" });
+  if (await burger.isVisible()) await burger.click();
+  return page.locator("header").getByRole("link", { name, exact: true });
 }

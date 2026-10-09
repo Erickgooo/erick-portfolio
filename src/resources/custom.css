@@ -94,15 +94,10 @@
   --brand-on-solid-strong: #f4f5f7;
 }
 
-/* ─── Mobile bottom-nav clearance ──────────────────────────────────────────
-   On mobile (≤768px) the header switches to position:fixed at the bottom
-   (bottom: 24px). Without extra padding-bottom, the bar overlaps content.
-   The nav bar is ~56px tall + 24px offset = ~80px, so 96px gives clearance.
-──────────────────────────────────────────────────────────────────────────── */
-@media (max-width: 768px) {
-  .main-content-wrapper {
-    padding-bottom: 96px !important;
-  }
+/* The header is a fixed floating pill (24px offset + 48px tall), so pages
+   reserve room above their content instead of the header taking flow space. */
+.main-content-wrapper {
+  padding-top: 96px !important;
 }
 
 /* Visually hidden, still read by assistive tech. user-select:none keeps copy /

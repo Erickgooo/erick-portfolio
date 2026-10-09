@@ -101,6 +101,8 @@ for (const target of TARGETS) {
 
     // Leave through the header so the View Transition listener runs.
     const next = route === "/about" ? "/work" : "/about";
+    const burger = page.getByRole("button", { name: "Open menu" });
+    if (await burger.isVisible()) await burger.click();
     const link = page.locator(`header a[href="${next}"]:visible`).first();
     let navigated = false;
     if (await link.count()) {
