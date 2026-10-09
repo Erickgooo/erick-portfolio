@@ -27,11 +27,20 @@ let allowedTitles: Set<string> | null = null;
 function getAllowedTitles(): Set<string> {
   if (allowedTitles) return allowedTitles;
 
-  const postTitles = (["blog", "work"] as const).flatMap((section) =>
-    getPosts(["src", "app", section, section === "blog" ? "posts" : "projects"])
-      .filter((post) => !isProtectedPath(`/${section}/${post.slug}`))
-      .map((post) => post.metadata.title),
-  );
+  // The MDX files reach the serverless function through
+  // `outputFileTracingIncludes` in next.config.mjs. If they are ever missing,
+  // getPosts() calls notFound(); an image route must not turn into a 404 over
+  // that, so post titles are skipped and the page titles still work.
+  let postTitles: string[] = [];
+  try {
+    postTitles = (["blog", "work"] as const).flatMap((section) =>
+      getPosts(["src", "app", section, section === "blog" ? "posts" : "projects"])
+        .filter((post) => !isProtectedPath(`/${section}/${post.slug}`))
+        .map((post) => post.metadata.title),
+    );
+  } catch {
+    console.error("[og] could not read post titles; falling back to page titles only");
+  }
 
   allowedTitles = new Set(
     [home.title, about.title, blog.title, work.title, gallery.title, ...postTitles]

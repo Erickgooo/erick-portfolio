@@ -95,6 +95,13 @@ const nextConfig = {
   pageExtensions: ["ts", "tsx", "md", "mdx"],
   transpilePackages: ["next-mdx-remote"],
   poweredByHeader: false,
+  // Route handlers that read MDX at request time need those files shipped with
+  // their serverless function; file tracing cannot see paths built at runtime.
+  // (Pages are prerendered at build time and do not need this.)
+  outputFileTracingIncludes: {
+    "/api/og/generate": ["./src/app/blog/posts/**/*.mdx", "./src/app/work/projects/**/*.mdx"],
+    "/api/rss": ["./src/app/blog/posts/**/*.mdx"],
+  },
   // Source maps would publish the original, commented source of every client bundle.
   productionBrowserSourceMaps: false,
   images: {
