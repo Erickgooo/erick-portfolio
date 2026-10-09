@@ -6,7 +6,7 @@
 
 **Architecture:** Primero un sistema de motion CSS-first en `src/components/motion/`: scroll-driven animations con fallback de IntersectionObserver, tiers de dispositivo fijados por un script inline antes del primer paint y View Transitions con un listener global. Luego cada página se reconstruye sobre esas primitivas, un momento firma por commit, medido antes y después. Sin framer-motion. `RevealFx` desaparece del código.
 
-**Tech Stack:** Next.js 15.5.23 App Router, React 19, TypeScript, SCSS modules, Once UI 1.4.x, CSS `animation-timeline` (`view()`/`scroll()`), View Transitions API, `@playwright/test`, Lighthouse 12.8.2, `web-vitals` (solo devDep para medir INP de laboratorio).
+**Tech Stack:** Next.js 15.5.23 App Router, React 19, TypeScript, SCSS modules, Once UI 1.4.x, CSS `animation-timeline` (`view()`/`scroll()`), View Transitions API, `@playwright/test`, Lighthouse 13.5.0 (12.8.2 hasta el 2026-10-09), `web-vitals` (solo devDep para medir INP de laboratorio).
 
 **Spec:** `docs/superpowers/specs/2026-09-26-disruptive-redesign-design.md`, §6, §7, §8, §9, §10 y §11.
 
@@ -123,7 +123,7 @@ Usa del Plan 1: `playwright.config.ts`, `tests/e2e/helpers.ts` (`ROUTES`, `measu
   - `npm run perf:inp` (env `INP_BASE_URL`, default `http://localhost:3100`) imprime una tabla con INP y tareas largas por interacción.
   - `npm run perf:screens -- <tag> <baseUrl>` guarda las capturas en `.perf/screens/<tag>/`.
 
-- [ ] **Step 1: `LH_PAGES` / `LH_FORMS` en `scripts/perf/lighthouse.mjs`**
+- [x] **Step 1: `LH_PAGES` / `LH_FORMS` en `scripts/perf/lighthouse.mjs`**
 
 Reemplazar los dos bucles externos:
 
@@ -138,7 +138,7 @@ for (const [name, pagePath] of selected) {
 ```
 (el cuerpo interno no cambia).
 
-- [ ] **Step 2: devDep y scripts**
+- [x] **Step 2: devDep y scripts**
 
 ```bash
 npm i -D -E web-vitals@4
@@ -150,7 +150,7 @@ En `package.json` → `scripts`:
     "perf:screens": "node scripts/perf/screens.mjs"
 ```
 
-- [ ] **Step 3: `scripts/perf/inp.mjs`**
+- [x] **Step 3: `scripts/perf/inp.mjs`**
 
 ```js
 // Lab INP: mobile viewport, 4x CPU throttling, real (trusted) Playwright input.
@@ -226,7 +226,7 @@ console.log("|---|---|---|");
 for (const r of rows) console.log(`| ${r.name} | ${Math.round(r.inp)} | ${r.scrollLong.join(", ") || "none"} |`);
 ```
 
-- [ ] **Step 4: `scripts/perf/screens.mjs`**
+- [x] **Step 4: `scripts/perf/screens.mjs`**
 
 ```js
 // Usage: node scripts/perf/screens.mjs <tag> <baseUrl>
@@ -262,7 +262,7 @@ console.log(`Screens written to ${out}`);
 ```
 `reducedMotion: "reduce"` produce capturas deterministas (estado final de cada animación).
 
-- [ ] **Step 5: Capturas «antes» y medición INP de referencia**
+- [x] **Step 5: Capturas «antes» y medición INP de referencia**
 
 ```bash
 npm run build && (npm run start -- -p 3100 &) 
@@ -273,7 +273,7 @@ cp .perf/build-*.txt . 2>/dev/null; npm run build 2>&1 | tee .perf/build-redesig
 ```
 Expected: capturas en `.perf/screens/before/` y tablas de INP y Lighthouse. Son la referencia de todo el Plan 2.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add scripts/perf package.json package-lock.json
@@ -297,7 +297,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
   - Tokens CSS: `--dur-xs|s|m|l`, `--ease-precise`, `--ease-out`, `--shift-s|m`, `--line`, `--cobalt`.
   - Clase global `.blueprint-bg`.
 
-- [ ] **Step 1: Test e2e (falla)**
+- [x] **Step 1: Test e2e (falla)**
 
 `tests/e2e/motion-boot.spec.ts`:
 
@@ -371,7 +371,7 @@ test("the page background is a single blueprint grid at <= 8% opacity", async ({
 
 Run: `npm run build && npx playwright test --project=chromium --project=firefox tests/e2e/motion-boot.spec.ts` → FAIL.
 
-- [ ] **Step 2: `src/components/motion/motionBoot.ts`**
+- [x] **Step 2: `src/components/motion/motionBoot.ts`**
 
 ```ts
 /**
@@ -420,7 +420,7 @@ export function motionBoot(): void {
 }
 ```
 
-- [ ] **Step 3: `src/components/motion/motion.css` (base; las tasks siguientes añaden secciones)**
+- [x] **Step 3: `src/components/motion/motion.css` (base; las tasks siguientes añaden secciones)**
 
 ```css
 /* ─── Motion system — Blueprint → Live System ──────────────────────────────
@@ -460,7 +460,7 @@ export function motionBoot(): void {
 }
 ```
 
-- [ ] **Step 4: `src/app/layout.tsx`**
+- [x] **Step 4: `src/app/layout.tsx`**
 
 1. Imports: añadir `import "@/components/motion/motion.css";` después de `import "@/resources/custom.css";` y `import { motionBoot } from "@/components/motion/motionBoot";`. Borrar `RevealFx` del import de Once UI, además de `import { SpotlightBackground } …` y `import spotlightStyles …`.
 2. Dentro de `<head>`, después del `theme-init`:
@@ -475,7 +475,7 @@ git rm src/components/SpotlightBackground.tsx src/components/SpotlightBackground
 rg -n "SpotlightBackground|spotlightStyles|pageDots" src   # Expected: sin resultados
 ```
 
-- [ ] **Step 5: El tier lite también desactiva el autoplay de `LazyVideo` (spec §6.2)**
+- [x] **Step 5: El tier lite también desactiva el autoplay de `LazyVideo` (spec §6.2)**
 
 En `src/components/home/LazyVideo.tsx` (Plan 1, Task 6), `canAutoplay()` pasa a leer el tier que fija `motionBoot`:
 ```tsx
@@ -501,14 +501,14 @@ Borrar el tipo `NetworkInformationLike`, que queda sin uso. Añadir a `tests/e2e
 ```
 (dentro del `test.describe("home video", …)`).
 
-- [ ] **Step 6: Verificar**
+- [x] **Step 6: Verificar**
 
 ```bash
 npm run build && npx playwright test --project=chromium --project=firefox --project=webkit tests/e2e/motion-boot.spec.ts tests/e2e/lazy-video.spec.ts tests/e2e/smoke.spec.ts
 ```
 Expected: PASS. En Firefox, `mo-io` presente. Mientras no exista `MotionRuntime` (Task 3), el watchdog la quita a los 3 s; el test `mo-io matches…` lee el valor antes de eso.
 
-- [ ] **Step 7: Perf gate y commit**
+- [x] **Step 7: Perf gate y commit**
 
 `PERF_GATE(task02-boot, home,about, 0)`: esperado ≈ −0.5 kB (se va el JS del Spotlight y su loop de rAF).
 
@@ -536,7 +536,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
   - `<Reveal as? direction?: "up" | "left" index?: number className? style? id?>`: renderiza `data-reveal` y `--i`.
   - `<MotionRuntime />`: con `html.mo-io`, añade `.is-in` una vez a `[data-reveal]` y `[data-mo-io]`, alterna `.is-active` en `[data-mo-band]` (banda central) y marca `html.mo-ready`.
 
-- [ ] **Step 1: Test e2e (falla)**
+- [x] **Step 1: Test e2e (falla)**
 
 `tests/e2e/reveal.spec.ts`:
 
@@ -608,7 +608,7 @@ Estos tests necesitan al menos un `[data-reveal]` en `/about`. El Step 5 añade 
 
 Run: `npm run build && npx playwright test --project=chromium --project=firefox tests/e2e/reveal.spec.ts` → FAIL.
 
-- [ ] **Step 2: Sección Reveal en `motion.css`**
+- [x] **Step 2: Sección Reveal en `motion.css`**
 
 ```css
 /* ─── Reveal ───────────────────────────────────────────────────────────── */
@@ -677,7 +677,7 @@ html.mo-io [data-reveal="left"]:not(.is-in) {
 }
 ```
 
-- [ ] **Step 3: `src/components/motion/Reveal.tsx`**
+- [x] **Step 3: `src/components/motion/Reveal.tsx`**
 
 ```tsx
 import type { CSSProperties, ElementType, ReactNode } from "react";
@@ -713,7 +713,7 @@ export function Reveal({ as: Tag = "div", direction = "up", index = 0, id, class
 }
 ```
 
-- [ ] **Step 4: `src/components/motion/MotionRuntime.tsx` e `index.ts`**
+- [x] **Step 4: `src/components/motion/MotionRuntime.tsx` e `index.ts`**
 
 ```tsx
 "use client";
@@ -788,19 +788,19 @@ export { Reveal } from "./Reveal";
 export { MotionRuntime } from "./MotionRuntime";
 ```
 
-- [ ] **Step 5: Montar `MotionRuntime` y un `Reveal` en About**
+- [x] **Step 5: Montar `MotionRuntime` y un `Reveal` en About**
 
 - `layout.tsx`: `import { MotionRuntime } from "@/components/motion";` y `<MotionRuntime />` justo después de `<Footer />`.
 - `src/app/about/page.tsx`: envolver el bloque de la intro (`<Column fillWidth marginBottom="xl"><Text …>{about.intro.description}</Text></Column>`) con `<Reveal>…</Reveal>` (import desde `@/components/motion`).
 
-- [ ] **Step 6: Verificar**
+- [x] **Step 6: Verificar**
 
 ```bash
 npm run build && npx playwright test --project=chromium --project=mobile-chromium --project=firefox --project=webkit tests/e2e/reveal.spec.ts tests/e2e/smoke.spec.ts
 ```
 Expected: PASS (el test de Firefox solo corre allí).
 
-- [ ] **Step 7: Perf gate y commit**
+- [x] **Step 7: Perf gate y commit**
 
 `PERF_GATE(task03-reveal, about, 0.8)`.
 
@@ -822,7 +822,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 **Interfaces:**
 - Produces: `<KineticText text: string mode?: "load" | "view" />`, que renderiza spans para usar **dentro** de un `Heading`/`Text`. No usarlo en h2 que alimenten `useHeadingLinks` (blog), porque su `textContent` quedaría duplicado.
 
-- [ ] **Step 1: Test e2e (falla)**
+- [x] **Step 1: Test e2e (falla)**
 
 `tests/e2e/kinetic.spec.ts`:
 
@@ -876,7 +876,7 @@ test("h1 is fully opaque and unclipped from the first frame", async ({ page }) =
 ```
 Estos tests dependen de que la Home use `KineticText` (Task 10). Hasta entonces, marcarlos como `test.fixme` y quitar el `fixme` en la Task 10. En esta task se verifica con el Step 4.
 
-- [ ] **Step 2: `.sr-only` en `src/resources/custom.css`**
+- [x] **Step 2: `.sr-only` en `src/resources/custom.css`**
 
 ```css
 /* Visually hidden, still read by assistive tech. user-select:none keeps copy /
@@ -895,7 +895,7 @@ Estos tests dependen de que la Home use `KineticText` (Task 10). Hasta entonces,
 }
 ```
 
-- [ ] **Step 3: `KineticText.tsx` + `KineticText.module.scss`**
+- [x] **Step 3: `KineticText.tsx` + `KineticText.module.scss`**
 
 ```tsx
 import { type CSSProperties, Fragment } from "react";
@@ -986,7 +986,7 @@ export function KineticText({ text, mode = "load" }: KineticTextProps) {
 }
 ```
 
-- [ ] **Step 4: Verificación aislada**
+- [x] **Step 4: Verificación aislada**
 
 Añadir `export { KineticText } from "./KineticText";` a `index.ts`. Uso temporal en `/about`: `<Heading …>{person.name}</Heading>` → `<Heading …><KineticText text={person.name} /></Heading>`.
 ```bash
@@ -994,7 +994,7 @@ npm run build && npx playwright test --project=chromium tests/e2e/smoke.spec.ts
 ```
 Comprobación manual en `/about`: el h1 es visible desde el primer frame y las palabras suben 0.35em. En DevTools, el árbol de accesibilidad muestra el h1 con el nombre «Erick Mahecha».
 
-- [ ] **Step 5: Perf gate y commit**
+- [x] **Step 5: Perf gate y commit**
 
 `PERF_GATE(task04-kinetic, about, 0.1)` (0 kB de JS: server component).
 
@@ -1019,7 +1019,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
   - `<BlueprintFrame trigger?: "view" | "load" className? />`: 4 líneas y 4 marcas de corte; el padre debe tener `position: relative`.
   - `<ReadingProgress />`: fija arriba, `scroll(root)`; se oculta si no hay soporte.
 
-- [ ] **Step 1: `BlueprintLine`**
+- [x] **Step 1: `BlueprintLine`**
 
 ```tsx
 import styles from "./BlueprintLine.module.scss";
@@ -1126,7 +1126,7 @@ export function BlueprintLine({ orientation = "h", origin = "start", trigger = "
 }
 ```
 
-- [ ] **Step 2: `BlueprintFrame`**
+- [x] **Step 2: `BlueprintFrame`**
 
 ```tsx
 import styles from "./BlueprintFrame.module.scss";
@@ -1224,7 +1224,7 @@ export function BlueprintFrame({ trigger = "load", className }: BlueprintFramePr
 ```
 Las marcas sobresalen 6px: el padre debe tener un padding horizontal ≥ 8px y la página ≥ 16px de gutter. La Task 11 lo verifica con el test de overflow.
 
-- [ ] **Step 3: `ReadingProgress`**
+- [x] **Step 3: `ReadingProgress`**
 
 ```tsx
 import styles from "./ReadingProgress.module.scss";
@@ -1303,7 +1303,7 @@ export function ReadingProgress() {
 }
 ```
 
-- [ ] **Step 4: Exportar y verificar**
+- [x] **Step 4: Exportar y verificar**
 
 `index.ts`: `export { BlueprintLine } from "./BlueprintLine"; export { BlueprintFrame } from "./BlueprintFrame"; export { ReadingProgress } from "./ReadingProgress";`
 
@@ -1312,7 +1312,7 @@ npm run build && npx tsc --noEmit && npx @biomejs/biome check src/components/mot
 ```
 Su comportamiento visual lo verifican las Tasks 10–18.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/components/motion
@@ -1335,7 +1335,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
   - `whenIntroDone(): Promise<void>`
   - `<DecodeText value: string trigger?: "view" | "manual" active?: boolean duration?: number className? />`
 
-- [ ] **Step 1: Tests unitarios (fallan)**
+- [x] **Step 1: Tests unitarios (fallan)**
 
 `tests/unit/decode.spec.ts`:
 
@@ -1375,7 +1375,7 @@ test("resolves left to right", () => {
 
 Run: `npx playwright test --project=unit tests/unit/decode.spec.ts` → FAIL.
 
-- [ ] **Step 2: `decode.ts` e `intro.ts`**
+- [x] **Step 2: `decode.ts` e `intro.ts`**
 
 ```ts
 // src/components/motion/decode.ts
@@ -1419,11 +1419,11 @@ export function whenIntroDone(): Promise<void> {
 }
 ```
 
-- [ ] **Step 3: Tests unitarios en verde**
+- [x] **Step 3: Tests unitarios en verde**
 
 Run: `npx playwright test --project=unit tests/unit/decode.spec.ts` → 4 passed.
 
-- [ ] **Step 4: `DecodeText.tsx` + `.module.scss`**
+- [x] **Step 4: `DecodeText.tsx` + `.module.scss`**
 
 ```tsx
 "use client";
@@ -1526,7 +1526,7 @@ export function DecodeText({ value, trigger = "view", active = false, duration =
 }
 ```
 
-- [ ] **Step 5: Test e2e**
+- [x] **Step 5: Test e2e**
 
 `tests/e2e/decode.spec.ts` (usa las stats de Home, que la Task 10 convierte; hasta entonces `test.fixme`):
 
@@ -1550,7 +1550,7 @@ test("reduced motion shows the final value without scrambling", async ({ page })
 });
 ```
 
-- [ ] **Step 6: Exportar, verificar y commit**
+- [x] **Step 6: Exportar, verificar y commit**
 
 `index.ts`: `export { DecodeText } from "./DecodeText";`
 ```bash
@@ -1574,7 +1574,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
   - `<Magnetic strength?: number>{children}</Magnetic>`
   - `<GlowTrack className? radius?: string>{children}</GlowTrack>`
 
-- [ ] **Step 1: `Magnetic`**
+- [x] **Step 1: `Magnetic`**
 
 ```tsx
 "use client";
@@ -1647,7 +1647,7 @@ export function Magnetic({ children, strength = 6 }: { children: ReactNode; stre
 }
 ```
 
-- [ ] **Step 2: `GlowTrack`**
+- [x] **Step 2: `GlowTrack`**
 
 ```tsx
 "use client";
@@ -1742,7 +1742,7 @@ export function GlowTrack({ children, className }: { children: ReactNode; classN
 }
 ```
 
-- [ ] **Step 3: Test e2e**
+- [x] **Step 3: Test e2e**
 
 `tests/e2e/pointer-fx.spec.ts` (el CTA de Home usa ambos desde la Task 12; hasta entonces `test.fixme`):
 
@@ -1776,7 +1776,7 @@ test.describe("touch devices", () => {
 });
 ```
 
-- [ ] **Step 4: Exportar, verificar y commit**
+- [x] **Step 4: Exportar, verificar y commit**
 
 `index.ts`: `export { Magnetic } from "./Magnetic"; export { GlowTrack } from "./GlowTrack";`
 ```bash
@@ -1797,7 +1797,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 **Interfaces:**
 - Produces: `view-transition-name: site-header` en el `<header>`. La clase `html.vt-active` (la pone la Task 9) dispara el barrido.
 
-- [ ] **Step 1: CSS de View Transitions en `motion.css`**
+- [x] **Step 1: CSS de View Transitions en `motion.css`**
 
 ```css
 /* ─── View Transitions (page) ─────────────────────────────────────────── */
@@ -1837,7 +1837,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 }
 ```
 
-- [ ] **Step 2: Header**
+- [x] **Step 2: Header**
 
 En `Header.tsx`, al `<Row … as="header" …>` añadir `style={{ viewTransitionName: "site-header" }}` y, como último hijo del header, la línea:
 ```tsx
@@ -1882,7 +1882,7 @@ En `Header.module.scss`:
 ```
 El header de Once UI ya es `position: sticky/fixed`, así que `absolute` se ancla a él. Verificarlo en DevTools; si no, añadir `position: relative` al header vía `className`.
 
-- [ ] **Step 3: Verificar y commit**
+- [x] **Step 3: Verificar y commit**
 
 ```bash
 npm run build && npx playwright test --project=chromium tests/e2e/smoke.spec.ts
@@ -1908,7 +1908,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
   - `<ViewTransitions />`
   - Contrato para las páginas: los orígenes del morph llevan `data-vt-name="project-<slug>"` (solo atributo, sin `view-transition-name`). El destino (hero del caso) lleva `style={{ viewTransitionName: "project-<slug>" }}` estático.
 
-- [ ] **Step 1: Tests unitarios (fallan)**
+- [x] **Step 1: Tests unitarios (fallan)**
 
 `tests/unit/viewTransition.spec.ts`:
 
@@ -1966,7 +1966,7 @@ test("maps case-study paths to a unique shared-element name", () => {
 
 Run: `npx playwright test --project=unit tests/unit/viewTransition.spec.ts` → FAIL.
 
-- [ ] **Step 2: `viewTransition.ts`**
+- [x] **Step 2: `viewTransition.ts`**
 
 ```ts
 export interface InterceptInput {
@@ -2023,11 +2023,11 @@ export function pickShared(name: string, root: ParentNode = document): HTMLEleme
 }
 ```
 
-- [ ] **Step 3: Tests unitarios en verde**
+- [x] **Step 3: Tests unitarios en verde**
 
 Run: `npx playwright test --project=unit tests/unit/viewTransition.spec.ts` → 4 passed.
 
-- [ ] **Step 4: `ViewTransitions.tsx`**
+- [x] **Step 4: `ViewTransitions.tsx`**
 
 ```tsx
 "use client";
@@ -2120,7 +2120,7 @@ export function ViewTransitions() {
 }
 ```
 
-- [ ] **Step 5: Montar y test e2e**
+- [x] **Step 5: Montar y test e2e**
 
 - `index.ts`: `export { ViewTransitions } from "./ViewTransitions";`
 - `layout.tsx`: `<ViewTransitions />` junto a `<MotionRuntime />`.
@@ -2210,7 +2210,7 @@ test("no page ever has duplicate view-transition names", async ({ page }) => {
 Run: `npm run build && npx playwright test --project=chromium --project=firefox --project=webkit tests/e2e/view-transitions.spec.ts tests/unit/viewTransition.spec.ts`
 Expected: PASS. Si `ControlOrMeta` no abre una pestaña nueva en algún navegador, ajustar la aserción a «la URL de la página original no cambia», que es lo que importa.
 
-- [ ] **Step 6: Perf gate y commit**
+- [x] **Step 6: Perf gate y commit**
 
 `PERF_GATE(task09-vt, home,work, 1.5)`.
 
@@ -2239,7 +2239,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
   - `parseMetric(metric?: string): { value: string; label: string } | null`
   - `<HomeSection index total id? children>`: índice mono, rama al riel (≥ 1024) y línea horizontal (< 1024).
 
-- [ ] **Step 1: Tests unitarios de `projects.ts` (fallan)**
+- [x] **Step 1: Tests unitarios de `projects.ts` (fallan)**
 
 `tests/unit/projects.spec.ts`:
 
@@ -2278,7 +2278,7 @@ test("sortProjects orders newest first without mutating the input", () => {
 
 Run: `npx playwright test --project=unit tests/unit/projects.spec.ts` → FAIL.
 
-- [ ] **Step 2: `src/utils/projects.ts`**
+- [x] **Step 2: `src/utils/projects.ts`**
 
 ```ts
 const VIDEO = /\.(mp4|webm|mov|m4v)$/i;
@@ -2310,7 +2310,7 @@ export function parseMetric(metric?: string): { value: string; label: string } |
 
 Run: `npx playwright test --project=unit tests/unit/projects.spec.ts` → 4 passed.
 
-- [ ] **Step 3: `home.headline` como string (mismo texto exacto)**
+- [x] **Step 3: `home.headline` como string (mismo texto exacto)**
 
 En `src/resources/content.tsx`:
 ```tsx
@@ -2318,7 +2318,7 @@ En `src/resources/content.tsx`:
 ```
 (antes: el mismo texto dentro de `<>…</>`). Verificar que `Home.headline` en `src/types/content.types.ts` admite `string` (`React.ReactNode` lo incluye). `git diff src/resources/content.tsx` debe mostrar **solo** ese cambio.
 
-- [ ] **Step 4: `HomeSection.tsx` + `Home.module.scss` (sección base)**
+- [x] **Step 4: `HomeSection.tsx` + `Home.module.scss` (sección base)**
 
 ```tsx
 import { BlueprintLine } from "@/components/motion";
@@ -2454,7 +2454,7 @@ export function HomeSection({ index, total, id, className, children }: HomeSecti
 }
 ```
 
-- [ ] **Step 5: Hero en `src/app/page.tsx`**
+- [x] **Step 5: Hero en `src/app/page.tsx`**
 
 Reemplazar **todo** el `return` de `Home()` por la nueva estructura. Las secciones 2–5 quedan como marcadores de la Task 11 con **el mismo contenido de hoy** (video, proyecto, blog, CTA) envuelto en `HomeSection`:
 
@@ -2584,7 +2584,7 @@ export default function Home() {
 ```
 Mantener `width={…}`/`height={…}` con los valores reales que la Task 6 del Plan 1 dejó en `LazyVideo`. `NodeDivider` deja de usarse en Home (lo reemplazan las líneas del riel), pero sigue exportado para `/work/[slug]` y `/blog/[slug]`.
 
-- [ ] **Step 6: Quitar `fixme` y verificar**
+- [x] **Step 6: Quitar `fixme` y verificar**
 
 Quitar `test.fixme` de `tests/e2e/kinetic.spec.ts` y `tests/e2e/decode.spec.ts`.
 ```bash
@@ -2592,7 +2592,7 @@ npm run build && npx playwright test --project=chromium --project=mobile-chromiu
 rg -n "RevealFx" src/app/page.tsx   # Expected: sin resultados
 ```
 
-- [ ] **Step 7: Medición de LCP con y sin `KineticText` (spec 6.5, ajuste 1)**
+- [x] **Step 7: Medición de LCP con y sin `KineticText` (spec 6.5, ajuste 1)**
 
 1. Variante A (con `KineticText`, la actual): `LH_PAGES=home LH_FORMS=mobile LH_TAG=hero-kinetic npm run perf:lh`.
 2. Variante B (temporal, **sin commitear**): en `page.tsx`, `<Heading …>{home.headline}</Heading>` sin `KineticText`. Build, arrancar, `LH_PAGES=home LH_FORMS=mobile LH_TAG=hero-static npm run perf:lh`, y revertir con `git checkout -- src/app/page.tsx`.
@@ -2623,7 +2623,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
   - `<HomeRail />`: debe ser hijo directo de `.home`.
   - `<DockFrame>{children}</DockFrame>`
 
-- [ ] **Step 1: Test e2e (falla)**
+- [x] **Step 1: Test e2e (falla)**
 
 `tests/e2e/home-rail.spec.ts`:
 
@@ -2665,7 +2665,7 @@ test("reduced motion: rail and branches are fully drawn", async ({ page }) => {
 
 Run: `npm run build && npx playwright test --project=chromium tests/e2e/home-rail.spec.ts` → FAIL.
 
-- [ ] **Step 2: `HomeRail.tsx` + estilos**
+- [x] **Step 2: `HomeRail.tsx` + estilos**
 
 ```tsx
 import styles from "./Home.module.scss";
@@ -2744,7 +2744,7 @@ Añadir a `Home.module.scss`:
 ```
 El nodo sticky se mueve porque la página se desplaza, no por una animación. Con RM sigue siendo sticky, lo cual es aceptable: no hay movimiento autónomo.
 
-- [ ] **Step 3: `DockFrame`**
+- [x] **Step 3: `DockFrame`**
 
 ```tsx
 import styles from "./DockFrame.module.scss";
@@ -2867,19 +2867,19 @@ export function DockFrame({ children }: { children: React.ReactNode }) {
 ```
 El `view()` de las marcas usa su propio sujeto (la marca), que entra en viewport junto con el marco, así que el efecto es equivalente. La escala de un contenedor no provoca CLS (`transform`).
 
-- [ ] **Step 4: Integrar en `page.tsx`**
+- [x] **Step 4: Integrar en `page.tsx`**
 
 - `<HomeRail />` como primer hijo de `<div className={styles.home}>` (después de `<Schema>`).
 - En la sección `reel`, envolver `<LazyVideo …/>` con `<DockFrame>…</DockFrame>`.
 - Envolver el contenido de las secciones `reel`, `featured`, `writing` y `contact` en `<Reveal>` (import desde `@/components/motion`).
 
-- [ ] **Step 5: Verificar**
+- [x] **Step 5: Verificar**
 
 ```bash
 npm run build && npx playwright test --project=chromium --project=mobile-chromium --project=firefox tests/e2e/home-rail.spec.ts tests/e2e/reveal.spec.ts tests/e2e/cls.spec.ts tests/e2e/lazy-video.spec.ts
 ```
 
-- [ ] **Step 6: Perf gate y commit**
+- [x] **Step 6: Perf gate y commit**
 
 `PERF_GATE(task11-rail, home, 0.2)`.
 
@@ -2902,7 +2902,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Consumes: `sortProjects`, `coverImage`, `parseMetric`, `formatIndex` (Task 10); `DecodeText`, `GlowTrack`, `Magnetic` (Tasks 6–7); contrato `data-vt-name="project-<slug>"` (Task 9).
 - Produces: `<FeaturedProject />`, origen del morph hacia `/work/<slug>`.
 
-- [ ] **Step 1: `FeaturedProject.tsx`**
+- [x] **Step 1: `FeaturedProject.tsx`**
 
 ```tsx
 import { DecodeText, GlowTrack } from "@/components/motion";
@@ -3049,7 +3049,7 @@ export function FeaturedProject() {
 }
 ```
 
-- [ ] **Step 2: Integrar y CTA**
+- [x] **Step 2: Integrar y CTA**
 
 - `page.tsx`, sección `featured`: reemplazar `<Projects range={[1, 1]} />` por `<FeaturedProject />` (import `@/components/home/FeaturedProject`) y quitar el import de `Projects` si queda sin uso.
 - `src/components/CallToAction.tsx`: envolver el `Column` raíz con `<GlowTrack>` (quitar su `style={{ boxShadow: "var(--glow-border)" }}`, porque `GlowTrack` ya lo aplica) y el botón primario con `<Magnetic>`:
@@ -3094,14 +3094,14 @@ for (const p of withTeam) {
 }
 ```
 
-- [ ] **Step 3: Verificar**
+- [x] **Step 3: Verificar**
 
 ```bash
 npm run build && npx playwright test --project=chromium --project=mobile-chromium --project=webkit tests/e2e/pointer-fx.spec.ts tests/e2e/team-credit.spec.ts tests/e2e/view-transitions.spec.ts tests/e2e/cls.spec.ts tests/e2e/no-broken-images.spec.ts
 ```
 Manual: en Home desktop, clic en la imagen destacada → la imagen se transforma en el hero del caso de estudio (se completa en la Task 15; aquí se verifica que la navegación funciona y no hay nombres duplicados).
 
-- [ ] **Step 4: Perf gate y commit**
+- [x] **Step 4: Perf gate y commit**
 
 `PERF_GATE(task12-featured, home, 1.0)`.
 
@@ -3120,7 +3120,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Modify: `src/components/IntroLoader.tsx` (un solo `useEffect` nuevo)
 - Create: `tests/e2e/intro-sequence.spec.ts`
 
-- [ ] **Step 1: Test (falla: hoy la clase solo se va por el backstop de 7 s)**
+- [x] **Step 1: Test (falla: hoy la clase solo se va por el backstop de 7 s)**
 
 ```ts
 import { expect, test } from "@playwright/test";
@@ -3155,7 +3155,7 @@ test("the IntroLoader still ignores prefers-reduced-motion (brand exemption)", a
 
 Run: `npm run build && npx playwright test --project=chromium tests/e2e/intro-sequence.spec.ts` → FAIL en el primero.
 
-- [ ] **Step 2: Un único efecto en `IntroLoader.tsx`**
+- [x] **Step 2: Un único efecto en `IntroLoader.tsx`**
 
 Añadir después del efecto que maneja `document.body.style.overflow`:
 
@@ -3172,7 +3172,7 @@ Añadir después del efecto que maneja `document.body.style.overflow`:
 ```
 **Nada más cambia en el IntroLoader.** `git diff src/components/IntroLoader.tsx` debe mostrar solo esas líneas.
 
-- [ ] **Step 3: Verificar y commit**
+- [x] **Step 3: Verificar y commit**
 
 ```bash
 npm run build && npx playwright test --project=chromium tests/e2e/intro-sequence.spec.ts tests/e2e/intro-font.spec.ts tests/e2e/motion-boot.spec.ts

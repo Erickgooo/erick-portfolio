@@ -154,3 +154,86 @@ Source: `.perf/security-notes.txt` (Task 3 Step 8, server-side RouteGuard/protec
 - **New, found during this task's Step 1 gate run:** `/work` and `/work/[slug]` First Load JS grew **309 kB → 310 kB** (+1 kB), a small miss against the "≤ baseline" budget. Every other route matches or beats baseline exactly. Not chased further — Task 11 is verification-only.
 - **New, found during this task's Step 1 gate run:** `tests/e2e/intro-font.spec.ts` failed on `mobile-chromium` (3 tests) — a genuine test defect from Task 10, not a product regression: its `test.skip(({ browserName }) => browserName !== "chromium", …)` only excludes Firefox/WebKit, because `mobile-chromium`'s underlying engine is also named `"chromium"` by Playwright, but Task 10 only captured/committed baseline screenshots for the desktop `chromium` project. Fixed here by skipping on `testInfo.project.name !== "chromium"` instead (same pattern already used in `tests/e2e/a11y-names.spec.ts`), matching the test's own stated intent ("reference frames are Chromium-only" = one desktop project, not every Chromium-engine project). No product code changed. Full suite is green after the fix: 105 passed, 27 skipped (declared), 0 failed.
 - **Task 11b:** an install-time patch of `node_modules/next` (via `patch-package` + `postinstall`) was tried during this task to work around the Windows-only font-manifest bug (vercel/next.js#57008) so the preload fix could be measured locally, but was rejected on review (binding constraint: no postinstall/install-time scripts, no in-range devDependencies, Vercel build stays plain `next build`) and removed — `package.json`/`package-lock.json` are back to byte-identical with `d6b8c9e`, no `patches/` directory exists on this branch. The Windows bug therefore remains **unworked-around** in this repo; local measurement of the preload fix used a temporary, never-committed edit under `node_modules/next` instead (see "Follow-up 11b"). Preload emission on Linux (Preview/production) is expected to work without any patch, since the bug is Windows-path-specific, but has not yet been directly confirmed there — see the updated font-preload Open item above.
+
+## Rediseño (`feat/disruptive-redesign`) — CP2 (Fase B + Home, Tasks 1–13)
+
+Measured 2026-10-09 on the branch after merging `main` (`dea8a88`: security audit, Lighthouse 12.8.2 → 13.5.0). Lighthouse 13.5.0, Playwright's Chromium, median of 3. The 12.8.2 figures above and in `docs/perf-baseline.md` are not comparable with these.
+
+### Lighthouse 13 baseline (`main`)
+
+| Page (mobile) | Production `prod-lh13` (Perf / A11y / LCP / CLS / TBT) | Local `next start` `base-lh13` |
+|---|---|---|
+| home | 88 / 98 / 3.83 s / 0.021 / 52 ms | 82 / 100 / 4.62 s / 0.026 / 55 ms |
+| about | 91 / 98 / 3.38 s / 0.026 / 69 ms | 74 / 98 / 4.37 s / 0.197 / 54 ms |
+| work | 89 / 98 / 3.76 s / 0.000 / 71 ms | 77 / 98 / 5.55 s / 0.001 / 58 ms |
+| blog | 88 / 98 / 3.83 s / 0.000 / 72 ms | 84 / 98 / 4.36 s / 0.001 / 60 ms |
+| gallery | 85 / 98 / 4.36 s / 0.000 / 46 ms | 81 / 98 / 4.66 s / 0.000 / 75 ms |
+
+`main` itself misses the plan's budget (Perf ≥ 95, LCP < 2.0 s) on every page with Lighthouse 13, in production and locally. With 12.8.2 production scored home 97 / 2.48 s after the quick wins. Local runs are worse than production because Windows builds emit no font preloads (vercel/next.js#57008), which also explains the local About CLS of 0.197.
+
+### Branch vs baseline, local, same machine (`cp2-lh13` vs `base-lh13`)
+
+| Page | FF | `main` (Perf / A11y / LCP / CLS / TBT / JS / Total) | Branch |
+|---|---|---|---|
+| home | mobile | 82 / 100 / 4.62 s / 0.026 / 55 ms / 349 KB / 729 KB | 73 / 100 / 5.14 s / 0.110 / 123 ms / 352 KB / 743 KB |
+| home | desktop | 99 / 100 / 0.98 s / 0.016 / 0 ms / 349 KB / 734 KB | 99 / 100 / 0.98 s / 0.022 / 0 ms / 352 KB / 743 KB |
+| about | mobile | 74 / 98 / 4.37 s / 0.197 / 54 ms / 347 KB / 792 KB | 80 / 98 / 4.39 s / 0.100 / 68 ms / 351 KB / 802 KB |
+| about | desktop | 99 / 98 / 0.89 s / 0.003 / 0 ms / 347 KB / 788 KB | 99 / 98 / 0.88 s / 0.008 / 0 ms / 351 KB / 799 KB |
+| work | mobile | 77 / 98 / 5.55 s / 0.001 / 58 ms / 349 KB / 959 KB | 77 / 98 / 5.83 s / 0.001 / 57 ms / 352 KB / 974 KB |
+| work | desktop | 98 / 98 / 1.10 s / 0.000 / 0 ms / 349 KB / 969 KB | 98 / 98 / 1.13 s / 0.000 / 0 ms / 352 KB / 1019 KB |
+| blog | mobile | 84 / 98 / 4.36 s / 0.001 / 60 ms / 352 KB / 607 KB | 83 / 98 / 4.44 s / 0.001 / 57 ms / 356 KB / 638 KB |
+| blog | desktop | 99 / 98 / 0.88 s / 0.001 / 0 ms / 352 KB / 606 KB | 99 / 98 / 0.87 s / 0.001 / 0 ms / 356 KB / 636 KB |
+| gallery | mobile | 81 / 98 / 4.66 s / 0.000 / 75 ms / 347 KB / 626 KB | 81 / 98 / 4.81 s / 0.000 / 73 ms / 351 KB / 636 KB |
+| gallery | desktop | 98 / 98 / 1.12 s / 0.000 / 0 ms / 347 KB / 962 KB | 98 / 98 / 1.13 s / 0.000 / 0 ms / 351 KB / 1061 KB |
+
+**Open: Home mobile regresses** (Perf −9, LCP +0.52 s, CLS 0.026 → 0.110, TBT +68 ms). Lighthouse attributes 0.095 of the CLS to the hero's `KineticText` words: each word is an inline-block, so every one of them moves when the web font replaces the fallback, whereas a plain text node does not count as shifted. The other four pages are within noise of `main`. The Vercel Preview has not been measured yet (Deployment Protection; needs the bypass secret) — it preloads the fonts, so the shift may not show there.
+
+### First Load JS (`next build`)
+
+| Route | Plan baseline | `main` now | Branch | Δ vs `main` |
+|---|---|---|---|---|
+| `/` | 311 kB | 312 kB | 314 kB | +2 kB |
+| `/about` | 275 kB | 275 kB | 275 kB | 0 |
+| `/work` | 309 kB | 310 kB | 311 kB | +1 kB |
+| `/blog/[slug]` | 312 kB | 313 kB | 313 kB | 0 |
+| `/gallery` | 286 kB | 286 kB | 286 kB | 0 |
+
+All routes are within the plan's baseline + 10 kB.
+
+### Motion ledger
+
+Lighthouse ran at the checkpoint, not per task (execution ruling), so the per-task column is the build delta; the Lighthouse figures for all of these together are the table above.
+
+| Task | Effect | Technique | Δ First Load JS |
+|---|---|---|---|
+| 2 | Motion boot flags, Blueprint Grid, global spotlight removed | Inline `<head>` script; CSS background; rAF loop deleted | 0 |
+| 3 | `Reveal` | CSS `animation-timeline: view()`, IntersectionObserver fallback (`MotionRuntime`) | `/about` +1 kB |
+| 4 | `KineticText` | Per-word `transform`, CSS only | 0 |
+| 9 | Page transitions | View Transitions API, one global click listener | `/about` +2 kB, recovered in Task 10 by importing primitives by path instead of the barrel |
+| 10 | Home hero: kinetic headline, decoding stats, blueprint frame | CSS + `DecodeText` (client) | `/` +1 kB |
+| 11 | Home rail, branches, docking reel frame | CSS scroll-driven, `transform` only | 0 |
+| 12 | Featured project spec sheet, parallax, CTA with `GlowTrack`/`Magnetic` | CSS scroll-driven; pointer handlers on fine pointers only | `/` +1 kB, `/blog/[slug]` +1 kB |
+| 13 | IntroLoader → hero hand-off | `html.intro-pending` class | `/work`, `/work/[slug]` +1 kB |
+
+### KineticText LCP check (Task 10)
+
+Lighthouse 12.8.2, Home, median of 3, run at the first CP2 (2026-09-27) as `cp2-kinetic` / `cp2-static`.
+
+| Home | Variant | Perf | LCP | CLS |
+|---|---|---|---|---|
+| mobile | `KineticText` | 91 | 3.09 s | 0.103 |
+| mobile | static `h1` | 84 | 4.29 s | 0.010 |
+| desktop | `KineticText` | 99 | 0.98 s | 0.019 |
+| desktop | static `h1` | 99 | 0.98 s | 0.014 |
+
+The plan's rule (keep the static `h1` if LCP with `KineticText` is more than 50 ms slower) does not trigger: on mobile the LCP element is the subline paragraph, not the `h1`, and the mobile difference is run-to-run noise; on desktop, where the `h1` is the LCP element, the difference is +3 ms. `KineticText` stays under that rule. Its CLS cost is the open item above.
+
+### Security after the merge
+
+- Response headers are identical to `main`'s build (CSP, Permissions-Policy, COOP and the other six), and `/api/check-auth`, `/api/authenticate`, `/api/chatbot`, `/api/rss` and `/api/og/generate` return the same status codes on both.
+- `node scripts/quality/csp-check.mjs`: 0 CSP violations and 0 console errors over 15 page loads (5 routes × Chromium desktop, Chromium mobile, Firefox), each scrolled to the bottom and left through a header link. The inline boot script set `data-fx` on every load and a View Transition started on every navigation. WebKit is covered only over https (pending on the Preview).
+- `FeaturedProject` takes the same `hideProtected` filter `main` added to `Projects`, so a password-protected project is never the featured one on Home.
+
+### Ideas descartadas
+
+None beyond the spec's §11 list so far: no effect has been reverted by a perf gate. The hero `KineticText` is the candidate if its CLS cannot be brought under 0.05.
