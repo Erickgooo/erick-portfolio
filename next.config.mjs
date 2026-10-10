@@ -96,6 +96,12 @@ const nextConfig = {
   pageExtensions: ["ts", "tsx", "md", "mdx"],
   transpilePackages: ["next-mdx-remote"],
   poweredByHeader: false,
+  experimental: {
+    // @once-ui-system/core is one barrel over ~270 components. Without this, a page
+    // that imports four of them ships all of them (date picker, charts, command
+    // palette, emoji picker...): a 567 kB chunk on every route.
+    optimizePackageImports: ["@once-ui-system/core"],
+  },
   // Route handlers that read MDX at request time need those files shipped with
   // their serverless function; file tracing cannot see paths built at runtime.
   // (Pages are prerendered at build time and do not need this.)
@@ -115,6 +121,19 @@ const nextConfig = {
   sassOptions: {
     compiler: "modern",
     silenceDeprecations: ["legacy-js-api"],
+  },
+  webpack(config) {
+    // Once UI's components import each other through the package's own index
+    // (`from "."`), and the package does not declare itself side-effect free, so
+    // webpack keeps every component reachable from that index. Declaring its
+    // JavaScript side-effect free lets unused components be dropped. Stylesheets
+    // are untouched: components import theirs by binding, and the global CSS is
+    // imported explicitly in layout.tsx.
+    config.module.rules.push({
+      test: /[\\/]node_modules[\\/]@once-ui-system[\\/]core[\\/]dist[\\/].*\.js$/,
+      sideEffects: false,
+    });
+    return config;
   },
   async headers() {
     return [
