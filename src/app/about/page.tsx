@@ -3,21 +3,19 @@ import styles from "@/components/about/about.module.scss";
 import { about, baseURL, person, sameAs, social } from "@/resources";
 import {
   Avatar,
-  Button,
   Column,
   Grid,
   Heading,
   Icon,
-  IconButton,
   Media,
   Meta,
   Row,
   Schema,
-  SmartLink,
   Tag,
   Text,
 } from "@once-ui-system/core";
-import React from "react";
+import Link from "next/link";
+import type React from "react";
 
 export async function generateMetadata() {
   return Meta.generate({
@@ -58,7 +56,7 @@ export default function About() {
     },
   ];
   return (
-    <Column maxWidth="m">
+    <Column maxWidth="m" className={styles.about}>
       <Schema
         as="webPage"
         baseURL={baseURL}
@@ -103,7 +101,7 @@ export default function About() {
           >
             <Avatar src={person.avatar} size="xl" />
             <Row gap="8" vertical="center">
-              <Icon onBackground="accent-weak" name="globe" />
+              <Icon onBackground="neutral-weak" name="globe" />
               {person.location}
             </Row>
             {person.languages && person.languages.length > 0 && (
@@ -125,29 +123,19 @@ export default function About() {
             vertical="center"
             marginBottom="32"
           >
-            {/* Manual §3.2: the booking CTA is the single solid-Cobalto element on
-                the page — the one thing the eye is meant to find first. */}
+            {/* The booking link is the one solid-Cobalt element on the page, the same
+                call to action as the Home's. */}
             {about.calendar.display && (
               <Row fitWidth marginBottom="m" className={styles.blockAlign}>
-                <Button
-                  href={about.calendar.link}
-                  variant="primary"
-                  size="m"
-                  prefixIcon="calendar"
-                  arrowIcon
-                >
+                <Link href={about.calendar.link} className={styles.cta}>
                   Schedule a call
-                </Button>
+                </Link>
               </Row>
             )}
             <Heading className={styles.textAlign} variant="display-strong-xl">
               {person.name}
             </Heading>
-            <Text
-              className={styles.textAlign}
-              variant="display-default-xs"
-              onBackground="neutral-weak"
-            >
+            <Text className={styles.textAlign} variant="body-default-l" onBackground="neutral-weak">
               {person.role}
             </Text>
             {social.length > 0 && (
@@ -159,62 +147,33 @@ export default function About() {
                 wrap
                 horizontal="center"
                 fitWidth
-                data-border="rounded"
               >
                 {social.map(
                   (item) =>
                     item.link && (
-                      <React.Fragment key={item.name}>
-                        <Row s={{ hide: true }}>
-                          <Button
-                            key={item.name}
-                            href={item.link}
-                            prefixIcon={item.icon}
-                            label={item.name}
-                            size="s"
-                            weight="default"
-                            variant="secondary"
-                          />
-                        </Row>
-                        <Row hide s={{ hide: false }}>
-                          <IconButton
-                            size="l"
-                            key={`${item.name}-icon`}
-                            href={item.link}
-                            icon={item.icon}
-                            variant="secondary"
-                          />
-                        </Row>
-                      </React.Fragment>
+                      <a
+                        key={item.name}
+                        href={item.link}
+                        className={styles.social}
+                        aria-label={item.name}
+                      >
+                        <Icon name={item.icon} size="s" />
+                        <span className={styles.socialName}>{item.name}</span>
+                      </a>
                     ),
                 )}
                 {about.resume?.display && (
-                  <React.Fragment>
-                    <Row s={{ hide: true }}>
-                      <Button
-                        href={about.resume.link}
-                        prefixIcon="document"
-                        label="Download Resume"
-                        size="s"
-                        weight="default"
-                        variant="secondary"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        download
-                      />
-                    </Row>
-                    <Row hide s={{ hide: false }}>
-                      <IconButton
-                        size="l"
-                        href={about.resume.link}
-                        icon="document"
-                        variant="secondary"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        download
-                      />
-                    </Row>
-                  </React.Fragment>
+                  <a
+                    href={about.resume.link}
+                    className={styles.social}
+                    aria-label="Download Resume"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    download
+                  >
+                    <Icon name="document" size="s" />
+                    <span className={styles.socialName}>Download Resume</span>
+                  </a>
                 )}
               </Row>
             )}
@@ -248,7 +207,7 @@ export default function About() {
                         {experience.timeframe}
                       </Text>
                     </Row>
-                    <Text variant="body-default-s" onBackground="brand-weak" marginBottom="m">
+                    <Text variant="body-default-s" onBackground="neutral-weak" marginBottom="m">
                       {experience.role}
                     </Text>
                     {/* --- INICIO DEL CÓDIGO NUEVO --- */}
@@ -346,15 +305,15 @@ export default function About() {
                         {item.institution}
                       </Text>
                     </Column>
-                    <SmartLink
-                      suffixIcon="arrowUpRightFromSquare"
+                    <a
                       href={item.link}
-                      style={{ marginTop: "auto", paddingTop: "0.75rem" }}
+                      className={styles.credential}
+                      target="_blank"
+                      rel="noopener noreferrer"
                     >
-                      <Text variant="label-default-m" onBackground="brand-weak">
-                        View credential
-                      </Text>
-                    </SmartLink>
+                      View credential
+                      <Icon name="arrowUpRightFromSquare" size="xs" />
+                    </a>
                   </Column>
                 ))}
               </Grid>

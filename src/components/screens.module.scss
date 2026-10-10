@@ -1,0 +1,44 @@
+@use "./system.scss" as system;
+
+/* The two short screens, a missing page and the password form: a heading, a
+   line, one action. They share the call to action with the Home and the About
+   page. Once UI colours every `a:not(.button)` with the brand scale at (0,1,1),
+   so the rule is written under .screen. */
+
+.screen {
+  box-sizing: border-box;
+  display: grid;
+  justify-items: center;
+  gap: 16px;
+  width: 100%;
+  max-width: 480px;
+  margin-inline: auto;
+  padding: 96px 20px 160px;
+  text-align: center;
+}
+
+.screen .cta {
+  @include system.cta;
+
+  margin-top: 8px;
+  border: 0;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+/* Checking the password: the button waits, it does not fade. */
+.screen .cta:disabled {
+  cursor: progress;
+}
+
+/* The eye that shows the password, inside the field: a full target for a thumb,
+   28px above 768px wide. The mark keeps its size. */
+.screen button:not(.cta) {
+  min-width: 44px;
+  min-height: 44px;
+
+  @media (min-width: 769px) {
+    min-width: 28px;
+    min-height: 28px;
+  }
+}

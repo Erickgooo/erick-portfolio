@@ -1,0 +1,35 @@
+@use "../system.scss" as system;
+
+/* The pieces of a post that are links and buttons of their own. Once UI colours
+   every `a:not(.button)` with the brand scale at (0,1,1), so each rule is
+   written to outrank it. */
+
+/* "Blog", above the title: a link on a line of its own, a full target tall. */
+a.crumb:any-link {
+  justify-content: center;
+  min-width: 44px;
+  color: var(--neutral-on-background-strong);
+
+  @include system.standalone-link;
+}
+
+/* A share link or the copy button: an icon in a box of its own. */
+a.share:any-link,
+button.share {
+  @include system.icon-target;
+}
+
+/* A post in a list: the whole card is the link, in the colour of its words. */
+a.card:any-link {
+  display: flex;
+  width: 100%;
+  min-width: 0;
+  border-radius: 12px;
+  color: var(--neutral-on-background-strong);
+  text-decoration: none;
+  transition: none;
+
+  &:focus-visible {
+    @include system.focus-ring;
+  }
+}

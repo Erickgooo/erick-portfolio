@@ -119,10 +119,9 @@ export function OnThisPage() {
             position="absolute"
             style={{
               top: `calc(${activeIndex} * ${ITEM_HEIGHT}px)`,
-              transition: "top 0.3s ease",
             }}
           >
-            <Row fillWidth solid="brand-strong" radius="full" />
+            <Row fillWidth background="neutral-strong" radius="full" />
           </Row>
         </Row>
         <Column fillWidth>
@@ -147,14 +146,9 @@ export function OnThisPage() {
                     color: isActive
                       ? "var(--neutral-on-background-strong)"
                       : "var(--neutral-on-background-weak)",
-                    transition: "color 0.2s ease",
                   }}
                 >
-                  <Text
-                    variant={isActive ? "body-strong-s" : "body-default-s"}
-                    truncate
-                    style={{ transition: "font-weight 0.2s ease" }}
-                  >
+                  <Text variant={isActive ? "body-strong-s" : "body-default-s"} truncate>
                     {heading.text}
                   </Text>
                 </SmartLink>

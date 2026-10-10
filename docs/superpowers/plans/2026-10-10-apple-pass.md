@@ -150,13 +150,13 @@ Datos: `work.title` (`content.tsx:591`) es el `<title>`, el título del schema y
 
 Datos: `blog/page.tsx:39-41` pinta «Earlier posts» siempre y `Posts range={[4]}` no pinta nada con menos de 4 posts; `blog/[slug]/page.tsx:151-154` hace lo mismo con «Recent posts». `GalleryView.tsx:186-207` es la insignia del contador con `backdropFilter: blur(6px)`. `gallery.title` (`content.tsx:601`) también es `<title>` y OG: el h1 visible debe ser `gallery.label`. `ssr-content.spec.ts:69` fija el texto del 404.
 
-- [ ] **Step 1:** Tests que fallan. `ssr-content.spec.ts`: h1 de `/gallery` exactamente «Visual Work»; 404 con h1 «Page not found» y un enlace «Go to the homepage» a `/`. `system.spec.ts`: las comprobaciones (a) a (f) de la Tarea 5 en `/about`, `/blog`, `/blog/my-workspace`, `/gallery`, `/this-page-does-not-exist` y `/unauthorized`; en `/blog` y en el post no existe ningún h2 cuyo siguiente bloque de lista esté vacío; en `/about` el enlace «Schedule a call» tiene fondo `rgb(45, 91, 255)`, texto blanco y ≥ 44 px de alto.
-- [ ] **Step 2:** Verlos fallar.
-- [ ] **Step 3:** About: «Schedule a call» con el estilo del CTA (Cobalto, blanco, radio 6 px); botones sociales y «View credential» con su área; fechas, instituciones y listas en el token secundario.
-- [ ] **Step 4:** Blog y post: los encabezados «Earlier posts» y «Recent posts» solo si su lista tiene elementos; fechas de 13 px o más; botones de compartir con su área.
-- [ ] **Step 5:** Gallery: h1 `gallery.label`; insignia del contador opaca (`#000000`, sin `backdropFilter`, radio 4 px), texto de 13 px o más.
-- [ ] **Step 6:** 404: h1 «Page not found», una línea «The address may be mistyped, or the page may have moved.» y el botón «Go to the homepage». Contraseña: mismo botón y tokens; no cambies su lógica ni `RouteGuard`.
-- [ ] **Step 7:** Gates, `test:unit`, `test:e2e`. Commit `feat: About, Blog, Gallery, 404 and the password screen on the shared system`.
+- [x] **Step 1:** Tests que fallan. `ssr-content.spec.ts`: h1 de `/gallery` exactamente «Visual Work»; 404 con h1 «Page not found» y un enlace «Go to the homepage» a `/`. `system.spec.ts`: las comprobaciones (a) a (f) de la Tarea 5 en `/about`, `/blog`, `/blog/my-workspace`, `/gallery`, `/this-page-does-not-exist` y `/unauthorized`; en `/blog` y en el post no existe ningún h2 cuyo siguiente bloque de lista esté vacío; en `/about` el enlace «Schedule a call» tiene fondo `rgb(45, 91, 255)`, texto blanco y ≥ 44 px de alto.
+- [x] **Step 2:** Verlos fallar.
+- [x] **Step 3:** About: «Schedule a call» con el estilo del CTA (Cobalto, blanco, radio 6 px); botones sociales y «View credential» con su área; fechas, instituciones y listas en el token secundario.
+- [x] **Step 4:** Blog y post: los encabezados «Earlier posts» y «Recent posts» solo si su lista tiene elementos; fechas de 13 px o más; botones de compartir con su área.
+- [x] **Step 5:** Gallery: h1 `gallery.label`; insignia del contador opaca (`#000000`, sin `backdropFilter`, radio 4 px), texto de 13 px o más.
+- [x] **Step 6:** 404: h1 «Page not found», una línea «The address may be mistyped, or the page may have moved.» y el botón «Go to the homepage». Contraseña: mismo botón y tokens; no cambies su lógica ni `RouteGuard`.
+- [x] **Step 7:** Gates, `test:unit`, `test:e2e`. Commit `feat: About, Blog, Gallery, 404 and the password screen on the shared system`.
 
 ### Task 7: Verificación y entrega (la ejecuta el controlador)
 

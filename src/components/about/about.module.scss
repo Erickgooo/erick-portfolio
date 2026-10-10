@@ -1,4 +1,5 @@
 @use "../breakpoints.scss" as breakpoints;
+@use "../system.scss" as system;
 
 .hover {
     transition: var(--transition-micro-medium);
@@ -16,4 +17,52 @@
     .blockAlign {
         align-self: center;
     }
+}
+
+/* Once UI colours every `a:not(.button)` with the brand scale at (0,1,1), so each
+   link rule is written under .about. */
+
+/* The booking link: the Home's call to action, from the shared mixin. */
+.about .cta {
+  @include system.cta;
+}
+
+/* A social link: an icon in a box of at least 44px a side, with its name beside
+   it from tablets up. */
+.about .social {
+  @include system.icon-target;
+}
+
+/* Phones show the icon alone; the name is still its accessible name. */
+.socialName {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+
+  @media (min-width: 769px) {
+    position: static;
+    width: auto;
+    height: auto;
+    overflow: visible;
+    clip-path: none;
+  }
+}
+
+/* "View credential": a link on its own line, a full target tall. */
+.about .credential {
+  gap: 8px;
+  margin-top: auto;
+  color: var(--neutral-on-background-strong);
+  font-size: 0.875rem;
+  font-weight: 500;
+
+  @include system.standalone-link;
+}
+
+/* The browser's bold is 700; the site stops at 600. */
+.about strong {
+  font-weight: 600;
 }

@@ -1,30 +1,19 @@
-import { EMIcon } from "@/resources/EMIcon";
-import { Button, Column, Heading, Row, Text } from "@once-ui-system/core";
+import styles from "@/components/screens.module.scss";
+import { Heading, Text } from "@once-ui-system/core";
+import Link from "next/link";
 
 export default function NotFound() {
   return (
-    <Column as="section" fill center gap="16" paddingBottom="160">
-      <Row style={{ fontSize: "40px", color: "var(--brand-on-background-strong)" }}>
-        <EMIcon />
-      </Row>
-      <Text
-        onBackground="brand-strong"
-        style={{ fontFamily: "var(--font-code)", fontWeight: 700 }}
-        variant="heading-strong-l"
-      >
-        404
-      </Text>
-      <Heading marginBottom="s" variant="display-default-xs" wrap="balance" align="center">
-        This page hasn't been built yet.
+    <section className={styles.screen}>
+      <Heading variant="display-strong-s" wrap="balance" align="center">
+        Page not found
       </Heading>
-      <Text onBackground="neutral-weak" align="center">
-        Everything else here was designed and shipped from zero — this URL just wasn't one of them.
+      <Text variant="body-default-l" onBackground="neutral-weak" align="center">
+        The address may be mistyped, or the page may have moved.
       </Text>
-      <Row paddingTop="16">
-        <Button href="/" variant="secondary" size="m" arrowIcon>
-          Back to the homepage
-        </Button>
-      </Row>
-    </Column>
+      <Link href="/" className={styles.cta}>
+        Go to the homepage
+      </Link>
+    </section>
   );
 }

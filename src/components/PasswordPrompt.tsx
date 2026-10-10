@@ -1,6 +1,7 @@
 "use client";
 
-import { Button, Column, Heading, PasswordInput, Text } from "@once-ui-system/core";
+import styles from "@/components/screens.module.scss";
+import { Heading, PasswordInput } from "@once-ui-system/core";
 import { useState } from "react";
 
 /**
@@ -43,26 +44,24 @@ const PasswordPrompt: React.FC = () => {
   };
 
   return (
-    <Column paddingY="128" maxWidth={24} gap="24" center>
-      <Heading align="center" wrap="balance">
+    <div className={styles.screen}>
+      <Heading variant="display-strong-s" align="center" wrap="balance">
         This page is password protected
       </Heading>
-      <Column fillWidth gap="8" horizontal="center">
-        <PasswordInput
-          id="password"
-          label="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") handleSubmit();
-          }}
-          errorMessage={error}
-        />
-        <Button onClick={handleSubmit} disabled={submitting}>
-          {submitting ? "Checking..." : "Submit"}
-        </Button>
-      </Column>
-    </Column>
+      <PasswordInput
+        id="password"
+        label="Password"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") handleSubmit();
+        }}
+        errorMessage={error}
+      />
+      <button type="button" className={styles.cta} onClick={handleSubmit} disabled={submitting}>
+        {submitting ? "Checking..." : "Submit"}
+      </button>
+    </div>
   );
 };
 

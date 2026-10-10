@@ -86,3 +86,85 @@
     padding-block: calc((28px - 1em) / 2);
   }
 }
+
+/* The one call to action: Cobalt fill, white text, 6px corners and a box 48px
+   tall. The Home's last block and the About page's booking link wear it, so it
+   is written once. Include it under a selector that outranks Once UI's link
+   colour (0,1,1) and its hover (0,2,1); a bare class does not. */
+@mixin cta {
+  display: inline-flex;
+  align-items: center;
+  box-sizing: border-box;
+  min-height: 48px;
+  padding: 12px 20px;
+  border-radius: 6px;
+  background: var(--cobalt);
+  color: #ffffff;
+  font-size: 1rem;
+  line-height: 1.5;
+  font-weight: 600;
+  text-decoration: none;
+  transition: transform 160ms ease-out;
+
+  @media (min-width: 768px) {
+    font-size: 1.0625rem;
+  }
+
+  &:hover {
+    background: #2549cb;
+    color: #ffffff;
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
+
+  /* The button's own text is white, which would vanish on the light surface. */
+  &:focus-visible {
+    @include focus-ring;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+  }
+}
+
+/* An icon (with its name beside it from tablets up) in a box of its own: at
+   least 44px a side up to 768px wide, 28px above. The box is a hairline in the
+   content colour; hover darkens the line, never the colour of the icon. Put
+   it under a selector that outranks Once UI's `a:not(.button)`. */
+@mixin icon-target {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-sizing: border-box;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0 12px;
+  border: 1px solid;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--neutral-on-background-strong);
+  font: inherit;
+  text-decoration: none;
+  cursor: pointer;
+  transition: none;
+
+  @include line(border-color);
+
+  @media (min-width: 769px) {
+    min-width: 28px;
+    min-height: 32px;
+  }
+
+  &:hover {
+    border-color: var(--neutral-on-background-strong);
+    color: var(--neutral-on-background-strong);
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+}

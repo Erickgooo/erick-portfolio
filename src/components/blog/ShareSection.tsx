@@ -1,7 +1,8 @@
 "use client";
 
 import { socialSharing } from "@/resources";
-import { Button, Row, Text, useToast } from "@once-ui-system/core";
+import { Icon, Row, Text, useToast } from "@once-ui-system/core";
+import styles from "./blog.module.scss";
 
 interface ShareSectionProps {
   title: string;
@@ -110,26 +111,27 @@ export function ShareSection({ title, url }: ShareSectionProps) {
       <Text variant="label-default-m" onBackground="neutral-weak">
         Share this post:
       </Text>
-      <Row data-border="rounded" gap="16" horizontal="center" wrap>
-        {enabledPlatforms.map((platform, index) => (
-          <Button
-            key={index}
-            variant="secondary"
-            size="s"
+      <Row gap="16" horizontal="center" wrap>
+        {enabledPlatforms.map((platform) => (
+          <a
+            key={platform.name}
+            className={styles.share}
             href={platform.generateUrl(title, url)}
-            prefixIcon={platform.icon}
             aria-label={shareLabel(platform)}
-          />
+          >
+            <Icon name={platform.icon} size="s" />
+          </a>
         ))}
 
         {socialSharing.platforms.copyLink && (
-          <Button
-            variant="secondary"
-            size="s"
+          <button
+            type="button"
+            className={styles.share}
             onClick={handleCopy}
-            prefixIcon="openLink"
             aria-label="Copy link to this post"
-          />
+          >
+            <Icon name="openLink" size="s" />
+          </button>
         )}
       </Row>
     </Row>

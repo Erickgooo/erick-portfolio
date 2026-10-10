@@ -13,14 +13,15 @@ interface PostsProps {
   hideProtected?: boolean;
 }
 
-export function Posts({
+/**
+ * The posts a list shows, newest first. The pages ask it too, so that a heading
+ * is only drawn over a list with something in it.
+ */
+export function listedPosts({
   range,
-  columns = "1",
-  thumbnail = false,
   exclude = [],
-  direction,
   hideProtected = false,
-}: PostsProps) {
+}: Pick<PostsProps, "range" | "exclude" | "hideProtected">) {
   let allBlogs = getPosts(["src", "app", "blog", "posts"]);
 
   if (hideProtected) {
@@ -36,9 +37,20 @@ export function Posts({
     return new Date(b.metadata.publishedAt).getTime() - new Date(a.metadata.publishedAt).getTime();
   });
 
-  const displayedBlogs = range
+  return range
     ? sortedBlogs.slice(range[0] - 1, range.length === 2 ? range[1] : sortedBlogs.length)
     : sortedBlogs;
+}
+
+export function Posts({
+  range,
+  columns = "1",
+  thumbnail = false,
+  exclude = [],
+  direction,
+  hideProtected = false,
+}: PostsProps) {
+  const displayedBlogs = listedPosts({ range, exclude, hideProtected });
 
   return (
     <>

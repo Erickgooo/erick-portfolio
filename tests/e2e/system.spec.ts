@@ -357,7 +357,17 @@ const measureSystem = (page: Page, minTarget: number) =>
     { minTarget, brand: BRAND_SCALE },
   );
 
-function followsThePageSystem(path: string, viewport: Viewport) {
+/** The least a page has to show for the scan to count as having looked at it. */
+interface Minimums {
+  texts: number;
+  targets: number;
+  links: number;
+  buttons: number;
+}
+
+const FULL_PAGE: Minimums = { texts: 10, targets: 1, links: 1, buttons: 1 };
+
+function followsThePageSystem(path: string, viewport: Viewport, minimum: Minimums = FULL_PAGE) {
   test(`${path} follows the page system at ${viewport.width}px`, async ({ page }) => {
     // The page fixture, not a fresh context, so WebKit still gets its CSP workaround.
     await page.setViewportSize({ width: viewport.width, height: viewport.height });
@@ -366,10 +376,10 @@ function followsThePageSystem(path: string, viewport: Viewport) {
     const found = await measureSystem(page, viewport.minTarget);
 
     // A scan that found nothing to measure proves nothing.
-    expect(found.counts.texts).toBeGreaterThan(10);
-    expect(found.counts.targets).toBeGreaterThan(0);
-    expect(found.counts.links).toBeGreaterThan(0);
-    expect(found.counts.buttons).toBeGreaterThan(0);
+    expect(found.counts.texts).toBeGreaterThanOrEqual(minimum.texts);
+    expect(found.counts.targets).toBeGreaterThanOrEqual(minimum.targets);
+    expect(found.counts.links).toBeGreaterThanOrEqual(minimum.links);
+    expect(found.counts.buttons).toBeGreaterThanOrEqual(minimum.buttons);
 
     expect.soft(found.offFamily, "text is Geist; Geist Mono only in pre and code").toEqual([]);
     expect.soft(found.small, "no text under 13px").toEqual([]);
@@ -384,10 +394,38 @@ function followsThePageSystem(path: string, viewport: Viewport) {
   });
 }
 
-const SYSTEM_PAGES = ["/work", ...CASE_STUDIES];
+const SYSTEM_PAGES = ["/work", ...CASE_STUDIES, "/about", "/blog/my-workspace"];
 
 for (const path of SYSTEM_PAGES) {
   for (const viewport of [PHONE, DESKTOP]) followsThePageSystem(path, viewport);
+}
+
+// The blog has one post to list: a card, and little else.
+for (const viewport of [PHONE, DESKTOP]) {
+  followsThePageSystem("/blog", viewport, { ...FULL_PAGE, texts: 8 });
+}
+
+// The gallery is pictures and clips behind buttons: no link in its body.
+for (const viewport of [PHONE, DESKTOP]) {
+  followsThePageSystem("/gallery", viewport, { ...FULL_PAGE, links: 0 });
+}
+
+// A missing page and the password screen are short on purpose, and the screen
+// has no link in its body: the form is the one control. They still have to show
+// enough text and a control for the scan to have looked at something.
+for (const viewport of [PHONE, DESKTOP]) {
+  followsThePageSystem("/this-page-does-not-exist", viewport, {
+    texts: 5,
+    targets: 1,
+    links: 1,
+    buttons: 0,
+  });
+  followsThePageSystem("/unauthorized", viewport, {
+    texts: 5,
+    targets: 1,
+    links: 0,
+    buttons: 1,
+  });
 }
 
 // ─── Work and the case studies ──────────────────────────────────────────────
@@ -438,7 +476,10 @@ for (const path of ["/work", CASE_STUDIES[0], CASE_STUDIES[1]]) {
   });
 }
 
-for (const path of SYSTEM_PAGES) {
+// Pages that hold a heading, a line or a card and a control, and little else.
+const SHORT_PAGES = ["/blog", "/this-page-does-not-exist", "/unauthorized"];
+
+for (const path of [...SYSTEM_PAGES, "/gallery", ...SHORT_PAGES]) {
   test(`${path}: no visible text is set outside 400, 500 and 600`, async ({ page }) => {
     await page.goto(path);
     await settled(page);
@@ -460,7 +501,7 @@ for (const path of SYSTEM_PAGES) {
       }
       return { texts, off };
     });
-    expect(weights.texts).toBeGreaterThan(10);
+    expect(weights.texts).toBeGreaterThanOrEqual(SHORT_PAGES.includes(path) ? 3 : 10);
     expect(weights.off).toEqual([]);
   });
 }
@@ -665,3 +706,130 @@ for (const path of ["/work/ai-portfolio", "/work/dakoma-roofing"]) {
     expect(await moreMedia(page)).toBeNull();
   });
 }
+
+// ─── Blog, About ────────────────────────────────────────────────────────────
+
+/** Every h2 on the page, and whether anything follows it before its parent ends. */
+const headingsWithNothingAfter = (page: Page) =>
+  page.evaluate(() => {
+    const headings = Array.from(document.querySelectorAll(".main-content-wrapper h2"));
+    const empty = headings
+      .filter((h) => {
+        // The block under a heading is the next sibling of the heading, or of the box that
+        // holds it and its copy-link mark; a list that rendered nothing leaves none.
+        const box = h.parentElement?.matches('[class*="HeadingLink_control"]')
+          ? h.parentElement
+          : h;
+        const next = box.nextElementSibling;
+        return next === null || (next.textContent ?? "").trim() === "";
+      })
+      .map((h) => (h.textContent ?? "").trim());
+    return { total: headings.length, empty };
+  });
+
+test("/blog: no heading is left over a list with nothing in it", async ({ page }) => {
+  await page.goto("/blog");
+  await settled(page);
+  // The page did render its posts: there is one, and it is a link to it.
+  await expect(
+    page.locator('.main-content-wrapper a[href="/blog/my-workspace"]').first(),
+  ).toBeVisible();
+  expect((await headingsWithNothingAfter(page)).empty).toEqual([]);
+  await expect(page.getByRole("heading", { name: "Earlier posts" })).toHaveCount(0);
+});
+
+test("a post: no heading is left over a list with nothing in it", async ({ page }) => {
+  await page.goto("/blog/my-workspace");
+  await settled(page);
+  const found = await headingsWithNothingAfter(page);
+  // The post's own sections are headings too, so this scan has something to read.
+  expect(found.total).toBeGreaterThan(0);
+  expect(found.empty).toEqual([]);
+  await expect(page.getByRole("heading", { name: "Recent posts" })).toHaveCount(0);
+});
+
+for (const viewport of [PHONE, DESKTOP]) {
+  test(`/about: "Schedule a call" is the call to action at ${viewport.width}px`, async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: viewport.width, height: viewport.height });
+    await page.goto("/about");
+    await settled(page);
+    const call = page.getByRole("link", { name: "Schedule a call" });
+    await expect(call).toBeVisible();
+    const look = await call.evaluate((a) => {
+      const cs = getComputedStyle(a);
+      return {
+        background: cs.backgroundColor,
+        colour: cs.color,
+        radius: cs.borderRadius,
+        height: a.getBoundingClientRect().height,
+        underlined: cs.textDecorationLine.includes("underline"),
+      };
+    });
+    expect(look.background).toBe("rgb(45, 91, 255)");
+    expect(look.colour).toBe("rgb(255, 255, 255)");
+    expect(look.radius).toBe("6px");
+    expect(look.height).toBeGreaterThanOrEqual(44);
+    expect(look.underlined).toBe(false);
+  });
+}
+
+// ─── Gallery ────────────────────────────────────────────────────────────────
+
+test("/gallery: a group of pictures opens without animating a filter", async ({ page }) => {
+  await page.setViewportSize({ width: DESKTOP.width, height: DESKTOP.height });
+  await page.goto("/gallery");
+  await settled(page);
+  const cover = page.getByText(/^1\/\d+$/).first();
+  await cover.scrollIntoViewIfNeeded();
+  await cover.click();
+  const dialog = page.getByRole("dialog");
+  await expect(dialog).toBeVisible();
+  // More than one picture to go through, so the group is really on screen.
+  await expect(dialog.locator("img").nth(1)).toBeAttached();
+  const filtered = await page.evaluate(async () => {
+    const seen = new Set<string>();
+    const until = performance.now() + 1500;
+    while (performance.now() < until) {
+      for (const animation of document.getAnimations()) {
+        const effect = animation.effect as KeyframeEffect | null;
+        if (!effect?.getKeyframes().some((k) => "filter" in k && k.filter !== "none")) continue;
+        const target = effect.target;
+        seen.add(target ? `${target.tagName.toLowerCase()}.${target.className}` : "?");
+      }
+      await new Promise((resolve) => requestAnimationFrame(resolve));
+    }
+    return [...seen];
+  });
+  expect(filtered).toEqual([]);
+});
+
+test("/gallery: the counter on a group is opaque and square-cornered", async ({ page }) => {
+  await page.goto("/gallery");
+  await settled(page);
+  const badges = await page.evaluate(() =>
+    Array.from(document.querySelectorAll(".main-content-wrapper *"))
+      .filter((el) => /^1\/\d+$/.test((el.textContent ?? "").trim()) && el.children.length === 0)
+      .map((el) => {
+        const box = el.parentElement as HTMLElement;
+        const cs = getComputedStyle(box);
+        return {
+          background: cs.backgroundColor,
+          radius: cs.borderRadius,
+          blur: cs.getPropertyValue("backdrop-filter") || "none",
+          size: Number.parseFloat(getComputedStyle(el).fontSize),
+        };
+      }),
+  );
+  expect(badges.length).toBeGreaterThan(0);
+  for (const badge of badges) {
+    expect(badge).toEqual({
+      background: "rgb(0, 0, 0)",
+      radius: "4px",
+      blur: "none",
+      size: expect.any(Number),
+    });
+    expect(badge.size).toBeGreaterThanOrEqual(13);
+  }
+});

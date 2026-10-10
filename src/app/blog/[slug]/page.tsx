@@ -1,23 +1,15 @@
 import { CustomMDX, NodeDivider, ScrollToHash } from "@/components";
 import { OnThisPage } from "@/components/blog/OnThisPage";
-import { Posts } from "@/components/blog/Posts";
+import { Posts, listedPosts } from "@/components/blog/Posts";
+import styles from "@/components/blog/blog.module.scss";
 import { ShareSection } from "@/components/blog/ShareSection";
 import { about, baseURL, blog, person } from "@/resources";
 import { EMIcon } from "@/resources/EMIcon";
 import { formatDate } from "@/utils/formatDate";
 import { getPosts } from "@/utils/utils";
-import {
-  Avatar,
-  Column,
-  Heading,
-  Media,
-  Meta,
-  Row,
-  Schema,
-  SmartLink,
-  Text,
-} from "@once-ui-system/core";
+import { Avatar, Column, Heading, Media, Meta, Row, Schema, Text } from "@once-ui-system/core";
 import type { Metadata } from "next";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import React from "react";
 
@@ -70,6 +62,9 @@ export default async function Blog({ params }: { params: Promise<{ slug: string 
       src: person.avatar,
     })) || [];
 
+  // Only a list with posts in it gets its heading, its rule and its room.
+  const hasRecent = listedPosts({ exclude: [post.slug], range: [1, 2] }).length > 0;
+
   return (
     <Row fillWidth>
       <Row maxWidth={12} m={{ hide: true }} />
@@ -94,10 +89,10 @@ export default async function Blog({ params }: { params: Promise<{ slug: string 
             }}
           />
           <Column maxWidth="s" gap="16" horizontal="center" align="center">
-            <SmartLink href="/blog">
+            <Link href="/blog" className={styles.crumb}>
               <Text variant="label-strong-m">Blog</Text>
-            </SmartLink>
-            <Text variant="body-default-xs" onBackground="neutral-weak" marginBottom="12">
+            </Link>
+            <Text variant="body-default-s" onBackground="neutral-weak" marginBottom="12">
               {post.metadata.publishedAt && formatDate(post.metadata.publishedAt)}
             </Text>
             <Heading variant="display-strong-m">{post.metadata.title}</Heading>
@@ -105,7 +100,7 @@ export default async function Blog({ params }: { params: Promise<{ slug: string 
           <Row marginBottom="32" horizontal="center">
             <Row gap="16" vertical="center">
               <Avatar size="s" src={person.avatar} />
-              <Text variant="label-default-m" onBackground="brand-weak">
+              <Text variant="label-default-m" onBackground="neutral-weak">
                 {person.name}
               </Text>
             </Row>
@@ -146,13 +141,21 @@ export default async function Blog({ params }: { params: Promise<{ slug: string 
 
           <ShareSection title={post.metadata.title} url={`${baseURL}${blog.path}/${post.slug}`} />
 
-          <Column fillWidth gap="40" horizontal="center" marginTop="40">
-            <NodeDivider maxWidth={40} />
-            <Heading as="h2" data-exclude-nav variant="heading-strong-xl" marginBottom="24">
-              Recent posts
-            </Heading>
-            <Posts exclude={[post.slug]} range={[1, 2]} columns="2" thumbnail direction="column" />
-          </Column>
+          {hasRecent && (
+            <Column fillWidth gap="40" horizontal="center" marginTop="40">
+              <NodeDivider maxWidth={40} />
+              <Heading as="h2" data-exclude-nav variant="heading-strong-xl" marginBottom="24">
+                Recent posts
+              </Heading>
+              <Posts
+                exclude={[post.slug]}
+                range={[1, 2]}
+                columns="2"
+                thumbnail
+                direction="column"
+              />
+            </Column>
+          )}
           <ScrollToHash />
         </Column>
       </Row>

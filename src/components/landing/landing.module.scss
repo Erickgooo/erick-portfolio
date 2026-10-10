@@ -38,33 +38,7 @@ $display: var(--font-heading), sans-serif;
 /* Every link rule is scoped under .home: Once UI styles `a:not(.button)` at
    specificity (0,1,1) and its hover at (0,2,1), with a transition on colour. */
 .home .cta {
-  display: inline-flex;
-  align-items: center;
-  box-sizing: border-box;
-  min-height: 48px;
-  padding: 12px 20px;
-  border-radius: 6px;
-  background: var(--cobalt);
-  color: #ffffff;
-  font-weight: 600;
-  text-decoration: none;
-  transition: transform 160ms ease-out;
-
-  @include note;
-}
-
-.home .cta:hover {
-  background: #2549cb;
-  color: #ffffff;
-}
-
-.home .cta:active {
-  transform: scale(0.98);
-}
-
-/* The button's own text is white, which would vanish on the light surface. */
-.home .cta:focus-visible {
-  @include system.focus-ring;
+  @include system.cta;
 }
 
 /* --- Text links ----------------------------------------------------------
@@ -445,11 +419,5 @@ $display: var(--font-heading), sans-serif;
 
   .closing {
     padding-bottom: 136px;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .home .cta {
-    transition: none;
   }
 }

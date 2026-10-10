@@ -3,7 +3,8 @@
 import { YouTubeFacade } from "@/components/YouTubeFacade";
 import { gallery } from "@/resources";
 import { extractYouTubeId } from "@/utils/youtube";
-import { Carousel, Dialog, Flex, Icon, MasonryGrid, Media, Text } from "@once-ui-system/core";
+import { Dialog, Flex, Icon, MasonryGrid, Media, Text } from "@once-ui-system/core";
+import Image from "next/image";
 import { useState } from "react";
 import styles from "./GalleryView.module.scss";
 
@@ -159,16 +160,11 @@ function ImageCell({ item }: { item: Extract<GalleryItem, { type: "image" }> }) 
   );
 }
 
-// ─── Carousel cell — BUG 2 FIX ───────────────────────────────────────────────
+// ─── Group cell ──────────────────────────────────────────────────────────────
 function CarouselCell({ item }: { item: Extract<GalleryItem, { type: "carousel" }> }) {
   const [open, setOpen] = useState(false);
   const count = item.images.length;
   const aspectRatio = getAspectRatio(item.coverImage.orientation);
-
-  const carouselItems = item.images.map((img) => ({
-    slide: img.src,
-    alt: img.alt,
-  }));
 
   return (
     <>
@@ -182,39 +178,19 @@ function CarouselCell({ item }: { item: Extract<GalleryItem, { type: "carousel" 
           alt={item.coverImage.alt}
         />
 
-        {/* Badge — top-right corner */}
-        <Flex
-          position="absolute"
-          style={{
-            top: 10,
-            right: 10,
-            gap: 4,
-            padding: "4px 8px",
-            borderRadius: 20,
-            background: "rgba(0,0,0,0.65)",
-            backdropFilter: "blur(6px)",
-            alignItems: "center",
-          }}
-        >
+        {/* Badge: opaque, so nothing behind it needs blurring. */}
+        <Flex position="absolute" className={styles.badge}>
           <Icon name="gallery" size="xs" onBackground="neutral-strong" />
-          <Text
-            variant="label-default-xs"
-            onBackground="neutral-strong"
-            style={{ color: "#fff", fontWeight: 600, letterSpacing: "0.02em" }}
-          >
+          <Text variant="label-default-s" className={styles.badgeCount}>
             1/{count}
           </Text>
         </Flex>
       </HoverWrapper>
 
-      {/*
-        BUG 2 FIX: Carousel aspect-ratio fix for mobile.
-        - Dialog maxWidth capped at 640px (comfortable on any phone).
-        - Carousel receives aspectRatio so it sizes itself correctly.
-        - `sizes` hints Next.js to load the right resolution per breakpoint.
-        - The Dialog's inner <section> already has overflowY:auto so tall
-          carousels scroll naturally rather than overflowing the viewport.
-      */}
+      {/* Once UI's Carousel fades each slide in through a blurred filter, which
+          the motion rule forbids. The pictures are a row that scrolls and snaps,
+          the way a project's pictures are on the work list: no script, nothing
+          animated. */}
       <Dialog
         isOpen={open}
         onClose={() => setOpen(false)}
@@ -224,13 +200,30 @@ function CarouselCell({ item }: { item: Extract<GalleryItem, { type: "carousel" 
           width: "100%",
         }}
       >
-        <Carousel
-          items={carouselItems}
-          aspectRatio={aspectRatio}
-          controls
-          indicator="thumbnail"
-          sizes="(max-width: 640px) 100vw, 640px"
-        />
+        <ul
+          // biome-ignore lint/a11y/useSemanticElements: it is a <ul> already; the role is for Safari
+          // biome-ignore lint/a11y/noRedundantRoles: Safari drops the list semantics of a list styled with list-style: none, and the role restores them
+          role="list"
+          className={styles.pictures}
+          aria-label={`Pictures: ${item.coverImage.alt}`}
+          // A row that scrolls has to be reachable from the keyboard.
+          tabIndex={count > 1 ? 0 : undefined}
+        >
+          {item.images.map((img, index) => (
+            <li key={img.src} className={styles.picture} style={{ aspectRatio }}>
+              <Image
+                src={img.src}
+                alt={img.alt}
+                fill
+                sizes="(max-width: 640px) 100vw, 640px"
+                style={{ objectFit: "cover" }}
+              />
+              <span className={styles.position}>
+                {index + 1}/{count}
+              </span>
+            </li>
+          ))}
+        </ul>
       </Dialog>
     </>
   );

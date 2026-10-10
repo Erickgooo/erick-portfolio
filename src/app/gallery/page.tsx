@@ -29,10 +29,10 @@ export default function Gallery() {
         }}
       />
 
-      {/* Sección de Texto Introductorio */}
+      {/* The heading is the nav's label; gallery.title stays the browser title. */}
       <Column fillWidth gap="m" paddingX="l">
         <Heading variant="display-strong-s" marginBottom="m">
-          {gallery.title}
+          {gallery.label}
         </Heading>
 
         <Text variant="body-default-l" onBackground="neutral-weak">
@@ -47,8 +47,8 @@ export default function Gallery() {
         </Text>
 
         <Text variant="body-default-l" onBackground="neutral-weak">
-          <strong>Stack:</strong> Higgsfield · Kling 3.0 · Google Veo 3 · DaVinci Resolve · CapCut ·
-          ElevenLabs · Affinity.
+          <strong style={{ fontWeight: 600 }}>Stack:</strong> Higgsfield · Kling 3.0 · Google Veo 3
+          · DaVinci Resolve · CapCut · ElevenLabs · Affinity.
         </Text>
       </Column>
 

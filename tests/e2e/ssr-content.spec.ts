@@ -14,7 +14,8 @@ test.describe("server-rendered content", () => {
     // The nav's own label, not the browser title ("Projects – Erick Mahecha").
     { path: "/work", text: /^Projects$/ },
     { path: "/blog/my-workspace", text: /My Workspace/ },
-    { path: "/gallery", text: /Visual Work/ },
+    // The nav's label again, not the browser title ("Visual Work – Erick Mahecha").
+    { path: "/gallery", text: /^Visual Work$/ },
   ];
 
   for (const c of cases) {
@@ -71,6 +72,22 @@ test.describe("a case study without JavaScript", () => {
   });
 });
 
+test.describe("a missing page without JavaScript", () => {
+  test.use({ javaScriptEnabled: false });
+
+  test("says so, and links to the homepage", async ({ page }) => {
+    await page.goto("/this-page-does-not-exist");
+    await expect(page.locator("h1").first()).toHaveText("Page not found");
+    await expect(
+      page.getByText("The address may be mistyped, or the page may have moved."),
+    ).toBeVisible();
+    await expect(page.getByRole("link", { name: "Go to the homepage" })).toHaveAttribute(
+      "href",
+      "/",
+    );
+  });
+});
+
 test("home server HTML preloads a next/font woff2 file", async ({ request }) => {
   // Task 11b: next/font emits <link rel="preload" as="font" ...> for the
   // fonts it detects are used on the page. Guards against the Home route
@@ -112,7 +129,7 @@ test("client navigation never flashes NotFound", async ({ page }) => {
   await page.exposeFunction("__record", (t: string) => seen.push(t));
   await page.evaluate(() => {
     new MutationObserver(() => {
-      if (document.body.innerText.includes("This page hasn't been built yet")) {
+      if (document.body.innerText.includes("Page not found")) {
         (window as unknown as { __record: (t: string) => void }).__record("404");
       }
     }).observe(document.body, { childList: true, subtree: true });
