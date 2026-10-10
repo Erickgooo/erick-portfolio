@@ -53,20 +53,32 @@ $ease: var(--ease-fluid);
 .home .cta {
   display: inline-flex;
   align-items: center;
-  padding: 8px 12px;
+  gap: 12px;
+  padding: 16px 24px;
   border-radius: 9999px;
   background: var(--cobalt);
-  color: #f4f5f7;
-  font-size: 1rem;
-  line-height: 1.5rem;
+  color: #ffffff;
+  font-size: 1.125rem;
+  line-height: 1.75rem;
   font-weight: 600;
   text-decoration: none;
-  transition: background-color 700ms $ease, transform 700ms $ease;
+  /* The Glow Border, turned up: the one element the eye should find first. */
+  box-shadow: 0 0 0 1px rgba(166, 186, 255, 0.4), 0 0 48px rgba(45, 91, 255, 0.55);
+  transition: box-shadow 700ms $ease, transform 700ms $ease;
 }
 
 .home .cta:hover {
-  background: #2549cb;
-  color: #f4f5f7;
+  color: #ffffff;
+  transform: translateY(-2px);
+  box-shadow: 0 0 0 1px rgba(166, 186, 255, 0.7), 0 0 72px rgba(45, 91, 255, 0.8);
+}
+
+.ctaArrow {
+  transition: transform 700ms $ease;
+}
+
+.cta:hover .ctaArrow {
+  transform: translateX(4px);
 }
 
 .home .cta:active {
@@ -124,13 +136,15 @@ $ease: var(--ease-fluid);
 }
 
 .tagline {
-  max-width: 680px;
+  justify-self: center;
+  max-width: 1040px;
   margin: 0;
   font-family: var(--font-heading), sans-serif;
-  font-size: 2.25rem;
-  line-height: 2.5rem;
+  font-size: clamp(2.25rem, 5vw, 4.75rem);
+  line-height: 1.05;
   font-weight: 600;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.03em;
+  text-align: center;
 }
 
 .taglineLine {
@@ -579,11 +593,6 @@ $ease: var(--ease-fluid);
   .subline {
     font-size: 1.25rem;
     line-height: 1.75rem;
-  }
-
-  .tagline {
-    font-size: 3.75rem;
-    line-height: 1;
   }
 
   .statementText {

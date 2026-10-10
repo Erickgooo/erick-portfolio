@@ -13,6 +13,9 @@ export function CallButton() {
       data-cta="primary"
     >
       {landing.cta.label}
+      <span aria-hidden="true" className={styles.ctaArrow}>
+        →
+      </span>
     </a>
   );
 }

@@ -51,11 +51,22 @@
       animation-timeline: --film-section, --film-section;
       animation-range: entry 40% entry 100%, exit 10% exit 70%;
     }
+
+    .fadeOut > * {
+      animation: film-out linear forwards;
+      animation-timeline: --film-section;
+      animation-range: exit 10% exit 70%;
+    }
   }
 }
 
+.top {
+  align-content: start;
+  padding-top: clamp(112px, 13vh, 160px);
+}
+
 @media (max-width: 767px) {
-  .topOnPhones {
-    align-content: start;
+  .top {
+    padding-top: 96px;
   }
 }

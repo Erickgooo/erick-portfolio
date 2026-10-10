@@ -115,11 +115,11 @@ test("the page ends with the same call to action as the hero", async ({ page }) 
   await page.goto("/");
   const ctas = page.locator('[data-cta="primary"]');
   await expect(ctas).toHaveCount(2);
-  const [top, bottom] = await ctas.evaluateAll((els) =>
-    els.map((el) => ({ href: el.getAttribute("href"), text: el.textContent?.trim() })),
-  );
-  expect(top).toEqual({ href: CALENDAR, text: "Book a 30 minute call" });
-  expect(bottom).toEqual(top);
+  // By accessible name: the arrow inside the button is decoration.
+  for (const cta of await ctas.all()) {
+    await expect(cta).toHaveAccessibleName("Book a 30 minute call");
+    await expect(cta).toHaveAttribute("href", CALENDAR);
+  }
   expect(
     await page.locator('[data-landing-section="final-cta"] [data-cta="primary"]').count(),
   ).toBe(1);

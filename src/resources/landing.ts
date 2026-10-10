@@ -5,15 +5,18 @@ export const landing = {
     subline:
       "For founders who need content, CRM and paid media working as one system. At Quick Metal Shop that meant 338K+ organic views with $0 in ad spend.",
     risk: "30 minutes. No commitment.",
+    emphasis: ["zero", "full", "department."],
   },
   cta: { label: "Book a 30 minute call" },
   tagline: ["Most companies hire a department.", "I build the system that does the work of one."],
   problem: {
     label: "The problem",
+    emphasis: ["five", "three", "none"],
     text: "Your marketing lives in five tools and three freelancers, and none of them talk to each other.",
   },
   solution: {
     label: "What I do",
+    emphasis: ["whole", "system,"],
     text: "I design the whole system, build it, and keep it running: brand, content, paid media, CRM and the software in between.",
   },
   benefits: [

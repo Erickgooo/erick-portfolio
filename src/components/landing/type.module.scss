@@ -1,0 +1,532 @@
+/* Type and motion for everything laid over the home film.
+
+   Words arrive one at a time out of a blur. The hero plays once on load (after
+   the intro); every other section is tied to the scroll through its own view
+   timeline (--film-section, defined in FilmSection.module.scss). Browsers
+   without scroll timelines get the same entrance on a timer when the block
+   comes into view (html.mo-io + .is-in, set by MotionRuntime), and reduced
+   motion gets the finished state. Composition changes from section to section
+   on purpose: centred hero, glass panels on alternating sides, figures that
+   swap sides, cards. */
+$ease: var(--ease-fluid);
+$glass-border: 1px solid rgba(255, 255, 255, 0.16);
+$glass-fill: rgba(8, 8, 10, 0.5);
+
+@mixin glass {
+  border: $glass-border;
+  background: $glass-fill;
+  -webkit-backdrop-filter: blur(24px) saturate(1.4);
+  backdrop-filter: blur(24px) saturate(1.4);
+}
+
+.block {
+  display: grid;
+  gap: 24px;
+  justify-items: center;
+  width: 100%;
+  text-align: center;
+}
+
+/* ─── Words ──────────────────────────────────────────────────────────── */
+.words {
+  display: inline;
+}
+
+.w,
+.wi {
+  display: inline-block;
+}
+
+/* Emphasis: the word in outline. */
+.w[data-hl] .wi {
+  color: transparent;
+  -webkit-text-stroke: 0.03em #ffffff;
+}
+
+/* ─── Shared pieces ──────────────────────────────────────────────────── */
+.pill {
+  margin: 0;
+  padding: 8px 16px;
+  border: 1px solid rgba(166, 186, 255, 0.5);
+  border-radius: 9999px;
+  background: rgba(45, 91, 255, 0.18);
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  font-weight: 600;
+  color: #ffffff;
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+}
+
+.h1,
+.h2,
+.h3 {
+  margin: 0;
+  font-family: var(--font-heading), sans-serif;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+}
+
+.h1 {
+  max-width: 1120px;
+  /* Sized by height as well as width, so the whole hero fits one screen on a laptop. */
+  font-size: clamp(1.875rem, min(6.2vw, 8.6vh), 5.25rem);
+  line-height: 1.03;
+}
+
+.h2 {
+  font-size: clamp(1.75rem, 3.4vw, 3.25rem);
+  line-height: 1.08;
+}
+
+.h3 {
+  font-size: clamp(1.75rem, 3.2vw, 3rem);
+  line-height: 1.05;
+}
+
+.sub,
+.body {
+  max-width: 720px;
+  margin: 0;
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+  color: #dcdddf;
+  text-wrap: pretty;
+}
+
+.body {
+  max-width: 520px;
+  font-size: 1.125rem;
+}
+
+.action {
+  display: grid;
+  gap: 12px;
+  justify-items: center;
+}
+
+.risk {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: #c7ccd1;
+}
+
+/* ─── Hero ───────────────────────────────────────────────────────────── */
+.stats {
+  display: grid;
+  grid-template-columns: repeat(4, auto);
+  margin: 8px 0 0;
+  padding: 0;
+  border-radius: 24px;
+  list-style: none;
+  @include glass;
+}
+
+.stats li {
+  display: grid;
+  gap: 4px;
+  padding: 16px 32px;
+  border-left: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+.stats li:first-child {
+  border-left: 0;
+}
+
+.stats strong {
+  font-family: var(--font-heading), sans-serif;
+  font-size: 2.25rem;
+  line-height: 2.5rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+}
+
+.stats span {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: #c7ccd1;
+}
+
+/* ─── Statements: glass panels on alternating sides ──────────────────── */
+.panel {
+  display: grid;
+  gap: 20px;
+  justify-items: start;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 660px;
+  padding: 48px;
+  border-radius: 32px;
+  text-align: left;
+  @include glass;
+}
+
+.left {
+  justify-self: start;
+}
+
+.right {
+  justify-self: end;
+}
+
+/* ─── Outcomes: the figure swaps sides ───────────────────────────────── */
+.benefit {
+  display: grid;
+  grid-template-columns: auto minmax(280px, 1fr);
+  align-items: center;
+  gap: 56px;
+  width: 100%;
+}
+
+.flip {
+  grid-template-columns: minmax(280px, 1fr) auto;
+}
+
+.flip .figure {
+  order: 2;
+  justify-items: end;
+}
+
+.flip .benefitText {
+  justify-items: end;
+  text-align: right;
+}
+
+.figure {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+}
+
+/* An outlined figure with a filled copy on top that grows from the bottom. */
+.figureValue {
+  position: relative;
+  font-family: var(--font-heading), sans-serif;
+  font-size: clamp(5rem, 15vw, 13.5rem);
+  line-height: 0.9;
+  font-weight: 700;
+  letter-spacing: -0.05em;
+  font-variant-numeric: tabular-nums;
+  color: transparent;
+  -webkit-text-stroke: 2px rgba(255, 255, 255, 0.9);
+  /* On the wrapper, not on the fill: a glow on the clipped layer is cut in a straight line. */
+  filter: drop-shadow(0 0 40px rgba(45, 91, 255, 0.6));
+}
+
+.figureFill {
+  position: absolute;
+  inset: 0;
+  -webkit-text-stroke: 0;
+  background: linear-gradient(180deg, #ffffff 30%, #6688ff);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.figureUnit {
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+  font-weight: 600;
+  color: #c1cfff;
+}
+
+.benefitText {
+  display: grid;
+  gap: 16px;
+  justify-items: start;
+  text-align: left;
+}
+
+/* A text link, not a button: the page keeps a single call to action.
+   Doubled class: Once UI colours every `a:not(.button)` at specificity (0,1,1). */
+.link.link {
+  font-size: 1.125rem;
+  line-height: 1.75rem;
+  font-weight: 600;
+  color: #ffffff;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
+  transition: color 700ms $ease;
+}
+
+.link.link:hover {
+  color: #a6baff;
+}
+
+.link.link:focus-visible {
+  outline: 2px solid #ffffff;
+  outline-offset: 2px;
+}
+
+/* ─── Process: three glass cards ─────────────────────────────────────── */
+.steps {
+  display: grid;
+  gap: 16px;
+  width: 100%;
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+  text-align: left;
+}
+
+.step {
+  display: grid;
+  gap: 8px;
+  align-content: start;
+  padding: 24px;
+  border-radius: 24px;
+  @include glass;
+}
+
+.stepNumber {
+  font-family: var(--font-code), monospace;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  font-weight: 600;
+  color: #c1cfff;
+}
+
+.stepName {
+  margin: 0;
+  font-family: var(--font-heading), sans-serif;
+  font-size: 1.5rem;
+  line-height: 2rem;
+  font-weight: 600;
+}
+
+.stepText {
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.5rem;
+  color: #dcdddf;
+}
+
+@media (min-width: 768px) {
+  .steps {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 24px;
+  }
+
+  .step {
+    padding: 32px;
+  }
+}
+
+/* ─── Phones ─────────────────────────────────────────────────────────── */
+@media (max-width: 767px) {
+  .block {
+    gap: 16px;
+  }
+
+  .sub {
+    font-size: 1rem;
+    line-height: 1.5rem;
+  }
+
+  .body {
+    font-size: 1rem;
+    line-height: 1.5rem;
+  }
+
+  .action {
+    gap: 8px;
+  }
+
+  .risk {
+    font-size: 0.75rem;
+    line-height: 1rem;
+  }
+
+  /* One compact row: below it the screen belongs to the nav bar and the chatbot greeting. */
+  .stats {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    width: 100%;
+    margin-top: 0;
+    border-radius: 16px;
+  }
+
+  .stats li {
+    padding: 8px 4px;
+  }
+
+  .stats strong {
+    font-size: 1.125rem;
+    line-height: 1.75rem;
+  }
+
+  .stats span {
+    font-size: 0.75rem;
+    line-height: 1rem;
+  }
+
+  .panel {
+    padding: 24px;
+    border-radius: 24px;
+  }
+
+  .benefit,
+  .flip {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 24px;
+    justify-items: center;
+  }
+
+  .flip .figure {
+    order: 0;
+  }
+
+  .figure,
+  .flip .figure,
+  .benefitText,
+  .flip .benefitText {
+    justify-items: center;
+    text-align: center;
+  }
+}
+
+/* ─── Motion ─────────────────────────────────────────────────────────── */
+/* A waiting word is hidden with opacity, never with visibility: it has to stay in
+   the accessibility tree (WebKit drops visibility:hidden text from a heading's
+   name). Measured with late web fonts, opacity costs no extra layout shift. */
+@keyframes word-in {
+  from {
+    opacity: 0;
+    filter: blur(18px);
+    transform: translateY(0.35em) scale(0.92);
+  }
+  to {
+    opacity: 1;
+    filter: blur(0);
+    transform: none;
+  }
+}
+
+@keyframes appear {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(32px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes fill-up {
+  from {
+    clip-path: inset(100% 0 0 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  /* Hero: once, on load. Paused while the intro is on screen.
+
+     The heading as a whole stays at opacity 0 until its words start. Its lines
+     are centred, so when the web font replaces the fallback under the intro they
+     re-wrap and their start moves; an element at opacity 0 is not counted as a
+     layout shift, and one that merely contains invisible words is. */
+  .hero .h1 {
+    animation: appear 1ms linear both;
+  }
+
+  .hero .wi {
+    animation: word-in 1000ms $ease both;
+    animation-delay: calc(150ms + var(--w) * 55ms);
+  }
+
+  .hero .pill,
+  .hero .sub,
+  .hero .action,
+  .hero .stats {
+    animation: rise-in 900ms $ease both;
+  }
+
+  .hero .sub {
+    animation-delay: 950ms;
+  }
+
+  .hero .action {
+    animation-delay: 1100ms;
+  }
+
+  .hero .stats {
+    animation-delay: 1250ms;
+  }
+
+  :global(html.intro-pending) .hero .h1,
+  :global(html.intro-pending) .hero .wi,
+  :global(html.intro-pending) .hero .pill,
+  :global(html.intro-pending) .hero .sub,
+  :global(html.intro-pending) .hero .action,
+  :global(html.intro-pending) .hero .stats {
+    animation-play-state: paused;
+  }
+
+  /* Sections: tied to the scroll. Words finish as the section reaches the top,
+     the rest follows, and a figure is full just after its section pins. */
+  @supports (animation-timeline: view()) {
+    .scrolly .wi {
+      animation: word-in linear both;
+      animation-timeline: --film-section;
+      animation-range: entry calc(30% + var(--w) / var(--n) * 45%) entry
+        calc(58% + var(--w) / var(--n) * 45%);
+    }
+
+    .scrolly .rise {
+      animation: rise-in linear both;
+      animation-timeline: --film-section;
+      animation-range: entry calc(55% + var(--i, 0) * 10%) entry calc(88% + var(--i, 0) * 10%);
+    }
+
+    .scrolly .figureFill {
+      animation: fill-up linear both;
+      animation-timeline: --film-section;
+      animation-range: entry 45% cover 46%;
+    }
+  }
+
+  /* Without scroll timelines: the same entrance, on a timer, once the block is in view. */
+  :global(html.mo-io) .scrolly .wi {
+    transition: opacity 700ms $ease, filter 700ms $ease, transform 700ms $ease;
+    transition-delay: calc(var(--w) * 35ms);
+  }
+
+  :global(html.mo-io) .scrolly:not(:global(.is-in)) .wi {
+    opacity: 0;
+    filter: blur(18px);
+    transform: translateY(0.35em) scale(0.92);
+  }
+
+  :global(html.mo-io) .scrolly .rise {
+    transition: opacity 700ms $ease, transform 700ms $ease;
+    transition-delay: calc(350ms + var(--i, 0) * 120ms);
+  }
+
+  :global(html.mo-io) .scrolly:not(:global(.is-in)) .rise {
+    opacity: 0;
+    transform: translateY(32px);
+  }
+
+  :global(html.mo-io) .scrolly .figureFill {
+    transition: clip-path 1200ms $ease 200ms;
+  }
+
+  :global(html.mo-io) .scrolly:not(:global(.is-in)) .figureFill {
+    clip-path: inset(100% 0 0 0);
+  }
+}
