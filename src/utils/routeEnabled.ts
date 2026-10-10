@@ -15,7 +15,7 @@ export function isRouteEnabled(pathname: string | null, routes: RoutesConfig): b
   if (pathname === "/unauthorized") return true;
 
   // THROWAWAY: the directions page on the lab branch.
-  if (pathname === "/lab") return true;
+  if (pathname === "/lab" || pathname.startsWith("/lab/")) return true;
 
   if (pathname in routes) {
     return routes[pathname as keyof RoutesConfig];
