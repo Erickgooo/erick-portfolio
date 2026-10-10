@@ -57,7 +57,8 @@ Reglas:
   | Título de sección | 28 → 40 | 1.12 | 600 | −0.01 em |
   | Frase de la tarjeta | 20 → 28 | 1.42 | 400 | 0 |
   | Texto | 17 → 18 | 1.55 | 400 | 0 |
-  | Nota, enlace, botón | 16 → 17 | 1.5 | 500 (botón 600) | 0 |
+  | Título de proyecto y pregunta del FAQ | 20 / 18 | 1.4 | 600 / 500 | 0 |
+  | Nota, enlace, botón | 16 → 17 | 1.5 | 400–500 (botón 600) | 0 |
 
 - **Espaciado negativo solo en display** (32 px o más). El texto corrido va a 0.
 - **Mínimos:** texto corrido de 16 px o más en móvil (17 px en la Home); nada por debajo de 13 px en ninguna página.
@@ -188,6 +189,14 @@ Mismos tokens, misma tipografía, ningún efecto. No hay elemento firma.
 El de `docs/perf-report.md`: ninguna página peor que `main` por más de 3 puntos de Performance o 0.3 s de LCP; CLS < 0.05; Accesibilidad ≥ 95; TBT < 200 ms.
 
 ## 8. Excepciones conocidas
+
+- **Decisiones tomadas durante la ejecución** (no estaban en la primera versión de este spec):
+  - Playwright corre con 6 workers: sin la intro, doce workers saturaban el único `next start` que sirve el video.
+  - El carrusel de Once UI se reemplazó por tiras de imágenes propias en Work y en Gallery, porque animaba `filter: blur`.
+  - Los videos de un proyecto que no son su portada se muestran en su caso de estudio («More from this project»), con controles y sin autoplay. La portada en video tampoco se reproduce sola.
+  - Las cifras de `ResultsStats` ya no cuentan hacia arriba: muestran el valor del MDX desde el servidor.
+  - El icono de copiar enlace de cada título se ve siempre (antes solo al pasar el cursor).
+  - La pantalla de contraseña usa `Input` con un botón propio para mostrar u ocultar, porque el `PasswordInput` de Once UI no admite nombre accesible. La lógica de envío no cambió.
 
 - `src/components/FaqChatbot.module.scss` usa `backdrop-filter` en dos reglas. El chatbot no se toca, así que queda como excepción a la comprobación con `rg`. Se informa a Erick.
 - El interruptor de tema se queda (convención web; el sitio arranca con el tema del sistema).
