@@ -84,11 +84,15 @@ $ease: var(--ease-fluid);
   color: #c7ccd1;
 }
 
+/* One row on every screen: on phones the bottom of the hero belongs to the nav
+   bar and the chatbot greeting, so the figures must not wrap into it. */
 .stats {
   display: grid;
-  grid-template-columns: repeat(2, max-content);
-  gap: 16px 40px;
-  margin: 24px 0 0;
+  grid-template-columns: repeat(4, minmax(0, max-content));
+  gap: 12px;
+  justify-content: space-between;
+  width: 100%;
+  margin: 8px 0 0;
   padding: 0;
   list-style: none;
 }
@@ -100,17 +104,23 @@ $ease: var(--ease-fluid);
 
 .statValue {
   font-family: var(--font-heading), sans-serif;
-  font-size: 1.875rem;
-  line-height: 2.25rem;
+  font-size: 1.25rem;
+  line-height: 1.75rem;
   font-weight: 700;
   letter-spacing: -0.03em;
   font-variant-numeric: tabular-nums;
 }
 
 .statLabel {
-  font-size: 0.875rem;
-  line-height: 1.25rem;
+  font-size: 0.75rem;
+  line-height: 1rem;
   color: #c7ccd1;
+}
+
+@media (max-width: 767px) {
+  .hero {
+    gap: 16px;
+  }
 }
 
 .tagline {
@@ -221,8 +231,8 @@ $ease: var(--ease-fluid);
   font-size: 1.125rem;
   line-height: 1.75rem;
   font-weight: 600;
-  /* The Cobalto text step for dark surfaces (brand-700): the exact #2d5bff is too dim over footage. */
-  color: #6688ff;
+  /* A pale Cobalto (brand-900): the mid steps drop under 4.5:1 once the footage behind the veil is bright. */
+  color: #c1cfff;
 }
 
 .benefitTitle {
@@ -283,7 +293,7 @@ $ease: var(--ease-fluid);
   font-size: 0.875rem;
   line-height: 1.25rem;
   font-weight: 600;
-  color: #6688ff;
+  color: #c1cfff;
 }
 
 .stepName {
@@ -616,11 +626,20 @@ $ease: var(--ease-fluid);
 
   .stats {
     grid-template-columns: repeat(4, max-content);
+    gap: 16px 40px;
+    justify-content: start;
+    width: auto;
+    margin-top: 24px;
   }
 
   .statValue {
     font-size: 2.25rem;
     line-height: 2.5rem;
+  }
+
+  .statLabel {
+    font-size: 0.875rem;
+    line-height: 1.25rem;
   }
 }
 

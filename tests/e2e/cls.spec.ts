@@ -2,7 +2,10 @@ import { expect, test } from "./fixtures";
 import { ROUTES, measureCLS } from "./helpers";
 
 test.describe("layout stability", () => {
-  test.skip(({ browserName }) => browserName !== "chromium", "layout-shift entries are Chromium-only");
+  test.skip(
+    ({ browserName }) => browserName !== "chromium",
+    "layout-shift entries are Chromium-only",
+  );
 
   for (const route of ROUTES) {
     test(`${route.name}: CLS < 0.05 including the chatbot greeting`, async ({ page }) => {

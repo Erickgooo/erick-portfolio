@@ -2,18 +2,17 @@ import { Magnetic } from "@/components/motion/Magnetic";
 import { Reveal } from "@/components/motion/Reveal";
 import { about } from "@/resources";
 import { landing } from "@/resources/landing";
-import { isProtectedPath } from "@/resources/protectedRoutes";
-import { coverImage, parseMetric, sortProjects } from "@/utils/projects";
+import { coverImage, parseMetric, publicProjects, sortProjects } from "@/utils/projects";
 import { getPosts } from "@/utils/utils";
 import Image from "next/image";
 import Link from "next/link";
 import { CallButton } from "./CallButton";
 import styles from "./landing.module.scss";
 
-/** The three most recent case studies that are not behind the password. */
+/** The three most recent case studies that have a headline result and are not behind the password. */
 function recentProjects() {
-  const projects = getPosts(["src", "app", "work", "projects"]).filter(
-    (post) => !isProtectedPath(`/work/${post.slug}`),
+  const projects = publicProjects(getPosts(["src", "app", "work", "projects"])).filter(
+    (post) => parseMetric(post.metadata.metric) !== null,
   );
   return sortProjects(projects).slice(0, 3);
 }
@@ -36,14 +35,16 @@ function faqSchema(): string {
  * hiring teams, objections, and the same call to action the page opened with.
  */
 export function Closing() {
+  const projects = recentProjects();
   return (
     <div className={styles.closing}>
-      <section className={styles.block} data-landing-section="proof">
+      {/* With every project protected there is nothing to show: no heading over an empty list. */}
+      <section className={styles.block} data-landing-section="proof" hidden={projects.length === 0}>
         <Reveal>
           <h2 className={styles.blockTitle}>{landing.proof.title}</h2>
         </Reveal>
         <ul className={styles.cards}>
-          {recentProjects().map((project, i) => {
+          {projects.map((project, i) => {
             const { title, summary, images, metric: rawMetric } = project.metadata;
             const cover = coverImage(images);
             const metric = parseMetric(rawMetric);
@@ -55,7 +56,7 @@ export function Closing() {
                       {cover && (
                         <Image
                           src={cover}
-                          alt={title}
+                          alt=""
                           fill
                           sizes="(max-width: 768px) 100vw, 360px"
                           className={styles.cardImage}

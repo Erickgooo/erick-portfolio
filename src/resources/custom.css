@@ -128,3 +128,15 @@
   border: 0;
   user-select: none;
 }
+
+/* Over the home film the header must not bring the light theme with it: its fade
+   is a page-coloured (white) gradient and its side labels are dark text, and the
+   film underneath is always dark footage. The nav bar itself keeps its own surface. */
+html[data-theme="light"]:has([data-film-root]) [data-header-fade] {
+  display: none !important;
+}
+
+/* Hidden, not removed: the side columns keep the nav bar centred. */
+html[data-theme="light"]:has([data-film-root]) [data-header-side] {
+  visibility: hidden;
+}

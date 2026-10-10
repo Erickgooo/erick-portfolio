@@ -1,4 +1,5 @@
 import { expect, test } from "./fixtures";
+import { introDone } from "./helpers";
 
 const CALENDAR = "https://calendly.com/santiagomahecha2328/30min";
 const QUESTIONS = [
@@ -19,7 +20,7 @@ test("the closing sections follow the film in order", async ({ page }) => {
   expect(ids).toEqual(["proof", "hiring", "faq", "final-cta"]);
 });
 
-test("the three most recent case studies are shown, each with an image and a link", async ({
+test("the three most recent case studies with a result are shown, each with an image and a link", async ({
   page,
 }) => {
   await page.goto("/");
@@ -31,24 +32,24 @@ test("the three most recent case studies are shown, each with an image and a lin
   expect(hrefs).toEqual([
     "/work/quick-metal-shop-viral-videos",
     "/work/ai-powered-ad-creatives",
-    "/work/quick-metal-shop-the-brand-comes-to-life",
+    "/work/quick-metal-shop-arquiexpo",
   ]);
   for (const card of await cards.all()) {
+    // Decorative: the card is one link whose name is already the project's title.
     await expect(card.locator("img")).toHaveCount(1);
-    expect(await card.locator("img").getAttribute("alt")).not.toBe("");
+    await expect(card.locator("img")).toHaveAttribute("alt", "");
+    await expect(card.getByRole("link")).toHaveAccessibleName(/[A-Za-z]/);
   }
   await expect(
     page.locator('[data-landing-section="proof"]').getByRole("link", { name: "See all projects" }),
   ).toHaveAttribute("href", "/work");
 });
 
-test("case study cards keep their shape without a metric", async ({ page }) => {
+test("every case study card shows its result and the cards line up", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/");
   const cards = page.locator("[data-proof-card]");
-  // The third card's project has no metric; the first two do.
-  await expect(cards.nth(0).locator("[data-proof-metric]")).toHaveCount(1);
-  await expect(cards.nth(2).locator("[data-proof-metric]")).toHaveCount(0);
+  await expect(cards.locator("[data-proof-metric]")).toHaveCount(3);
   const heights = await cards.evaluateAll((els) =>
     els.map((el) => Math.round(el.getBoundingClientRect().height)),
   );
@@ -75,6 +76,12 @@ test("the FAQ has seven questions and its answers open on click", async ({ page 
   expect(questions.map((q) => q.trim())).toEqual(QUESTIONS);
   const first = faq.locator("details").first();
   await expect(first.locator("[data-faq-answer]")).toBeHidden();
+  // After the intro and with the question already in place: a click aimed while the
+  // page is still scroll-locked or gliding can land on a neighbouring question.
+  await introDone(page);
+  await first
+    .locator("summary")
+    .evaluate((el) => el.scrollIntoView({ block: "center", behavior: "instant" }));
   await first.locator("summary").click();
   await expect(first.locator("[data-faq-answer]")).toBeVisible();
 });

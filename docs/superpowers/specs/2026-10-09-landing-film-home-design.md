@@ -59,7 +59,7 @@ Solo usa datos que ya están en `src/resources/content.tsx` y en los MDX de `/wo
 
 **Beneficios**
 1. **Content at agency scale.** 338K+ organic views for Quick Metal Shop with $0 in ad spend, from an AI production pipeline. → `quick-metal-shop-viral-videos`
-2. **Paid media that pays back.** 3.92x ROAS on AI generated ad creatives for Quick Metal Shop and Dakoma Roofing. → `ai-powered-ad-creatives`
+2. **Paid media that pays back.** 3.92x ROAS on an AI generated sales campaign for Quick Metal Shop. → `ai-powered-ad-creatives`
 3. **Leads answered while you sleep.** A WhatsApp assistant that handles 85% of inbound conversations on its own, and a CRM flow that sorts 200+ leads a day. → `leadbot-ai`, `atv-riders`
 4. **Software when nothing exists yet.** A touchscreen trade show app designed, built and deployed in 48 hours. → `quick-metal-shop-arquiexpo`
 

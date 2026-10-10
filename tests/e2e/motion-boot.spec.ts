@@ -29,6 +29,17 @@ test("lite tier when hardwareConcurrency < 4", async ({ page }) => {
   expect(await fx(page)).toBe("lite");
 });
 
+test("lite tier on a slow connection", async ({ page }) => {
+  await page.addInitScript(() => {
+    Object.defineProperty(navigator, "hardwareConcurrency", { get: () => 8 });
+    Object.defineProperty(navigator, "connection", {
+      get: () => ({ saveData: false, effectiveType: "3g" }),
+    });
+  });
+  await page.goto("/about");
+  expect(await fx(page)).toBe("lite");
+});
+
 test("missing deviceMemory (Safari) is ignored, not treated as low", async ({ page }) => {
   await page.addInitScript(() => {
     Object.defineProperty(navigator, "hardwareConcurrency", { get: () => 8 });
@@ -81,6 +92,17 @@ test("the page has the dotted background and one cursor glow layer", async ({ pa
 test("the glow follows the pointer", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== "chromium", "one mouse-driven engine is enough");
   await page.goto("/about");
+  // The layer writes --x once its effect has run; a move sent before that is not heard.
+  await expect
+    .poll(() =>
+      page.evaluate(
+        () =>
+          (document.querySelector("[data-spotlight]") as HTMLElement).style.getPropertyValue(
+            "--x",
+          ) !== "",
+      ),
+    )
+    .toBe(true);
   await page.mouse.move(300, 420);
   const x = () =>
     page.evaluate(() =>

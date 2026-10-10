@@ -91,6 +91,7 @@ export async function introDone(page: Page) {
   await page.waitForFunction(
     () => !document.documentElement.classList.contains("intro-pending"),
     null,
-    { timeout: 8000 },
+    // The intro runs for up to 6.5 s; the margin is for a loaded machine.
+    { timeout: 15000 },
   );
 }

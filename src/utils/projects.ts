@@ -1,4 +1,15 @@
+import { isProtectedPath, protectedRoutes } from "@/resources/protectedRoutes";
+import type { ProtectedRoutesConfig } from "@/types/config.types";
+
 const VIDEO = /\.(mp4|webm|mov|m4v)$/i;
+
+/** Projects that may be shown on a public page: nothing whose own page is password-protected. */
+export function publicProjects<T extends { slug: string }>(
+  posts: T[],
+  config: ProtectedRoutesConfig = protectedRoutes,
+): T[] {
+  return posts.filter((post) => !isProtectedPath(`/work/${post.slug}`, config));
+}
 
 export function sortProjects<T extends { metadata: { publishedAt: string } }>(posts: T[]): T[] {
   return [...posts].sort(

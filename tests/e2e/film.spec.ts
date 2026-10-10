@@ -86,6 +86,85 @@ test.describe("scrubbing", () => {
   });
 });
 
+test("the film becomes ready on every engine", async ({ page }) => {
+  await page.goto("/");
+  await filmReady(page);
+  const video = await page.evaluate(() => {
+    const v = document.querySelector("[data-film-video]") as HTMLVideoElement;
+    return { src: v.currentSrc, duration: v.duration, error: v.error?.code ?? null };
+  });
+  // Playwright's WebKit will not play a Blob URL and takes the plain-URL fallback.
+  expect(video.src.startsWith("blob:") || video.src.includes("/video/home-film")).toBe(true);
+  expect(video.error).toBeNull();
+  expect(video.duration).toBeGreaterThan(24);
+});
+
+test("turning a phone swaps the clip to the matching orientation", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== "chromium", "one engine is enough for the variant rule");
+  const shape = () =>
+    page.evaluate(() => {
+      const v = document.querySelector("[data-film-video]") as HTMLVideoElement;
+      return v.videoWidth > v.videoHeight ? "landscape" : "portrait";
+    });
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/");
+  await filmReady(page);
+  expect(await shape()).toBe("portrait");
+  await page.setViewportSize({ width: 844, height: 390 });
+  await expect.poll(shape, { timeout: 20000 }).toBe("landscape");
+  const overflow = await page.evaluate(
+    () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+  );
+  expect(overflow).toBeLessThanOrEqual(0);
+});
+
+test("a wide touch screen gets the landscape clip", async ({ browser }, testInfo) => {
+  test.skip(testInfo.project.name !== "chromium", "one engine is enough for the variant rule");
+  const context = await browser.newContext({
+    viewport: { width: 1180, height: 820 },
+    hasTouch: true,
+    isMobile: true,
+  });
+  const page = await context.newPage();
+  await page.goto("/");
+  await filmReady(page);
+  const size = await page.evaluate(() => {
+    const v = document.querySelector("[data-film-video]") as HTMLVideoElement;
+    return { w: v.videoWidth, h: v.videoHeight };
+  });
+  expect(size.w).toBeGreaterThan(size.h);
+  await context.close();
+});
+
+test("light theme: the header's page-coloured fade and side labels stay off the film", async ({
+  page,
+}, testInfo) => {
+  test.skip(testInfo.project.name === "mobile-chromium", "desktop header");
+  await page.addInitScript(() => localStorage.setItem("data-theme", "light"));
+  await page.goto("/");
+  await expect(page.locator("[data-header-fade]").first()).toBeHidden();
+  await expect(page.locator("[data-header-side]").first()).toBeHidden();
+  await page.goto("/about");
+  await expect(page.locator("[data-header-side]").first()).toBeVisible();
+});
+
+test("on phones the hero figures sit in one row, clear of the bottom of the screen", async ({
+  page,
+}, testInfo) => {
+  test.skip(testInfo.project.name !== "mobile-chromium", "phone layout");
+  await page.goto("/");
+  const stats = await page.evaluate(() => {
+    const items = Array.from(document.querySelectorAll("[data-hero-stats] li"));
+    const tops = items.map((el) => Math.round(el.getBoundingClientRect().top));
+    const bottom = Math.max(...items.map((el) => el.getBoundingClientRect().bottom));
+    return { count: items.length, rows: new Set(tops).size, bottom, viewport: window.innerHeight };
+  });
+  expect(stats.count).toBe(4);
+  expect(stats.rows).toBe(1);
+  // The chatbot greeting and the nav bar occupy the bottom third on phones.
+  expect(stats.bottom).toBeLessThan(stats.viewport * 0.67);
+});
+
 const BEATS = [
   "hero",
   "tagline",

@@ -6,7 +6,7 @@ import styles from "./landing.module.scss";
 
 export function Hero() {
   return (
-    <FilmSection beat="hero" screens={2} fade={false}>
+    <FilmSection beat="hero" screens={2} fade={false} topOnPhones>
       <div className={styles.hero}>
         <h1 className={styles.headline}>{landing.hero.headline}</h1>
         <p className={styles.subline}>{landing.hero.subline}</p>
@@ -15,7 +15,7 @@ export function Hero() {
           <span className={styles.risk}>{landing.hero.risk}</span>
         </div>
         {home.stats && home.stats.length > 0 && (
-          <ul className={styles.stats}>
+          <ul className={styles.stats} data-hero-stats="">
             {home.stats.map((stat) => (
               <li key={stat.label} className={styles.stat}>
                 <span className={styles.statValue}>{stat.value}</span>

@@ -28,7 +28,7 @@ export const landing = {
       figure: "3.92x",
       unit: "ROAS",
       title: "Paid media that pays back.",
-      body: "3.92x ROAS on AI generated ad creatives for Quick Metal Shop and Dakoma Roofing.",
+      body: "3.92x ROAS on an AI generated sales campaign for Quick Metal Shop.",
       slug: "ai-powered-ad-creatives",
     },
     {
@@ -81,7 +81,7 @@ export const landing = {
       {
         question: "Do you work alone?",
         answer:
-          "I run projects from start to finish myself, with an AI stack that lets one person produce at agency scale. When a project needs more hands, the team is credited on its case study.",
+          "Yes. I run projects from start to finish myself, with an AI stack that lets one person produce at agency scale.",
       },
       {
         question: "Which tools do you use?",

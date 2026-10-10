@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { coverImage, parseMetric, sortProjects } from "@/utils/projects";
+import { coverImage, parseMetric, publicProjects, sortProjects } from "@/utils/projects";
 
 test("coverImage skips videos and handles empty lists", () => {
   expect(coverImage(["/a.mp4", "/b.webp", "/c.webp"])).toBe("/b.webp");
@@ -24,4 +24,18 @@ test("sortProjects orders newest first without mutating the input", () => {
   ];
   expect(sortProjects(input).map((p) => p.slug)).toEqual(["b", "a"]);
   expect(input[0].slug).toBe("a");
+});
+
+test("publicProjects drops anything under a protected route", () => {
+  const posts = [{ slug: "open" }, { slug: "secret" }, { slug: "secret-notes" }];
+  expect(publicProjects(posts, {}).map((post) => post.slug)).toEqual([
+    "open",
+    "secret",
+    "secret-notes",
+  ]);
+  expect(publicProjects(posts, { "/work/secret": true }).map((post) => post.slug)).toEqual([
+    "open",
+    "secret-notes",
+  ]);
+  expect(publicProjects(posts, { "/work": true })).toEqual([]);
 });

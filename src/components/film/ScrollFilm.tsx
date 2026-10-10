@@ -1,8 +1,11 @@
 "use client";
 
-import { type ReactNode, useEffect, useRef } from "react";
+import { type ReactNode, useEffect, useRef, useState } from "react";
 import styles from "./ScrollFilm.module.scss";
 import { type FilmBeat, type SectionBox, activeBeatId, filmTimeAt, veilAt } from "./filmMap";
+
+/** The portrait clip, poster and stills are used whenever the viewport is taller than wide. */
+const PORTRAIT = "(orientation: portrait)";
 
 interface ScrollFilmProps {
   src: string;
@@ -20,7 +23,8 @@ interface ScrollFilmProps {
  * A full-viewport film pinned behind its children and scrubbed by scroll: each
  * child section tagged data-film-beat walks its beat as it crosses the top of
  * the viewport. The clip is fetched once after `load` and played from a Blob,
- * so every seek is instant. Reduced motion and the lite tier never download
+ * so every seek is instant (with the plain URL as a fallback where a Blob will
+ * not play). Reduced motion and the lite tier never download
  * it: they get one still per section instead, and every word of the content.
  */
 export function ScrollFilm({
@@ -36,12 +40,22 @@ export function ScrollFilm({
   const rootRef = useRef<HTMLDivElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
+  // null until mounted: the clip is chosen on the client, and again when the device is turned.
+  const [portrait, setPortrait] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    const query = window.matchMedia(PORTRAIT);
+    const update = () => setPortrait(query.matches);
+    update();
+    query.addEventListener("change", update);
+    return () => query.removeEventListener("change", update);
+  }, []);
 
   useEffect(() => {
     const root = rootRef.current;
     const stage = stageRef.current;
     const video = videoRef.current;
-    if (!root || !stage || !video) return;
+    if (!root || !stage || !video || portrait === null) return;
     const sections = Array.from(root.querySelectorAll<HTMLElement>("[data-film-beat]"));
     const measure = (): SectionBox[] =>
       sections.map((el) => {
@@ -78,13 +92,13 @@ export function ScrollFilm({
     }
 
     const coarse = window.matchMedia("(hover: none) and (pointer: coarse)").matches;
-    const mobile = coarse || window.matchMedia("(max-width: 860px)").matches;
-    // Coarser steps on phones mean fewer decodes.
-    const step = mobile ? 0.02 : 0.008;
+    // Coarser steps on touch devices mean fewer decodes.
+    const step = coarse ? 0.02 : 0.008;
     const last = duration - 0.05;
     const abort = new AbortController();
     let objectUrl = "";
     let ready = false;
+    let primed = false;
     let current = 0;
     let frame = 0;
 
@@ -104,35 +118,54 @@ export function ScrollFilm({
       if (!frame) frame = requestAnimationFrame(tick);
     };
 
-    // iOS paints nothing for a muted video that was seeked but never played.
+    const reveal = () => root.setAttribute("data-film-ready", "");
+
+    // iOS paints nothing for a muted video that was seeked but never played, and may
+    // not even report its data until play() is called. So the clip is primed as soon
+    // as it has a source, and again on every touch until one play() goes through
+    // (Low Power Mode rejects the ones that do not come from a gesture).
     const prime = () => {
-      if (!ready) return;
+      if (primed || !video.src) return;
       video
         .play()
-        .then(() => video.pause())
+        .then(() => {
+          primed = true;
+          video.pause();
+          video.currentTime = Math.max(current, 0.001);
+          window.removeEventListener("touchstart", prime);
+          reveal();
+        })
         .catch(() => {});
     };
 
-    const onLoaded = () => {
+    const onMetadata = () => {
       ready = true;
       video.pause();
       // The poster stays until a real frame has painted.
-      video.addEventListener("seeked", () => root.setAttribute("data-film-ready", ""), {
-        once: true,
-      });
+      video.addEventListener("seeked", reveal, { once: true });
       video.currentTime = Math.max(current, 0.001);
       prime();
       schedule();
     };
 
+    const url = portrait ? srcMobile : src;
+    // Some WebKit builds refuse to play a Blob URL (MEDIA_ERR_SRC_NOT_SUPPORTED). The
+    // file is in the HTTP cache by then, so the element falls back to its plain URL:
+    // seeks cost a range request instead of nothing, but the film still plays.
+    const onError = () => {
+      if (!video.src.startsWith("blob:")) return;
+      video.src = url;
+      video.load();
+    };
+
     const load = async () => {
       try {
-        const response = await fetch(mobile ? srcMobile : src, { signal: abort.signal });
+        const response = await fetch(url, { signal: abort.signal });
         if (!response.ok) return;
         objectUrl = URL.createObjectURL(await response.blob());
-        video.addEventListener("loadeddata", onLoaded, { once: true });
-        // The bytes are already in memory: let the element read all of them now, so
-        // no seek ever waits and the page settles to network idle.
+        video.addEventListener("loadedmetadata", onMetadata, { once: true });
+        video.addEventListener("error", onError);
+        // The bytes are already in memory, so the element may read ahead freely.
         video.preload = "auto";
         video.src = objectUrl;
         video.load();
@@ -146,7 +179,7 @@ export function ScrollFilm({
     else window.addEventListener("load", start, { once: true });
     window.addEventListener("scroll", schedule, { passive: true });
     window.addEventListener("resize", schedule);
-    window.addEventListener("touchstart", prime, { once: true, passive: true });
+    window.addEventListener("touchstart", prime, { passive: true });
     schedule();
 
     return () => {
@@ -156,16 +189,24 @@ export function ScrollFilm({
       window.removeEventListener("scroll", schedule);
       window.removeEventListener("resize", schedule);
       window.removeEventListener("touchstart", prime);
-      video.removeEventListener("loadeddata", onLoaded);
-      if (objectUrl) URL.revokeObjectURL(objectUrl);
+      video.removeEventListener("loadedmetadata", onMetadata);
+      video.removeEventListener("error", onError);
+      video.removeEventListener("seeked", reveal);
+      // Back to the poster until the next clip is in: a revoked source would freeze the stage.
+      root.removeAttribute("data-film-ready");
+      if (objectUrl) {
+        video.removeAttribute("src");
+        video.load();
+        URL.revokeObjectURL(objectUrl);
+      }
     };
-  }, [src, srcMobile, stills, beats, duration]);
+  }, [src, srcMobile, stills, beats, duration, portrait]);
 
   return (
     <div ref={rootRef} className={styles.film} data-film-root="">
       <div ref={stageRef} className={styles.stage} data-film-stage="" aria-hidden="true">
         <picture>
-          <source media="(max-width: 860px)" srcSet={posterMobile} />
+          <source media={PORTRAIT} srcSet={posterMobile} />
           <img src={poster} alt="" className={styles.media} fetchPriority="high" />
         </picture>
         <video
