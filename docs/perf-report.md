@@ -237,3 +237,71 @@ The plan's rule (keep the static `h1` if LCP with `KineticText` is more than 50 
 ### Ideas descartadas
 
 None beyond the spec's §11 list so far: no effect has been reverted by a perf gate. The hero `KineticText` is the candidate if its CLS cannot be brought under 0.05.
+
+## Landing con película de scroll (`feat/disruptive-redesign`, 2026-10-09)
+
+Replaces the "Blueprint" Home measured in the CP2 section above, which Erick rejected. Same machine, same day and same Lighthouse 13.5.0 setup as `base-lh13`; local `next start`, median of 3. The Home rows are from the final commit (`landing-final-lh13`); the other four pages were measured one commit earlier (`landing-lh13`), before a review pass that did not touch them.
+
+### Lighthouse 13: branch vs `main`
+
+| Page | FF | `main` `base-lh13` (Perf / A11y / LCP / CLS / TBT / JS / Total) | Branch `landing-lh13` |
+|---|---|---|---|
+| home | mobile | 82 / 100 / 4.62 s / 0.026 / 55 ms / 349 KB / 729 KB | 85 / 100 / 4.33 s / 0.000 / 57 ms / 352 KB / 10504 KB |
+| home | desktop | 99 / 100 / 0.98 s / 0.016 / 0 ms / 349 KB / 734 KB | 100 / 100 / 0.66 s / 0.001 / 0 ms / 352 KB / 12624 KB |
+| about | mobile | 74 / 98 / 4.37 s / 0.197 / 54 ms / 347 KB / 792 KB | 86 / 98 / 4.13 s / 0.045 / 52 ms / 351 KB / 746 KB |
+| about | desktop | 99 / 98 / 0.89 s / 0.003 / 0 ms / 347 KB / 788 KB | 99 / 98 / 0.83 s / 0.026 / 0 ms / 351 KB / 743 KB |
+| work | mobile | 77 / 98 / 5.55 s / 0.001 / 58 ms / 349 KB / 959 KB | 80 / 98 / 5.30 s / 0.000 / 61 ms / 353 KB / 917 KB |
+| work | desktop | 98 / 98 / 1.10 s / 0.000 / 0 ms / 349 KB / 969 KB | 98 / 98 / 1.10 s / 0.000 / 0 ms / 353 KB / 963 KB |
+| blog | mobile | 84 / 98 / 4.36 s / 0.001 / 60 ms / 352 KB / 607 KB | 86 / 98 / 4.13 s / 0.000 / 49 ms / 356 KB / 598 KB |
+| blog | desktop | 99 / 98 / 0.88 s / 0.001 / 0 ms / 352 KB / 606 KB | 99 / 98 / 0.83 s / 0.000 / 0 ms / 356 KB / 596 KB |
+| gallery | mobile | 81 / 98 / 4.66 s / 0.000 / 75 ms / 347 KB / 626 KB | 83 / 98 / 4.59 s / 0.000 / 54 ms / 351 KB / 597 KB |
+| gallery | desktop | 98 / 98 / 1.12 s / 0.000 / 0 ms / 347 KB / 962 KB | 98 / 98 / 1.12 s / 0.011 / 0 ms / 351 KB / 1021 KB |
+
+Budget agreed for this work (no page worse than `main` by more than 3 Perf points or 0.3 s of LCP; CLS < 0.05; A11y ≥ 95; TBT < 200 ms): **met on all ten rows.** No page is worse than `main` on Perf or LCP. The Home's CLS regression from the previous direction (0.110, word-split headline) is gone: the hero heading is plain text again.
+
+**The cost is page weight on Home: 10.5 MB on mobile and 12.6 MB on desktop, against 0.7 MB on `main`.** That is the film (10.2 MB portrait, 12.3 MB landscape). It is requested after `load`, so it does not hold back LCP, and it is never requested under reduced motion, on the lite device tier, with Save-Data or on a connection the browser reports as 2g/3g (Chromium only). Everyone else downloads it on every visit to the Home, whether or not they scroll. Not measured: real mobile networks, and the Vercel Preview (Deployment Protection).
+
+The local numbers stay below production's for the reason given above: Windows builds emit no font preloads.
+
+### First Load JS (`next build`)
+
+| Route | `main` | Branch | Δ |
+|---|---|---|---|
+| `/` | 312 kB | 314 kB | +2 kB |
+| `/about` | 275 kB | 275 kB | 0 |
+| `/work` | 310 kB | 310 kB | 0 |
+| `/blog/[slug]` | 313 kB | 312 kB | −1 kB |
+| `/gallery` | 286 kB | 286 kB | 0 |
+
+### What moves, and how
+
+| Effect | Technique | Notes |
+|---|---|---|
+| Film scrubbed by scroll | `video.currentTime` set from the section crossing the top of the viewport; clip fetched once and played from a Blob, with the plain URL as a fallback where a Blob will not play (Playwright's WebKit) | One rAF per scroll frame, seeks coalesced while the decoder is busy |
+| Section copy in and out | CSS `view-timeline` on each section, `transform` and `opacity` | Static in browsers without scroll timelines |
+| Tagline word by word | CSS `view-timeline`, per-word `animation-range` | IntersectionObserver fallback |
+| Benefit figures | `DecodeText` scramble on entry | Skipped under reduced motion |
+| Cursor glow | `SpotlightBackground`, restored from production | A permanent rAF loop, as in production today |
+| Scroll reveals | CSS `view()` timeline; blur on the full tier only | Entry range capped at 30vh so tall blocks are sharp at load |
+
+### Security
+
+Headers are identical to `main` except one directive: `media-src 'self'` became `media-src 'self' blob:`, approved by Erick for the in-memory film. `node scripts/quality/csp-check.mjs`: 0 CSP violations and 0 console errors over 15 page loads (5 routes on Chromium desktop, Chromium mobile and Firefox). WebKit over https is still unchecked (Preview behind Deployment Protection).
+
+### Ideas descartadas
+
+| Idea | Motivo |
+|---|---|
+| Dirección «Blueprint → Live System» completa (retícula, riel con nodo, marcos, índices) | Erick: se ve básica, fría y demasiado técnica |
+| Titular partido en palabras (`KineticText`) en el hero | CLS 0.110 en móvil por el cambio de fuente; ahora es texto plano |
+| Nav en píldora con menú hamburguesa | Erick prefiere la barra con iconos del sitio actual |
+| Fondos planos sin textura | Erick prefiere el fondo de puntos y la luz que sigue al mouse |
+| Cifras en fuente monoespaciada | Erick: se ven planas |
+| Recorte central del video en el teléfono | Dejaba al sujeto fuera de cuadro; ahora el encuadre sigue cada plano |
+| Motor de `scroll-world` tal cual y sus escenas generadas con IA | Su texto se genera con JS (malo para SEO y LCP) y las escenas cuestan dinero; se portó solo la técnica de scrub |
+
+### Not verified
+
+- A real iPhone or Mac Safari. Playwright's WebKit refuses the Blob URL and plays the film through the plain-URL fallback; whether real Safari takes the Blob or the fallback is unknown.
+- The Vercel Preview (Deployment Protection): no Lighthouse and no CSP check over https there.
+- Real mobile networks. The 10 to 12 MB film is the one number here that a local run cannot judge.
