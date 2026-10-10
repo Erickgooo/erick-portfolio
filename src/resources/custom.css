@@ -94,10 +94,19 @@
   --brand-on-solid-strong: #f4f5f7;
 }
 
-/* The header is a fixed floating pill (24px offset + 48px tall), so pages
-   reserve room above their content instead of the header taking flow space. */
-.main-content-wrapper {
-  padding-top: 96px !important;
+/* The nav bar is fixed (top on desktop, bottom on phones), so pages reserve
+   room for it instead of the bar taking flow space: 72px of bar plus breathing
+   room above the content on desktop, and clearance over the bottom bar on phones. */
+@media (min-width: 769px) {
+  .main-content-wrapper {
+    padding-top: 104px !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .main-content-wrapper {
+    padding-bottom: 96px !important;
+  }
 }
 
 /* The home film is full bleed and starts under the header. */

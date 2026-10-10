@@ -1,4 +1,5 @@
 import { FilmSection } from "@/components/film/FilmSection";
+import { DecodeText } from "@/components/motion/DecodeText";
 import { landing } from "@/resources/landing";
 import { isProtectedPath } from "@/resources/protectedRoutes";
 import Link from "next/link";
@@ -33,7 +34,7 @@ export function Argument() {
             <div className={styles.benefit} data-benefit="">
               <p className={styles.figure}>
                 <span className={styles.figureValue} data-benefit-figure="">
-                  {benefit.figure}
+                  <DecodeText value={benefit.figure} className={styles.figureDecode} />
                 </span>
                 <span className={styles.figureUnit}>{benefit.unit}</span>
               </p>

@@ -4,6 +4,13 @@ $ease: var(--ease-fluid);
   width: 100%;
 }
 
+/* Phones have the nav bar fixed at the bottom; keep the last block clear of it. */
+@media (max-width: 768px) {
+  .home {
+    padding-bottom: 96px;
+  }
+}
+
 .hero {
   display: grid;
   gap: 24px;
@@ -92,10 +99,11 @@ $ease: var(--ease-fluid);
 }
 
 .statValue {
-  font-family: var(--font-code), monospace;
-  font-size: 1.5rem;
-  line-height: 2rem;
-  font-weight: 600;
+  font-family: var(--font-heading), sans-serif;
+  font-size: 1.875rem;
+  line-height: 2.25rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
   font-variant-numeric: tabular-nums;
 }
 
@@ -191,20 +199,30 @@ $ease: var(--ease-fluid);
   margin: 0;
 }
 
+/* The figure is the loudest thing in its section: display face, bold, as large
+   as the scale goes, lit by the brand glow. */
 .figureValue {
-  font-family: var(--font-code), monospace;
-  font-size: 3.75rem;
+  font-family: var(--font-heading), sans-serif;
+  font-size: 6rem;
   line-height: 1;
-  font-weight: 600;
+  font-weight: 700;
+  letter-spacing: -0.04em;
   font-variant-numeric: tabular-nums;
-  /* The Cobalto text step for dark surfaces (brand-700): the exact #2d5bff is too dim over footage. */
-  color: #6688ff;
+  color: #ffffff;
+  text-shadow: 0 0 48px rgba(45, 91, 255, 0.9), 0 0 16px rgba(102, 136, 255, 0.5);
+}
+
+/* DecodeText defaults to the mono face; the figure keeps the display one. */
+.figureValue .figureDecode {
+  font-family: inherit;
 }
 
 .figureUnit {
-  font-size: 0.875rem;
-  line-height: 1.25rem;
-  color: #c7ccd1;
+  font-size: 1.125rem;
+  line-height: 1.75rem;
+  font-weight: 600;
+  /* The Cobalto text step for dark surfaces (brand-700): the exact #2d5bff is too dim over footage. */
+  color: #6688ff;
 }
 
 .benefitTitle {
@@ -313,7 +331,7 @@ $ease: var(--ease-fluid);
   }
 
   .figureValue {
-    font-size: 6rem;
+    font-size: 8rem;
   }
 
   .benefitTitle {
@@ -331,8 +349,8 @@ $ease: var(--ease-fluid);
   }
 
   .statValue {
-    font-size: 1.875rem;
-    line-height: 2.25rem;
+    font-size: 2.25rem;
+    line-height: 2.5rem;
   }
 }
 

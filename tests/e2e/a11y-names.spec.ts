@@ -9,10 +9,11 @@ const { defaultBrowserType: _defaultBrowserType, ...pixel7 } = devices["Pixel 7"
 
 test.describe("mobile nav", () => {
   test.use({ ...pixel7 });
-  test("the home link and the menu button have accessible names", async ({ page }) => {
+  test("icon-only nav links have accessible names", async ({ page }) => {
     await page.goto("/about");
-    await expect(page.getByRole("link", { name: "Erick Mahecha — Home" })).toBeVisible();
-    await expect(page.getByRole("button", { name: "Open menu" })).toBeVisible();
+    for (const name of ["About", "Projects", "Blog", "Visual Work"]) {
+      await expect(page.getByRole("link", { name, exact: true })).toBeVisible();
+    }
   });
 });
 

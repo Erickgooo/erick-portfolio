@@ -144,6 +144,41 @@ test("the argument is in the server HTML", async ({ request }) => {
   expect(html).toContain("How I work");
 });
 
+test("the cursor glow also follows the pointer over the film", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== "chromium", "one mouse-driven engine is enough");
+  await page.goto("/");
+  await introDone(page);
+  await page.mouse.move(520, 300);
+  const x = () =>
+    page.evaluate(() =>
+      Number.parseFloat(
+        (
+          document.querySelector("[data-film-stage] [data-spotlight-target]") as HTMLElement
+        ).style.getPropertyValue("--x"),
+      ),
+    );
+  await expect.poll(async () => Math.abs((await x()) - 520) < 4, { timeout: 5000 }).toBe(true);
+});
+
+test("benefit figures are set in the display face at display size", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== "chromium", "desktop sizes");
+  await page.goto("/");
+  const style = await page
+    .locator("[data-benefit-figure]")
+    .first()
+    .evaluate((el) => {
+      const cs = getComputedStyle(el);
+      return {
+        family: cs.fontFamily,
+        size: Number.parseFloat(cs.fontSize),
+        weight: Number(cs.fontWeight),
+      };
+    });
+  expect(style.family).not.toContain("Mono");
+  expect(style.size).toBeGreaterThanOrEqual(128);
+  expect(style.weight).toBeGreaterThanOrEqual(700);
+});
+
 const mp4Requests = (page: Page) => {
   const urls: string[] = [];
   page.on("request", (request) => {
