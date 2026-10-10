@@ -6,11 +6,12 @@
 
 ## 1. Qué se construye
 
-La Home deja de ser una landing SaaS sobre un video apagado. El video del escritorio de Erick corre a sangre y **sin nada encima**; entre plano y plano sube una **tarjeta negra** que nombra un puesto del departamento de marketing y lo que Erick hizo en él. El resto del sitio adopta los mismos tokens, la misma tipografía y ningún efecto: páginas tranquilas donde manda el contenido.
+La Home deja de ser una landing SaaS sobre un video apagado. El video del escritorio de Erick corre a sangre y **sin nada encima**; entre plano y plano sube una **tarjeta opaca del color de la página** (blanca en modo día, negra en modo noche) que nombra un puesto del departamento de marketing y lo que Erick hizo en él. El resto del sitio adopta los mismos tokens, la misma tipografía y ningún efecto: páginas tranquilas donde manda el contenido.
 
 | Decisión | Valor | Quién la tomó |
 | --- | --- | --- |
-| Dirección de la Home | C, «Departamento de uno», con tarjetas negras opacas | Erick (2026-10-10; descartó la variante C2 con el video detrás) |
+| Dirección de la Home | C, «Departamento de uno», con tarjetas opacas | Erick (2026-10-10; descartó la variante C2 con el video detrás) |
+| Color de las tarjetas y de la banda del héroe | El de la página en cada tema: `#f4f5f7` en modo día, `#000000` en modo noche | Erick (2026-10-10: «en modo día las tarjetas deberían ser blancas») |
 | Elemento firma | El video que avanza con el scroll. Es lo único audaz del sitio | Erick (brief) |
 | Se conserva | Nombre, logo y favicon, un Cobalto reconocible | Erick (brief) |
 | Acción única | «Book a 30 minute call» → `about.calendar.link` | Erick (decisión anterior, se mantiene) |
@@ -41,7 +42,7 @@ Reglas:
 - **Cobalto significa dos cosas:** la acción principal (relleno del botón) y el estado del video (barra de progreso). En ningún otro lugar: ni en texto corrido, ni en chips, ni en bordes, ni en sombras.
 - **Los enlaces se distinguen por subrayado,** no por color. En hover pueden tomar `#2549cb` (claro) o `#a6baff` (oscuro).
 - **Ningún texto por debajo de 4.5:1** (3:1 desde 24 px, o 18.66 px en negrita) en ninguna página ni tema.
-- Sobre el video de la Home el texto solo va sobre negro opaco. No hay texto sobre fotogramas, salvo las etiquetas de la nav, que llevan su propio degradado (§3.2).
+- Sobre el video de la Home el texto solo va sobre la superficie opaca del tema (la banda del héroe y las tarjetas). No hay texto sobre fotogramas, salvo las etiquetas de la nav, que llevan su propio degradado (§3.2).
 
 ### 2.2 Tipografía
 
@@ -85,8 +86,8 @@ Intro de 5 s, fondo de puntos, brillo que sigue al cursor, `--glow-border`, píl
 
 | # | Sección | Fondo | Contenido |
 | --- | --- | --- | --- |
-| 1 | Héroe | Video a sangre; banda negra pegada al borde inferior de la primera pantalla | h1, línea de autor, CTA |
-| 2–11 | Cinco tarjetas alternadas con cinco tramos de video limpio | Tarjeta: negro `#000000` opaco, alto mínimo de una pantalla. Tramo: el video, sin nada | Tarjeta: h2 con el puesto, una frase, enlace al caso |
+| 1 | Héroe | Video a sangre; banda opaca del color de la página pegada al borde inferior de la primera pantalla | h1, línea de autor, CTA |
+| 2–11 | Cinco tarjetas alternadas con cinco tramos de video limpio | Tarjeta: superficie de la página (`--page-background`), opaca, alto mínimo de una pantalla. Tramo: el video, sin nada | Tarjeta: h2 con el puesto, una frase, enlace al caso |
 | 12 | Trabajo | Superficie del tema | Los 6 proyectos públicos más recientes: imagen 16:9, título, resultado si existe. Enlace a `/work` |
 | 13 | Equipos que contratan | Superficie del tema | Título, una frase, CV y About |
 | 14 | Preguntas | Superficie del tema | `<details>` nativos y el JSON-LD `FAQPage` |
@@ -110,6 +111,7 @@ La sección de newsletter (`Mailchimp`) sale de la Home: está desactivada y sol
 - **Alto de scroll:** héroe 175 % de la pantalla; tramos limpios 125 % (el último 160 %); tarjetas 100 % como mínimo.
 - **Velo:** 0 en reposo y 0.55 durante los destellos del montaje (los intervalos de `FILM_FLASHES`).
 - **Degradado bajo la nav:** 132 px, de negro al 74 % a transparente, dentro del escenario, para las etiquetas de lugar y hora (14 px, blancas). Peor caso calculado con video blanco: 5.33:1.
+- **Etiquetas de la nav y tema claro:** sobre el video las etiquetas de lugar y hora son blancas en los dos temas (regla actual de `custom.css`). Cuando una tarjeta clara pasa bajo la nav, vuelven al color del tema: `ScrollFilm` marca `html[data-nav-over-card]` mientras una superficie `[data-opaque]` cubre la línea de las etiquetas, y la regla de `custom.css` deja de aplicarse. Sin JS el primer fotograma es correcto, porque arriba siempre hay video. En teléfonos la barra va abajo con su propio fondo y no necesita nada.
 - **Barra de progreso:** 3 px en el borde inferior del escenario, Cobalto, `scaleX` según el tiempo del video.
 - **Peso:** los archivos de video no cambian (`tests/unit/filmBudget.spec.ts`).
 - **LCP:** el póster (`<img fetchpriority="high">`) y el h1 vienen en el HTML del servidor. Nada del héroe espera a JS ni a una animación.
@@ -149,6 +151,7 @@ Tell me where your funnel leaks.
 ### 3.4 Accesibilidad de la Home
 
 - Un solo h1; cada tarjeta es una `<section>` con su h2.
+- Texto de la banda y de las tarjetas con los tokens de contenido: 17.94:1 (día) y 19.25:1 (noche); línea de autor con el token secundario: 7.44:1 y 9.31:1.
 - Los tramos de video limpio no tienen contenido y van `aria-hidden`.
 - El FAQ funciona sin JavaScript y con teclado.
 - En teléfonos la nav va abajo: la banda del héroe y el último bloque dejan libre ese espacio.
