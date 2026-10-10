@@ -113,6 +113,43 @@ test("the glow follows the pointer", async ({ page }, testInfo) => {
   await expect.poll(async () => Math.abs((await x()) - 300) < 4, { timeout: 5000 }).toBe(true);
 });
 
+test("the glow goes idle once it has caught up, and wakes on the next move", async ({
+  page,
+}, testInfo) => {
+  test.skip(testInfo.project.name !== "chromium", "one mouse-driven engine is enough");
+  await page.goto("/about");
+  const x = () =>
+    page.evaluate(() =>
+      Number.parseFloat(
+        (document.querySelector("[data-spotlight]") as HTMLElement).style.getPropertyValue("--x"),
+      ),
+    );
+  await expect.poll(async () => Number.isFinite(await x())).toBe(true);
+  await page.mouse.move(300, 420);
+  await expect.poll(async () => Math.abs((await x()) - 300) < 4, { timeout: 5000 }).toBe(true);
+  // The glow eases in over about 1.7 s from this far away; after that a resting
+  // pointer must cost nothing per frame.
+  await page.waitForTimeout(1500);
+  const writes = await page.evaluate(
+    () =>
+      new Promise<number>((resolve) => {
+        const el = document.querySelector("[data-spotlight]") as HTMLElement;
+        let count = 0;
+        const observer = new MutationObserver((records) => {
+          count += records.length;
+        });
+        observer.observe(el, { attributes: true, attributeFilter: ["style"] });
+        setTimeout(() => {
+          observer.disconnect();
+          resolve(count);
+        }, 500);
+      }),
+  );
+  expect(writes).toBe(0);
+  await page.mouse.move(640, 200);
+  await expect.poll(async () => Math.abs((await x()) - 640) < 4, { timeout: 5000 }).toBe(true);
+});
+
 test("headings and body use Geist; figures use Geist Mono", async ({ page }) => {
   await page.goto("/about");
   const fonts = await page.evaluate(() => {

@@ -1,5 +1,6 @@
 "use client";
 
+import { usePathname } from "next/navigation";
 import { useEffect, useRef } from "react";
 import styles from "./SpotlightBackground.module.scss";
 
@@ -24,6 +25,8 @@ export function SpotlightBackground({
   const target = useRef({ x: 0, y: 0 });
   const current = useRef({ x: 0, y: 0 });
   const frameRef = useRef<number | undefined>(undefined);
+  const wakeRef = useRef<() => void>(() => {});
+  const pathname = usePathname();
 
   useEffect(() => {
     target.current = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
@@ -31,6 +34,7 @@ export function SpotlightBackground({
 
     const handleMouseMove = (e: MouseEvent) => {
       target.current = { x: e.clientX, y: e.clientY };
+      wake();
     };
     // Touch devices have no cursor, so the reveal follows the finger instead —
     // same idea as mousemove, just driven by touchstart/touchmove. Without
@@ -40,14 +44,21 @@ export function SpotlightBackground({
     const handleTouchMove = (e: TouchEvent) => {
       const touch = e.touches[0];
       if (touch) target.current = { x: touch.clientX, y: touch.clientY };
+      wake();
     };
     window.addEventListener("mousemove", handleMouseMove, { passive: true });
     window.addEventListener("touchstart", handleTouchMove, { passive: true });
     window.addEventListener("touchmove", handleTouchMove, { passive: true });
 
+    // The loop runs only while the glow is still catching up: a resting pointer
+    // (and a phone nobody is touching) costs no frames at all.
     const loop = () => {
-      current.current.x += (target.current.x - current.current.x) * 0.08;
-      current.current.y += (target.current.y - current.current.y) * 0.08;
+      frameRef.current = undefined;
+      const dx = target.current.x - current.current.x;
+      const dy = target.current.y - current.current.y;
+      const settled = Math.abs(dx) < 0.1 && Math.abs(dy) < 0.1;
+      current.current.x = settled ? target.current.x : current.current.x + dx * 0.08;
+      current.current.y = settled ? target.current.y : current.current.y + dy * 0.08;
       const x = `${current.current.x}px`;
       const y = `${current.current.y}px`;
       // The page-wide layer sits behind the content, so the home film (an opaque,
@@ -58,17 +69,29 @@ export function SpotlightBackground({
         el.style.setProperty("--x", x);
         el.style.setProperty("--y", y);
       }
-      frameRef.current = requestAnimationFrame(loop);
+      if (!settled) wake();
     };
-    frameRef.current = requestAnimationFrame(loop);
+    const wake = () => {
+      if (frameRef.current === undefined) frameRef.current = requestAnimationFrame(loop);
+    };
+    wakeRef.current = wake;
+    wake();
 
     return () => {
       window.removeEventListener("mousemove", handleMouseMove);
       window.removeEventListener("touchstart", handleTouchMove);
       window.removeEventListener("touchmove", handleTouchMove);
-      if (frameRef.current) cancelAnimationFrame(frameRef.current);
+      if (frameRef.current !== undefined) cancelAnimationFrame(frameRef.current);
+      frameRef.current = undefined;
     };
   }, []);
+
+  // A page that brings its own glow layer (the home film) mounts after the loop
+  // may have gone idle: one more pass hands it the current position.
+  // biome-ignore lint/correctness/useExhaustiveDependencies: pathname is the trigger, not an input
+  useEffect(() => {
+    wakeRef.current();
+  }, [pathname]);
 
   return (
     <div
