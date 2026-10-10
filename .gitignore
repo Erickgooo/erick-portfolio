@@ -57,3 +57,6 @@ security-audit.local.md
 # local agent state: personal permission allowlists and nested worktrees
 /.claude/settings.local.json
 /.claude/worktrees/
+
+# design review captures (regenerate with scripts/design/capture.mjs)
+/docs/design/screens/
