@@ -1,7 +1,8 @@
-import { CallToAction, Mailchimp } from "@/components";
+import { Mailchimp } from "@/components";
 import { ScrollFilm } from "@/components/film/ScrollFilm";
 import { FILM_BEATS, FILM_DURATION } from "@/components/film/filmMap";
 import { Argument } from "@/components/landing/Argument";
+import { Closing } from "@/components/landing/Closing";
 import { Hero } from "@/components/landing/Hero";
 import { Tagline } from "@/components/landing/Tagline";
 import styles from "@/components/landing/landing.module.scss";
@@ -46,8 +47,8 @@ export default function Home() {
         <Tagline />
         <Argument />
       </ScrollFilm>
+      <Closing />
       <div className={styles.flat}>
-        <CallToAction />
         <Mailchimp />
       </div>
     </div>

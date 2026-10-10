@@ -1,7 +1,7 @@
 import { expect, test } from "./fixtures";
 
 const cta = (page: import("@playwright/test").Page) =>
-  page.locator("[data-cta-magnetic]").getByRole("link", { name: "Schedule a call" });
+  page.locator("[data-cta-magnetic]").getByRole("link", { name: "Book a 30 minute call" });
 
 test("magnetic CTA moves at most 6px toward the pointer on desktop", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name === "mobile-chromium", "fine-pointer check");
@@ -9,7 +9,8 @@ test("magnetic CTA moves at most 6px toward the pointer on desktop", async ({ pa
   await page.goto("/");
   await page.waitForTimeout(5500); // intro overlay blocks pointer events
   const link = cta(page);
-  await link.scrollIntoViewIfNeeded();
+  // Instant, not smooth: the CTA now sits under a long film and the box must be final.
+  await link.evaluate((el) => el.scrollIntoView({ block: "center", behavior: "instant" }));
   const box = await link.boundingBox();
   if (!box) throw new Error("no CTA");
   await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
@@ -33,7 +34,7 @@ test.describe("touch devices", () => {
     await page.goto("/");
     await page.waitForTimeout(5500);
     const link = cta(page);
-    await link.scrollIntoViewIfNeeded();
+    await link.evaluate((el) => el.scrollIntoView({ block: "center", behavior: "instant" }));
     await link.hover();
     const t = await page
       .locator("[data-cta-magnetic]")

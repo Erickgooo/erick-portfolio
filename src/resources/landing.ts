@@ -58,4 +58,54 @@ export const landing = {
       { name: "Run", text: "I operate it, measure it and keep improving it." },
     ],
   },
+  proof: { title: "Recent work", all: "See all projects" },
+  hiring: {
+    title: "Hiring for a growth role?",
+    text: "I lead growth and operations at Incentiva Group today. Before that I was the first marketing hire at Quick Metal Shop and built the function from zero.",
+    resume: "Download my resume",
+    about: "More about me",
+  },
+  faq: {
+    title: "Questions founders ask",
+    items: [
+      {
+        question: "What exactly do you do?",
+        answer:
+          "I build and run complete growth systems: brand identity, paid media, SEO automation, AI content pipelines, CRM and the custom software that connects them.",
+      },
+      {
+        question: "Who do you work with?",
+        answer:
+          "Founders and small teams. So far in construction, food and retail, for companies like Quick Metal Shop, Dakoma Roofing and Artesa Panadería.",
+      },
+      {
+        question: "Do you work alone?",
+        answer:
+          "I run projects from start to finish myself, with an AI stack that lets one person produce at agency scale. When a project needs more hands, the team is credited on its case study.",
+      },
+      {
+        question: "Which tools do you use?",
+        answer:
+          "Higgsfield and Google Veo for video, Claude, Gemini and ChatGPT for orchestration, Soro AI for SEO, and Zapier, Kommo CRM and Bitrix24 for operations.",
+      },
+      {
+        question: "How fast can you start showing results?",
+        answer:
+          "It depends on where you start. At Quick Metal Shop the brand manual was done in the first week, and a trade show app went from idea to deployed in 48 hours.",
+      },
+      {
+        question: "Where are you based and what languages do you work in?",
+        answer: "Medellín, Colombia, on Bogotá time. I work in Spanish and English.",
+      },
+      {
+        question: "What happens on the call?",
+        answer:
+          "It takes 30 minutes. You tell me where the funnel leaks and I tell you what I would automate first. No deck and no commitment.",
+      },
+    ],
+  },
+  finalCta: {
+    title: "Let's build the growth system your company doesn't have yet.",
+    text: "30 minutes, no deck. Tell me where the funnel leaks and I'll tell you what I'd automate first.",
+  },
 } as const;

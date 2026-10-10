@@ -301,6 +301,257 @@ $ease: var(--ease-fluid);
   color: #dcdddf;
 }
 
+/* ─── Under the film: the page's own background and theme tokens ─────── */
+.closing {
+  box-sizing: border-box;
+  display: grid;
+  gap: 96px;
+  width: 100%;
+  max-width: 1120px;
+  margin-inline: auto;
+  padding: 96px 24px 0;
+  color: var(--neutral-on-background-strong);
+}
+
+.block {
+  display: grid;
+  gap: 32px;
+  justify-items: start;
+}
+
+.blockTitle {
+  margin: 0;
+  font-family: var(--font-heading), sans-serif;
+  font-size: 1.875rem;
+  line-height: 2.25rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+.blockText {
+  max-width: 680px;
+  margin: 0;
+  font-size: 1.125rem;
+  line-height: 1.75rem;
+  color: var(--neutral-on-background-weak);
+  text-wrap: pretty;
+}
+
+.cards {
+  display: grid;
+  gap: 24px;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.cardItem {
+  display: grid;
+}
+
+.card {
+  display: grid;
+  height: 100%;
+  border: 1px solid var(--neutral-alpha-weak);
+  border-radius: 16px;
+  background: var(--surface-background);
+  overflow: hidden;
+  transition: border-color 700ms $ease, transform 700ms $ease;
+}
+
+.card:hover {
+  border-color: var(--brand-alpha-strong);
+  transform: translateY(-4px);
+}
+
+.home .cardLink {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  color: inherit;
+  text-decoration: none;
+}
+
+.home .cardLink:focus-visible {
+  outline: 2px solid var(--cobalt);
+  outline-offset: -2px;
+}
+
+.cardMedia {
+  position: relative;
+  display: block;
+  aspect-ratio: 16 / 9;
+  background: var(--neutral-alpha-weak);
+}
+
+.cardImage {
+  object-fit: cover;
+}
+
+.cardBody {
+  display: grid;
+  gap: 8px;
+  align-content: start;
+  padding: 24px;
+}
+
+/* Fixed height whether or not the project has a metric, so cards line up. */
+.cardMetric {
+  display: block;
+  min-height: 1.25rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: var(--brand-on-background-weak);
+}
+
+.cardTitle {
+  font-family: var(--font-heading), sans-serif;
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+  font-weight: 600;
+  color: var(--neutral-on-background-strong);
+  text-wrap: balance;
+}
+
+.cardSummary {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  overflow: hidden;
+  font-size: 1rem;
+  line-height: 1.5rem;
+  color: var(--neutral-on-background-weak);
+}
+
+/* Text links in the closing sections: never styled as buttons, so the page keeps one CTA. */
+.home .textLink {
+  font-size: 1rem;
+  line-height: 1.5rem;
+  font-weight: 600;
+  color: var(--neutral-on-background-strong);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
+  transition: color 700ms $ease;
+}
+
+.home .textLink:hover {
+  color: var(--brand-on-background-weak);
+}
+
+.home .textLink:focus-visible {
+  outline: 2px solid var(--cobalt);
+  outline-offset: 2px;
+}
+
+.hiring {
+  display: grid;
+  gap: 24px;
+  width: 100%;
+  padding: 32px 0;
+  border-top: 1px solid var(--neutral-alpha-weak);
+  border-bottom: 1px solid var(--neutral-alpha-weak);
+}
+
+.hiring > div {
+  display: grid;
+  gap: 12px;
+}
+
+.hiringLinks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  margin: 0;
+}
+
+.faq {
+  display: grid;
+  width: 100%;
+  max-width: 800px;
+}
+
+.faqItem {
+  border-bottom: 1px solid var(--neutral-alpha-weak);
+}
+
+.faqQuestion {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 24px 0;
+  font-family: var(--font-heading), sans-serif;
+  font-size: 1.125rem;
+  line-height: 1.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  list-style: none;
+  transition: color 700ms $ease;
+}
+
+.faqQuestion::-webkit-details-marker {
+  display: none;
+}
+
+/* A plus that turns into a cross when the answer is open. */
+.faqQuestion::after {
+  content: "";
+  flex: none;
+  width: 16px;
+  height: 16px;
+  background: linear-gradient(currentColor, currentColor) center / 16px 2px no-repeat,
+    linear-gradient(currentColor, currentColor) center / 2px 16px no-repeat;
+  transition: transform 700ms $ease;
+}
+
+.faqItem[open] .faqQuestion::after {
+  transform: rotate(45deg);
+}
+
+.faqQuestion:hover {
+  color: var(--brand-on-background-weak);
+}
+
+.faqQuestion:focus-visible {
+  outline: 2px solid var(--cobalt);
+  outline-offset: 2px;
+}
+
+.faqAnswer {
+  max-width: 680px;
+  margin: 0;
+  padding: 0 0 24px;
+  font-size: 1rem;
+  line-height: 1.5rem;
+  color: var(--neutral-on-background-weak);
+}
+
+.finalCta {
+  display: grid;
+  gap: 24px;
+  justify-items: center;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 64px 24px;
+  border-radius: 24px;
+  background: var(--surface-background);
+  box-shadow: var(--glow-border);
+  text-align: center;
+}
+
+.finalTitle {
+  max-width: 680px;
+  margin: 0;
+  font-family: var(--font-heading), sans-serif;
+  font-size: 1.875rem;
+  line-height: 2.25rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
 .flat {
   box-sizing: border-box;
   width: 100%;
@@ -344,6 +595,25 @@ $ease: var(--ease-fluid);
     gap: 48px;
   }
 
+  .cards {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .blockTitle {
+    font-size: 2.25rem;
+    line-height: 2.5rem;
+  }
+
+  .hiring {
+    grid-template-columns: 1fr auto;
+    align-items: end;
+  }
+
+  .finalTitle {
+    font-size: 3rem;
+    line-height: 1;
+  }
+
   .stats {
     grid-template-columns: repeat(4, max-content);
   }
@@ -355,6 +625,17 @@ $ease: var(--ease-fluid);
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .card,
+  .faqQuestion,
+  .faqQuestion::after,
+  .home .textLink {
+    transition: none;
+  }
+
+  .card:hover {
+    transform: none;
+  }
+
   .home .cta {
     transition: none;
   }
