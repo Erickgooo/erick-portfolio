@@ -14,6 +14,9 @@ export function isRouteEnabled(pathname: string | null, routes: RoutesConfig): b
   // Rendered by the middleware rewrite for protected routes; never in `routes`.
   if (pathname === "/unauthorized") return true;
 
+  // THROWAWAY: the variants page on the lab branch.
+  if (pathname === "/lab") return true;
+
   if (pathname in routes) {
     return routes[pathname as keyof RoutesConfig];
   }

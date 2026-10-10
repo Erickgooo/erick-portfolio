@@ -1,0 +1,712 @@
+/* THROWAWAY (lab only): three skins over the same markup, chosen by data-variant.
+   Each one changes how the words enter, how big the type is and how each section
+   is composed. Scroll-linked parts use the section's own view timeline
+   (--film-section, defined in FilmSection.module.scss). */
+$ease: cubic-bezier(0.32, 0.72, 0, 1);
+$cobalt: #2d5bff;
+$cobalt-pale: #a6baff;
+
+.lab {
+  width: 100%;
+  color: #ffffff;
+}
+
+/* Wider stage than the Home's 1120px, so display type can run large. */
+.lab :global([data-film-beat]) > div {
+  max-width: 1360px;
+  padding-inline: 32px;
+  padding-top: 128px;
+}
+
+.block {
+  display: grid;
+  gap: 24px;
+  justify-items: start;
+  width: 100%;
+}
+
+.split {
+  display: inline;
+}
+
+.w,
+.wi {
+  display: inline-block;
+}
+
+.eyebrow,
+.label {
+  margin: 0;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  font-weight: 600;
+  color: #c7ccd1;
+}
+
+.h1,
+.h2,
+.h3 {
+  margin: 0;
+  font-family: var(--font-heading), sans-serif;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+}
+
+.sub,
+.body {
+  max-width: 620px;
+  margin: 0;
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+  color: #dcdddf;
+  text-wrap: pretty;
+}
+
+.action {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px;
+}
+
+.lab .cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 24px;
+  border-radius: 9999px;
+  background: $cobalt;
+  color: #ffffff;
+  font-size: 1.125rem;
+  line-height: 1.75rem;
+  font-weight: 600;
+  text-decoration: none;
+  box-shadow: 0 0 0 1px rgba(166, 186, 255, 0.4), 0 0 48px rgba(45, 91, 255, 0.55);
+  transition: transform 700ms $ease, box-shadow 700ms $ease;
+}
+
+.lab .cta:hover {
+  color: #ffffff;
+  transform: translateY(-2px);
+  box-shadow: 0 0 0 1px rgba(166, 186, 255, 0.7), 0 0 72px rgba(45, 91, 255, 0.8);
+}
+
+.ctaArrow {
+  transition: transform 700ms $ease;
+}
+
+.cta:hover .ctaArrow {
+  transform: translateX(4px);
+}
+
+.risk {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: #c7ccd1;
+}
+
+.stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px 48px;
+  margin: 16px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.stats li {
+  display: grid;
+  gap: 4px;
+}
+
+.stats strong {
+  font-family: var(--font-heading), sans-serif;
+  font-size: 2.25rem;
+  line-height: 2.5rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+
+.stats span {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: #c7ccd1;
+}
+
+.figure {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+}
+
+.figureValue {
+  position: relative;
+  font-family: var(--font-heading), sans-serif;
+  font-weight: 700;
+  line-height: 0.9;
+  letter-spacing: -0.05em;
+  font-variant-numeric: tabular-nums;
+}
+
+.figureUnit {
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+  font-weight: 600;
+  color: #c1cfff;
+}
+
+.benefitText {
+  display: grid;
+  gap: 16px;
+  justify-items: start;
+}
+
+.lab .link {
+  font-size: 1.125rem;
+  line-height: 1.75rem;
+  font-weight: 600;
+  color: #ffffff;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
+}
+
+/* ─── Shared scroll choreography ─────────────────────────────────────── */
+@keyframes lab-out {
+  to {
+    opacity: 0;
+    transform: translateY(-48px);
+  }
+}
+
+@keyframes lab-rise {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes hero-rest {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  /* Hero: plays once on load, the words first and the rest after them. */
+  .hero .wi {
+    animation-duration: 1000ms;
+    animation-timing-function: $ease;
+    animation-fill-mode: both;
+    animation-delay: calc(150ms + var(--w) * 55ms);
+  }
+
+  .hero .eyebrow,
+  .hero .sub,
+  .hero .action,
+  .hero .stats {
+    animation: hero-rest 900ms $ease both;
+  }
+
+  .hero .eyebrow {
+    animation-delay: 0ms;
+  }
+
+  .hero .sub {
+    animation-delay: 950ms;
+  }
+
+  .hero .action {
+    animation-delay: 1100ms;
+  }
+
+  .hero .stats {
+    animation-delay: 1250ms;
+  }
+
+  @supports (animation-timeline: view()) {
+    /* Sections: every word is tied to the scroll, arriving while the section comes up. */
+    .scrolly .wi {
+      animation-timing-function: linear;
+      animation-fill-mode: both;
+      animation-timeline: --film-section;
+      animation-range: entry calc(30% + var(--w) / var(--n) * 45%) entry
+        calc(58% + var(--w) / var(--n) * 45%);
+    }
+
+    .scrolly .rise {
+      animation: lab-rise linear both;
+      animation-timeline: --film-section;
+      animation-range: entry 55% entry 100%;
+    }
+
+    .block {
+      animation: lab-out linear forwards;
+      animation-timeline: --film-section;
+      animation-range: exit 15% exit 70%;
+    }
+  }
+}
+
+/* ═══ A · Máscara editorial ═══════════════════════════════════════════
+   Words slide up from behind a mask. Left aligned, very large, calm. */
+@keyframes a-in {
+  from {
+    transform: translateY(112%);
+  }
+  to {
+    transform: none;
+  }
+}
+
+.lab[data-variant="a"] {
+  .w {
+    overflow: clip;
+    padding-bottom: 0.12em;
+    margin-bottom: -0.12em;
+    vertical-align: bottom;
+  }
+
+  .wi {
+    animation-name: a-in;
+  }
+
+  .h1 {
+    max-width: 1180px;
+    font-size: clamp(2.75rem, 6vw, 5.75rem);
+    line-height: 1;
+  }
+
+  .h2 {
+    max-width: 1100px;
+    font-size: clamp(2.25rem, 5.4vw, 5.25rem);
+    line-height: 1.02;
+  }
+
+  .h3 {
+    font-size: clamp(1.875rem, 3.4vw, 3rem);
+    line-height: 1.05;
+  }
+
+  [data-hl] .wi {
+    color: $cobalt-pale;
+  }
+
+  .eyebrow,
+  .label {
+    padding-left: 56px;
+    position: relative;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    font-size: 0.75rem;
+  }
+
+  .eyebrow::before,
+  .label::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 50%;
+    width: 40px;
+    height: 1px;
+    background: currentColor;
+  }
+
+  .stats {
+    width: 100%;
+    max-width: 880px;
+    padding-top: 24px;
+    border-top: 1px solid rgba(255, 255, 255, 0.24);
+    justify-content: space-between;
+  }
+
+  .benefit {
+    grid-template-columns: auto minmax(280px, 1fr);
+    align-items: end;
+    gap: 48px;
+  }
+
+  .figureValue {
+    font-size: clamp(5.5rem, 15vw, 13.5rem);
+    text-shadow: 0 0 80px rgba(45, 91, 255, 0.7);
+  }
+
+  .benefitText {
+    padding-bottom: 24px;
+    border-left: 1px solid rgba(255, 255, 255, 0.24);
+    padding-left: 32px;
+  }
+}
+
+/* ═══ B · Desenfoque centrado ══════════════════════════════════════════
+   Words come out of a blur, one after another. Everything centred. */
+@keyframes b-in {
+  from {
+    opacity: 0;
+    filter: blur(18px);
+    transform: translateY(0.35em) scale(0.92);
+  }
+  to {
+    opacity: 1;
+    filter: blur(0);
+    transform: none;
+  }
+}
+
+.lab[data-variant="b"] {
+  .block {
+    justify-items: center;
+    text-align: center;
+  }
+
+  .wi {
+    animation-name: b-in;
+  }
+
+  .h1 {
+    max-width: 1120px;
+    font-size: clamp(2.5rem, 6.4vw, 6.25rem);
+    line-height: 1.02;
+  }
+
+  .h2 {
+    max-width: 1040px;
+    font-size: clamp(2.25rem, 5vw, 4.75rem);
+    line-height: 1.05;
+  }
+
+  .h3 {
+    font-size: clamp(1.875rem, 3.6vw, 3.25rem);
+    line-height: 1.05;
+  }
+
+  /* Emphasis: a Cobalto marker under the word. */
+  [data-hl] .wi {
+    background: linear-gradient($cobalt, $cobalt) 0 88% / 100% 0.14em no-repeat;
+  }
+
+  .eyebrow,
+  .label {
+    padding: 8px 16px;
+    border: 1px solid rgba(166, 186, 255, 0.5);
+    border-radius: 9999px;
+    background: rgba(45, 91, 255, 0.18);
+    color: #ffffff;
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+  }
+
+  .sub,
+  .body {
+    max-width: 720px;
+  }
+
+  .action {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .stats {
+    justify-content: center;
+    gap: 0;
+    margin-top: 24px;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 24px;
+    background: rgba(10, 10, 12, 0.45);
+    -webkit-backdrop-filter: blur(16px);
+    backdrop-filter: blur(16px);
+  }
+
+  .stats li {
+    padding: 16px 32px;
+    border-left: 1px solid rgba(255, 255, 255, 0.14);
+  }
+
+  .stats li:first-child {
+    border-left: 0;
+  }
+
+  .figureValue {
+    font-size: clamp(7rem, 24vw, 21rem);
+    background: linear-gradient(180deg, #ffffff 30%, #6688ff);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    filter: drop-shadow(0 0 48px rgba(45, 91, 255, 0.75));
+  }
+
+  .figure,
+  .benefitText {
+    justify-items: center;
+  }
+}
+
+/* ═══ C · Póster ═══════════════════════════════════════════════════════
+   Words punch in from oversized. Uppercase, anchored to a corner, with
+   outlined type and glass panels; each section sits somewhere different. */
+@keyframes c-in {
+  from {
+    opacity: 0;
+    filter: blur(8px);
+    transform: scale(1.9);
+  }
+  to {
+    opacity: 1;
+    filter: blur(0);
+    transform: none;
+  }
+}
+
+@keyframes c-fill {
+  from {
+    clip-path: inset(100% 0 0 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+.lab[data-variant="c"] {
+  :global([data-film-beat="hero"]) > div {
+    align-content: end;
+    padding-bottom: 72px;
+  }
+
+  .wi {
+    animation-name: c-in;
+    transform-origin: left bottom;
+  }
+
+  .h1,
+  .h2,
+  .h3 {
+    text-transform: uppercase;
+    font-weight: 700;
+    letter-spacing: -0.04em;
+  }
+
+  .h1 {
+    max-width: 1280px;
+    font-size: clamp(2.75rem, 6.4vw, 6.25rem);
+    line-height: 0.92;
+  }
+
+  .h2 {
+    font-size: clamp(2rem, 3.6vw, 3.5rem);
+    line-height: 0.98;
+  }
+
+  .h3 {
+    font-size: clamp(1.75rem, 2.8vw, 2.75rem);
+    line-height: 1;
+  }
+
+  /* Emphasis: outlined type. */
+  [data-hl] .wi {
+    color: transparent;
+    -webkit-text-stroke: 2px #ffffff;
+  }
+
+  .eyebrow,
+  .label {
+    padding: 4px 12px;
+    background: #ffffff;
+    color: #000000;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-size: 0.75rem;
+  }
+
+  .hero {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: end;
+    column-gap: 48px;
+  }
+
+  .hero .eyebrow,
+  .hero .h1 {
+    grid-column: 1 / -1;
+  }
+
+  .hero .stats {
+    grid-column: 2;
+    grid-row: 3 / span 2;
+    display: grid;
+    grid-template-columns: repeat(2, auto);
+    gap: 24px 40px;
+    margin: 0;
+  }
+
+  /* Statement: a glass panel on the right half. */
+  .statement {
+    justify-self: end;
+    max-width: 640px;
+    padding: 48px;
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 32px;
+    background: rgba(8, 8, 10, 0.5);
+    -webkit-backdrop-filter: blur(24px) saturate(1.4);
+    backdrop-filter: blur(24px) saturate(1.4);
+  }
+
+  /* Benefit: an outlined figure that fills with the scroll, and a glass card. */
+  .benefit {
+    grid-template-columns: auto minmax(280px, 1fr);
+    align-items: end;
+    gap: 40px;
+  }
+
+  .figureValue {
+    font-size: clamp(5.5rem, 15vw, 13.5rem);
+    color: transparent;
+    -webkit-text-stroke: 2px rgba(255, 255, 255, 0.9);
+  }
+
+  .figureValue::after {
+    content: attr(data-value);
+    position: absolute;
+    inset: 0;
+    color: #ffffff;
+    -webkit-text-stroke: 0;
+    text-shadow: 0 0 64px rgba(45, 91, 255, 0.9);
+  }
+
+  .benefitText {
+    padding: 32px;
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 24px;
+    background: rgba(8, 8, 10, 0.5);
+    -webkit-backdrop-filter: blur(24px) saturate(1.4);
+    backdrop-filter: blur(24px) saturate(1.4);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    @supports (animation-timeline: view()) {
+      .figureValue::after {
+        animation: c-fill linear both;
+        animation-timeline: --film-section;
+        animation-range: entry 70% cover 55%;
+      }
+    }
+  }
+}
+
+/* ─── Phones ─────────────────────────────────────────────────────────── */
+@media (max-width: 767px) {
+  .lab :global([data-film-beat]) > div {
+    padding-inline: 20px;
+  }
+
+  .sub,
+  .body {
+    font-size: 1.125rem;
+  }
+
+  .stats {
+    gap: 12px 24px;
+  }
+
+  .stats strong {
+    font-size: 1.5rem;
+    line-height: 2rem;
+  }
+
+  .lab[data-variant="a"] .benefit,
+  .lab[data-variant="c"] .benefit,
+  .lab[data-variant="c"] .hero {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .lab[data-variant="a"] .benefitText {
+    padding-left: 0;
+    border-left: 0;
+  }
+
+  .lab[data-variant="b"] .stats li {
+    padding: 12px 16px;
+  }
+
+  .lab[data-variant="c"] .hero .stats {
+    grid-column: 1;
+    grid-row: auto;
+  }
+
+  .lab[data-variant="c"] .statement {
+    padding: 24px;
+  }
+
+  .lab[data-variant="c"] :global([data-film-beat="hero"]) > div {
+    padding-bottom: 120px;
+  }
+}
+
+/* ─── Variant switcher and tail ──────────────────────────────────────── */
+.switch {
+  position: fixed;
+  left: 50%;
+  top: 72px;
+  z-index: 8;
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  transform: translateX(-50%);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 9999px;
+  background: rgba(8, 8, 10, 0.75);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+}
+
+.lab .switchLink {
+  padding: 8px 16px;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  font-weight: 600;
+  color: #c7ccd1;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.lab .switchLink[aria-current="page"] {
+  background: $cobalt;
+  color: #ffffff;
+}
+
+.switchName {
+  margin-left: 4px;
+}
+
+@media (max-width: 767px) {
+  .switch {
+    top: 12px;
+  }
+
+  /* Phones: just the letters. */
+  .switchName {
+    display: none;
+  }
+
+  .lab .switchLink {
+    padding: 8px 20px;
+  }
+}
+
+.after {
+  display: grid;
+  place-items: center;
+  min-height: 60vh;
+  padding: 96px 24px;
+  color: var(--neutral-on-background-weak);
+  text-align: center;
+}
