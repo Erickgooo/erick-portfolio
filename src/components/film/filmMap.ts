@@ -71,6 +71,20 @@ export function filmTimeAt(beats: FilmBeat[], boxes: SectionBox[], stage = 0): n
   return time;
 }
 
+/**
+ * Id of the beat whose section currently owns the stage: the last mapped
+ * section whose top edge has passed `line` (pixels from the top of the viewport).
+ */
+export function activeBeatId(beats: FilmBeat[], boxes: SectionBox[], line: number): string {
+  let id = beats[0]?.id ?? "";
+  for (const box of boxes) {
+    if (!beats.some((beat) => beat.id === box.id)) continue;
+    if (box.top > line) break;
+    id = box.id;
+  }
+  return id;
+}
+
 /** Opacity of the flat black veil over the film at a given time. */
 export function veilAt(time: number): number {
   return FILM_FLASHES.some(([from, to]) => time >= from && time <= to) ? VEIL_FLASH : VEIL_BASE;

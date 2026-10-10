@@ -197,6 +197,31 @@ test("reduced motion: no video is downloaded and the poster stays", async ({ pag
   await expect(page.locator("[data-film-stage] img")).toBeAttached();
 });
 
+test("reduced motion swaps a still per section", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  const urls = mp4Requests(page);
+  await page.goto("/");
+  await introDone(page);
+  const still = () =>
+    page.evaluate(
+      () => (document.querySelector("[data-film-stage] img") as HTMLImageElement).currentSrc,
+    );
+  expect(await still()).toContain("/images/film/hero");
+  await scrollIntoBeat(page, "benefit-1", 0.2);
+  await expect.poll(still).toContain("/images/film/benefit-1");
+  await scrollIntoBeat(page, "process", 0.2);
+  await expect.poll(still).toContain("/images/film/process");
+  await expect
+    .poll(() =>
+      page.evaluate(() => {
+        const img = document.querySelector("[data-film-stage] img") as HTMLImageElement;
+        return img.complete && img.naturalWidth > 0;
+      }),
+    )
+    .toBe(true);
+  expect(urls).toEqual([]);
+});
+
 test("lite tier: no video is downloaded", async ({ page }) => {
   await page.addInitScript(() => {
     Object.defineProperty(navigator, "hardwareConcurrency", { get: () => 2 });

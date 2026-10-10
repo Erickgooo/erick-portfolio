@@ -40,6 +40,7 @@ export default function Home() {
         srcMobile="/video/home-film-m.mp4"
         poster="/images/film/hero.webp"
         posterMobile="/images/film/hero-m.webp"
+        stills="/images/film"
         beats={FILM_BEATS}
         duration={FILM_DURATION}
       >

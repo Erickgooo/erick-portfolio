@@ -3,6 +3,7 @@ import {
   FILM_BEATS,
   FILM_DURATION,
   type FilmBeat,
+  activeBeatId,
   filmTimeAt,
   veilAt,
 } from "../../src/components/film/filmMap";
@@ -91,4 +92,15 @@ test("sections before the last keep walking their beat over their full height", 
     { id: "tagline", top: 800, height: 2000 },
   ];
   expect(filmTimeAt(beats, boxes, 800)).toBeCloseTo(1.585, 3);
+});
+
+test("the active beat is the last section whose top has passed the given line", () => {
+  const boxes = [
+    { id: "hero", top: -1700, height: 1600 },
+    { id: "tagline", top: -100, height: 2000 },
+    { id: "problem", top: 1900, height: 1200 },
+  ];
+  expect(activeBeatId(beats, boxes, 400)).toBe("tagline");
+  expect(activeBeatId(beats, [{ id: "hero", top: 900, height: 1600 }], 400)).toBe("hero");
+  expect(activeBeatId(beats, [{ id: "unknown", top: -5, height: 100 }], 400)).toBe("hero");
 });

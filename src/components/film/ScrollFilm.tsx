@@ -2,13 +2,15 @@
 
 import { type ReactNode, useEffect, useRef } from "react";
 import styles from "./ScrollFilm.module.scss";
-import { type FilmBeat, type SectionBox, filmTimeAt, veilAt } from "./filmMap";
+import { type FilmBeat, type SectionBox, activeBeatId, filmTimeAt, veilAt } from "./filmMap";
 
 interface ScrollFilmProps {
   src: string;
   srcMobile: string;
   poster: string;
   posterMobile: string;
+  /** Folder holding one still per beat: `<id>.webp` and `<id>-m.webp`. */
+  stills: string;
   beats: FilmBeat[];
   duration: number;
   children: ReactNode;
@@ -19,13 +21,14 @@ interface ScrollFilmProps {
  * child section tagged data-film-beat walks its beat as it crosses the top of
  * the viewport. The clip is fetched once after `load` and played from a Blob,
  * so every seek is instant. Reduced motion and the lite tier never download
- * it — the poster stays, and so does every word of the content.
+ * it: they get one still per section instead, and every word of the content.
  */
 export function ScrollFilm({
   src,
   srcMobile,
   poster,
   posterMobile,
+  stills,
   beats,
   duration,
   children,
@@ -39,12 +42,43 @@ export function ScrollFilm({
     const stage = stageRef.current;
     const video = videoRef.current;
     if (!root || !stage || !video) return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    if (document.documentElement.dataset.fx === "lite") return;
+    const sections = Array.from(root.querySelectorAll<HTMLElement>("[data-film-beat]"));
+    const measure = (): SectionBox[] =>
+      sections.map((el) => {
+        const rect = el.getBoundingClientRect();
+        return { id: el.dataset.filmBeat ?? "", top: rect.top, height: rect.height };
+      });
+
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduce || document.documentElement.dataset.fx === "lite") {
+      // No video: the poster is swapped for the still of whichever section is on stage.
+      const img = stage.querySelector("img");
+      const source = stage.querySelector("source");
+      let shown = beats[0]?.id ?? "";
+      let pending = 0;
+      const swap = () => {
+        pending = 0;
+        const id = activeBeatId(beats, measure(), stage.offsetHeight / 2);
+        if (!img || id === shown) return;
+        shown = id;
+        if (source) source.srcset = `${stills}/${id}-m.webp`;
+        img.src = `${stills}/${id}.webp`;
+      };
+      const queue = () => {
+        if (!pending) pending = requestAnimationFrame(swap);
+      };
+      window.addEventListener("scroll", queue, { passive: true });
+      window.addEventListener("resize", queue);
+      queue();
+      return () => {
+        cancelAnimationFrame(pending);
+        window.removeEventListener("scroll", queue);
+        window.removeEventListener("resize", queue);
+      };
+    }
 
     const coarse = window.matchMedia("(hover: none) and (pointer: coarse)").matches;
     const mobile = coarse || window.matchMedia("(max-width: 860px)").matches;
-    const sections = Array.from(root.querySelectorAll<HTMLElement>("[data-film-beat]"));
     // Coarser steps on phones mean fewer decodes.
     const step = mobile ? 0.02 : 0.008;
     const last = duration - 0.05;
@@ -53,12 +87,6 @@ export function ScrollFilm({
     let ready = false;
     let current = 0;
     let frame = 0;
-
-    const measure = (): SectionBox[] =>
-      sections.map((el) => {
-        const rect = el.getBoundingClientRect();
-        return { id: el.dataset.filmBeat ?? "", top: rect.top, height: rect.height };
-      });
 
     const tick = () => {
       frame = 0;
@@ -131,7 +159,7 @@ export function ScrollFilm({
       video.removeEventListener("loadeddata", onLoaded);
       if (objectUrl) URL.revokeObjectURL(objectUrl);
     };
-  }, [src, srcMobile, beats, duration]);
+  }, [src, srcMobile, stills, beats, duration]);
 
   return (
     <div ref={rootRef} className={styles.film} data-film-root="">
