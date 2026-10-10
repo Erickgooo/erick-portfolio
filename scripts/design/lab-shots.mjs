@@ -38,6 +38,15 @@ const STOPS = {
     { name: "film-2", selector: "[data-lab] section:has(> div > h2):nth-of-type(4)" },
     { name: "after", selector: "[data-lab] ul" },
   ],
+  // C with the film held behind each card: the hero, a card pinned, a card
+  // arriving (its soft edge over the film) and a clean stretch.
+  c2: [
+    { name: "hero", y: 0 },
+    { name: "card", pinned: 1, at: 0.5 },
+    { name: "card-2", pinned: 3, at: 0.5 },
+    { name: "arriving", pinned: 2, at: -0.55 },
+    { name: "film", beat: "after-2", at: 0.45 },
+  ],
 };
 
 const VIEWPORTS = [
@@ -78,6 +87,13 @@ for (const vp of VIEWPORTS) {
       for (const stop of STOPS[id]) {
         const y = await page.evaluate((s) => {
           if (typeof s.y === "number") return s.y;
+          // `pinned`: the nth title card, that far through the scroll it stays pinned for.
+          if (s.pinned) {
+            const card = [...document.querySelectorAll("[data-lab] section:has(h2)")][s.pinned - 1];
+            if (!card) return -1;
+            const box = card.getBoundingClientRect();
+            return box.top + window.scrollY + (box.height - window.innerHeight) * s.at;
+          }
           const el = s.beat
             ? document.querySelector(`[data-film-beat="${s.beat}"]`)
             : document.querySelector(s.selector);

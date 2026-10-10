@@ -134,6 +134,63 @@
   outline-offset: 2px;
 }
 
+/* ─── Variant: no slab. The film darkens behind the words ───────────────
+   The section is a sheet of black at 84% with soft ends, taller than the screen.
+   Its words are pinned in the middle of it, so they only ever sit where the
+   sheet is at full strength: the contrast does not depend on the frame. */
+$dim: rgb(0 0 0 / 0.84);
+$soft: 28vh;
+
+.dim {
+  position: relative;
+  min-height: 170vh;
+  min-height: 170svh;
+  background: linear-gradient(
+    to bottom,
+    rgb(0 0 0 / 0) 0,
+    $dim $soft,
+    $dim calc(100% - #{$soft}),
+    rgb(0 0 0 / 0) 100%
+  );
+  color: #ffffff;
+}
+
+.dimPin {
+  position: sticky;
+  top: 0;
+  display: grid;
+  align-items: center;
+  height: 100vh;
+  height: 100svh;
+}
+
+.band.bandDim {
+  position: relative;
+  padding-top: 148px;
+  background: linear-gradient(to bottom, rgb(0 0 0 / 0) 0, $dim 124px);
+}
+
+.bandDim::after {
+  content: "";
+  position: absolute;
+  inset: 100% 0 auto;
+  height: 124px;
+  background: linear-gradient(to bottom, $dim, rgb(0 0 0 / 0));
+  pointer-events: none;
+}
+
+/* Reduce transparency: back to the opaque card. */
+@media (prefers-reduced-transparency: reduce) {
+  .dim,
+  .band.bandDim {
+    background: #000000;
+  }
+
+  .bandDim::after {
+    display: none;
+  }
+}
+
 @media (min-width: 900px) {
   .band {
     grid-template-columns: minmax(0, 1fr) auto;

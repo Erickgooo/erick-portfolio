@@ -18,6 +18,7 @@ export const DIRECTIONS = [
   { id: "a", name: "Voz en off" },
   { id: "b", name: "Escritorio y libro mayor" },
   { id: "c", name: "Departamento de uno" },
+  { id: "c2", name: "C, con el video detrás" },
 ] as const;
 
 export const labMetadata = {
@@ -50,6 +51,7 @@ export function LabPage({ v, clean = false }: { v?: string; clean?: boolean }) {
       {direction === "a" && <DirectionA />}
       {direction === "b" && <DirectionB />}
       {direction === "c" && <DirectionC />}
+      {direction === "c2" && <DirectionC dim />}
     </div>
   );
 }

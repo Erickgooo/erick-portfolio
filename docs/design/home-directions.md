@@ -183,6 +183,17 @@ Píldoras, paneles de vidrio, degradados en texto, palabras que salen de un dese
 
 **Por qué es de Erick y qué descarté.** Su propuesta de valor, hacer el trabajo de un departamento, se vuelve la estructura: cada tarjeta es un puesto que él ocupó, con lo que hizo en ese puesto. Es la dirección donde el video se ve más limpio. Descarté las tarjetas en Cobalto a pantalla completa (un segundo elemento audaz que competía con el video), numerar los puestos 01 a 05 (no son una secuencia) y que las tarjetas siguieran el tema claro, porque las etiquetas blancas de la nav desaparecían sobre una tarjeta blanca.
 
+### Variante C2 · el video detrás del texto
+
+Erick eligió C el 2026-10-10 y pidió que el fondo de las tarjetas no fuera negro plano. En `/lab/c2` ya no hay tarjeta: el propio video se oscurece detrás del texto y vuelve a aclararse después.
+
+- **Cómo:** cada puesto es una lámina negra al 84 % con los extremos difuminados (28 % del alto de pantalla), más alta que la pantalla. El texto va fijo en su centro, así que solo se ve donde la lámina está a plena fuerza.
+- **Contraste:** peor caso calculado, con video blanco puro detrás: blanco 14.5:1, línea de autor `#c7ccd1` 8.9:1. No depende del fotograma.
+- **El video se queda quieto detrás del texto,** en el último fotograma del tramo anterior. Los tramos terminan justo antes de cada destello del montaje y retoman justo después, para que el fotograma detenido nunca sea un destello.
+- **El héroe** usa la misma lámina, difuminada hacia arriba, en lugar de la banda negra.
+- **Con `prefers-reduced-transparency`** vuelve la tarjeta negra opaca.
+- **Largo:** unas 15 pantallas (las láminas miden 1.7 pantallas; los tramos limpios bajan a 0.9).
+
 ## 6. Autocrítica
 
 **¿Habría propuesto lo mismo para otro producto?**
