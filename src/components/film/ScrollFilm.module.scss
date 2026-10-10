@@ -47,17 +47,3 @@
   margin-top: -100vh;
   margin-top: -100lvh;
 }
-
-/* The cursor glow from the rest of the site, repeated above the veil: the
-   page-wide layer sits behind the content and the film covers it.
-   SpotlightBackground writes --x / --y here too. */
-.glow {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background-image: radial-gradient(
-    260px at var(--x, 50%) var(--y, 50%),
-    var(--scheme-brand-600-30) 0%,
-    transparent 70%
-  );
-}

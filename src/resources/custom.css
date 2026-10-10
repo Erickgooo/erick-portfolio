@@ -55,28 +55,53 @@
   --scheme-neutral-600-50: #93939680;
 }
 
-/* ─── Data Callout (Manual §4.3) ───────────────────────────────────────────
-   Inline metrics inside running copy: mono family + Cobalto, so a figure never
-   reads as ordinary prose. Tabular numerals keep digits aligned.
+/* ─── Shared tokens ────────────────────────────────────────────────────────
+   One set of semantic colours for the whole site. Once UI declares these in
+   [data-theme=...] blocks (0,1,0), so the :root[data-theme=...] selectors here
+   (0,2,0) win without !important. Page and surface are two different greys in
+   light and two different blacks in dark, so a card reads as a card.
 ──────────────────────────────────────────────────────────────────────────── */
-.metric {
-  font-family: var(--font-code), monospace;
-  font-weight: 600;
-  /* -weak, not -strong: --brand-on-background-strong is static white in dark and
-     near-black in light — it is the max-contrast text token, not the brand hue.
-     -weak is the Cobalto one (brand-700 dark / brand-500 light). */
-  color: var(--brand-on-background-weak);
-  font-variant-numeric: tabular-nums;
-  white-space: nowrap;
+:root[data-theme="light"] {
+  --page-background: #f4f5f7;
+  --surface-background: #ffffff;
+  --neutral-on-background-strong: #0b0c0e;
+  --neutral-on-background-weak: #4b5058;
 }
 
-/* ─── Glow Border (Manual §5.3.3) ──────────────────────────────────────────
-   1px Cobalto ring plus a low-intensity glow — the only light effect the manual
-   permits, reserved for metric cards and highlighted data blocks. Defined once
-   here so every data callout carries the identical treatment.
-──────────────────────────────────────────────────────────────────────────── */
+:root[data-theme="dark"] {
+  --page-background: #000000;
+  --surface-background: #141416;
+  --neutral-on-background-strong: #f4f5f7;
+  --neutral-on-background-weak: #a8adb5;
+}
+
+/* "filled" surfaces map --surface-background at (0,3,0) per theme; pin the same
+   values there so the config's surface choice cannot move them. */
+:root[data-surface="filled"][data-theme="light"] {
+  --surface-background: #ffffff;
+}
+
+:root[data-surface="filled"][data-theme="dark"] {
+  --surface-background: #141416;
+}
+
 :root {
-  --glow-border: 0 0 0 1px var(--brand-alpha-medium), 0 0 24px var(--brand-alpha-weak);
+  /* 16px root on phones too (Once UI drops it to 15px). */
+  --font-scaling-mobile: 16px;
+  /* Display type defaults to 300 in Once UI; the site never uses weights below 400. */
+  --font-weight-display-default: 400;
+}
+
+/* ─── Data Callout ─────────────────────────────────────────────────────────
+   Inline metrics inside running copy: same face and colour as the text around
+   them, set apart by weight alone. Tabular numerals keep digits aligned.
+──────────────────────────────────────────────────────────────────────────── */
+.metric {
+  font-family: inherit;
+  font-weight: 600;
+  color: inherit;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
 }
 
 /* ─── Solid CTA color ──────────────────────────────────────────────────────

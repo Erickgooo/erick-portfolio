@@ -340,10 +340,7 @@ export default function About() {
                     fillHeight
                     padding="20"
                     radius="m"
-                    style={{
-                      boxShadow:
-                        "0 0 0 1px var(--brand-alpha-medium), 0 0 24px var(--brand-alpha-weak)",
-                    }}
+                    border="neutral-alpha-medium"
                   >
                     <Column gap="4" fillWidth>
                       <Text id={item.name} variant="heading-strong-m">

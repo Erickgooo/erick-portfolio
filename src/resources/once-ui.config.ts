@@ -57,7 +57,7 @@ const style: StyleConfig = {
   solid: "color", // color | contrast — solid surfaces must carry Cobalto Eléctrico, not a neutral (Manual §3.2: CTAs exclusivamente en Cobalto)
   solidStyle: "flat", // flat | plastic
   border: "conservative", // rounded | playful | conservative — Manual §2.3: geometría angular, sin redondeos decorativos
-  surface: "translucent", // filled | translucent
+  surface: "filled", // filled | translucent — filled has no backdrop blur
   transition: "all", // all | micro | macro
   scaling: "100", // 90 | 95 | 100 | 105 | 110
 };

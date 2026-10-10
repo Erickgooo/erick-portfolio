@@ -247,7 +247,6 @@ export function ScrollFilm({
           data-film-video=""
         />
         <div className={styles.veil} />
-        <div className={styles.glow} data-spotlight-target="" />
       </div>
       <div className={styles.track}>{children}</div>
     </div>

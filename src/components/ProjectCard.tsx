@@ -58,23 +58,8 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
               {title}
             </Heading>
             {metricValue && metricLabel && (
-              <Flex
-                vertical="center"
-                gap="8"
-                fitWidth
-                paddingX="12"
-                paddingY="8"
-                radius="m"
-                style={{
-                  boxShadow: "var(--glow-border)",
-                  background: "var(--brand-alpha-weak)",
-                }}
-              >
-                <Text
-                  style={{ fontFamily: "var(--font-code)", fontWeight: 700 }}
-                  onBackground="brand-weak"
-                  variant="body-strong-s"
-                >
+              <Flex vertical="center" gap="8" fitWidth>
+                <Text style={{ fontWeight: 600 }} onBackground="neutral-strong" variant="body-strong-s">
                   {metricValue}
                 </Text>
                 <Text onBackground="neutral-weak" variant="label-default-s">

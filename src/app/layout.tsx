@@ -7,8 +7,6 @@ import classNames from "classnames";
 
 import { body, code, heading } from "@/app/fonts";
 import { FaqChatbot, Footer, Header, IntroLoader, Providers, RouteGuard } from "@/components";
-import { SpotlightBackground } from "@/components/SpotlightBackground";
-import spotlightStyles from "@/components/SpotlightBackground.module.scss";
 import { MotionRuntime, ViewTransitions } from "@/components/motion";
 import { motionBoot } from "@/components/motion/motionBoot";
 import { baseURL, dataStyle, home, style } from "@/resources";
@@ -108,14 +106,12 @@ export default async function RootLayout({
           as="body"
           background="page"
           fillWidth
-          className={spotlightStyles.pageDots}
           style={{ minHeight: "100vh", position: "relative" }}
           margin="0"
           padding="0"
           horizontal="center"
         >
           <IntroLoader />
-          <SpotlightBackground />
           <Header />
           <Flex
             zIndex={0}
