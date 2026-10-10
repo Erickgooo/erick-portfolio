@@ -1,18 +1,16 @@
 import type { Page } from "@playwright/test";
 import { expect, test } from "./fixtures";
-import { introDone } from "./helpers";
 
-const HEADLINE =
-  "I build your marketing engine from zero and make it outperform a full department.";
 const CALENDAR = "https://calendly.com/santiagomahecha2328/30min";
+const FILM_DURATION = 24.8;
+const WHITE = "rgb(255, 255, 255)";
+const THEMES = {
+  light: { page: "rgb(244, 245, 247)", content: "rgb(11, 12, 14)" },
+  dark: { page: "rgb(0, 0, 0)", content: "rgb(244, 245, 247)" },
+} as const;
 
-/** Server HTML reduced to the text a reader gets: tags and React's comment markers out. */
-const visibleText = (html: string) =>
-  html
-    .replace(/<!--[^]*?-->/g, "")
-    .replace(/<[^>]+>/g, "")
-    .replace(/&#x27;/g, "'")
-    .replace(/\s+/g, " ");
+const forceTheme = (page: Page, theme: keyof typeof THEMES) =>
+  page.addInitScript((value) => localStorage.setItem("data-theme", value), theme);
 
 const filmReady = (page: Page) =>
   expect
@@ -30,15 +28,26 @@ const filmTime = (page: Page) =>
     () => (document.querySelector("[data-film-video]") as HTMLVideoElement).currentTime,
   );
 
-const scrollIntoBeat = (page: Page, beat: string, progress: number) =>
+/** Puts the top of the viewport `progress` of the way through an element (0 = its top edge). */
+const scrollInto = (page: Page, selector: string, progress: number) =>
   page.evaluate(
-    ([id, p]) => {
-      const el = document.querySelector(`[data-film-beat="${id}"]`) as HTMLElement;
+    ([target, p]) => {
+      const el = document.querySelector(target as string) as HTMLElement;
       const top = el.getBoundingClientRect().top + window.scrollY;
       window.scrollTo({ top: top + el.offsetHeight * (p as number), behavior: "instant" });
     },
-    [beat, progress] as const,
+    [selector, progress] as const,
   );
+
+const scrollIntoBeat = (page: Page, beat: string, progress: number) =>
+  scrollInto(page, `[data-film-beat="${beat}"]`, progress);
+
+const scrollPastFilm = (page: Page) =>
+  page.evaluate(() => {
+    const film = document.querySelector("[data-film-root]") as HTMLElement;
+    const bottom = film.getBoundingClientRect().bottom + window.scrollY;
+    window.scrollTo({ top: bottom + 200, behavior: "instant" });
+  });
 
 test.describe("scrubbing", () => {
   test.beforeEach(({ page: _page }, testInfo) => {
@@ -50,7 +59,6 @@ test.describe("scrubbing", () => {
 
   test("the film follows the scroll position, forwards and backwards", async ({ page }) => {
     await page.goto("/");
-    await introDone(page);
     await filmReady(page);
     await scrollIntoBeat(page, "hero", 0.5);
     await expect.poll(() => filmTime(page)).toBeGreaterThan(1.3);
@@ -58,6 +66,19 @@ test.describe("scrubbing", () => {
     for (const p of [0.9, 0.1, 0.7, 0.2]) await scrollIntoBeat(page, "hero", p);
     await page.evaluate(() => window.scrollTo(0, 0));
     await expect.poll(() => filmTime(page)).toBeLessThan(0.3);
+  });
+
+  test("a title card holds the film on the cut it arrived at", async ({ page }) => {
+    await page.goto("/");
+    await filmReady(page);
+    // Halfway through the Content card: the stretch before it has ended (7.03 s)
+    // and the one after it has not started.
+    await scrollInto(page, '[data-seat="content"]', 0.5);
+    await expect.poll(() => filmTime(page)).toBeGreaterThan(6.9);
+    expect(await filmTime(page)).toBeLessThan(7.1);
+    await scrollIntoBeat(page, "after-content", 0.5);
+    await expect.poll(() => filmTime(page)).toBeGreaterThan(9.4);
+    expect(await filmTime(page)).toBeLessThan(10);
   });
 
   test("the clip plays from memory and is seekable end to end", async ({ page }) => {
@@ -73,13 +94,40 @@ test.describe("scrubbing", () => {
 
   test("the stage stays pinned while its sections scroll", async ({ page }) => {
     await page.goto("/");
-    await introDone(page);
+    const stageTop = () =>
+      page.evaluate(
+        () =>
+          (document.querySelector("[data-film-stage]") as HTMLElement).getBoundingClientRect().top,
+      );
     await page.evaluate(() => window.scrollTo(0, 500));
-    const top = await page.evaluate(
-      () =>
-        (document.querySelector("[data-film-stage]") as HTMLElement).getBoundingClientRect().top,
-    );
-    expect(top).toBe(0);
+    expect(await stageTop()).toBe(0);
+    // Still pinned under a title card and through the stretch after it.
+    await scrollInto(page, '[data-seat="crm"]', 0.5);
+    expect(await stageTop()).toBe(0);
+    await scrollIntoBeat(page, "after-crm", 0.5);
+    expect(await stageTop()).toBe(0);
+  });
+
+  test("the progress bar tracks the film", async ({ page }) => {
+    await page.goto("/");
+    await filmReady(page);
+    const bar = () =>
+      page.evaluate(() => {
+        const el = document.querySelector("[data-film-progress]") as HTMLElement;
+        return new DOMMatrixReadOnly(getComputedStyle(el).transform).a;
+      });
+    expect(await bar()).toBeLessThan(0.03);
+    for (const [beat, progress] of [
+      ["after-brand", 0.5],
+      ["after-crm", 0.4],
+    ] as const) {
+      await scrollIntoBeat(page, beat, progress);
+      // Wait for the film to move there, then for the bar to agree with it.
+      await expect.poll(() => filmTime(page)).toBeGreaterThan(beat === "after-brand" ? 4.5 : 17);
+      await expect
+        .poll(async () => Math.abs((await bar()) - (await filmTime(page)) / FILM_DURATION))
+        .toBeLessThan(0.03);
+    }
   });
 
   test("phones get the portrait encode", async ({ page }, testInfo) => {
@@ -144,132 +192,150 @@ test("a wide touch screen gets the landscape clip", async ({ browser }, testInfo
   await context.close();
 });
 
-test("light theme: the header's side labels stay readable over the film and after it", async ({
-  page,
-}, testInfo) => {
-  test.skip(testInfo.project.name === "mobile-chromium", "the side labels are a desktop feature");
-  await page.addInitScript(() => localStorage.setItem("data-theme", "light"));
+test("every film stretch has a beat", async ({ page }) => {
   await page.goto("/");
-  await introDone(page);
-  const place = page.locator("[data-header-side]").first();
-  const colour = () => place.evaluate((el) => getComputedStyle(el.firstElementChild ?? el).color);
-  // Over the film, which is always dark footage: shown, and in white.
-  await expect(place).toBeVisible();
-  await expect(place).toContainText("Medellín, Colombia");
-  expect(await colour()).toBe("rgb(255, 255, 255)");
-  // The page-coloured (white) fade would wash out the top of the film.
-  await expect(page.locator("[data-header-fade]").first()).toBeHidden();
-
-  // Past the film the page is light again: the labels go back to the theme's dark text.
-  await page.evaluate(() => {
-    const film = document.querySelector("[data-film-root]") as HTMLElement;
-    const bottom = film.getBoundingClientRect().bottom + window.scrollY;
-    window.scrollTo({ top: bottom + 200, behavior: "instant" });
-  });
-  await expect.poll(colour).not.toBe("rgb(255, 255, 255)");
-  await expect(place).toBeVisible();
-  await expect(page.locator("[data-header-fade]").first()).toBeVisible();
-
-  // And back up over the film.
-  await page.evaluate(() => window.scrollTo({ top: 0, behavior: "instant" }));
-  await expect.poll(colour).toBe("rgb(255, 255, 255)");
+  const stretches = await page.locator("[data-film-beat]").evaluateAll((els) =>
+    els.map((el) => ({
+      beat: el.getAttribute("data-film-beat"),
+      // The seat a clean stretch follows; the hero has none.
+      after: el.previousElementSibling?.getAttribute("data-seat") ?? null,
+      height: (el as HTMLElement).offsetHeight,
+    })),
+  );
+  expect(stretches.map(({ beat, after }) => ({ beat, after }))).toEqual([
+    { beat: "hero", after: null },
+    { beat: "after-brand", after: "brand" },
+    { beat: "after-content", after: "content" },
+    { beat: "after-paid-media", after: "paid-media" },
+    { beat: "after-crm", after: "crm" },
+    { beat: "after-software", after: "software" },
+  ]);
+  // A stretch with no height would be skipped by the film map.
+  for (const stretch of stretches) expect(stretch.height, String(stretch.beat)).toBeGreaterThan(0);
 });
 
-test("dark theme: the header's side labels are shown on the Home", async ({ page }, testInfo) => {
-  test.skip(testInfo.project.name === "mobile-chromium", "the side labels are a desktop feature");
-  await page.addInitScript(() => localStorage.setItem("data-theme", "dark"));
-  await page.goto("/");
-  await expect(page.locator("[data-header-side]").first()).toBeVisible();
-  await expect(page.locator("[data-header-side]").first()).toContainText("Medellín, Colombia");
-});
-
-test("on phones the hero figures sit in one row", async ({ page }, testInfo) => {
-  test.skip(testInfo.project.name !== "mobile-chromium", "phone layout");
-  await page.goto("/");
-  const stats = await page.evaluate(() => {
-    const items = Array.from(document.querySelectorAll("[data-hero-stats] li"));
-    const tops = items.map((el) => Math.round(el.getBoundingClientRect().top));
-    return { count: items.length, rows: new Set(tops).size };
-  });
-  expect(stats.count).toBe(4);
-  expect(stats.rows).toBe(1);
-});
-
-const BEATS = [
-  "hero",
-  "tagline",
-  "problem",
-  "solution",
-  "benefit-1",
-  "benefit-2",
-  "benefit-3",
-  "benefit-4",
-  "process",
-];
-
-test("every film section has a beat", async ({ page }) => {
-  await page.goto("/");
-  const ids = await page
-    .locator("[data-film-beat]")
-    .evaluateAll((els) => els.map((el) => el.getAttribute("data-film-beat")));
-  expect(ids).toEqual(BEATS);
-});
-
-test("the last film section ends the video", async ({ page }, testInfo) => {
+test("the last stretch ends the video", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== "chromium", "one engine is enough for the mapping");
   await page.goto("/");
-  await introDone(page);
   await filmReady(page);
-  // Scroll to where the stage unpins: the last section's bottom edge at the viewport's bottom edge.
+  // Scroll to where the stage unpins: the last stretch's bottom edge at the viewport's bottom edge.
   await page.evaluate(() => {
-    const el = document.querySelector('[data-film-beat="process"]') as HTMLElement;
+    const el = document.querySelector('[data-film-beat="after-software"]') as HTMLElement;
     const top = el.getBoundingClientRect().top + window.scrollY;
     window.scrollTo({ top: top + el.offsetHeight - window.innerHeight, behavior: "instant" });
   });
   await expect.poll(() => filmTime(page), { timeout: 10000 }).toBeGreaterThan(24.5);
 });
 
-test("each benefit shows its figure and links to its case study", async ({ page }) => {
-  await page.goto("/");
-  const benefits = page.locator("[data-benefit]");
-  await expect(benefits).toHaveCount(4);
-  const figures = await benefits.locator("[data-benefit-figure]").allTextContents();
-  expect(figures).toEqual(["338K+", "3.92x", "85%", "48h"]);
-  const links = await benefits
-    .locator("a")
-    .evaluateAll((els) => els.map((a) => a.getAttribute("href")));
-  expect(links).toEqual([
-    "/work/quick-metal-shop-viral-videos",
-    "/work/ai-powered-ad-creatives",
-    "/work/leadbot-ai",
-    "/work/quick-metal-shop-arquiexpo",
-  ]);
-});
-
-test("the argument is in the server HTML", async ({ request }) => {
-  const text = visibleText(await (await request.get("/")).text());
-  expect(text).toContain("none of them talk to each other");
-  expect(text).toContain("Content at agency scale.");
-  expect(text).toContain("How I work");
-});
-
-test("benefit figures are set in the display face at display size", async ({ page }, testInfo) => {
-  test.skip(testInfo.project.name !== "chromium", "desktop sizes");
-  await page.goto("/");
-  const style = await page
-    .locator("[data-benefit-figure]")
-    .first()
-    .evaluate((el) => {
-      const cs = getComputedStyle(el);
-      return {
-        family: cs.fontFamily,
-        size: Number.parseFloat(cs.fontSize),
-        weight: Number(cs.fontWeight),
-      };
+for (const theme of ["light", "dark"] as const) {
+  test(`no words sit on the footage (${theme} theme)`, async ({ page }) => {
+    await forceTheme(page, theme);
+    await page.goto("/");
+    const words = await page.evaluate(() => {
+      const body = getComputedStyle(document.body).backgroundColor;
+      const out: { text: string; surface: string | null }[] = [];
+      for (const el of Array.from(document.querySelectorAll("[data-film-root] *"))) {
+        const text = Array.from(el.childNodes)
+          .filter((node) => node.nodeType === Node.TEXT_NODE)
+          .map((node) => node.textContent ?? "")
+          .join("")
+          .trim();
+        if (!text) continue;
+        const surface = el.closest("[data-opaque]");
+        out.push({ text, surface: surface ? getComputedStyle(surface).backgroundColor : null });
+      }
+      return { body, out };
     });
-  expect(style.family).not.toContain("Mono");
-  expect(style.size).toBeGreaterThanOrEqual(128);
-  expect(style.weight).toBeGreaterThanOrEqual(700);
+    // The h1, the byline, the button, and a title, a sentence and a link per seat.
+    expect(words.out.length).toBeGreaterThanOrEqual(18);
+    // Opaque colours serialise as rgb(); anything translucent would read rgba().
+    expect(words.body).toBe(THEMES[theme].page);
+    for (const word of words.out) expect(word.surface, word.text).toBe(words.body);
+  });
+
+  test(`the cards take the colour of the page (${theme} theme)`, async ({ page }) => {
+    await forceTheme(page, theme);
+    await page.goto("/");
+    const surfaces = page.locator('[data-film-beat="hero"] [data-opaque], [data-seat]');
+    await expect(surfaces).toHaveCount(6);
+    for (const surface of await surfaces.all()) {
+      await expect(surface).toHaveCSS("background-color", THEMES[theme].page);
+    }
+    const titles = page.locator("[data-seat] h2");
+    await expect(titles).toHaveCount(5);
+    for (const title of await titles.all()) {
+      await expect(title).toHaveCSS("color", THEMES[theme].content);
+    }
+    await expect(page.locator('[data-film-beat="hero"] h1')).toHaveCSS(
+      "color",
+      THEMES[theme].content,
+    );
+  });
+}
+
+test.describe("the nav's side labels", () => {
+  test.beforeEach(({ page: _page }, testInfo) => {
+    test.skip(testInfo.project.name === "mobile-chromium", "the side labels are a desktop feature");
+  });
+
+  const labelColour = (page: Page) =>
+    page
+      .locator("[data-header-side]")
+      .first()
+      .evaluate((el) => getComputedStyle(el.firstElementChild ?? el).color);
+
+  test("light theme: the nav labels follow what is under them", async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await forceTheme(page, "light");
+    await page.goto("/");
+    const place = page.locator("[data-header-side]").first();
+    await expect(place).toContainText("Medellín, Colombia");
+    // Over the footage, which is dark whatever the theme.
+    expect(await labelColour(page)).toBe(WHITE);
+    // A light title card pinned under the bar.
+    await scrollInto(page, '[data-seat="brand"]', 0.2);
+    await expect.poll(() => labelColour(page)).toBe(THEMES.light.content);
+    // The card has left and the film is clean again.
+    await scrollIntoBeat(page, "after-brand", 0.1);
+    await expect.poll(() => labelColour(page)).toBe(WHITE);
+    await scrollInto(page, '[data-seat="software"]', 0.5);
+    await expect.poll(() => labelColour(page)).toBe(THEMES.light.content);
+    await scrollIntoBeat(page, "after-software", 0.1);
+    await expect.poll(() => labelColour(page)).toBe(WHITE);
+    await scrollPastFilm(page);
+    await expect.poll(() => labelColour(page)).toBe(THEMES.light.content);
+  });
+
+  test("light theme: the header's side labels stay readable over the film and after it", async ({
+    page,
+  }) => {
+    await forceTheme(page, "light");
+    await page.goto("/");
+    const place = page.locator("[data-header-side]").first();
+    // Over the film, which is always dark footage: shown, and in white.
+    await expect(place).toBeVisible();
+    await expect(place).toContainText("Medellín, Colombia");
+    expect(await labelColour(page)).toBe(WHITE);
+    // The page-coloured (white) fade would wash out the top of the film.
+    await expect(page.locator("[data-header-fade]").first()).toBeHidden();
+
+    // Past the film the page is light again: the labels go back to the theme's dark text.
+    await scrollPastFilm(page);
+    await expect.poll(() => labelColour(page)).not.toBe(WHITE);
+    await expect(place).toBeVisible();
+    await expect(page.locator("[data-header-fade]").first()).toBeVisible();
+
+    // And back up over the film.
+    await page.evaluate(() => window.scrollTo({ top: 0, behavior: "instant" }));
+    await expect.poll(() => labelColour(page)).toBe(WHITE);
+  });
+
+  test("dark theme: the header's side labels are shown on the Home", async ({ page }) => {
+    await forceTheme(page, "dark");
+    await page.goto("/");
+    await expect(page.locator("[data-header-side]").first()).toBeVisible();
+    await expect(page.locator("[data-header-side]").first()).toContainText("Medellín, Colombia");
+  });
 });
 
 const mp4Requests = (page: Page) => {
@@ -290,20 +356,20 @@ test("reduced motion: no video is downloaded and the poster stays", async ({ pag
   await expect(page.locator("[data-film-stage] img")).toBeAttached();
 });
 
-test("reduced motion swaps a still per section", async ({ page }) => {
+test("reduced motion swaps a still per stretch", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
   const urls = mp4Requests(page);
   await page.goto("/");
-  await introDone(page);
   const still = () =>
     page.evaluate(
       () => (document.querySelector("[data-film-stage] img") as HTMLImageElement).currentSrc,
     );
-  expect(await still()).toContain("/images/film/hero");
-  await scrollIntoBeat(page, "benefit-1", 0.2);
-  await expect.poll(still).toContain("/images/film/benefit-1");
-  await scrollIntoBeat(page, "process", 0.2);
-  await expect.poll(still).toContain("/images/film/process");
+  // Phones get the portrait still of the same shot: `<name>-m.webp`.
+  await expect.poll(still).toMatch(/\/images\/film\/hero(-m)?\.webp$/);
+  await scrollIntoBeat(page, "after-content", 0.2);
+  await expect.poll(still).toMatch(/\/images\/film\/solution(-m)?\.webp$/);
+  await scrollIntoBeat(page, "after-software", 0.2);
+  await expect.poll(still).toMatch(/\/images\/film\/process(-m)?\.webp$/);
   await expect
     .poll(() =>
       page.evaluate(() => {
@@ -342,13 +408,6 @@ test("a failed film download leaves the poster and logs nothing", async ({ page 
   expect(errors).toEqual([]);
 });
 
-test("the h1 and the call link are in the server HTML", async ({ request }) => {
-  const html = await (await request.get("/")).text();
-  // The headline is split into one element per word; what matters is the text.
-  expect(visibleText(html)).toContain(HEADLINE);
-  expect(html).toContain(CALENDAR);
-});
-
 test("there is exactly one primary call to action above the fold", async ({ page }) => {
   await page.goto("/");
   const visible = await page.evaluate(
@@ -360,6 +419,34 @@ test("there is exactly one primary call to action above the fold", async ({ page
   );
   expect(visible).toBe(1);
   await expect(page.locator('[data-cta="primary"]').first()).toHaveAttribute("href", CALENDAR);
+});
+
+test("on phones the call to action stays clear of the nav bar and the chatbot greeting", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/");
+  const cta = page.locator('[data-film-beat="hero"] [data-cta="primary"]');
+  const greeting = page.locator('[class*="greetingBubble"]');
+  // The greeting opens by itself a couple of seconds after load.
+  await expect(greeting).toBeVisible({ timeout: 8000 });
+  const box = async (locator: typeof cta) => {
+    const rect = await locator.boundingBox();
+    if (!rect) throw new Error("not rendered");
+    return rect;
+  };
+  const button = await box(cta);
+  expect(button.y).toBeGreaterThanOrEqual(0);
+  // Clear means air between them, not edges that happen to touch.
+  const AIR = 8;
+  for (const other of [await box(page.locator("header")), await box(greeting)]) {
+    const apart =
+      button.x + button.width + AIR <= other.x ||
+      other.x + other.width + AIR <= button.x ||
+      button.y + button.height + AIR <= other.y ||
+      other.y + other.height + AIR <= button.y;
+    expect(apart, JSON.stringify({ button, other })).toBe(true);
+  }
 });
 
 for (const width of [390, 859, 861, 1024, 1440]) {

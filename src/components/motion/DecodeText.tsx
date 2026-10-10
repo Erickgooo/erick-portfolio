@@ -3,11 +3,10 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import styles from "./DecodeText.module.scss";
 import { scrambleFrame } from "./decode";
-import { whenIntroDone } from "./intro";
 
 interface DecodeTextProps {
   value: string;
-  /** "view": once, when 60% visible (after the intro). "manual": every time `active` turns true. */
+  /** "view": once, when 60% visible. "manual": every time `active` turns true. */
   trigger?: "view" | "manual";
   active?: boolean;
   duration?: number;
@@ -59,7 +58,7 @@ export function DecodeText({
       ([entry]) => {
         if (entry.isIntersecting) {
           observer.disconnect();
-          whenIntroDone().then(run);
+          run();
         }
       },
       { threshold: 0.6 },

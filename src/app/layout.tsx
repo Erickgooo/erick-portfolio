@@ -6,7 +6,7 @@ import "@/components/motion/motion.css";
 import classNames from "classnames";
 
 import { body, code, heading } from "@/app/fonts";
-import { FaqChatbot, Footer, Header, IntroLoader, Providers, RouteGuard } from "@/components";
+import { FaqChatbot, Footer, Header, Providers, RouteGuard } from "@/components";
 import { MotionRuntime, ViewTransitions } from "@/components/motion";
 import { motionBoot } from "@/components/motion/motionBoot";
 import { baseURL, dataStyle, home, style } from "@/resources";
@@ -97,7 +97,7 @@ export default async function RootLayout({
         />
         <script
           id="motion-init"
-          // biome-ignore lint/security/noDangerouslySetInnerHtml: device tier, motion fallback and intro flags must be set before first paint; the body is our own static function, no user input
+          // biome-ignore lint/security/noDangerouslySetInnerHtml: device tier and motion fallback flags must be set before first paint; the body is our own static function, no user input
           dangerouslySetInnerHTML={{ __html: `(${motionBoot.toString()})();` }}
         />
       </head>
@@ -111,7 +111,6 @@ export default async function RootLayout({
           padding="0"
           horizontal="center"
         >
-          <IntroLoader />
           <Header />
           <Flex
             zIndex={0}

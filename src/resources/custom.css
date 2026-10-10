@@ -154,16 +154,18 @@
   user-select: none;
 }
 
-/* Over the home film the header must not bring the light theme with it: the film
-   underneath is always dark footage. While it is under the nav bar (ScrollFilm
-   sets data-past-film on <html> once it has scrolled away), the page-coloured
-   (white) fade is dropped and the side labels turn white instead of dark. Past
-   the film both go back to the theme's own colours. */
-html[data-theme="light"]:has([data-film-root]):not([data-past-film]) [data-header-fade] {
+/* Over the home film the header must not bring the light theme with it: the
+   footage underneath is dark whatever the theme. While it is under the nav bar
+   the page-coloured (white) fade is dropped and the side labels turn white
+   instead of dark. Both go back to the theme's own colours once the film has
+   scrolled away, and for as long as one of the Home's page-coloured surfaces
+   (the hero band or a title card) lies under the labels: ScrollFilm sets
+   data-past-film and data-nav-over-card on <html> for those two cases. */
+html[data-theme="light"]:has([data-film-root]):not([data-past-film]):not([data-nav-over-card]) [data-header-fade] {
   display: none !important;
 }
 
-html[data-theme="light"]:has([data-film-root]):not([data-past-film]) [data-header-side],
-html[data-theme="light"]:has([data-film-root]):not([data-past-film]) [data-header-side] * {
+html[data-theme="light"]:has([data-film-root]):not([data-past-film]):not([data-nav-over-card]) [data-header-side],
+html[data-theme="light"]:has([data-film-root]):not([data-past-film]):not([data-nav-over-card]) [data-header-side] * {
   color: #ffffff !important;
 }

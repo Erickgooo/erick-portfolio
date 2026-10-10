@@ -3,6 +3,8 @@ export interface FilmBeat {
   id: string;
   start: number;
   end: number;
+  /** Still shown for this beat when the film is not downloaded: `<still>.webp`. Defaults to the id. */
+  still?: string;
 }
 
 /** A section's box relative to the top of the viewport. */
@@ -16,24 +18,26 @@ export const FILM_DURATION = 24.8;
 
 /**
  * public/video/home-film.mp4 is an edit, not one take. Its cuts fall at 3.17,
- * 5.17, 7.03, 12.40, 15.50, 20.77 and 23.67 s, with flare transitions near 9.0
- * and 14.0 s; beats start and end on those so a change of shot lands on a change
- * of message. Together the beats cover the whole film: scrolling through the
- * last section ends it.
+ * 5.17, 7.03, 12.40, 15.50, 20.77 and 23.67 s. The film plays with nothing over
+ * it: the hero walks the first shot, and every title card of the Home is
+ * followed by one clean stretch. Each stretch ends on a cut, so the film holds
+ * that frame while the next card is on screen and changes shot once it has left.
+ * Together the beats cover the whole film: scrolling through the last stretch
+ * ends it. The stills keep the names of the sections they were first cut for.
  */
 export const FILM_BEATS: FilmBeat[] = [
   { id: "hero", start: 0, end: 3.17 },
-  { id: "tagline", start: 3.17, end: 7.03 },
-  { id: "problem", start: 7.03, end: 9.5 },
-  { id: "solution", start: 9.5, end: 12.4 },
-  { id: "benefit-1", start: 12.4, end: 14 },
-  { id: "benefit-2", start: 14, end: 15.55 },
-  { id: "benefit-3", start: 15.55, end: 18.6 },
-  { id: "benefit-4", start: 18.6, end: 20.77 },
-  { id: "process", start: 20.77, end: FILM_DURATION },
+  { id: "after-brand", start: 3.17, end: 7.03, still: "tagline" },
+  { id: "after-content", start: 7.03, end: 12.4, still: "solution" },
+  { id: "after-paid-media", start: 12.4, end: 15.55, still: "benefit-1" },
+  { id: "after-crm", start: 15.55, end: 20.77, still: "benefit-3" },
+  { id: "after-software", start: 20.77, end: FILM_DURATION, still: "process" },
 ];
 
-/** Flare and white flash transitions in the edit; text over them needs a darker veil. */
+/**
+ * Flare and white flash transitions in the edit. They are the only moments the
+ * film is dimmed: a white frame filling the whole screen is harsh.
+ */
 const FILM_FLASHES: [number, number][] = [
   [1.9, 2.2],
   [6.5, 7.15],
@@ -43,8 +47,8 @@ const FILM_FLASHES: [number, number][] = [
   [15.35, 15.7],
   [20.6, 21],
 ];
-const VEIL_BASE = 0.58;
-const VEIL_FLASH = 0.82;
+const VEIL_BASE = 0;
+const VEIL_FLASH = 0.55;
 
 /**
  * Film time for the current scroll position. Sections are read top to bottom:
@@ -85,7 +89,7 @@ export function activeBeatId(beats: FilmBeat[], boxes: SectionBox[], line: numbe
   return id;
 }
 
-/** Opacity of the flat black veil over the film at a given time. */
+/** Opacity of the flat black veil over the film at a given time: none, except during a flash. */
 export function veilAt(time: number): number {
   return FILM_FLASHES.some(([from, to]) => time >= from && time <= to) ? VEIL_FLASH : VEIL_BASE;
 }

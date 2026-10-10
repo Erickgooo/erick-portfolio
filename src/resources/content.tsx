@@ -49,7 +49,6 @@ const home: Home = {
   // concrete figure. Mirrors the short bio in §1.4.
   description:
     "I build complete growth systems for founders: AI content pipelines, CRM automation and paid media. ROAS 3.92x · 338K+ organic views at $0 ad spend · $3.45 cost per lead in technical B2B.",
-  headline: "I Build Marketing Infrastructure From Zero. And Make It Outperform Full Departments.",
   featured: {
     display: true,
     title: (
@@ -63,23 +62,6 @@ const home: Home = {
     ),
     href: "/work/quick-metal-shop-viral-videos",
   },
-  subline: (
-    <>
-      I'm Erick, a one-person growth department. At Quick Metal Shop, I built their marketing
-      function from zero and generated 338K+ organic video views with $0 ad spend, using an AI
-      production pipeline I designed myself. I architect the full stack: brand identity, paid media,
-      SEO automation, CRM, and the software itself when nothing exists yet.
-    </>
-  ),
-  // The three verifiable pillars from Manual §1.1, plus the $0 spend that makes
-  // the reach figure meaningful. ROAS and CPL are what a founder buying growth
-  // actually evaluates, so they belong above the fold.
-  stats: [
-    { value: "338K+", label: "organic views" },
-    { value: "$0", label: "ad spend" },
-    { value: "3.92x", label: "ROAS" },
-    { value: "$3.45", label: "cost per lead" },
-  ],
 };
 
 const about: About = {

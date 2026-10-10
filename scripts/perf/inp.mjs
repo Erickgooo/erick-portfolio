@@ -58,7 +58,7 @@ for (const [name, act] of Object.entries(SCENARIOS)) {
   await page.goto(BASE + PATHS[name]);
   // "load", not "networkidle": Chromium keeps the home film's blob: request open.
   await page.waitForLoadState("load");
-  await page.waitForTimeout(6000); // let the Home intro finish
+  await page.waitForTimeout(1500); // let hydration settle: its long tasks are not scroll work
   await page.evaluate(() => {
     window.__long = [];
   });

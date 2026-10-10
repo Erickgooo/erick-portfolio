@@ -1,34 +1,26 @@
-import { FilmSection } from "@/components/film/FilmSection";
-import { home, person } from "@/resources";
 import { landing } from "@/resources/landing";
 import { CallButton } from "./CallButton";
-import { Words } from "./Words";
-import t from "./type.module.scss";
+import styles from "./landing.module.scss";
 
+/**
+ * The first screen: the film above, and docked along its bottom edge a band of
+ * the page's own colour that carries the headline, the byline and the one
+ * action. The words never sit on footage, and none of them waits for a script
+ * or an animation. The section is taller than the screen so the film walks its
+ * first shot while the band scrolls away.
+ */
 export function Hero() {
   return (
-    <FilmSection beat="hero" screens={2} fade={false} top>
-      <div className={`${t.block} ${t.hero}`}>
-        <p className={t.pill}>{person.role}</p>
-        <h1 className={t.h1}>
-          <Words text={landing.hero.headline} emphasis={landing.hero.emphasis} />
-        </h1>
-        <p className={t.sub}>{landing.hero.subline}</p>
-        <div className={t.action}>
-          <CallButton />
-          <span className={t.risk}>{landing.hero.risk}</span>
+    <section data-film-beat="hero" className={styles.hero}>
+      <div className={styles.firstScreen}>
+        <div className={styles.band} data-opaque="">
+          <h1 className={styles.heroTitle}>{landing.hero.title}</h1>
+          <div className={styles.bandSide}>
+            <p className={styles.byline}>{landing.hero.byline}</p>
+            <CallButton />
+          </div>
         </div>
-        {home.stats && home.stats.length > 0 && (
-          <ul className={t.stats} data-hero-stats="">
-            {home.stats.map((stat) => (
-              <li key={stat.label}>
-                <strong>{stat.value}</strong>
-                <span>{stat.label}</span>
-              </li>
-            ))}
-          </ul>
-        )}
       </div>
-    </FilmSection>
+    </section>
   );
 }

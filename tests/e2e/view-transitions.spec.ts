@@ -29,7 +29,7 @@ test("internal navigation runs a view transition and lands on the page", async (
       return orig(cb);
     }) as typeof document.startViewTransition;
   });
-  await (await workLink(page)).click();
+  await workLink(page).click();
   await page.waitForURL("**/work");
   expect(await page.evaluate(() => (window as unknown as { __vt: number }).__vt)).toBe(1);
   await expect
@@ -44,7 +44,7 @@ test("slow navigation skips the transition and still navigates", async ({ page, 
     await new Promise((r) => setTimeout(r, 900));
     await route.continue();
   });
-  await (await workLink(page)).click();
+  await workLink(page).click();
   await page.waitForURL("**/work", { timeout: 10_000 });
   await expect(page.locator("h1").first()).toBeVisible();
   await expect
@@ -86,7 +86,7 @@ test("a double click on a slow route leaves no transition hanging", async ({
       return t;
     }) as typeof document.startViewTransition;
   });
-  await (await workLink(page)).dblclick();
+  await workLink(page).dblclick();
   await page.waitForURL("**/work", { timeout: 10_000 });
   await expect
     .poll(() => page.evaluate(() => (window as unknown as { __settled: boolean[] }).__settled), {
@@ -105,7 +105,7 @@ test("back navigation restores scroll without leftover transition names", async 
   await page.waitForTimeout(300);
   await page.locator("footer").scrollIntoViewIfNeeded();
   await page.evaluate(() => window.scrollTo(0, 1200));
-  await (await workLink(page)).click();
+  await workLink(page).click();
   await page.waitForURL("**/work");
   await page.goBack();
   await page.waitForURL("**/about");
@@ -124,7 +124,7 @@ test("back navigation restores scroll without leftover transition names", async 
 test("modified clicks are not intercepted", async ({ page, context }) => {
   await page.goto("/blog/my-workspace");
   const popupPromise = context.waitForEvent("page", { timeout: 5000 }).catch(() => null);
-  await (await workLink(page)).click({ modifiers: ["ControlOrMeta"] });
+  await workLink(page).click({ modifiers: ["ControlOrMeta"] });
   const popup = await popupPromise;
   if (popup) await popup.close();
   expect(new URL(page.url()).pathname).toBe("/blog/my-workspace");

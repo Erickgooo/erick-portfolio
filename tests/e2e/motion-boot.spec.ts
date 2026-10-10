@@ -49,24 +49,6 @@ test("missing deviceMemory (Safari) is ignored, not treated as low", async ({ pa
   expect(await fx(page)).toBe("full");
 });
 
-test("intro-pending only on Home and cleared by the 7 s backstop at the latest", async ({
-  page,
-}) => {
-  await page.goto("/about");
-  expect(
-    await page.evaluate(() => document.documentElement.classList.contains("intro-pending")),
-  ).toBe(false);
-  await page.goto("/");
-  expect(
-    await page.evaluate(() => document.documentElement.classList.contains("intro-pending")),
-  ).toBe(true);
-  await expect
-    .poll(() => page.evaluate(() => document.documentElement.classList.contains("intro-pending")), {
-      timeout: 8000,
-    })
-    .toBe(false);
-});
-
 test("mo-io matches the absence of view() support", async ({ page }) => {
   await page.goto("/about");
   const { supports, moIo } = await page.evaluate(() => ({

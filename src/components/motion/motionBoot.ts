@@ -10,9 +10,6 @@
  *   `animation-timeline: view()` (Firefox without flag). Never set under reduced
  *   motion. A 3 s watchdog removes it if MotionRuntime never reports ready, so
  *   content can't stay hidden.
- * - intro-pending: Home only, when the tab is visible — the same decision the
- *   IntroLoader makes on a document load. The IntroLoader clears it when its
- *   fade-out starts; the 7 s backstop outlasts its 6.5 s MAX_LIFETIME_MS.
  */
 export function motionBoot(): void {
   const root = document.documentElement;
@@ -34,11 +31,6 @@ export function motionBoot(): void {
       window.setTimeout(() => {
         if (!root.classList.contains("mo-ready")) root.classList.remove("mo-io");
       }, 3000);
-    }
-
-    if (window.location.pathname === "/" && !document.hidden) {
-      root.classList.add("intro-pending");
-      window.setTimeout(() => root.classList.remove("intro-pending"), 7000);
     }
   } catch {
     root.setAttribute("data-fx", "full");

@@ -21,10 +21,6 @@
     animation-delay: calc(var(--w) * 40ms);
   }
 
-  :global(html.intro-pending) .load .word {
-    animation-play-state: paused;
-  }
-
   @supports (animation-timeline: view()) {
     .view .word {
       animation: kinetic-in linear both;

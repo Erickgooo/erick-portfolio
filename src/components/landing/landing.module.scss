@@ -1,500 +1,345 @@
-$ease: var(--ease-fluid);
+/* The Home (spec 2026-10-10, sections 2 and 3). The film is the one bold thing
+   on the page, so everything here is flat: the page's own surface, two text
+   colours, one accent on the button. Colours are the shared tokens that
+   custom.css sets per theme, which is what lets the hero band and the title
+   cards be near-white by day and black by night. */
 
-.home {
-  width: 100%;
-}
+$display: var(--font-heading), sans-serif;
+$dark: 'html[data-theme="dark"]';
 
-/* Phones have the nav bar fixed at the bottom; keep the last block clear of it. */
-@media (max-width: 768px) {
-  .home {
-    padding-bottom: 96px;
+/* Running text: 17px on phones, 18px from tablets up. */
+@mixin text {
+  font-size: 1.0625rem;
+  line-height: 1.55;
+
+  @media (min-width: 768px) {
+    font-size: 1.125rem;
   }
 }
 
-.hero {
-  display: grid;
-  gap: 24px;
-  justify-items: start;
+/* Notes, links and the button: 16px on phones, 17px from tablets up. */
+@mixin note {
+  font-size: 1rem;
+  line-height: 1.5;
+
+  @media (min-width: 768px) {
+    font-size: 1.0625rem;
+  }
 }
 
-.headline {
-  max-width: 680px;
-  margin: 0;
-  font-family: var(--font-heading), sans-serif;
-  font-size: 2.25rem;
-  line-height: 2.5rem;
-  font-weight: 600;
-  letter-spacing: -0.02em;
-  text-wrap: balance;
-  /* The one gradient the system allows: on the hero heading's text, never on a background. */
-  background: linear-gradient(90deg, #ffffff, #9b9b9b);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+/* A hairline: the content colour at 14% by day and at 18% by night. */
+@mixin line($side) {
+  border-#{$side}: 1px solid color-mix(in srgb, var(--neutral-on-background-strong) 14%, transparent);
+
+  :global(#{$dark}) & {
+    border-#{$side}-color: color-mix(
+      in srgb,
+      var(--neutral-on-background-strong) 18%,
+      transparent
+    );
+  }
 }
 
-.subline {
-  max-width: 680px;
-  margin: 0;
-  font-size: 1.125rem;
-  line-height: 1.75rem;
-  color: #dcdddf;
-  text-wrap: pretty;
+/* A ring in the colour of the text it surrounds, clear of the glyphs. */
+@mixin focus-ring {
+  outline: 2px solid currentColor;
+  outline-offset: 3px;
 }
 
-.action {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 16px;
+.home {
+  width: 100%;
+  color: var(--neutral-on-background-strong);
 }
 
-/* Scoped under .home: Once UI colours every `a:not(.button)` at specificity (0,1,1). */
+/* --- The one action ------------------------------------------------------ */
+
+/* Every link rule is scoped under .home: Once UI styles `a:not(.button)` at
+   specificity (0,1,1) and its hover at (0,2,1), with a transition on colour. */
 .home .cta {
   display: inline-flex;
   align-items: center;
-  gap: 12px;
-  padding: 16px 24px;
-  border-radius: 9999px;
+  box-sizing: border-box;
+  min-height: 48px;
+  padding: 12px 20px;
+  border-radius: 6px;
   background: var(--cobalt);
   color: #ffffff;
-  font-size: 1.125rem;
-  line-height: 1.75rem;
   font-weight: 600;
   text-decoration: none;
-  transition: transform 700ms $ease;
+  transition: transform 160ms ease-out;
+
+  @include note;
 }
 
 .home .cta:hover {
+  background: #2549cb;
   color: #ffffff;
-  transform: translateY(-2px);
-}
-
-.ctaArrow {
-  transition: transform 700ms $ease;
-}
-
-.cta:hover .ctaArrow {
-  transform: translateX(4px);
 }
 
 .home .cta:active {
   transform: scale(0.98);
 }
 
+/* The button's own text is white, which would vanish on the light surface. */
 .home .cta:focus-visible {
-  outline: 2px solid #ffffff;
-  outline-offset: 2px;
+  outline: 2px solid var(--neutral-on-background-strong);
+  outline-offset: 3px;
 }
 
-.risk {
-  font-size: 0.875rem;
-  line-height: 1.25rem;
-  color: #c7ccd1;
-}
-
-/* One row on every screen: on phones the bottom of the hero belongs to the nav
-   bar and the chatbot greeting, so the figures must not wrap into it. */
-.stats {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, max-content));
-  gap: 12px;
-  justify-content: space-between;
-  width: 100%;
-  margin: 8px 0 0;
-  padding: 0;
-  list-style: none;
-}
-
-.stat {
-  display: grid;
-  gap: 4px;
-}
-
-.statValue {
-  font-family: var(--font-heading), sans-serif;
-  font-size: 1.25rem;
-  line-height: 1.75rem;
-  font-weight: 700;
-  letter-spacing: -0.03em;
-  font-variant-numeric: tabular-nums;
-}
-
-.statLabel {
-  font-size: 0.75rem;
-  line-height: 1rem;
-  color: #c7ccd1;
-}
-
-@media (max-width: 767px) {
-  .hero {
-    gap: 16px;
-  }
-}
-
-.tagline {
-  justify-self: center;
-  max-width: 1040px;
-  margin: 0;
-  font-family: var(--font-heading), sans-serif;
-  font-size: clamp(2.25rem, 5vw, 4.75rem);
-  line-height: 1.05;
-  font-weight: 600;
-  letter-spacing: -0.03em;
-  text-align: center;
-}
-
-.taglineLine {
-  display: block;
-  text-wrap: balance;
-}
-
-@keyframes word-on {
-  from {
-    opacity: 0.3;
-    animation-timing-function: var(--ease-fluid);
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  /* The section is 2.5 screens tall and its content is pinned from 28% to 72% of
-     its pass through the viewport; the words light up across that pinned stretch. */
-  @supports (animation-timeline: view()) {
-    .word {
-      animation: word-on linear both;
-      animation-timeline: --film-section;
-      animation-range: cover calc(28% + var(--w) / var(--n) * 36%) cover
-        calc(34% + var(--w) / var(--n) * 36%);
-    }
-  }
-
-  :global(html.mo-io) .word {
-    opacity: 0.3;
-    transition: opacity 700ms var(--ease-fluid);
-    transition-delay: calc(var(--w) * 70ms);
-  }
-
-  :global(html.mo-io) .tagline:global(.is-in) .word {
-    opacity: 1;
-  }
-}
-
-.statement,
-.benefit,
-.process {
-  display: grid;
-  gap: 16px;
-  justify-items: start;
-  max-width: 680px;
-}
-
-.process {
-  gap: 40px;
-  max-width: none;
-}
-
-.label {
-  margin: 0;
-  font-size: 0.875rem;
-  line-height: 1.25rem;
-  font-weight: 600;
-  color: #c7ccd1;
-}
-
-.statementText {
-  margin: 0;
-  font-family: var(--font-heading), sans-serif;
-  font-size: 1.875rem;
-  line-height: 2.25rem;
-  font-weight: 600;
-  letter-spacing: -0.02em;
-  text-wrap: balance;
-}
-
-.figure {
-  display: grid;
-  gap: 4px;
-  margin: 0;
-}
-
-/* The figure is the loudest thing in its section: display face, bold, as large
-   as the scale goes, lit by the brand glow. */
-.figureValue {
-  font-family: var(--font-heading), sans-serif;
-  font-size: 6rem;
-  line-height: 1;
-  font-weight: 700;
-  letter-spacing: -0.04em;
-  font-variant-numeric: tabular-nums;
-  color: #ffffff;
-  text-shadow: 0 0 48px rgba(45, 91, 255, 0.9), 0 0 16px rgba(102, 136, 255, 0.5);
-}
-
-/* DecodeText defaults to the mono face; the figure keeps the display one. */
-.figureValue .figureDecode {
-  font-family: inherit;
-}
-
-.figureUnit {
-  font-size: 1.125rem;
-  line-height: 1.75rem;
-  font-weight: 600;
-  /* A pale Cobalto (brand-900): the mid steps drop under 4.5:1 once the footage behind the veil is bright. */
-  color: #c1cfff;
-}
-
-.benefitTitle {
-  margin: 8px 0 0;
-  font-family: var(--font-heading), sans-serif;
-  font-size: 1.875rem;
-  line-height: 2.25rem;
-  font-weight: 600;
-  letter-spacing: -0.02em;
-  text-wrap: balance;
-}
-
-.benefitBody {
-  margin: 0;
-  font-size: 1.125rem;
-  line-height: 1.75rem;
-  color: #dcdddf;
-  text-wrap: pretty;
-}
-
-/* A text link, not a button: the page keeps a single call to action. */
-.home .caseLink {
-  font-size: 1rem;
-  line-height: 1.5rem;
-  font-weight: 600;
-  color: #ffffff;
+/* --- Text links ----------------------------------------------------------
+   Told apart by the underline, not by colour, and 44px tall so a thumb can
+   hit them: the text keeps its size and the box around it grows. */
+.home .textLink {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: var(--neutral-on-background-strong);
+  font-weight: 500;
   text-decoration: underline;
   text-decoration-thickness: 1px;
   text-underline-offset: 4px;
-  transition: color 700ms $ease;
+  /* Once UI greys every link's underline with !important. */
+  text-decoration-color: currentColor !important;
+  transition: none;
+
+  @include note;
 }
 
-.home .caseLink:hover {
+.home .textLink:hover {
+  color: #2549cb;
+  text-decoration-line: underline;
+}
+
+:global(#{$dark}) .home .textLink:hover {
   color: #a6baff;
 }
 
-.home .caseLink:focus-visible {
-  outline: 2px solid #ffffff;
-  outline-offset: 2px;
+.home .textLink:focus-visible {
+  @include focus-ring;
 }
 
-.steps {
+/* --- Hero ----------------------------------------------------------------
+   Taller than the screen: the film walks its first shot while the band leaves. */
+.hero {
+  min-height: 175vh;
+  min-height: 175svh;
+}
+
+/* The first screen: film above, the band docked along its bottom edge. */
+.firstScreen {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  height: 100vh;
+  height: 100svh;
+}
+
+.band {
+  box-sizing: border-box;
   display: grid;
-  gap: 32px;
-  margin: 0;
-  padding: 0;
-  list-style: none;
+  gap: 20px;
+  width: 100%;
+  padding: 28px clamp(20px, 4vw, 56px) 36px;
+  background: var(--page-background);
 }
 
-.step {
+.bandSide {
   display: grid;
-  gap: 8px;
-  align-content: start;
+  gap: 16px;
+  justify-items: start;
 }
 
-.stepNumber {
-  font-family: var(--font-code), monospace;
-  font-size: 0.875rem;
-  line-height: 1.25rem;
-  font-weight: 600;
-  color: #c1cfff;
-}
-
-.stepName {
+.heroTitle {
+  max-width: 15ch;
   margin: 0;
-  font-family: var(--font-heading), sans-serif;
-  font-size: 1.5rem;
-  line-height: 2rem;
+  font-family: $display;
+  font-size: clamp(2rem, 5.28vw, 4.75rem);
+  line-height: 1.02;
   font-weight: 600;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
 }
 
-.stepText {
+.byline {
+  max-width: 30ch;
   margin: 0;
-  font-size: 1rem;
-  line-height: 1.5rem;
-  color: #dcdddf;
+  color: var(--neutral-on-background-weak);
+
+  @include text;
 }
 
-/* ─── Under the film: the page's own background and theme tokens ─────── */
+/* --- Seats ---------------------------------------------------------------
+   A title card is a slab of the page's surface, at least one screen tall, that
+   slides over the film. Opaque on purpose: no word ever sits on a frame. */
+.seat {
+  display: grid;
+  align-items: center;
+  min-height: 100vh;
+  min-height: 100svh;
+  background: var(--page-background);
+}
+
+.seatInner {
+  box-sizing: border-box;
+  display: grid;
+  gap: 28px;
+  width: 100%;
+  max-width: 1280px;
+  margin-inline: auto;
+  padding: 112px clamp(20px, 4vw, 56px);
+}
+
+.seatName {
+  margin: 0;
+  font-family: $display;
+  font-size: clamp(3rem, 9vw, 8rem);
+  line-height: 0.98;
+  font-weight: 600;
+  letter-spacing: -0.025em;
+}
+
+.seatText {
+  display: grid;
+  gap: 20px;
+  justify-items: start;
+}
+
+.seatSaid {
+  max-width: 27ch;
+  margin: 0;
+  font-size: clamp(1.25rem, 1.95vw, 1.75rem);
+  line-height: 1.42;
+  text-wrap: pretty;
+}
+
+/* Film with nothing on it. The last stretch is longer: the stage unpins one
+   screen before its end, and the film has to finish before that. */
+.stretch {
+  min-height: 125vh;
+  min-height: 125svh;
+}
+
+.lastStretch {
+  min-height: 160vh;
+  min-height: 160svh;
+}
+
+/* --- Under the film ------------------------------------------------------ */
 .closing {
   box-sizing: border-box;
   display: grid;
-  gap: 96px;
+  gap: clamp(72px, 10vw, 128px);
   width: 100%;
-  max-width: 1120px;
+  max-width: 1200px;
   margin-inline: auto;
-  padding: 96px 24px 0;
-  color: var(--neutral-on-background-strong);
+  padding: clamp(72px, 10vw, 128px) clamp(20px, 4vw, 56px);
 }
 
 .block {
   display: grid;
   gap: 32px;
-  justify-items: start;
 }
 
 .blockTitle {
   margin: 0;
-  font-family: var(--font-heading), sans-serif;
-  font-size: 1.875rem;
-  line-height: 2.25rem;
+  font-family: $display;
+  font-size: clamp(1.75rem, 2.78vw, 2.5rem);
+  line-height: 1.12;
   font-weight: 600;
-  letter-spacing: -0.02em;
   text-wrap: balance;
 }
 
 .blockText {
-  max-width: 680px;
+  max-width: 60ch;
   margin: 0;
-  font-size: 1.125rem;
-  line-height: 1.75rem;
   color: var(--neutral-on-background-weak);
   text-wrap: pretty;
+
+  @include text;
 }
 
-.cards {
+.links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 28px;
+  margin: 0;
+}
+
+/* Work: picture, title, result. No card around them. */
+.work {
   display: grid;
-  gap: 24px;
-  width: 100%;
+  gap: 40px 32px;
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
-.cardItem {
+.home .workLink {
   display: grid;
-}
-
-.card {
-  display: grid;
-  height: 100%;
-  border: 1px solid var(--neutral-alpha-weak);
-  border-radius: 16px;
-  background: var(--surface-background);
-  overflow: hidden;
-  transition: border-color 700ms $ease, transform 700ms $ease;
-}
-
-.card:hover {
-  border-color: var(--brand-alpha-strong);
-  transform: translateY(-4px);
-}
-
-.home .cardLink {
-  display: grid;
-  grid-template-rows: auto 1fr;
+  gap: 14px;
   color: inherit;
   text-decoration: none;
+  transition: none;
 }
 
-.home .cardLink:focus-visible {
-  outline: 2px solid var(--cobalt);
-  outline-offset: -2px;
+.home .workLink:hover {
+  color: inherit;
 }
 
-.cardMedia {
+.home .workLink:focus-visible {
+  @include focus-ring;
+}
+
+.workMedia {
   position: relative;
   display: block;
   aspect-ratio: 16 / 9;
-  background: var(--neutral-alpha-weak);
+  overflow: hidden;
+  border-radius: 4px;
+  /* Shows while the picture loads, and for a project that has none. */
+  background: var(--surface-background);
 }
 
-.cardImage {
+.workImage {
   object-fit: cover;
 }
 
-.cardBody {
-  display: grid;
-  gap: 8px;
-  align-content: start;
-  padding: 24px;
-}
-
-/* Fixed height whether or not the project has a metric, so cards line up. */
-.cardMetric {
-  display: block;
-  min-height: 1.25rem;
-  font-size: 0.875rem;
-  line-height: 1.25rem;
-  color: var(--brand-on-background-weak);
-}
-
-.cardTitle {
-  font-family: var(--font-heading), sans-serif;
+.workTitle {
+  font-family: $display;
   font-size: 1.25rem;
   line-height: 1.75rem;
   font-weight: 600;
-  color: var(--neutral-on-background-strong);
   text-wrap: balance;
 }
 
-.cardSummary {
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 3;
-  overflow: hidden;
-  font-size: 1rem;
-  line-height: 1.5rem;
-  color: var(--neutral-on-background-weak);
-}
-
-/* Text links in the closing sections: never styled as buttons, so the page keeps one CTA. */
-.home .textLink {
-  font-size: 1rem;
-  line-height: 1.5rem;
-  font-weight: 600;
-  color: var(--neutral-on-background-strong);
+.workLink:hover .workTitle {
   text-decoration: underline;
   text-decoration-thickness: 1px;
   text-underline-offset: 4px;
-  transition: color 700ms $ease;
 }
 
-.home .textLink:hover {
-  color: var(--brand-on-background-weak);
-}
+.workResult {
+  color: var(--neutral-on-background-weak);
+  font-variant-numeric: tabular-nums;
 
-.home .textLink:focus-visible {
-  outline: 2px solid var(--cobalt);
-  outline-offset: 2px;
+  @include note;
 }
 
 .hiring {
   display: grid;
-  gap: 24px;
-  width: 100%;
-  padding: 32px 0;
-  border-top: 1px solid var(--neutral-alpha-weak);
-  border-bottom: 1px solid var(--neutral-alpha-weak);
-}
+  gap: 20px;
+  padding-top: 32px;
 
-.hiring > div {
-  display: grid;
-  gap: 12px;
-}
-
-.hiringLinks {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 24px;
-  margin: 0;
+  @include line(top);
 }
 
 .faq {
   display: grid;
-  width: 100%;
-  max-width: 800px;
+  max-width: 760px;
 }
 
 .faqItem {
-  border-bottom: 1px solid var(--neutral-alpha-weak);
+  @include line(bottom);
 }
 
 .faqQuestion {
@@ -502,165 +347,121 @@ $ease: var(--ease-fluid);
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  padding: 24px 0;
-  font-family: var(--font-heading), sans-serif;
-  font-size: 1.125rem;
-  line-height: 1.75rem;
-  font-weight: 600;
+  min-height: 44px;
+  padding: 18px 0;
+  font-weight: 500;
   cursor: pointer;
   list-style: none;
-  transition: color 700ms $ease;
+
+  @include text;
 }
 
 .faqQuestion::-webkit-details-marker {
   display: none;
 }
 
-/* A plus that turns into a cross when the answer is open. */
+/* A plus drawn with two bars; `currentColor` twice is a flat fill, not a gradient. */
 .faqQuestion::after {
   content: "";
   flex: none;
-  width: 16px;
-  height: 16px;
-  background: linear-gradient(currentColor, currentColor) center / 16px 2px no-repeat,
-    linear-gradient(currentColor, currentColor) center / 2px 16px no-repeat;
-  transition: transform 700ms $ease;
+  width: 14px;
+  height: 14px;
+  color: var(--neutral-on-background-weak);
+  background:
+    linear-gradient(currentColor, currentColor) center / 14px 1.5px no-repeat,
+    linear-gradient(currentColor, currentColor) center / 1.5px 14px no-repeat;
 }
 
+/* Open: the plus loses its upright and reads as a minus. */
 .faqItem[open] .faqQuestion::after {
-  transform: rotate(45deg);
-}
-
-.faqQuestion:hover {
-  color: var(--brand-on-background-weak);
+  background: linear-gradient(currentColor, currentColor) center / 14px 1.5px no-repeat;
 }
 
 .faqQuestion:focus-visible {
-  outline: 2px solid var(--cobalt);
-  outline-offset: 2px;
+  @include focus-ring;
 }
 
 .faqAnswer {
-  max-width: 680px;
+  max-width: 60ch;
   margin: 0;
-  padding: 0 0 24px;
-  font-size: 1rem;
-  line-height: 1.5rem;
+  padding: 0 0 22px;
   color: var(--neutral-on-background-weak);
+
+  @include text;
 }
 
 .finalCta {
   display: grid;
-  gap: 24px;
-  justify-items: center;
-  width: 100%;
-  box-sizing: border-box;
-  padding: 64px 24px;
-  border-radius: 24px;
-  background: var(--surface-background);
-  border: 1px solid var(--neutral-alpha-medium);
-  text-align: center;
+  gap: 20px;
+  justify-items: start;
 }
 
 .finalTitle {
-  max-width: 680px;
+  max-width: 16ch;
   margin: 0;
-  font-family: var(--font-heading), sans-serif;
-  font-size: 1.875rem;
-  line-height: 2.25rem;
+  font-family: $display;
+  font-size: clamp(2.25rem, 5vw, 4.5rem);
+  line-height: 1.02;
   font-weight: 600;
   letter-spacing: -0.02em;
   text-wrap: balance;
 }
 
-.flat {
-  box-sizing: border-box;
-  width: 100%;
-  max-width: 1120px;
-  margin-inline: auto;
-  padding: 96px 24px;
-}
-
 @media (min-width: 768px) {
-  .headline {
-    font-size: 3.75rem;
-    line-height: 1;
-  }
-
-  .subline {
-    font-size: 1.25rem;
-    line-height: 1.75rem;
-  }
-
-  .statementText {
-    font-size: 3rem;
-    line-height: 1;
-  }
-
-  .figureValue {
-    font-size: 8rem;
-  }
-
-  .benefitTitle {
-    font-size: 2.25rem;
-    line-height: 2.5rem;
-  }
-
-  .steps {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 48px;
-  }
-
-  .cards {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-
-  .blockTitle {
-    font-size: 2.25rem;
-    line-height: 2.5rem;
+  .work {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .hiring {
-    grid-template-columns: 1fr auto;
+    grid-template-columns: minmax(0, 1fr) auto;
     align-items: end;
   }
+}
 
-  .finalTitle {
-    font-size: 3rem;
-    line-height: 1;
+@media (min-width: 900px) {
+  .band {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: end;
+    gap: 48px;
+    padding-top: 36px;
+    padding-bottom: 44px;
   }
 
-  .stats {
-    grid-template-columns: repeat(4, max-content);
-    gap: 16px 40px;
-    justify-content: start;
-    width: auto;
-    margin-top: 24px;
+  .seatInner {
+    grid-template-columns: minmax(0, 6fr) minmax(0, 5fr);
+    align-items: end;
+    gap: 64px;
+  }
+}
+
+@media (min-width: 1100px) {
+  .work {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+/* Section titles reach 32px here; below that size the tracking stays at 0. */
+@media (min-width: 1152px) {
+  .blockTitle {
+    letter-spacing: -0.01em;
+  }
+}
+
+/* Phones keep the nav bar at the bottom of the screen: the hero band and the
+   last block leave that strip free. The band's 104px put the button between the
+   bar (22px under it) and the chatbot's greeting (12px over it), which opens
+   above its launcher 168px from the bottom of the screen. */
+@media (max-width: 768px) {
+  .band {
+    padding-bottom: 104px;
   }
 
-  .statValue {
-    font-size: 2.25rem;
-    line-height: 2.5rem;
-  }
-
-  .statLabel {
-    font-size: 0.875rem;
-    line-height: 1.25rem;
+  .closing {
+    padding-bottom: 136px;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .card,
-  .faqQuestion,
-  .faqQuestion::after,
-  .home .textLink {
-    transition: none;
-  }
-
-  .card:hover {
-    transform: none;
-  }
-
   .home .cta {
     transition: none;
   }

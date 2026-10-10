@@ -1,7 +1,7 @@
 /* ─── Motion system ────────────────────────────────────────────────────────
    CSS-first: scroll-driven animations where supported, an IntersectionObserver
    fallback under html.mo-io, transform/opacity only, and a reduced-motion
-   escape hatch for everything (the IntroLoader is exempt by brand decision). */
+   escape hatch for everything. */
 
 :root {
   --dur-xs: 150ms;

@@ -12,7 +12,7 @@ interface ScrollFilmProps {
   srcMobile: string;
   poster: string;
   posterMobile: string;
-  /** Folder holding one still per beat: `<id>.webp` and `<id>-m.webp`. */
+  /** Folder holding one still per beat: `<still>.webp` and `<still>-m.webp`. */
   stills: string;
   beats: FilmBeat[];
   duration: number;
@@ -21,11 +21,12 @@ interface ScrollFilmProps {
 
 /**
  * A full-viewport film pinned behind its children and scrubbed by scroll: each
- * child section tagged data-film-beat walks its beat as it crosses the top of
- * the viewport. The clip is fetched once after `load` and played from a Blob,
- * so every seek is instant (with the plain URL as a fallback where a Blob will
- * not play). Reduced motion and the lite tier never download
- * it: they get one still per section instead, and every word of the content.
+ * child tagged data-film-beat walks its beat as it crosses the top of the
+ * viewport, and a child without one (a title card) holds the film where the
+ * beat before it ended. The clip is fetched once after `load` and played from a
+ * Blob, so every seek is instant (with the plain URL as a fallback where a Blob
+ * will not play). Reduced motion and the lite tier never download it: they get
+ * one still per beat instead, and every word of the content.
  */
 export function ScrollFilm({
   src,
@@ -51,19 +52,33 @@ export function ScrollFilm({
     return () => query.removeEventListener("change", update);
   }, []);
 
-  // Tells the rest of the page whether the film is still under the nav bar, so the
-  // header can keep its labels readable over dark footage whatever the theme
-  // (see custom.css). The bar sits at the top on desktop and at the bottom on phones.
+  // Tells the rest of the page what is under the nav bar, so the header can keep
+  // its labels readable whatever the theme (see custom.css): white over the
+  // footage, the theme's own colour once the film has scrolled away
+  // (data-past-film) or while a page-coloured surface covers them
+  // (data-nav-over-card). The bar sits at the top on desktop and at the bottom on phones.
   useEffect(() => {
     const root = rootRef.current;
     if (!root) return;
     const html = document.documentElement;
     const phone = window.matchMedia("(max-width: 768px)");
+    const surfaces = Array.from(root.querySelectorAll<HTMLElement>("[data-opaque]"));
     let frame = 0;
     const update = () => {
       frame = 0;
       const line = phone.matches ? window.innerHeight - 40 : 80;
       html.toggleAttribute("data-past-film", root.getBoundingClientRect().bottom <= line);
+      // The place and time labels are one line of text near the top of the bar
+      // (its box runs from about 20 to 38 px). A surface is under them while it
+      // spans the band from 30 to 44 px. Phones do not show the labels, and their
+      // bar brings its own background.
+      const covered =
+        !phone.matches &&
+        surfaces.some((surface) => {
+          const rect = surface.getBoundingClientRect();
+          return rect.top <= 30 && rect.bottom >= 44;
+        });
+      html.toggleAttribute("data-nav-over-card", covered);
     };
     const queue = () => {
       if (!frame) frame = requestAnimationFrame(update);
@@ -76,6 +91,7 @@ export function ScrollFilm({
       window.removeEventListener("scroll", queue);
       window.removeEventListener("resize", queue);
       html.removeAttribute("data-past-film");
+      html.removeAttribute("data-nav-over-card");
     };
   }, []);
 
@@ -93,7 +109,7 @@ export function ScrollFilm({
 
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (reduce || document.documentElement.dataset.fx === "lite") {
-      // No video: the poster is swapped for the still of whichever section is on stage.
+      // No video: the poster is swapped for the still of whichever beat is on stage.
       const img = stage.querySelector("img");
       const source = stage.querySelector("source");
       let shown = beats[0]?.id ?? "";
@@ -103,8 +119,9 @@ export function ScrollFilm({
         const id = activeBeatId(beats, measure(), stage.offsetHeight / 2);
         if (!img || id === shown) return;
         shown = id;
-        if (source) source.srcset = `${stills}/${id}-m.webp`;
-        img.src = `${stills}/${id}.webp`;
+        const still = beats.find((beat) => beat.id === id)?.still ?? id;
+        if (source) source.srcset = `${stills}/${still}-m.webp`;
+        img.src = `${stills}/${still}.webp`;
       };
       const queue = () => {
         if (!pending) pending = requestAnimationFrame(swap);
@@ -136,6 +153,7 @@ export function ScrollFilm({
       current += (target - current) * 0.2;
       if (Math.abs(target - current) < 0.004) current = target;
       root.style.setProperty("--film-veil", String(veilAt(current)));
+      root.style.setProperty("--film-progress", (current / duration).toFixed(4));
       // Never queue a seek behind one still decoding: fast flicks would pile up and freeze the clip.
       if (ready && !video.seeking && Math.abs(video.currentTime - current) > step) {
         video.currentTime = current;
@@ -247,6 +265,7 @@ export function ScrollFilm({
           data-film-video=""
         />
         <div className={styles.veil} />
+        <div className={styles.progress} data-film-progress="" />
       </div>
       <div className={styles.track}>{children}</div>
     </div>

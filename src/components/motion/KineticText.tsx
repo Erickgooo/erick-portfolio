@@ -3,7 +3,7 @@ import styles from "./KineticText.module.scss";
 
 interface KineticTextProps {
   text: string;
-  /** "load": plays on first paint (paused while html.intro-pending). "view": scroll-driven. */
+  /** "load": plays on first paint. "view": scroll-driven. */
   mode?: "load" | "view";
 }
 

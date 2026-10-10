@@ -1,10 +1,8 @@
-import { Mailchimp } from "@/components";
 import { ScrollFilm } from "@/components/film/ScrollFilm";
 import { FILM_BEATS, FILM_DURATION } from "@/components/film/filmMap";
-import { Argument } from "@/components/landing/Argument";
 import { Closing } from "@/components/landing/Closing";
 import { Hero } from "@/components/landing/Hero";
-import { Tagline } from "@/components/landing/Tagline";
+import { Seats } from "@/components/landing/Seats";
 import styles from "@/components/landing/landing.module.scss";
 import { about, baseURL, home, person } from "@/resources";
 import { Meta, Schema } from "@once-ui-system/core";
@@ -45,13 +43,9 @@ export default function Home() {
         duration={FILM_DURATION}
       >
         <Hero />
-        <Tagline />
-        <Argument />
+        <Seats />
       </ScrollFilm>
       <Closing />
-      <div className={styles.flat}>
-        <Mailchimp />
-      </div>
     </div>
   );
 }

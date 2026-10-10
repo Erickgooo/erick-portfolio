@@ -1,3 +1,5 @@
+import { existsSync } from "node:fs";
+import path from "node:path";
 import { expect, test } from "@playwright/test";
 import {
   FILM_BEATS,
@@ -7,6 +9,7 @@ import {
   filmTimeAt,
   veilAt,
 } from "../../src/components/film/filmMap";
+import { landing } from "../../src/resources/landing";
 
 const beats: FilmBeat[] = [
   { id: "hero", start: 0, end: 3.17 },
@@ -53,22 +56,45 @@ test("sections without a beat or without height are ignored", () => {
   expect(filmTimeAt(beats, boxes)).toBe(0);
 });
 
-test("the veil darkens during the white flashes", () => {
-  expect(veilAt(1)).toBe(0.58);
-  expect(veilAt(2)).toBe(0.82);
-  expect(veilAt(7)).toBe(0.82);
-  expect(veilAt(12.5)).toBe(0.82);
-  expect(veilAt(15.5)).toBe(0.82);
-  expect(veilAt(16)).toBe(0.58);
+test("the film plays without a veil, except during the white flashes", () => {
+  expect(veilAt(1)).toBe(0);
+  expect(veilAt(2)).toBe(0.55);
+  expect(veilAt(7)).toBe(0.55);
+  expect(veilAt(12.5)).toBe(0.55);
+  expect(veilAt(15.5)).toBe(0.55);
+  expect(veilAt(16)).toBe(0);
 });
 
 test("the beats cover the whole film without gaps", () => {
+  expect(FILM_BEATS.map((beat) => beat.id)).toEqual([
+    "hero",
+    "after-brand",
+    "after-content",
+    "after-paid-media",
+    "after-crm",
+    "after-software",
+  ]);
   expect(FILM_BEATS[0].start).toBe(0);
   for (let i = 1; i < FILM_BEATS.length; i++) {
     expect(FILM_BEATS[i].start).toBe(FILM_BEATS[i - 1].end);
   }
   expect(FILM_BEATS.at(-1)?.end).toBe(FILM_DURATION);
   expect(new Set(FILM_BEATS.map((beat) => beat.id)).size).toBe(FILM_BEATS.length);
+});
+
+test("every seat of the department is followed by its own stretch of film", () => {
+  expect(landing.seats.map((seat) => `after-${seat.id}`)).toEqual(
+    FILM_BEATS.slice(1).map((beat) => beat.id),
+  );
+});
+
+test("every beat has a landscape and a portrait still on disk", () => {
+  for (const beat of FILM_BEATS) {
+    const still = beat.still ?? beat.id;
+    for (const file of [`${still}.webp`, `${still}-m.webp`]) {
+      expect(existsSync(path.join("public", "images", "film", file)), file).toBe(true);
+    }
+  }
 });
 
 test("the last section ends its beat when the stage unpins, not after it has scrolled away", () => {

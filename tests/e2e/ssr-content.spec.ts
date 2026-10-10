@@ -7,7 +7,7 @@ test.describe("server-rendered content", () => {
   test.use({ javaScriptEnabled: false });
 
   const cases = [
-    { path: "/", text: /I build your marketing engine from zero/ },
+    { path: "/", text: /The marketing department is one person\./ },
     { path: "/about", text: /Erick Mahecha/ },
     { path: "/work", text: /Projects/ },
     { path: "/blog/my-workspace", text: /My Workspace/ },
@@ -58,9 +58,6 @@ test("client navigation never flashes NotFound", async ({ page }) => {
   // click-target bug, just a test-environment artifact of testing a
   // production CSP over plain HTTP.
 
-  // Starts on /about, not /, so the Home-only IntroLoader overlay (which
-  // covers the page and blocks pointer events for several seconds on first
-  // load) never appears and can't interfere with the clicks below.
   await page.goto("/about");
   const seen: string[] = [];
   await page.exposeFunction("__record", (t: string) => seen.push(t));
@@ -71,10 +68,9 @@ test("client navigation never flashes NotFound", async ({ page }) => {
       }
     }).observe(document.body, { childList: true, subtree: true });
   });
-  // headerLink() opens the menu first on phones, where the links are collapsed.
-  await (await headerLink(page, "Projects")).click();
+  await headerLink(page, "Projects").click();
   await page.waitForURL("**/work");
-  await (await headerLink(page, "About")).click();
+  await headerLink(page, "About").click();
   await page.waitForURL((url) => url.pathname === "/about");
   expect(seen).toEqual([]);
 });

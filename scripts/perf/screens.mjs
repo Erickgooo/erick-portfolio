@@ -21,7 +21,7 @@ for (const [vpName, vp] of Object.entries({ mobile: devices["Pixel 7"], desktop:
     for (const [name, p] of Object.entries(PAGES)) {
       await page.goto(base + p);
       await page.waitForLoadState("networkidle");
-      await page.waitForTimeout(name === "home" ? 6000 : 800);
+      await page.waitForTimeout(800);
       await page.screenshot({ path: `${out}/${name}-${vpName}-${scheme}.png`, fullPage: true });
     }
     await context.close();

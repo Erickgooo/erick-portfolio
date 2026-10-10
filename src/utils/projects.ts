@@ -18,6 +18,27 @@ export function sortProjects<T extends { metadata: { publishedAt: string } }>(po
   );
 }
 
+/** The newest projects that may be listed in public, whether or not they carry a headline result. */
+export function recentProjects<T extends { slug: string; metadata: { publishedAt: string } }>(
+  posts: T[],
+  count: number,
+  config: ProtectedRoutesConfig = protectedRoutes,
+): T[] {
+  return sortProjects(publicProjects(posts, config)).slice(0, count);
+}
+
+/**
+ * The project a public page may link to by slug: null when no project has that
+ * slug or when its page is behind the password, so the link is left out.
+ */
+export function linkableProject<T extends { slug: string }>(
+  posts: T[],
+  slug: string,
+  config: ProtectedRoutesConfig = protectedRoutes,
+): T | null {
+  return publicProjects(posts, config).find((post) => post.slug === slug) ?? null;
+}
+
 /** First still image of a project (case-study carousels may start with a video). */
 export function coverImage(images: string[]): string | null {
   return images.find((src) => !VIDEO.test(src)) ?? null;

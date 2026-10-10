@@ -79,12 +79,6 @@ for (const target of TARGETS) {
 
     const response = await page.goto(BASE + route, { waitUntil: "load" });
     const csp = response?.headers()["content-security-policy"] ?? "";
-    // Home plays the intro first; its overlay blocks the pointer until it hands off.
-    await page
-      .waitForFunction(() => !document.documentElement.classList.contains("intro-pending"), null, {
-        timeout: 9000,
-      })
-      .catch(() => {});
     const boot = await page.evaluate(() => ({
       fx: document.documentElement.dataset.fx ?? null,
       io: document.documentElement.classList.contains("mo-io"),
