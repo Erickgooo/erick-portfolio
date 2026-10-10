@@ -114,7 +114,7 @@ export default async function Blog({ params }: { params: Promise<{ slug: string 
                 priority
                 sizes="(min-width: 768px) 100vw, 768px"
                 border="neutral-alpha-weak"
-                radius="l"
+                style={{ borderRadius: 4 }}
                 marginTop="12"
                 marginBottom="8"
               />

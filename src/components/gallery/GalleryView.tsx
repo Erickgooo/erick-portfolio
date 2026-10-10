@@ -59,25 +59,27 @@ function buildGalleryItems(images: RawImage[]): GalleryItem[] {
   return items;
 }
 
-// ─── Hover wrapper ────────────────────────────────────────────────────────────
-function HoverWrapper({
+// ─── Cell button ──────────────────────────────────────────────────────────────
+// What opens a picture or a group: a real button, so the keyboard and a screen
+// reader reach it. Its name says what it opens.
+function CellButton({
   children,
+  label,
   onClick,
 }: {
   children: React.ReactNode;
-  onClick?: () => void;
+  label: string;
+  onClick: () => void;
 }) {
   const [hovered, setHovered] = useState(false);
   return (
-    <Flex
-      fillWidth
-      position="relative"
-      radius="m"
-      overflow="hidden"
+    <button
+      type="button"
+      className={styles.cell}
+      aria-label={label}
+      aria-haspopup="dialog"
       style={{
-        cursor: onClick ? "pointer" : "default",
         transform: hovered ? "scale(1.025)" : "scale(1)",
-        transition: "transform 0.25s ease, box-shadow 0.25s ease",
         boxShadow: hovered ? "0 8px 32px rgba(0,0,0,0.35)" : "0 2px 8px rgba(0,0,0,0.12)",
       }}
       onMouseEnter={() => setHovered(true)}
@@ -95,7 +97,7 @@ function HoverWrapper({
           pointerEvents: "none",
         }}
       />
-    </Flex>
+    </button>
   );
 }
 
@@ -129,15 +131,15 @@ function ImageCell({ item }: { item: Extract<GalleryItem, { type: "image" }> }) 
 
   return (
     <>
-      <HoverWrapper onClick={() => setOpen(true)}>
+      <CellButton label={`Open picture: ${item.image.alt}`} onClick={() => setOpen(true)}>
+        {/* No radius of its own: the button clips it to 4px. The button carries the name. */}
         <Media
           sizes="(max-width: 560px) 100vw, (max-width: 900px) 50vw, 33vw"
-          radius="m"
           aspectRatio={aspectRatio}
           src={item.image.src}
-          alt={item.image.alt}
+          alt=""
         />
-      </HoverWrapper>
+      </CellButton>
 
       {/* Lightbox — Media with its default `aspectRatio="original"` renders
           next/image with automatic height and zero cropping, so the image
@@ -146,14 +148,14 @@ function ImageCell({ item }: { item: Extract<GalleryItem, { type: "image" }> }) 
       <Dialog
         isOpen={open}
         onClose={() => setOpen(false)}
-        title={<span />}
+        title={item.image.alt}
         style={{ maxWidth: 900 }}
       >
         <Media
           src={item.image.src}
           alt={item.image.alt}
           sizes="(max-width: 900px) 100vw, 900px"
-          radius="m"
+          style={{ borderRadius: 4 }}
         />
       </Dialog>
     </>
@@ -168,24 +170,33 @@ function CarouselCell({ item }: { item: Extract<GalleryItem, { type: "carousel" 
 
   return (
     <>
-      <HoverWrapper onClick={() => setOpen(true)}>
+      <CellButton
+        label={
+          count > 1
+            ? `Open ${count} pictures: ${item.coverImage.alt}`
+            : `Open picture: ${item.coverImage.alt}`
+        }
+        onClick={() => setOpen(true)}
+      >
         {/* Cover thumbnail */}
         <Media
           sizes="(max-width: 560px) 100vw, (max-width: 900px) 50vw, 33vw"
-          radius="m"
           aspectRatio={aspectRatio}
           src={item.coverImage.src}
-          alt={item.coverImage.alt}
+          alt=""
         />
 
-        {/* Badge: opaque, so nothing behind it needs blurring. */}
-        <Flex position="absolute" className={styles.badge}>
-          <Icon name="gallery" size="xs" onBackground="neutral-strong" />
-          <Text variant="label-default-s" className={styles.badgeCount}>
-            1/{count}
-          </Text>
-        </Flex>
-      </HoverWrapper>
+        {/* Badge: opaque, so nothing behind it needs blurring. A group of one has
+            nothing to count. */}
+        {count > 1 && (
+          <Flex position="absolute" className={styles.badge}>
+            <Icon name="gallery" size="xs" onBackground="neutral-strong" />
+            <Text variant="label-default-s" className={styles.badgeCount}>
+              1/{count}
+            </Text>
+          </Flex>
+        )}
+      </CellButton>
 
       {/* Once UI's Carousel fades each slide in through a blurred filter, which
           the motion rule forbids. The pictures are a row that scrolls and snaps,
@@ -194,7 +205,7 @@ function CarouselCell({ item }: { item: Extract<GalleryItem, { type: "carousel" 
       <Dialog
         isOpen={open}
         onClose={() => setOpen(false)}
-        title={<span />}
+        title={item.coverImage.alt}
         style={{
           maxWidth: 640,
           width: "100%",
@@ -218,9 +229,11 @@ function CarouselCell({ item }: { item: Extract<GalleryItem, { type: "carousel" 
                 sizes="(max-width: 640px) 100vw, 640px"
                 style={{ objectFit: "cover" }}
               />
-              <span className={styles.position}>
-                {index + 1}/{count}
-              </span>
+              {count > 1 && (
+                <span className={styles.position}>
+                  {index + 1}/{count}
+                </span>
+              )}
             </li>
           ))}
         </ul>

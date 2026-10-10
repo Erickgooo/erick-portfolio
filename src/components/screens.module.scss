@@ -7,8 +7,11 @@
 
 .screen {
   box-sizing: border-box;
-  display: grid;
-  justify-items: center;
+  /* A column, not a grid: a grid's rows stretch to fill a tall parent and pulled
+     the button out of shape. */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   gap: 16px;
   width: 100%;
   max-width: 480px;

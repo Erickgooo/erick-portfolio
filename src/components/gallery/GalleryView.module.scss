@@ -1,3 +1,5 @@
+@use "../system.scss" as system;
+
 // Gallery-only hover treatment for YouTubeFacade tiles, matching the scale +
 // shadow effect ImageCell/CarouselCell get from HoverWrapper. Scoped to a
 // className passed from GalleryView so MDX's YouTubeEmbed (which renders the
@@ -16,6 +18,33 @@
       transform: scale(1.025);
       box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
     }
+  }
+}
+
+// The button that opens a picture or a group. It takes the whole tile, so it is
+// far larger than a thumb needs; the 4px corner clips the picture inside.
+.cell {
+  position: relative;
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  border-radius: 4px;
+  background: none;
+  color: inherit;
+  font: inherit;
+  overflow: hidden;
+  cursor: pointer;
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease;
+
+  &:focus-visible {
+    @include system.focus-ring;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
   }
 }
 

@@ -405,7 +405,8 @@ for (const viewport of [PHONE, DESKTOP]) {
   followsThePageSystem("/blog", viewport, { ...FULL_PAGE, texts: 8 });
 }
 
-// The gallery is pictures and clips behind buttons: no link in its body.
+// The gallery is pictures and clips behind buttons (every cell is one, and counted
+// below): no link in its body.
 for (const viewport of [PHONE, DESKTOP]) {
   followsThePageSystem("/gallery", viewport, { ...FULL_PAGE, links: 0 });
 }
@@ -819,6 +820,7 @@ test("/gallery: the counter on a group is opaque and square-cornered", async ({ 
           radius: cs.borderRadius,
           blur: cs.getPropertyValue("backdrop-filter") || "none",
           size: Number.parseFloat(getComputedStyle(el).fontSize),
+          pictures: Number((el.textContent ?? "").split("/")[1]),
         };
       }),
   );
@@ -829,7 +831,152 @@ test("/gallery: the counter on a group is opaque and square-cornered", async ({ 
       radius: "4px",
       blur: "none",
       size: expect.any(Number),
+      pictures: expect.any(Number),
     });
+    // A group of one has nothing to count, so it wears no badge.
+    expect(badge.pictures).toBeGreaterThan(1);
     expect(badge.size).toBeGreaterThanOrEqual(13);
   }
 });
+
+test("/gallery: each cell is a button that names what it opens", async ({ page }) => {
+  await page.setViewportSize({ width: PHONE.width, height: PHONE.height });
+  await page.goto("/gallery");
+  await settled(page);
+  const cells = await page.evaluate(() =>
+    Array.from(
+      document.querySelectorAll('.main-content-wrapper button[aria-haspopup="dialog"]'),
+    ).map((el) => {
+      const box = el.getBoundingClientRect();
+      return {
+        name: el.getAttribute("aria-label") ?? "",
+        w: box.width,
+        h: box.height,
+      };
+    }),
+  );
+  expect(cells.length).toBeGreaterThan(10);
+  expect(cells.filter((c) => !/^Open (picture|\d+ pictures): \S/.test(c.name))).toEqual([]);
+  expect(cells.filter((c) => c.w < 44 || c.h < 44)).toEqual([]);
+  // At least one group says how many pictures it holds.
+  expect(cells.some((c) => /^Open \d+ pictures/.test(c.name))).toBe(true);
+});
+
+test.describe("the gallery from the keyboard", () => {
+  // Safari does not put buttons in the Tab order unless a system setting says so.
+  test.skip(({ browserName }) => browserName === "webkit", "Safari skips buttons when tabbing");
+
+  const tabTo = async (page: Page, target: import("@playwright/test").Locator) => {
+    for (let presses = 0; presses < 80; presses++) {
+      if (await target.evaluate((el) => el === document.activeElement)) return;
+      await page.keyboard.press("Tab");
+    }
+    throw new Error("Tab never reached the element");
+  };
+
+  test("a picture opens with Enter, has a name and gives focus back on Escape", async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: DESKTOP.width, height: DESKTOP.height });
+    await page.goto("/gallery");
+    await settled(page);
+    const cell = page.locator('button[aria-haspopup="dialog"][aria-label^="Open picture"]').first();
+    await tabTo(page, cell);
+    await page.keyboard.press("Enter");
+    const dialog = page.getByRole("dialog");
+    await expect(dialog).toBeVisible();
+    await expect(dialog).toHaveAccessibleName(/\S/);
+    await page.keyboard.press("Escape");
+    await expect(dialog).toBeHidden();
+    await expect(cell).toBeFocused();
+  });
+
+  test("a group's pictures can be scrolled from the keyboard", async ({ page }) => {
+    await page.setViewportSize({ width: DESKTOP.width, height: DESKTOP.height });
+    await page.goto("/gallery");
+    await settled(page);
+    const cell = page.locator('button[aria-haspopup="dialog"][aria-label*=" pictures:"]').first();
+    await tabTo(page, cell);
+    await page.keyboard.press("Enter");
+    const dialog = page.getByRole("dialog");
+    await expect(dialog).toBeVisible();
+    await expect(dialog).toHaveAccessibleName(/\S/);
+    const row = dialog.locator('ul[aria-label^="Pictures"]');
+    await expect(row).toHaveCount(1);
+    await tabTo(page, row);
+    await expect(row).toBeFocused();
+    await page.keyboard.press("Escape");
+    await expect(dialog).toBeHidden();
+    await expect(cell).toBeFocused();
+  });
+});
+
+// ─── The short screens keep their button the size of the call to action ─────
+
+for (const path of SHORT_PAGES.slice(1)) {
+  for (const viewport of [PHONE, DESKTOP]) {
+    test(`${path}: the button is one call to action tall at ${viewport.width}px`, async ({
+      page,
+    }) => {
+      await page.setViewportSize({ width: viewport.width, height: viewport.height });
+      await page.goto(path);
+      await settled(page);
+      const button = page.locator('.main-content-wrapper [class*="screens_cta"]');
+      await expect(button).toHaveCount(1);
+      const box = await button.boundingBox();
+      expect(box?.height).toBeGreaterThanOrEqual(44);
+      expect(box?.height).toBeLessThanOrEqual(56);
+      // One compact group: the heading, the line and the button sit within a few hundred pixels.
+      const group = await page.evaluate(() => {
+        const screen = document.querySelector('[class*="screens_screen"]') as HTMLElement;
+        return screen.firstElementChild && screen.lastElementChild
+          ? screen.lastElementChild.getBoundingClientRect().bottom -
+              screen.firstElementChild.getBoundingClientRect().top
+          : Number.POSITIVE_INFINITY;
+      });
+      expect(group).toBeLessThan(320);
+    });
+  }
+}
+
+test("/unauthorized: the field's show button says what it does", async ({ page }) => {
+  await page.goto("/unauthorized");
+  await settled(page);
+  const show = page.getByRole("button", { name: "Show password" });
+  await expect(show).toBeVisible();
+  await expect(page.locator("#password")).toHaveAttribute("type", "password");
+  await show.click();
+  await expect(page.locator("#password")).toHaveAttribute("type", "text");
+  await expect(page.getByRole("button", { name: "Hide password" })).toBeVisible();
+});
+
+// ─── Pictures have 4px corners ──────────────────────────────────────────────
+
+for (const path of ["/work", "/blog", "/blog/my-workspace", "/gallery"]) {
+  test(`${path}: every picture is clipped to 4px corners`, async ({ page }) => {
+    await page.goto(path);
+    await settled(page);
+    const found = await page.evaluate(() => {
+      const bad: string[] = [];
+      let pictures = 0;
+      for (const img of Array.from(document.querySelectorAll(".main-content-wrapper img"))) {
+        // Avatars are circles on purpose.
+        if (img.closest('[class*="Avatar"]') || !img.checkVisibility()) continue;
+        pictures += 1;
+        // The picture and what clips it, up to the first box that hides its overflow.
+        const radii: string[] = [];
+        for (let node: Element | null = img; node; node = node.parentElement) {
+          const cs = getComputedStyle(node);
+          if (cs.borderRadius !== "0px") radii.push(cs.borderRadius);
+          if (node !== img && cs.overflow !== "visible") break;
+        }
+        if (radii.some((radius) => radius !== "4px")) {
+          bad.push(`${radii.join(" ")} ${(img.getAttribute("src") ?? "").slice(-40)}`);
+        }
+      }
+      return { pictures, bad };
+    });
+    expect(found.pictures).toBeGreaterThan(0);
+    expect(found.bad).toEqual([]);
+  });
+}

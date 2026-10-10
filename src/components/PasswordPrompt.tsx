@@ -1,7 +1,7 @@
 "use client";
 
 import styles from "@/components/screens.module.scss";
-import { Heading, PasswordInput } from "@once-ui-system/core";
+import { Heading, IconButton, Input } from "@once-ui-system/core";
 import { useState } from "react";
 
 /**
@@ -13,6 +13,7 @@ const PasswordPrompt: React.FC = () => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | undefined>(undefined);
   const [submitting, setSubmitting] = useState(false);
+  const [shown, setShown] = useState(false);
 
   const handleSubmit = async () => {
     if (submitting) return;
@@ -48,15 +49,28 @@ const PasswordPrompt: React.FC = () => {
       <Heading variant="display-strong-s" align="center" wrap="balance">
         This page is password protected
       </Heading>
-      <PasswordInput
+      {/* Once UI's PasswordInput names its show/hide button "eye". This is the same
+          field, with a button that says what it does. */}
+      <Input
         id="password"
         label="Password"
+        type={shown ? "text" : "password"}
         value={password}
         onChange={(e) => setPassword(e.target.value)}
         onKeyDown={(e) => {
           if (e.key === "Enter") handleSubmit();
         }}
         errorMessage={error}
+        hasSuffix={
+          <IconButton
+            type="button"
+            variant="ghost"
+            size="s"
+            icon={shown ? "eyeOff" : "eye"}
+            aria-label={shown ? "Hide password" : "Show password"}
+            onClick={() => setShown(!shown)}
+          />
+        }
       />
       <button type="button" className={styles.cta} onClick={handleSubmit} disabled={submitting}>
         {submitting ? "Checking..." : "Submit"}

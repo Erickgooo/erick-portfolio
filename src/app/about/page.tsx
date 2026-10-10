@@ -236,13 +236,13 @@ export default function About() {
                           <Row
                             key={index}
                             border="neutral-medium"
-                            radius="m"
+                            style={{ borderRadius: 4 }}
                             minWidth={image.width}
                             height={image.height}
                           >
                             <Media
                               enlarge
-                              radius="m"
+                              style={{ borderRadius: 4 }}
                               sizes={image.width.toString()}
                               alt={image.alt}
                               src={image.src}
@@ -354,13 +354,13 @@ export default function About() {
                           <Row
                             key={index}
                             border="neutral-medium"
-                            radius="m"
+                            style={{ borderRadius: 4 }}
                             minWidth={image.width}
                             height={image.height}
                           >
                             <Media
                               enlarge
-                              radius="m"
+                              style={{ borderRadius: 4 }}
                               sizes={image.width.toString()}
                               alt={image.alt}
                               src={image.src}
