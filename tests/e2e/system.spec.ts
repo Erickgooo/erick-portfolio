@@ -4,11 +4,15 @@ import { ROUTES } from "./helpers";
 
 // The one set of tokens the whole site draws from. Later tasks add cases here.
 
-/** One case study per kind of body: embeds and stats, links in running text, a code block. */
+/**
+ * One case study per kind of page: embeds and stats, links in running text, a
+ * code block and a clip after the body, a clip for a hero.
+ */
 const CASE_STUDIES = [
   "/work/quick-metal-shop-viral-videos",
   "/work/ai-powered-ad-creatives",
   "/work/atv-riders",
+  "/work/leadbot-ai",
 ] as const;
 
 const forceTheme = async (page: import("@playwright/test").Page, theme: "light" | "dark") => {
@@ -536,3 +540,128 @@ test("the project list shows every project with its pictures and a way in", asyn
     cards.filter((c) => !c.links.some((href) => href?.startsWith("/work/"))).map((c) => c.title),
   ).toEqual([]);
 });
+
+test("with reduced motion a stats arrow jumps instead of gliding", async ({ page }) => {
+  await page.setViewportSize({ width: PHONE.width, height: PHONE.height });
+  await page.goto(CASE_STUDIES[0]);
+  // After the navigation: Firefox drops media emulated before the first one on this site.
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  const block = page.locator('[class*="ResultsStats_carouselWrapper"]').first();
+  await expect(block.getByRole("button", { name: "Scroll right" })).toBeVisible();
+  const moved = await block.evaluate((el) => {
+    const track = el.querySelector('[class*="ResultsStats_track"]') as HTMLElement;
+    (el.querySelector('button[aria-label="Scroll right"]') as HTMLButtonElement).click();
+    // Read in the same task as the click: only a scroll that did not glide is there already.
+    return track.scrollLeft;
+  });
+  expect(moved).toBeGreaterThan(0);
+});
+
+// ─── A case study keeps every picture and clip of its project ───────────────
+// The list shows stills only, so the page of the project is where the rest of
+// its media lives: the first entry as the hero, the others after the body.
+
+const CLIPS = [
+  { path: "/work/leadbot-ai", files: ["chatbot-artesa.mp4", "leadbot.mp4"] },
+  { path: "/work/atv-riders", files: ["chatbot-video.mp4"] },
+];
+
+for (const { path, files } of CLIPS) {
+  test(`${path}: its clips wait to be played`, async ({ page, request }) => {
+    await page.goto(path);
+    await settled(page);
+    for (const file of files) {
+      const clip = page.locator(`.main-content-wrapper video[src$="/${file}"]`);
+      await expect(clip).toHaveCount(1);
+      await clip.scrollIntoViewIfNeeded();
+      await expect(clip).toBeVisible();
+      const state = await clip.evaluate((video: HTMLVideoElement) => {
+        const box = video.getBoundingClientRect();
+        return {
+          controls: video.controls,
+          autoplay: video.autoplay,
+          paused: video.paused,
+          preload: video.preload,
+          // The attribute, not the property: Firefox has no `playsInline` on the element.
+          inline: video.hasAttribute("playsinline"),
+          label: video.getAttribute("aria-label") ?? "",
+          poster: video.getAttribute("poster") ?? "",
+          width: box.width,
+          height: box.height,
+          corner: getComputedStyle(video.parentElement as Element).borderRadius,
+        };
+      });
+      expect(state.controls).toBe(true);
+      expect(state.autoplay).toBe(false);
+      expect(state.paused).toBe(true);
+      // Nothing is fetched until it is played: a <video> that loads, even only its
+      // metadata, makes Firefox hold back the page's `load` under a busy server.
+      expect(state.preload).toBe("none");
+      expect(state.inline).toBe(true);
+      expect(state.label).not.toBe("");
+      expect(state.width).toBeGreaterThan(200);
+      expect(state.height).toBeGreaterThan(100);
+      expect(state.corner).toBe("4px");
+      // With nothing loaded the poster is all there is to see, so it has to exist.
+      expect(state.poster).toMatch(/-poster\.webp$/);
+      expect((await request.get(state.poster)).status()).toBe(200);
+    }
+    const playing = await page.evaluate(
+      () => Array.from(document.querySelectorAll("video")).filter((video) => !video.paused).length,
+    );
+    expect(playing).toBe(0);
+  });
+}
+
+const moreMedia = (page: Page) =>
+  page.evaluate(() => {
+    const section = document.querySelector("[data-project-more]");
+    if (!section) return null;
+    const body = document.querySelector(".main-content-wrapper article");
+    return {
+      afterBody:
+        body !== null &&
+        (body.compareDocumentPosition(section) & Node.DOCUMENT_POSITION_FOLLOWING) !== 0,
+      heading: section.querySelector("h2")?.textContent ?? "",
+      media: Array.from(section.querySelectorAll("img, video")).map((el) =>
+        decodeURIComponent(el.getAttribute("src") ?? ""),
+      ),
+      corners: Array.from(section.querySelectorAll("li")).map(
+        (item) => getComputedStyle(item).borderRadius,
+      ),
+    };
+  });
+
+test("a case study shows the rest of its project's media after the body", async ({ page }) => {
+  await page.goto(CASE_STUDIES[0]);
+  await settled(page);
+  const more = await moreMedia(page);
+  expect(more).not.toBeNull();
+  expect(more?.afterBody).toBe(true);
+  expect(more?.heading.trim()).not.toBe("");
+  expect(more?.media.length).toBe(2);
+  expect(more?.media[0]).toContain("social-media2.webp");
+  expect(more?.media[1]).toContain("social-media3.webp");
+  expect(more?.corners).toEqual(["4px", "4px"]);
+});
+
+test("stills and clips keep the order the project lists them in", async ({ page }) => {
+  await page.goto("/work/atv-riders");
+  await settled(page);
+  const more = await moreMedia(page);
+  expect(more?.media.length).toBe(2);
+  expect(more?.media[0]).toMatch(/chatbot-video\.mp4$/);
+  expect(more?.media[1]).toContain("chatbot.webp");
+});
+
+// One picture only, and a project whose other pictures are already in its body.
+for (const path of ["/work/ai-portfolio", "/work/dakoma-roofing"]) {
+  test(`${path}: nothing is left to show, so there is no section for it`, async ({ page }) => {
+    await page.goto(path);
+    await settled(page);
+    // The page did render: its hero and its related projects are there.
+    await expect(page.locator("[data-project-hero]")).toBeVisible();
+    await expect(page.locator("[data-project-media]").first()).toBeAttached();
+    expect(await moreMedia(page)).toBeNull();
+  });
+}

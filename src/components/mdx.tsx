@@ -1,5 +1,6 @@
 import { HeadingLink } from "@/components/HeadingLink";
 import { ResultsStats } from "@/components/mdx/ResultsStats";
+import { preContent } from "@/components/mdx/preContent";
 import { TechStack } from "@/components/mdx/TechStack";
 import { YouTubeEmbed } from "@/components/mdx/YouTubeEmbed";
 import { MDXRemote, type MDXRemoteProps } from "next-mdx-remote/rsc";
@@ -162,12 +163,11 @@ function createCodeBlock(props: any) {
   }
 
   // A fenced block with no language. MDX has already turned its <code> into the
-  // inline-code chip, which is smaller than the site's minimum text size, so the
-  // text is taken out of it and set in the site's own code face.
-  const text = props.children?.props?.children ?? props.children;
+  // inline-code chip, which is smaller than the site's minimum text size, so
+  // what the chip holds is taken out of it and set in the site's own code face.
   return (
     <pre className={styles.pre}>
-      <code>{text}</code>
+      <code>{preContent(props.children)}</code>
     </pre>
   );
 }

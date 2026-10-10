@@ -45,7 +45,31 @@ export function linkableProject<T extends { slug: string }>(
  * plays or has to load a video.
  */
 export function projectStills(images: string[]): string[] {
-  return images.filter((src) => !VIDEO.test(src));
+  return images.filter((src) => !isClip(src));
+}
+
+/** Whether an entry of a project's media list is a clip rather than a picture. */
+export function isClip(src: string): boolean {
+  return VIDEO.test(src);
+}
+
+/**
+ * The still that stands for a clip until it is played: its first frame, kept
+ * beside it as `<name>-poster.webp`. A clip on a page loads nothing before
+ * that, so this is all there is to see of it. Made with
+ * `ffmpeg -i <name>.mp4 -frames:v 1 -c:v libwebp -quality 80 <name>-poster.webp`.
+ */
+export function clipPoster(src: string): string {
+  return src.replace(/\.[^./]+$/, "-poster.webp");
+}
+
+/**
+ * What a case study still has to show once its hero and its body are done:
+ * every entry of the media list after the first, in the project's own order,
+ * leaving out the ones the body already embeds.
+ */
+export function remainingMedia(images: string[], body: string): string[] {
+  return images.slice(1).filter((src) => !body.includes(src));
 }
 
 /** First still image of a project (its media list may start with a video). */

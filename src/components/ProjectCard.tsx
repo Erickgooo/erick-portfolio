@@ -42,6 +42,9 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
     <article className={styles.card}>
       {pictures.length > 0 && (
         <ul
+          // biome-ignore lint/a11y/useSemanticElements: it is a <ul> already; the role is for Safari
+          // biome-ignore lint/a11y/noRedundantRoles: Safari drops the list semantics of a list styled with list-style: none, and the role restores them
+          role="list"
           className={pictures.length > 1 ? `${styles.strip} ${styles.scrolls}` : styles.strip}
           data-project-media=""
           aria-label={`${title}: pictures`}

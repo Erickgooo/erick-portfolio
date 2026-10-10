@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs";
 import type { Page } from "@playwright/test";
 import { expect, test } from "./fixtures";
 import { headerLink } from "./helpers";
@@ -47,6 +48,26 @@ test.describe("the project list without JavaScript", () => {
     await expect
       .poll(() => picture.evaluate((img: HTMLImageElement) => img.complete && img.naturalWidth > 0))
       .toBe(true);
+  });
+});
+
+test.describe("a case study without JavaScript", () => {
+  test.use({ javaScriptEnabled: false });
+
+  // The figures are the ones the project wrote, there from the server: nothing
+  // counts up to them, and nothing is left at zero when no script runs.
+  test("the results show the figures as written", async ({ page }) => {
+    const source = readFileSync("src/app/work/projects/quick-metal-shop-viral-videos.mdx", "utf8");
+    const written = [...source.matchAll(/<ResultsStats data="([^"]+)"/g)].flatMap((match) =>
+      match[1]
+        .split("|")
+        .filter((_, index) => index % 2 === 0)
+        .map((value) => value.trim()),
+    );
+    expect(written.length).toBeGreaterThan(10);
+    await page.goto("/work/quick-metal-shop-viral-videos");
+    const shown = await page.locator('[class*="ResultsStats_value"]').allTextContents();
+    expect(shown.map((value) => value.trim())).toEqual(written);
   });
 });
 

@@ -1,9 +1,10 @@
-/* The pieces of the shared system (spec 2026-10-10, section 2) that pages
-   outside the Home build from: night, the hairline and the two kinds of text
-   link. Colours themselves are the tokens custom.css sets per theme. */
+/* The pieces of the shared system (spec 2026-10-10, section 2) that every
+   page builds from, the Home included: night, the hairline, the focus ring and
+   the two kinds of text link. Colours themselves are the tokens custom.css
+   sets per theme. */
 
 /* Night, however it was chosen: by the theme switch, or by the system while no
-   script has set data-theme. */
+   script has set data-theme (custom.css gives the tokens the same fallback). */
 @mixin night {
   :global(html[data-theme="dark"]) & {
     @content;
@@ -26,9 +27,10 @@
   }
 }
 
-/* A ring in the content colour, clear of what it surrounds. */
-@mixin focus-ring {
-  outline: 2px solid var(--neutral-on-background-strong);
+/* A ring clear of what it surrounds, in the content colour. The Home passes
+   `currentColor` instead, so the ring matches text that is white over the film. */
+@mixin focus-ring($colour: var(--neutral-on-background-strong)) {
+  outline: 2px solid $colour;
   outline-offset: 3px;
 }
 

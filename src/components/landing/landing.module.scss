@@ -4,21 +4,9 @@
    custom.css sets per theme, which is what lets the hero band and the title
    cards be near-white by day and black by night. */
 
+@use "../system.scss" as system;
+
 $display: var(--font-heading), sans-serif;
-
-/* Night, however it was chosen: by the theme switch, or by the system while no
-   script has set data-theme (custom.css gives the tokens the same fallback). */
-@mixin night {
-  :global(html[data-theme="dark"]) & {
-    @content;
-  }
-
-  @media (prefers-color-scheme: dark) {
-    :global(html:not([data-theme])) & {
-      @content;
-    }
-  }
-}
 
 /* Running text: 17px on phones, 18px from tablets up. */
 @mixin text {
@@ -38,25 +26,6 @@ $display: var(--font-heading), sans-serif;
   @media (min-width: 768px) {
     font-size: 1.0625rem;
   }
-}
-
-/* A hairline: the content colour at 14% by day and at 18% by night. */
-@mixin line($side) {
-  border-#{$side}: 1px solid color-mix(in srgb, var(--neutral-on-background-strong) 14%, transparent);
-
-  @include night {
-    border-#{$side}-color: color-mix(
-      in srgb,
-      var(--neutral-on-background-strong) 18%,
-      transparent
-    );
-  }
-}
-
-/* A ring in the colour of the text it surrounds, clear of the glyphs. */
-@mixin focus-ring {
-  outline: 2px solid currentColor;
-  outline-offset: 3px;
 }
 
 .home {
@@ -95,8 +64,7 @@ $display: var(--font-heading), sans-serif;
 
 /* The button's own text is white, which would vanish on the light surface. */
 .home .cta:focus-visible {
-  outline: 2px solid var(--neutral-on-background-strong);
-  outline-offset: 3px;
+  @include system.focus-ring;
 }
 
 /* --- Text links ----------------------------------------------------------
@@ -122,13 +90,13 @@ $display: var(--font-heading), sans-serif;
   color: #2549cb;
   text-decoration-line: underline;
 
-  @include night {
+  @include system.night {
     color: #a6baff;
   }
 }
 
 .home .textLink:focus-visible {
-  @include focus-ring;
+  @include system.focus-ring(currentColor);
 }
 
 /* --- Hero ----------------------------------------------------------------
@@ -302,7 +270,7 @@ $display: var(--font-heading), sans-serif;
 }
 
 .home .workLink:focus-visible {
-  @include focus-ring;
+  @include system.focus-ring(currentColor);
 }
 
 .workMedia {
@@ -345,7 +313,9 @@ $display: var(--font-heading), sans-serif;
   gap: 20px;
   padding-top: 32px;
 
-  @include line(top);
+  border-top: 1px solid;
+
+  @include system.line(border-top-color);
 }
 
 .faq {
@@ -354,7 +324,9 @@ $display: var(--font-heading), sans-serif;
 }
 
 .faqItem {
-  @include line(bottom);
+  border-bottom: 1px solid;
+
+  @include system.line(border-bottom-color);
 }
 
 .faqQuestion {
@@ -393,7 +365,7 @@ $display: var(--font-heading), sans-serif;
 }
 
 .faqQuestion:focus-visible {
-  @include focus-ring;
+  @include system.focus-ring(currentColor);
 }
 
 .faqAnswer {

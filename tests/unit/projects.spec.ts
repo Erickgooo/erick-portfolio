@@ -1,9 +1,14 @@
+import { existsSync, readFileSync, readdirSync } from "node:fs";
+import path from "node:path";
 import { expect, test } from "@playwright/test";
 import {
+  clipPoster,
   coverImage,
+  isClip,
   linkableProject,
   parseMetric,
   projectStills,
+  remainingMedia,
   publicProjects,
   recentProjects,
   sortProjects,
@@ -20,6 +25,37 @@ test("projectStills keeps the pictures in order and leaves the clips out", () =>
   expect(projectStills(["/a.webp", "/b.webp"])).toEqual(["/a.webp", "/b.webp"]);
   expect(projectStills(["/a.mp4"])).toEqual([]);
   expect(projectStills([])).toEqual([]);
+});
+
+test("remainingMedia is what the hero and the body have not shown, in order", () => {
+  const images = ["/hero.mp4", "/a.webp", "/b.mp4", "/c.webp"];
+  expect(remainingMedia(images, "")).toEqual(["/a.webp", "/b.mp4", "/c.webp"]);
+  // A picture the body already embeds is not shown a second time.
+  expect(remainingMedia(images, "text ![alt](/a.webp) more")).toEqual(["/b.mp4", "/c.webp"]);
+  expect(remainingMedia(["/only.webp"], "")).toEqual([]);
+  expect(remainingMedia([], "")).toEqual([]);
+});
+
+test("isClip tells a clip from a picture, and clipPoster names its still", () => {
+  expect(isClip("/a/b.mp4")).toBe(true);
+  expect(isClip("/a/b.WEBM")).toBe(true);
+  expect(isClip("/a/b.webp")).toBe(false);
+  expect(clipPoster("/images/projects/x/demo.mp4")).toBe("/images/projects/x/demo-poster.webp");
+  expect(clipPoster("/a.b/demo.v2.mov")).toBe("/a.b/demo.v2-poster.webp");
+});
+
+test("every clip in a project's media has its poster in public", () => {
+  // A clip loads nothing until it is played, so the poster is all there is to see.
+  const dir = "src/app/work/projects";
+  const clips = readdirSync(dir)
+    .filter((file) => file.endsWith(".mdx"))
+    .flatMap((file) => {
+      const source = readFileSync(path.join(dir, file), "utf8");
+      return [...source.matchAll(/^\s+- "(\/images\/[^"]+)"/gm)].map((match) => match[1]);
+    })
+    .filter(isClip);
+  expect(clips.length).toBeGreaterThan(0);
+  expect(clips.filter((src) => !existsSync(path.join("public", clipPoster(src))))).toEqual([]);
 });
 
 test("parseMetric splits value|label and rejects partial input", () => {

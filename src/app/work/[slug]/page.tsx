@@ -3,6 +3,7 @@ import { Projects } from "@/components/work/Projects";
 import { about, baseURL, person, work } from "@/resources";
 import { EMIcon } from "@/resources/EMIcon";
 import { formatDate } from "@/utils/formatDate";
+import { clipPoster, isClip, remainingMedia } from "@/utils/projects";
 import { getPosts } from "@/utils/utils";
 import {
   Avatar,
@@ -18,6 +19,7 @@ import {
   Text,
 } from "@once-ui-system/core";
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import styles from "./page.module.scss";
@@ -54,6 +56,27 @@ export async function generateMetadata({
   });
 }
 
+/**
+ * A clip of the project. It never plays on its own and fetches nothing until
+ * it is played: Firefox holds back the page's `load` while a <video> loads,
+ * even only its metadata, and under a busy server that became navigations
+ * that never finished. Until then it shows its own first frame as a poster.
+ */
+function Clip({ src, label }: { src: string; label: string }) {
+  return (
+    // biome-ignore lint/a11y/useMediaCaption: the clips are screen recordings with no audio track, so there is nothing to caption
+    <video
+      className={styles.clip}
+      src={src}
+      poster={clipPoster(src)}
+      aria-label={label}
+      controls
+      playsInline
+      preload="none"
+    />
+  );
+}
+
 export default async function Project({
   params,
 }: {
@@ -74,6 +97,13 @@ export default async function Project({
     post.metadata.team?.map((person) => ({
       src: person.avatar,
     })) || [];
+
+  // The first entry of the media list is the hero. The list of projects shows
+  // stills only, so whatever else the project has, and its body does not
+  // already embed, is shown here after the body: no picture or clip is lost.
+  const { title, images } = post.metadata;
+  const [hero] = images;
+  const more = remainingMedia(images, post.content);
 
   return (
     <Column as="section" maxWidth="m" horizontal="center" gap="l">
@@ -125,15 +155,21 @@ export default async function Project({
           </Text>
         </Row>
       </Row>
-      {post.metadata.images.length > 0 && (
-        <Row fillWidth position="relative">
+      {hero && isClip(hero) && (
+        // No watermark here: it would sit on the player's own controls.
+        <div className={styles.frame} data-project-hero="">
+          <Clip src={hero} label={`${title}: clip`} />
+        </div>
+      )}
+      {hero && !isClip(hero) && (
+        <Row fillWidth position="relative" data-project-hero="">
           <Media
             priority
             aspectRatio="16 / 9"
             // Pictures take a 4px corner everywhere on the site.
             style={{ borderRadius: "4px" }}
             alt="image"
-            src={post.metadata.images[0]}
+            src={hero}
           />
           <span
             aria-hidden="true"
@@ -155,6 +191,42 @@ export default async function Project({
       <Column style={{ margin: "auto" }} as="article" maxWidth="xs">
         <CustomMDX source={post.content} />
       </Column>
+      {more.length > 0 && (
+        <Column
+          as="section"
+          fillWidth
+          gap="24"
+          horizontal="center"
+          marginTop="40"
+          data-project-more=""
+        >
+          <Heading as="h2" variant="heading-strong-xl">
+            More from this project
+          </Heading>
+          {/* biome-ignore lint/a11y/useSemanticElements: it is a <ul>; the role is for Safari, see below */}
+          <ul
+            // biome-ignore lint/a11y/noRedundantRoles: Safari drops the list semantics of a list styled with list-style: none, and the role restores them
+            role="list"
+            className={more.length > 1 ? styles.more : `${styles.more} ${styles.single}`}
+          >
+            {more.map((src, index) => (
+              <li key={src} className={styles.frame}>
+                {isClip(src) ? (
+                  <Clip src={src} label={`${title}: clip (${index + 2})`} />
+                ) : (
+                  <Image
+                    className={styles.picture}
+                    src={src}
+                    alt={`${title} (${index + 2})`}
+                    fill
+                    sizes="(max-width: 768px) 100vw, 480px"
+                  />
+                )}
+              </li>
+            ))}
+          </ul>
+        </Column>
+      )}
       <Column fillWidth gap="40" horizontal="center" marginTop="40">
         <NodeDivider maxWidth={40} />
         <Heading as="h2" variant="heading-strong-xl" marginBottom="24">
