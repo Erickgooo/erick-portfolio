@@ -1,10 +1,6 @@
 export { MotionRuntime } from "./MotionRuntime";
 export { Reveal } from "./Reveal";
 export { KineticText } from "./KineticText";
-export { BlueprintFrame } from "./BlueprintFrame";
-export { BlueprintLine } from "./BlueprintLine";
-export { ReadingProgress } from "./ReadingProgress";
 export { DecodeText } from "./DecodeText";
-export { GlowTrack } from "./GlowTrack";
 export { Magnetic } from "./Magnetic";
 export { ViewTransitions } from "./ViewTransitions";

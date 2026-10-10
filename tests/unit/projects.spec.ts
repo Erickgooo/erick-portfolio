@@ -1,11 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { coverImage, formatIndex, parseMetric, sortProjects } from "@/utils/projects";
-
-test("formatIndex pads and totals", () => {
-  expect(formatIndex(1, 5)).toBe("01 / 05");
-  expect(formatIndex(3)).toBe("03");
-  expect(formatIndex(12)).toBe("12");
-});
+import { coverImage, parseMetric, sortProjects } from "@/utils/projects";
 
 test("coverImage skips videos and handles empty lists", () => {
   expect(coverImage(["/a.mp4", "/b.webp", "/c.webp"])).toBe("/b.webp");

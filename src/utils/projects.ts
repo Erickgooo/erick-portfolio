@@ -1,11 +1,5 @@
 const VIDEO = /\.(mp4|webm|mov|m4v)$/i;
 
-/** "01 / 05" with a total, "03" without. Numbering always comes from data. */
-export function formatIndex(n: number, total?: number): string {
-  const pad = (x: number) => String(x).padStart(2, "0");
-  return total ? `${pad(n)} / ${pad(total)}` : pad(n);
-}
-
 export function sortProjects<T extends { metadata: { publishedAt: string } }>(posts: T[]): T[] {
   return [...posts].sort(
     (a, b) =>
