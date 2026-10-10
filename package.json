@@ -11,7 +11,9 @@
     "test:unit": "playwright test --project=unit",
     "test:e2e": "playwright test --project=chromium --project=mobile-chromium --project=firefox --project=webkit",
     "perf:lh": "node scripts/perf/lighthouse.mjs",
-    "perf:report": "node scripts/perf/report.mjs"
+    "perf:report": "node scripts/perf/report.mjs",
+    "perf:inp": "node scripts/perf/inp.mjs",
+    "perf:screens": "node scripts/perf/screens.mjs"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
@@ -44,6 +46,7 @@
     "lighthouse": "13.5.0",
     "lint-staged": "^16.4.0",
     "typescript": "^5.8.3",
-    "tzdata": "^1.0.44"
+    "tzdata": "^1.0.44",
+    "web-vitals": "4.2.4"
   }
 }

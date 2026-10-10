@@ -1,0 +1,19 @@
+.root {
+  position: relative;
+  display: inline-block;
+  font-family: var(--font-code), monospace;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.fx {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+.root[data-running] .value {
+  opacity: 0;
+}
+.root[data-running] .fx {
+  opacity: 1;
+}

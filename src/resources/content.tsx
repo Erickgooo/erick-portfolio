@@ -49,9 +49,7 @@ const home: Home = {
   // concrete figure. Mirrors the short bio in §1.4.
   description:
     "I build complete growth systems for founders: AI content pipelines, CRM automation and paid media. ROAS 3.92x · 338K+ organic views at $0 ad spend · $3.45 cost per lead in technical B2B.",
-  headline: (
-    <>I Build Marketing Infrastructure From Zero. And Make It Outperform Full Departments.</>
-  ),
+  headline: "I Build Marketing Infrastructure From Zero. And Make It Outperform Full Departments.",
   featured: {
     display: true,
     title: (

@@ -1,5 +1,7 @@
 import TableOfContents from "@/components/about/TableOfContents";
 import styles from "@/components/about/about.module.scss";
+import { KineticText } from "@/components/motion/KineticText";
+import { Reveal } from "@/components/motion/Reveal";
 import { about, baseURL, person, sameAs, social } from "@/resources";
 import {
   Avatar,
@@ -141,7 +143,7 @@ export default function About() {
               </Row>
             )}
             <Heading className={styles.textAlign} variant="display-strong-xl">
-              {person.name}
+              <KineticText text={person.name} />
             </Heading>
             <Text
               className={styles.textAlign}
@@ -227,9 +229,11 @@ export default function About() {
               intro one inline formatting context, and the blank lines come from
               the <br /> pairs in the copy rather than from a flex gap. */}
           {about.intro.display && (
-            <Column fillWidth marginBottom="xl">
-              <Text variant="body-default-l">{about.intro.description}</Text>
-            </Column>
+            <Reveal>
+              <Column fillWidth marginBottom="xl">
+                <Text variant="body-default-l">{about.intro.description}</Text>
+              </Column>
+            </Reveal>
           )}
 
           {about.work.display && (

@@ -36,12 +36,14 @@ function count(content, file) {
   const tmpFile = path.join(scratch, `${randomBytes(4).toString("hex")}-${path.basename(file)}`);
   writeFileSync(tmpFile, content);
   try {
+    // Biome's JSON embeds the source file in every diagnostic, so a file with
+    // many warnings (content.tsx) easily exceeds spawnSync's 1 MB default.
     const r = spawnSync(process.execPath, [BIOME, "lint", tmpFile, "--reporter=json"], {
       encoding: "utf8",
+      maxBuffer: 256 * 1024 * 1024,
     });
-    const stdout = r.stdout ?? "";
-    const json = JSON.parse(stdout);
-    return json.diagnostics?.length ?? 0;
+    const json = JSON.parse(r.stdout ?? "");
+    return json.summary ? json.summary.errors + json.summary.warnings : (json.diagnostics?.length ?? 0);
   } finally {
     rmSync(tmpFile, { force: true });
   }

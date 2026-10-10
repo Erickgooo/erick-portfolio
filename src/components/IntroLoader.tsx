@@ -265,6 +265,16 @@ export const IntroLoader = () => {
     };
   }, [phase]);
 
+  // Hands off to the hero (spec §8): the hero's kinetic headline, blueprint
+  // frame and decoding stats wait on html.intro-pending, set by the head script.
+  // Cleared as soon as the fade-out starts — or immediately when the intro
+  // doesn't show at all (phase starts at "done"). Timing is otherwise untouched.
+  useEffect(() => {
+    if (phase === "leaving" || phase === "done") {
+      document.documentElement.classList.remove("intro-pending");
+    }
+  }, [phase]);
+
   if (phase === "done") return null;
 
   return (

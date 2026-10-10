@@ -15,7 +15,6 @@ import { existsSync, renameSync, rmSync, statSync } from "node:fs";
 import sharp from "sharp";
 
 const VIDEOS = [
-  { file: "public/videohome.mp4", mutedNoControls: true, targetMB: 1.2, poster: false },
   {
     file: "public/images/projects/project-01/leadbot.mp4",
     mutedNoControls: true,

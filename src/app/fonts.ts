@@ -1,5 +1,6 @@
-// Font declarations — Manual de Marca, Sección 04:
-// Space Grotesk (titulares), Inter (cuerpo/label), JetBrains Mono (datos).
+// Font declarations. Geist for headings and body, Geist Mono for figures —
+// chosen by Erick on 2026-10-09 for the landing redesign; this replaces the
+// brand manual's Space Grotesk / Inter / JetBrains Mono trio.
 //
 // The three font instances live here as a single, obvious source of truth.
 // `@/resources/once-ui.config.ts` re-exports them (Task 11b), and that
@@ -17,26 +18,21 @@
 // forward-slash-only substring that can never match on Windows (matches
 // vercel/next.js#57008). This is a build-host artefact, independent of
 // which module holds these declarations — see docs/perf-report.md.
-import { Inter, JetBrains_Mono, Space_Grotesk } from "next/font/google";
+import { Geist, Geist_Mono } from "next/font/google";
 
-export const heading = Space_Grotesk({
+export const heading = Geist({
   variable: "--font-heading",
   subsets: ["latin"],
   display: "swap",
 });
 
-export const body = Inter({
+export const body = Geist({
   variable: "--font-body",
   subsets: ["latin"],
   display: "swap",
 });
 
-// Measured with `preload: false` first (JetBrains Mono isn't visually used
-// above the fold on Home/Gallery), but Lighthouse's layout-shifts audit then
-// attributed a residual 0.033 About-mobile CLS to this exact font file
-// swapping in late on the sticky meta panel. Preloading it removes that
-// shift; see docs/perf-report.md, Follow-up 11b, for the measurements.
-export const code = JetBrains_Mono({
+export const code = Geist_Mono({
   variable: "--font-code",
   subsets: ["latin"],
   display: "swap",

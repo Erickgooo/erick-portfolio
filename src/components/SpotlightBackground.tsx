@@ -48,9 +48,15 @@ export function SpotlightBackground({
     const loop = () => {
       current.current.x += (target.current.x - current.current.x) * 0.08;
       current.current.y += (target.current.y - current.current.y) * 0.08;
-      if (containerRef.current) {
-        containerRef.current.style.setProperty("--x", `${current.current.x}px`);
-        containerRef.current.style.setProperty("--y", `${current.current.y}px`);
+      const x = `${current.current.x}px`;
+      const y = `${current.current.y}px`;
+      // The page-wide layer sits behind the content, so the home film (an opaque,
+      // viewport-pinned stage) carries its own glow layer and gets the same position.
+      const film = document.querySelector<HTMLElement>("[data-spotlight-target]");
+      for (const el of [containerRef.current, film]) {
+        if (!el) continue;
+        el.style.setProperty("--x", x);
+        el.style.setProperty("--y", y);
       }
       frameRef.current = requestAnimationFrame(loop);
     };
@@ -68,6 +74,7 @@ export function SpotlightBackground({
     <div
       ref={containerRef}
       className={styles.spotlightWrapper}
+      data-spotlight=""
       style={
         {
           "--glow-radius": `${glowRadius}px`,

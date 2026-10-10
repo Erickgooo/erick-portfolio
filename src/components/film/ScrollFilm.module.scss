@@ -1,0 +1,63 @@
+.film {
+  position: relative;
+  width: 100%;
+  /* The film is always dark footage, so its copy is light in both themes. */
+  color: #ffffff;
+  --film-veil: 0.58;
+}
+
+.stage {
+  position: sticky;
+  top: 0;
+  z-index: 0;
+  height: 100vh;
+  /* The large viewport: the stage must not resize when a phone's URL bar slides. */
+  height: 100lvh;
+  overflow: hidden;
+  background: #000000;
+}
+
+.media {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.video {
+  opacity: 0;
+}
+
+.film[data-film-ready] .video {
+  opacity: 1;
+}
+
+/* A flat veil, never a gradient: keeps the copy readable over bright footage. */
+.veil {
+  position: absolute;
+  inset: 0;
+  background: #000000;
+  opacity: var(--film-veil);
+}
+
+.track {
+  position: relative;
+  z-index: 1;
+  margin-top: -100vh;
+  margin-top: -100lvh;
+}
+
+/* The cursor glow from the rest of the site, repeated above the veil: the
+   page-wide layer sits behind the content and the film covers it.
+   SpotlightBackground writes --x / --y here too. */
+.glow {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: radial-gradient(
+    260px at var(--x, 50%) var(--y, 50%),
+    var(--scheme-brand-600-30) 0%,
+    transparent 70%
+  );
+}

@@ -1,0 +1,44 @@
+.words {
+  display: inline;
+}
+
+.word {
+  display: inline-block;
+}
+
+@keyframes kinetic-in {
+  from {
+    transform: translateY(0.35em);
+  }
+  to {
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .load .word {
+    animation: kinetic-in var(--dur-m) var(--ease-out) both;
+    animation-delay: calc(var(--w) * 40ms);
+  }
+
+  :global(html.intro-pending) .load .word {
+    animation-play-state: paused;
+  }
+
+  @supports (animation-timeline: view()) {
+    .view .word {
+      animation: kinetic-in linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 50%;
+    }
+  }
+
+  :global(html.mo-io) .view .word {
+    transition: transform var(--dur-m) var(--ease-out);
+    transition-delay: calc(var(--w) * 40ms);
+  }
+
+  :global(html.mo-io) .view:not(:global(.is-in)) .word {
+    transform: translateY(0.35em);
+  }
+}

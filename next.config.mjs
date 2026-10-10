@@ -23,6 +23,7 @@ const isDev = process.env.NODE_ENV === "development";
  * together with the feature that needs it:
  *   - i.ytimg.com / www.youtube-nocookie.com: YouTubeFacade thumbnails and player
  *   - va.vercel-scripts.com: @vercel/analytics (debug script outside Vercel)
+ *   - media-src blob: the home film is fetched once and scrubbed from an in-memory Blob
  *   - enabling the Mailchimp newsletter needs `form-action` + your list-manage.com host
  */
 const csp = [
@@ -34,7 +35,7 @@ const csp = [
   "font-src 'self' data:",
   "connect-src 'self' https://va.vercel-scripts.com",
   "frame-src https://www.youtube-nocookie.com",
-  "media-src 'self'",
+  "media-src 'self' blob:",
   "worker-src 'self' blob:",
   "manifest-src 'self'",
   "object-src 'none'",
