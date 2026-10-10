@@ -136,16 +136,43 @@ test("a wide touch screen gets the landscape clip", async ({ browser }, testInfo
   await context.close();
 });
 
-test("light theme: the header's page-coloured fade and side labels stay off the film", async ({
+test("light theme: the header's side labels stay readable over the film and after it", async ({
   page,
 }, testInfo) => {
-  test.skip(testInfo.project.name === "mobile-chromium", "desktop header");
+  test.skip(testInfo.project.name === "mobile-chromium", "the side labels are a desktop feature");
   await page.addInitScript(() => localStorage.setItem("data-theme", "light"));
   await page.goto("/");
+  await introDone(page);
+  const place = page.locator("[data-header-side]").first();
+  const colour = () => place.evaluate((el) => getComputedStyle(el.firstElementChild ?? el).color);
+  // Over the film, which is always dark footage: shown, and in white.
+  await expect(place).toBeVisible();
+  await expect(place).toContainText("Medellín, Colombia");
+  expect(await colour()).toBe("rgb(255, 255, 255)");
+  // The page-coloured (white) fade would wash out the top of the film.
   await expect(page.locator("[data-header-fade]").first()).toBeHidden();
-  await expect(page.locator("[data-header-side]").first()).toBeHidden();
-  await page.goto("/about");
+
+  // Past the film the page is light again: the labels go back to the theme's dark text.
+  await page.evaluate(() => {
+    const film = document.querySelector("[data-film-root]") as HTMLElement;
+    const bottom = film.getBoundingClientRect().bottom + window.scrollY;
+    window.scrollTo({ top: bottom + 200, behavior: "instant" });
+  });
+  await expect.poll(colour).not.toBe("rgb(255, 255, 255)");
+  await expect(place).toBeVisible();
+  await expect(page.locator("[data-header-fade]").first()).toBeVisible();
+
+  // And back up over the film.
+  await page.evaluate(() => window.scrollTo({ top: 0, behavior: "instant" }));
+  await expect.poll(colour).toBe("rgb(255, 255, 255)");
+});
+
+test("dark theme: the header's side labels are shown on the Home", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name === "mobile-chromium", "the side labels are a desktop feature");
+  await page.addInitScript(() => localStorage.setItem("data-theme", "dark"));
+  await page.goto("/");
   await expect(page.locator("[data-header-side]").first()).toBeVisible();
+  await expect(page.locator("[data-header-side]").first()).toContainText("Medellín, Colombia");
 });
 
 test("on phones the hero figures sit in one row, clear of the bottom of the screen", async ({

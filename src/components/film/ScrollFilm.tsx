@@ -51,6 +51,34 @@ export function ScrollFilm({
     return () => query.removeEventListener("change", update);
   }, []);
 
+  // Tells the rest of the page whether the film is still under the nav bar, so the
+  // header can keep its labels readable over dark footage whatever the theme
+  // (see custom.css). The bar sits at the top on desktop and at the bottom on phones.
+  useEffect(() => {
+    const root = rootRef.current;
+    if (!root) return;
+    const html = document.documentElement;
+    const phone = window.matchMedia("(max-width: 768px)");
+    let frame = 0;
+    const update = () => {
+      frame = 0;
+      const line = phone.matches ? window.innerHeight - 40 : 80;
+      html.toggleAttribute("data-past-film", root.getBoundingClientRect().bottom <= line);
+    };
+    const queue = () => {
+      if (!frame) frame = requestAnimationFrame(update);
+    };
+    window.addEventListener("scroll", queue, { passive: true });
+    window.addEventListener("resize", queue);
+    queue();
+    return () => {
+      cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", queue);
+      window.removeEventListener("resize", queue);
+      html.removeAttribute("data-past-film");
+    };
+  }, []);
+
   useEffect(() => {
     const root = rootRef.current;
     const stage = stageRef.current;

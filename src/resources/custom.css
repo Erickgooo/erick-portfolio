@@ -129,14 +129,16 @@
   user-select: none;
 }
 
-/* Over the home film the header must not bring the light theme with it: its fade
-   is a page-coloured (white) gradient and its side labels are dark text, and the
-   film underneath is always dark footage. The nav bar itself keeps its own surface. */
-html[data-theme="light"]:has([data-film-root]) [data-header-fade] {
+/* Over the home film the header must not bring the light theme with it: the film
+   underneath is always dark footage. While it is under the nav bar (ScrollFilm
+   sets data-past-film on <html> once it has scrolled away), the page-coloured
+   (white) fade is dropped and the side labels turn white instead of dark. Past
+   the film both go back to the theme's own colours. */
+html[data-theme="light"]:has([data-film-root]):not([data-past-film]) [data-header-fade] {
   display: none !important;
 }
 
-/* Hidden, not removed: the side columns keep the nav bar centred. */
-html[data-theme="light"]:has([data-film-root]) [data-header-side] {
-  visibility: hidden;
+html[data-theme="light"]:has([data-film-root]):not([data-past-film]) [data-header-side],
+html[data-theme="light"]:has([data-film-root]):not([data-past-film]) [data-header-side] * {
+  color: #ffffff !important;
 }
