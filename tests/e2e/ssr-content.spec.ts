@@ -1,3 +1,4 @@
+import type { Page } from "@playwright/test";
 import { expect, test } from "./fixtures";
 import { headerLink } from "./helpers";
 
@@ -73,4 +74,28 @@ test("client navigation never flashes NotFound", async ({ page }) => {
   await headerLink(page, "About").click();
   await page.waitForURL((url) => url.pathname === "/about");
   expect(seen).toEqual([]);
+});
+
+async function copyH1(page: Page) {
+  return page.evaluate(() => {
+    const h1 = document.querySelector("h1");
+    if (!h1) return "";
+    const range = document.createRange();
+    range.selectNodeContents(h1);
+    const sel = window.getSelection();
+    sel?.removeAllRanges();
+    sel?.addRange(range);
+    return sel?.toString().replace(/\s+/g, " ").trim() ?? "";
+  });
+}
+
+test("/about: h1 keeps its exact accessible name", async ({ page }) => {
+  await page.goto("/about");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveAccessibleName("Erick Mahecha");
+});
+
+test("/about: copying the h1 yields the text once", async ({ page, browserName }) => {
+  test.skip(browserName !== "chromium", "selection API assertion is Chromium-only");
+  await page.goto("/about");
+  expect(await copyH1(page)).toBe("Erick Mahecha");
 });

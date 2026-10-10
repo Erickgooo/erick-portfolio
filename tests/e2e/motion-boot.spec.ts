@@ -49,15 +49,6 @@ test("missing deviceMemory (Safari) is ignored, not treated as low", async ({ pa
   expect(await fx(page)).toBe("full");
 });
 
-test("mo-io matches the absence of view() support", async ({ page }) => {
-  await page.goto("/about");
-  const { supports, moIo } = await page.evaluate(() => ({
-    supports: CSS.supports("animation-timeline: view()"),
-    moIo: document.documentElement.classList.contains("mo-io"),
-  }));
-  expect(moIo).toBe(!supports);
-});
-
 test("headings and body use Geist; figures use Geist Mono", async ({ page }) => {
   await page.goto("/about");
   const fonts = await page.evaluate(() => {

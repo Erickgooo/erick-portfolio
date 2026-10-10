@@ -81,7 +81,6 @@ for (const target of TARGETS) {
     const csp = response?.headers()["content-security-policy"] ?? "";
     const boot = await page.evaluate(() => ({
       fx: document.documentElement.dataset.fx ?? null,
-      io: document.documentElement.classList.contains("mo-io"),
     }));
 
     const height = await page.evaluate(() => document.documentElement.scrollHeight);
@@ -110,7 +109,6 @@ for (const target of TARGETS) {
       status: response?.status(),
       csp: csp ? "present" : "MISSING",
       fx: boot.fx,
-      io: boot.io,
       navigated,
       transitions,
     });

@@ -100,12 +100,12 @@ Lee el §3 del spec y la referencia del lab antes de empezar. La estructura, los
 - Consumes: la Home de la Tarea 2 ya no usa `Reveal`, `Magnetic` ni `data-mo-io`.
 - Produces: `motion.css` solo con las variables (`--cobalt`, `--ease-fluid` y las demás que alguien lea) y el bloque de view transitions; `motionBoot` solo con `data-fx`.
 
-- [ ] **Step 1:** Tests que fallan en `system.spec.ts`: en cada ruta de `ROUTES`, `html` no tiene las clases `mo-io` ni `mo-ready` y no existe ningún `[data-reveal]`, `[data-mo-io]`, `[data-kinetic-words]`; ninguna animación en curso toca `filter`. En `ssr-content.spec.ts`: el h1 de `/about` tiene el nombre accesible exacto «Erick Mahecha» y copiarlo da el texto una sola vez (son los dos casos que se conservan de `kinetic.spec.ts`).
-- [ ] **Step 2:** Verlos fallar.
-- [ ] **Step 3:** `about/page.tsx`: el h1 es texto plano y el bloque de introducción ya no va envuelto en `Reveal`. Borra los componentes de la lista y sus exports.
-- [ ] **Step 4:** `motion.css`: fuera los keyframes y reglas de `[data-reveal]`, la rama `mo-io` y el bloque de movimiento reducido que solo los reiniciaba. Se quedan las variables y las view transitions (solo `opacity` y `translateY`). `motionBoot.ts`: fuera `mo-io` y su vigilante. `layout.tsx`: fuera `<MotionRuntime />`.
-- [ ] **Step 5:** Borra los specs de la lista y el caso «mo-io matches the absence of view() support» de `motion-boot.spec.ts`.
-- [ ] **Step 6:** Gates, `test:unit`, `test:e2e`. Commit `refactor: remove the motion primitives nothing uses any more`.
+- [x] **Step 1:** Tests que fallan en `system.spec.ts`: en cada ruta de `ROUTES`, `html` no tiene las clases `mo-io` ni `mo-ready` y no existe ningún `[data-reveal]`, `[data-mo-io]`, `[data-kinetic-words]`; ninguna animación en curso toca `filter`. En `ssr-content.spec.ts`: el h1 de `/about` tiene el nombre accesible exacto «Erick Mahecha» y copiarlo da el texto una sola vez (son los dos casos que se conservan de `kinetic.spec.ts`).
+- [x] **Step 2:** Verlos fallar.
+- [x] **Step 3:** `about/page.tsx`: el h1 es texto plano y el bloque de introducción ya no va envuelto en `Reveal`. Borra los componentes de la lista y sus exports.
+- [x] **Step 4:** `motion.css`: fuera los keyframes y reglas de `[data-reveal]`, la rama `mo-io` y el bloque de movimiento reducido que solo los reiniciaba. Se quedan las variables y las view transitions (solo `opacity` y `translateY`). `motionBoot.ts`: fuera `mo-io` y su vigilante. `layout.tsx`: fuera `<MotionRuntime />`.
+- [x] **Step 5:** Borra los specs de la lista y el caso «mo-io matches the absence of view() support» de `motion-boot.spec.ts`.
+- [x] **Step 6:** Gates, `test:unit`, `test:e2e`. Commit `refactor: remove the motion primitives nothing uses any more`.
 
 ### Task 4: Nav y footer
 

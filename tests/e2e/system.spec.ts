@@ -85,3 +85,26 @@ test("Once UI surfaces no longer blur what is behind them", async ({ page }) => 
   );
   expect(["", "none"]).toContain(value);
 });
+
+for (const route of ROUTES) {
+  test(`${route.name}: no entrance-animation machinery is left`, async ({ page }) => {
+    await page.goto(route.path);
+    const state = await page.evaluate(() => ({
+      classes: [...document.documentElement.classList],
+      nodes: document.querySelectorAll("[data-reveal], [data-mo-io], [data-kinetic-words]").length,
+      // Only transform and opacity may move; a running animation on filter is a regression.
+      filtered: document
+        .getAnimations()
+        .filter((a) => {
+          const effect = a.effect as KeyframeEffect | null;
+          return effect?.getKeyframes().some((k) => "filter" in k && k.filter !== "none");
+        }).length,
+    }));
+    expect(state.classes).not.toContain("mo-io");
+    expect(state.classes).not.toContain("mo-ready");
+    expect(state.nodes).toBe(0);
+    // The Once UI Carousel on /work animates a blur through its own RevealFx.
+    // Task 5 replaces that carousel and drops this exemption.
+    if (route.name !== "work") expect(state.filtered).toBe(0);
+  });
+}
