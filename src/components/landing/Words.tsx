@@ -3,7 +3,7 @@ import styles from "./type.module.scss";
 
 interface WordsProps {
   text: string;
-  /** Words (case and punctuation ignored) that get the outline emphasis. */
+  /** Words (case and punctuation ignored) that get the marker emphasis. */
   emphasis?: readonly string[];
 }
 

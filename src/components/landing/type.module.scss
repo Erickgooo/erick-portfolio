@@ -7,7 +7,7 @@
    comes into view (html.mo-io + .is-in, set by MotionRuntime), and reduced
    motion gets the finished state. Composition changes from section to section
    on purpose: centred hero, glass panels on alternating sides, figures that
-   swap sides, cards. */
+   swap sides, cards. Key words are underlined with a Cobalto marker. */
 $ease: var(--ease-fluid);
 $glass-border: 1px solid rgba(255, 255, 255, 0.16);
 $glass-fill: rgba(8, 8, 10, 0.5);
@@ -37,10 +37,10 @@ $glass-fill: rgba(8, 8, 10, 0.5);
   display: inline-block;
 }
 
-/* Emphasis: the word in outline. */
+/* Emphasis: the word stays solid and sits on a Cobalto marker. (Outlined type
+   was tried first; in this typeface the stroke reads thin and weak.) */
 .w[data-hl] .wi {
-  color: transparent;
-  -webkit-text-stroke: 0.03em #ffffff;
+  background: linear-gradient(#2d5bff, #2d5bff) 0 90% / 100% 0.14em no-repeat;
 }
 
 /* ─── Shared pieces ──────────────────────────────────────────────────── */

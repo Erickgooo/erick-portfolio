@@ -60,15 +60,23 @@ test("after the intro every word of the headline has arrived, sharp", async ({ p
     .toBe(true);
 });
 
-test("key words of the headline are set in outline", async ({ page }) => {
+test("key words are solid and underlined in the brand colour, not outlined", async ({ page }) => {
   await page.goto("/");
   const marked = page.locator("h1 [data-word][data-hl] > span");
   expect(await marked.count()).toBeGreaterThanOrEqual(2);
-  const stroke = await marked.first().evaluate((el) => {
-    const style = getComputedStyle(el);
-    return Number.parseFloat(style.getPropertyValue("-webkit-text-stroke-width"));
+  const style = await marked.first().evaluate((el) => {
+    const computed = getComputedStyle(el);
+    return {
+      stroke: Number.parseFloat(computed.getPropertyValue("-webkit-text-stroke-width")),
+      colour: computed.color,
+      marker: computed.backgroundImage,
+    };
   });
-  expect(stroke).toBeGreaterThan(0);
+  // Outlined type read as thin and weak in this typeface.
+  expect(style.stroke).toBe(0);
+  expect(style.colour).toBe("rgb(255, 255, 255)");
+  // Cobalto, #2d5bff.
+  expect(style.marker).toContain("rgb(45, 91, 255)");
 });
 
 test("problem and solution sit in glass panels on opposite sides", async ({ page }, testInfo) => {
