@@ -1,5 +1,6 @@
 import type { Page } from "@playwright/test";
 import { expect, test } from "./fixtures";
+import { wordsOnFilm } from "./helpers";
 
 const CALENDAR = "https://calendly.com/santiagomahecha2328/30min";
 const HEADLINE = "The marketing department is one person.";
@@ -98,8 +99,42 @@ test.describe("without JavaScript", () => {
     await expect(closingAfterFilm).toHaveCount(1);
   });
 
+  // Nothing sets data-theme without the inline script, so the surface and the
+  // text colours have to come from the stylesheet alone, for either scheme.
+  const SCHEMES = {
+    light: { page: "rgb(244, 245, 247)", content: "rgb(11, 12, 14)", note: "rgb(75, 80, 88)" },
+    dark: { page: "rgb(0, 0, 0)", content: "rgb(244, 245, 247)", note: "rgb(168, 173, 181)" },
+  } as const;
+
+  for (const scheme of ["light", "dark"] as const) {
+    test(`no words sit on the footage without JavaScript (${scheme} scheme)`, async ({ page }) => {
+      await open(page);
+      // Set once the page is there: the site's Cross-Origin-Opener-Policy moves the
+      // first navigation to a new browsing context, and Firefox drops a scheme
+      // emulated before it.
+      await page.emulateMedia({ colorScheme: scheme });
+      // The words are in the colour that reads on the surface. These retry, so the
+      // scan after them reads a page whose stylesheets have been applied.
+      const hero = page.locator('[data-film-beat="hero"]');
+      await expect(hero.locator("h1")).toHaveCSS("color", SCHEMES[scheme].content);
+      await expect(hero.getByText(BYLINE)).toHaveCSS("color", SCHEMES[scheme].note);
+      const { body, words } = await wordsOnFilm(page);
+      expect(words.length).toBeGreaterThanOrEqual(18);
+      expect(body).toBe(SCHEMES[scheme].page);
+      for (const word of words) expect(word.surface, word.text).toBe(SCHEMES[scheme].page);
+      for (const card of await page.locator("[data-seat]").all()) {
+        await expect(card.locator("h2")).toHaveCSS("color", SCHEMES[scheme].content);
+        await expect(card.locator("p")).toHaveCSS("color", SCHEMES[scheme].content);
+        await expect(card.locator("a")).toHaveCSS("color", SCHEMES[scheme].content);
+      }
+    });
+  }
+
   test("the FAQ opens without JavaScript", async ({ page }) => {
-    await open(page);
+    // This one waits for `load`: the click needs a page that has stopped moving.
+    // Playwright retries a click that misses on a timer inside the page, and with
+    // scripting off that timer never fires, so a third attempt would hang.
+    await page.goto("/");
     const first = page.locator('[data-landing-section="faq"] details').first();
     await expect(first.locator("[data-faq-answer]")).toBeHidden();
     await first.locator("summary").click();

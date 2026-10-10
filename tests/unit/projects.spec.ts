@@ -72,4 +72,6 @@ test("a project without a metric keeps its place in Work", () => {
     recentProjects(posts, count, { "/work/secret": true }).map((project) => project.slug);
   expect(slugs(6)).toEqual(["newest", "no-metric", "middle", "oldest"]);
   expect(slugs(2)).toEqual(["newest", "no-metric"]);
+  // With every project behind the password the Home has nothing to list, and leaves Work out.
+  expect(recentProjects(posts, 6, { "/work": true })).toEqual([]);
 });

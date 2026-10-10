@@ -75,6 +75,27 @@
   --neutral-on-background-weak: #a8adb5;
 }
 
+/* Without JavaScript nothing sets data-theme (the inline script in layout.tsx
+   does), and Once UI declares every colour under that attribute: the page would
+   have no surface and no text colour of its own, and the Home's title cards
+   would be see-through. Until the attribute arrives these four follow the
+   system's scheme. */
+:root:not([data-theme]) {
+  --page-background: #f4f5f7;
+  --surface-background: #ffffff;
+  --neutral-on-background-strong: #0b0c0e;
+  --neutral-on-background-weak: #4b5058;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    --page-background: #000000;
+    --surface-background: #141416;
+    --neutral-on-background-strong: #f4f5f7;
+    --neutral-on-background-weak: #a8adb5;
+  }
+}
+
 /* "filled" surfaces map --surface-background at (0,3,0) per theme; pin the same
    values there so the config's surface choice cannot move them. */
 :root[data-surface="filled"][data-theme="light"] {

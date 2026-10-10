@@ -42,12 +42,22 @@
   opacity: 1;
 }
 
-/* Flat black over the whole frame, and only during the edit's white flashes. */
+/* Flat black over the whole frame, and only during the edit's white flashes.
+   It eases in and out: most stretches end inside a flash, so the frame a title
+   card uncovers is dimmed, and without the ease it would snap to clear as soon
+   as the film moves on. */
 .veil {
   position: absolute;
   inset: 0;
   background: #000000;
   opacity: var(--film-veil);
+  transition: opacity 200ms linear;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .veil {
+    transition: none;
+  }
 }
 
 /* How far the film has played. It reports a state, so it carries the accent colour. */
@@ -55,7 +65,7 @@
   position: absolute;
   inset: auto 0 0;
   height: 3px;
-  background: #2d5bff;
+  background: var(--cobalt);
   transform: scaleX(var(--film-progress, 0));
   transform-origin: left;
 }

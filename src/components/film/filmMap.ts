@@ -20,10 +20,12 @@ export const FILM_DURATION = 24.8;
  * public/video/home-film.mp4 is an edit, not one take. Its cuts fall at 3.17,
  * 5.17, 7.03, 12.40, 15.50, 20.77 and 23.67 s. The film plays with nothing over
  * it: the hero walks the first shot, and every title card of the Home is
- * followed by one clean stretch. Each stretch ends on a cut, so the film holds
- * that frame while the next card is on screen and changes shot once it has left.
- * Together the beats cover the whole film: scrolling through the last stretch
- * ends it. The stills keep the names of the sections they were first cut for.
+ * followed by one clean stretch. The stretches end where the shot changes: on
+ * the cut itself, except `after-paid-media`, which ends at 15.55, 0.05 s past
+ * the cut at 15.50. The film holds that frame while the next card is on screen
+ * and moves on once it has left. Together the beats cover the whole film:
+ * scrolling through the last stretch ends it. The stills keep the names of the
+ * sections they were first cut for.
  */
 export const FILM_BEATS: FilmBeat[] = [
   { id: "hero", start: 0, end: 3.17 },

@@ -31,46 +31,48 @@ export function Closing() {
   const projects = recentProjects(getPosts(["src", "app", "work", "projects"]), WORK_COUNT);
   return (
     <div className={styles.closing}>
-      {/* With every project protected there is nothing to show: no heading over an empty list. */}
-      <section className={styles.block} data-landing-section="proof" hidden={projects.length === 0}>
-        <h2 className={styles.blockTitle}>{landing.work.title}</h2>
-        <ul className={styles.work}>
-          {projects.map((project) => {
-            const { title, images, metric: rawMetric } = project.metadata;
-            const cover = coverImage(images);
-            const metric = parseMetric(rawMetric);
-            return (
-              <li key={project.slug} data-work-item="">
-                <Link href={`/work/${project.slug}`} className={styles.workLink}>
-                  <span className={styles.workMedia}>
-                    {cover && (
-                      <Image
-                        src={cover}
-                        alt=""
-                        fill
-                        sizes="(max-width: 767px) 100vw, (max-width: 1099px) 50vw, 380px"
-                        className={styles.workImage}
-                      />
-                    )}
-                  </span>
-                  <span className={styles.workTitle}>{title}</span>
-                  {/* Only where the project reports one: a result is never made up to fill the row. */}
-                  {metric && (
-                    <span className={styles.workResult}>
-                      {metric.value} {metric.label}
+      {/* With every project protected there is nothing to show, so the section is left out: no heading over an empty list. */}
+      {projects.length > 0 && (
+        <section className={styles.block} data-landing-section="proof">
+          <h2 className={styles.blockTitle}>{landing.work.title}</h2>
+          <ul className={styles.work}>
+            {projects.map((project) => {
+              const { title, images, metric: rawMetric } = project.metadata;
+              const cover = coverImage(images);
+              const metric = parseMetric(rawMetric);
+              return (
+                <li key={project.slug} data-work-item="">
+                  <Link href={`/work/${project.slug}`} className={styles.workLink}>
+                    <span className={styles.workMedia}>
+                      {cover && (
+                        <Image
+                          src={cover}
+                          alt=""
+                          fill
+                          sizes="(max-width: 767px) 100vw, (max-width: 1099px) 50vw, 380px"
+                          className={styles.workImage}
+                        />
+                      )}
                     </span>
-                  )}
-                </Link>
-              </li>
-            );
-          })}
-        </ul>
-        <p className={styles.links}>
-          <Link href="/work" className={styles.textLink}>
-            {landing.work.all}
-          </Link>
-        </p>
-      </section>
+                    <span className={styles.workTitle}>{title}</span>
+                    {/* Only where the project reports one: a result is never made up to fill the row. */}
+                    {metric && (
+                      <span className={styles.workResult}>
+                        {metric.value} {metric.label}
+                      </span>
+                    )}
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+          <p className={styles.links}>
+            <Link href="/work" className={styles.textLink}>
+              {landing.work.all}
+            </Link>
+          </p>
+        </section>
+      )}
 
       <section className={styles.hiring} data-landing-section="hiring">
         <div className={styles.block}>

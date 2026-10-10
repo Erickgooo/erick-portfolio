@@ -1,5 +1,6 @@
 import type { Page } from "@playwright/test";
 import { expect, test } from "./fixtures";
+import { wordsOnFilm } from "./helpers";
 
 const CALENDAR = "https://calendly.com/santiagomahecha2328/30min";
 const FILM_DURATION = 24.8;
@@ -231,26 +232,11 @@ for (const theme of ["light", "dark"] as const) {
   test(`no words sit on the footage (${theme} theme)`, async ({ page }) => {
     await forceTheme(page, theme);
     await page.goto("/");
-    const words = await page.evaluate(() => {
-      const body = getComputedStyle(document.body).backgroundColor;
-      const out: { text: string; surface: string | null }[] = [];
-      for (const el of Array.from(document.querySelectorAll("[data-film-root] *"))) {
-        const text = Array.from(el.childNodes)
-          .filter((node) => node.nodeType === Node.TEXT_NODE)
-          .map((node) => node.textContent ?? "")
-          .join("")
-          .trim();
-        if (!text) continue;
-        const surface = el.closest("[data-opaque]");
-        out.push({ text, surface: surface ? getComputedStyle(surface).backgroundColor : null });
-      }
-      return { body, out };
-    });
+    const { body, words } = await wordsOnFilm(page);
     // The h1, the byline, the button, and a title, a sentence and a link per seat.
-    expect(words.out.length).toBeGreaterThanOrEqual(18);
-    // Opaque colours serialise as rgb(); anything translucent would read rgba().
-    expect(words.body).toBe(THEMES[theme].page);
-    for (const word of words.out) expect(word.surface, word.text).toBe(words.body);
+    expect(words.length).toBeGreaterThanOrEqual(18);
+    expect(body).toBe(THEMES[theme].page);
+    for (const word of words) expect(word.surface, word.text).toBe(body);
   });
 
   test(`the cards take the colour of the page (${theme} theme)`, async ({ page }) => {
@@ -295,6 +281,30 @@ test.describe("the nav's side labels", () => {
     // A light title card pinned under the bar.
     await scrollInto(page, '[data-seat="brand"]', 0.2);
     await expect.poll(() => labelColour(page)).toBe(THEMES.light.content);
+    // The labels change where the card's edge crosses their own middle: a card is
+    // under them from the moment its top edge passes it until its bottom edge does.
+    const middle = await place.evaluate((el) => {
+      const rect = (el.firstElementChild ?? el).getBoundingClientRect();
+      return (rect.top + rect.bottom) / 2;
+    });
+    const putCardEdge = (edge: "top" | "bottom", y: number) =>
+      page.evaluate(
+        ([side, at]) => {
+          const card = document.querySelector('[data-seat="brand"]') as HTMLElement;
+          const rect = card.getBoundingClientRect();
+          const from = side === "top" ? rect.top : rect.bottom;
+          window.scrollTo({ top: window.scrollY + from - (at as number), behavior: "instant" });
+        },
+        [edge, y] as const,
+      );
+    await putCardEdge("top", middle + 6);
+    await expect.poll(() => labelColour(page)).toBe(WHITE);
+    await putCardEdge("top", middle - 6);
+    await expect.poll(() => labelColour(page)).toBe(THEMES.light.content);
+    await putCardEdge("bottom", middle + 6);
+    await expect.poll(() => labelColour(page)).toBe(THEMES.light.content);
+    await putCardEdge("bottom", middle - 6);
+    await expect.poll(() => labelColour(page)).toBe(WHITE);
     // The card has left and the film is clean again.
     await scrollIntoBeat(page, "after-brand", 0.1);
     await expect.poll(() => labelColour(page)).toBe(WHITE);
@@ -381,6 +391,34 @@ test("reduced motion swaps a still per stretch", async ({ page }) => {
   expect(urls).toEqual([]);
 });
 
+test("reduced motion: a still is swapped while the card above it covers the screen", async ({
+  page,
+}) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/");
+  const still = () =>
+    page.evaluate(
+      () => (document.querySelector("[data-film-stage] img") as HTMLImageElement).currentSrc,
+    );
+  // Puts the top edge of the stretch after the Content card `inside` px above the
+  // bottom of the viewport (negative: still under the fold).
+  const stretchTop = (inside: number) =>
+    page.evaluate((px) => {
+      const el = document.querySelector('[data-film-beat="after-content"]') as HTMLElement;
+      const top = el.getBoundingClientRect().top + window.scrollY;
+      window.scrollTo({ top: top - window.innerHeight + px, behavior: "instant" });
+    }, inside);
+  // Under the fold: the card covers the screen and the stage keeps the shot before it.
+  await stretchTop(-40);
+  await expect.poll(still).toMatch(/\/images\/film\/tagline(-m)?\.webp$/);
+  // The moment the stretch shows at the bottom edge, its own still is already there.
+  await stretchTop(2);
+  await expect.poll(still).toMatch(/\/images\/film\/solution(-m)?\.webp$/);
+  // And scrolling back up puts the earlier one back before the card uncovers it.
+  await stretchTop(-40);
+  await expect.poll(still).toMatch(/\/images\/film\/tagline(-m)?\.webp$/);
+});
+
 test("lite tier: no video is downloaded", async ({ page }) => {
   await page.addInitScript(() => {
     Object.defineProperty(navigator, "hardwareConcurrency", { get: () => 2 });
@@ -447,6 +485,26 @@ test("on phones the call to action stays clear of the nav bar and the chatbot gr
       other.y + other.height + AIR <= button.y;
     expect(apart, JSON.stringify({ button, other })).toBe(true);
   }
+});
+
+test("a screen shorter than the hero band still shows the whole headline", async ({ page }) => {
+  // A phone on its side: the band is taller than the screen.
+  await page.setViewportSize({ width: 568, height: 320 });
+  await page.goto("/");
+  const h1 = page.locator('[data-film-beat="hero"] h1');
+  const box = await h1.evaluate((el) => {
+    const rect = el.getBoundingClientRect();
+    const top = document.elementFromPoint(rect.left + 8, rect.top + 8);
+    return {
+      // Above the top of the document there is nowhere to scroll to.
+      top: rect.top + window.scrollY,
+      bottom: rect.bottom,
+      uncovered: top !== null && el.contains(top),
+    };
+  });
+  expect(box.top).toBeGreaterThanOrEqual(0);
+  expect(box.bottom).toBeLessThanOrEqual(320);
+  expect(box.uncovered).toBe(true);
 });
 
 for (const width of [390, 859, 861, 1024, 1440]) {

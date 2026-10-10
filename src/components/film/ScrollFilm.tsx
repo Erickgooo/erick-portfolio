@@ -63,21 +63,26 @@ export function ScrollFilm({
     const html = document.documentElement;
     const phone = window.matchMedia("(max-width: 768px)");
     const surfaces = Array.from(root.querySelectorAll<HTMLElement>("[data-opaque]"));
+    const labels = document.querySelector<HTMLElement>("[data-header-side]");
     let frame = 0;
     const update = () => {
       frame = 0;
       const line = phone.matches ? window.innerHeight - 40 : 80;
       html.toggleAttribute("data-past-film", root.getBoundingClientRect().bottom <= line);
-      // The place and time labels are one line of text near the top of the bar
-      // (its box runs from about 20 to 38 px). A surface is under them while it
-      // spans the band from 30 to 44 px. Phones do not show the labels, and their
-      // bar brings its own background.
-      const covered =
-        !phone.matches &&
-        surfaces.some((surface) => {
+      // The place and time labels are one line of text, centred in the bar. A
+      // surface is under them while it spans their middle, so they change colour
+      // at the same point whether its edge arrives or leaves. The line is measured
+      // because the bar's height is Once UI's. Phones do not show the labels, and
+      // their bar brings its own background.
+      let covered = false;
+      if (labels && !phone.matches) {
+        const bar = labels.getBoundingClientRect();
+        const middle = (bar.top + bar.bottom) / 2;
+        covered = surfaces.some((surface) => {
           const rect = surface.getBoundingClientRect();
-          return rect.top <= 30 && rect.bottom >= 44;
+          return rect.top <= middle && rect.bottom >= middle;
         });
+      }
       html.toggleAttribute("data-nav-over-card", covered);
     };
     const queue = () => {
@@ -110,13 +115,17 @@ export function ScrollFilm({
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (reduce || document.documentElement.dataset.fx === "lite") {
       // No video: the poster is swapped for the still of whichever beat is on stage.
+      // A beat takes over when its stretch reaches the bottom edge of the stage: the
+      // title card above it still covers the screen then, so the swap is not seen
+      // (a card is one small viewport tall, so on a phone whose URL bar has slid
+      // away a strip at the top is the exception).
       const img = stage.querySelector("img");
       const source = stage.querySelector("source");
       let shown = beats[0]?.id ?? "";
       let pending = 0;
       const swap = () => {
         pending = 0;
-        const id = activeBeatId(beats, measure(), stage.offsetHeight / 2);
+        const id = activeBeatId(beats, measure(), stage.offsetHeight);
         if (!img || id === shown) return;
         shown = id;
         const still = beats.find((beat) => beat.id === id)?.still ?? id;

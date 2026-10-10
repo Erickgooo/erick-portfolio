@@ -39,6 +39,29 @@ export function headerLink(page: Page, name: string): Locator {
 }
 
 /**
+ * Every element in the Home's film that carries text, each with the background
+ * of the `[data-opaque]` surface it sits on: null when it sits straight on the
+ * footage. An opaque colour serialises as `rgb()`; anything translucent, or a
+ * background that was never painted, reads `rgba()`.
+ */
+export function wordsOnFilm(page: Page) {
+  return page.evaluate(() => {
+    const words: { text: string; surface: string | null }[] = [];
+    for (const el of Array.from(document.querySelectorAll("[data-film-root] *"))) {
+      const text = Array.from(el.childNodes)
+        .filter((node) => node.nodeType === Node.TEXT_NODE)
+        .map((node) => node.textContent ?? "")
+        .join("")
+        .trim();
+      if (!text) continue;
+      const surface = el.closest("[data-opaque]");
+      words.push({ text, surface: surface ? getComputedStyle(surface).backgroundColor : null });
+    }
+    return { body: getComputedStyle(document.body).backgroundColor, words };
+  });
+}
+
+/**
  * A stand-in for `waitForLoadState("networkidle")` that ignores `blob:` requests.
  * Chromium keeps a Blob-backed media resource open for as long as a video element
  * may read from it, so a page with the home film never reaches Playwright's own

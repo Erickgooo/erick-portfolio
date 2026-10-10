@@ -5,7 +5,20 @@
    cards be near-white by day and black by night. */
 
 $display: var(--font-heading), sans-serif;
-$dark: 'html[data-theme="dark"]';
+
+/* Night, however it was chosen: by the theme switch, or by the system while no
+   script has set data-theme (custom.css gives the tokens the same fallback). */
+@mixin night {
+  :global(html[data-theme="dark"]) & {
+    @content;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :global(html:not([data-theme])) & {
+      @content;
+    }
+  }
+}
 
 /* Running text: 17px on phones, 18px from tablets up. */
 @mixin text {
@@ -31,7 +44,7 @@ $dark: 'html[data-theme="dark"]';
 @mixin line($side) {
   border-#{$side}: 1px solid color-mix(in srgb, var(--neutral-on-background-strong) 14%, transparent);
 
-  :global(#{$dark}) & {
+  @include night {
     border-#{$side}-color: color-mix(
       in srgb,
       var(--neutral-on-background-strong) 18%,
@@ -108,10 +121,10 @@ $dark: 'html[data-theme="dark"]';
 .home .textLink:hover {
   color: #2549cb;
   text-decoration-line: underline;
-}
 
-:global(#{$dark}) .home .textLink:hover {
-  color: #a6baff;
+  @include night {
+    color: #a6baff;
+  }
 }
 
 .home .textLink:focus-visible {
@@ -125,13 +138,15 @@ $dark: 'html[data-theme="dark"]';
   min-height: 175svh;
 }
 
-/* The first screen: film above, the band docked along its bottom edge. */
+/* The first screen: film above, the band docked along its bottom edge. A
+   minimum, not a fixed height: on a screen shorter than the band (a phone on
+   its side) the box grows downwards instead of pushing the headline off the top. */
 .firstScreen {
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
-  height: 100vh;
-  height: 100svh;
+  min-height: 100vh;
+  min-height: 100svh;
 }
 
 .band {

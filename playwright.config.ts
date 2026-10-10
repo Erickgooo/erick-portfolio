@@ -7,6 +7,11 @@ const e2e = /e2e[\\/].*\.spec\.ts$/;
 export default defineConfig({
   testDir: "./tests",
   fullyParallel: true,
+  // One `next start` serves every worker, and each load of the Home pulls a 12 MB
+  // film from it. With the intro gone a dozen workers no longer wait five seconds
+  // before asking for it, and under that load Firefox now and then never reports
+  // `load`. Six keep the suite steady; retries would only hide the timeouts.
+  workers: 6,
   retries: 0,
   reporter: [["list"]],
   expect: { toHaveScreenshot: { maxDiffPixelRatio: 0.001 } },
