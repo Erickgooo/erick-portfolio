@@ -3,7 +3,6 @@
   width: 100%;
   /* The film is always dark footage, so its copy is light in both themes. */
   color: #ffffff;
-  --film-veil: 0.58;
 }
 
 .stage {
@@ -60,4 +59,14 @@
     var(--scheme-brand-600-30) 0%,
     transparent 70%
   );
+}
+
+/* How far the film has played: a status bar, so it carries the accent colour. */
+.progress {
+  position: absolute;
+  inset: auto 0 0;
+  height: 3px;
+  background: #2d5bff;
+  transform: scaleX(var(--film-progress, 0));
+  transform-origin: left;
 }

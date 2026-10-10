@@ -3,6 +3,8 @@ export interface FilmBeat {
   id: string;
   start: number;
   end: number;
+  /** Still shown for this beat without video: `<still>.webp`. Defaults to the id. */
+  still?: string;
 }
 
 /** A section's box relative to the top of the viewport. */
@@ -86,6 +88,6 @@ export function activeBeatId(beats: FilmBeat[], boxes: SectionBox[], line: numbe
 }
 
 /** Opacity of the flat black veil over the film at a given time. */
-export function veilAt(time: number): number {
-  return FILM_FLASHES.some(([from, to]) => time >= from && time <= to) ? VEIL_FLASH : VEIL_BASE;
+export function veilAt(time: number, base = VEIL_BASE, flash = VEIL_FLASH): number {
+  return FILM_FLASHES.some(([from, to]) => time >= from && time <= to) ? flash : base;
 }

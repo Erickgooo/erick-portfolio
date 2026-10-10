@@ -1,0 +1,406 @@
+/* THROWAWAY (lab only). Tokens shared by the three Home directions, the
+   switcher, and the pieces under the film. Four roles in light and dark:
+   surface, content, accent, line. */
+.lab {
+  --surface: #f4f5f7;
+  --raised: #ffffff;
+  --content: #0b0c0e;
+  --content-2: #4b5058;
+  --line: rgb(11 12 14 / 0.14);
+  --accent: #2d5bff;
+  --on-accent: #ffffff;
+  --accent-text: #2549cb;
+  --display: var(--font-heading), sans-serif;
+  --text: var(--font-body), sans-serif;
+
+  width: 100%;
+  background: var(--surface);
+  color: var(--content);
+  font-family: var(--text);
+}
+
+:global(html[data-theme="dark"]) .lab {
+  --surface: #000000;
+  --raised: #141416;
+  --content: #f4f5f7;
+  --content-2: #a8adb5;
+  --line: rgb(244 245 247 / 0.18);
+  --accent-text: #a6baff;
+}
+
+/* The page-wide dot grid and the glow that follows the pointer are part of what
+   this pass removes; the lab hides them instead of editing the shared layout. */
+:global(body):has(.lab)::before,
+:global(body):has(.lab) :global([data-spotlight]) {
+  display: none !important;
+}
+
+:global(.main-content-wrapper):has(.lab) {
+  padding: 0 !important;
+}
+
+/* ─── Switcher ───────────────────────────────────────────────────────── */
+.switch {
+  position: fixed;
+  top: 76px;
+  left: 16px;
+  z-index: 8;
+  display: flex;
+  gap: 2px;
+  padding: 2px;
+  border-radius: 8px;
+  background: #000000;
+}
+
+.switch .switchLink {
+  display: inline-flex;
+  align-items: center;
+  min-height: 36px;
+  padding: 0 12px;
+  border-radius: 6px;
+  color: #c7ccd1;
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.switch .switchLink[aria-current="page"] {
+  background: #ffffff;
+  color: #000000;
+}
+
+.switchName {
+  margin-left: 6px;
+}
+
+@media (max-width: 768px) {
+  .switch {
+    top: 12px;
+    left: 12px;
+  }
+
+  .switchName {
+    display: none;
+  }
+}
+
+/* ─── The one action ─────────────────────────────────────────────────── */
+.lab .cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 48px;
+  box-sizing: border-box;
+  padding: 12px 20px;
+  border-radius: 6px;
+  background: var(--accent);
+  color: var(--on-accent);
+  font-size: 1.0625rem;
+  line-height: 1.5rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: transform 160ms ease-out;
+}
+
+.lab .cta:hover {
+  color: var(--on-accent);
+  background: #2549cb;
+}
+
+.lab .cta:active {
+  transform: scale(0.98);
+}
+
+.lab .cta:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 3px;
+}
+
+/* ─── Under the film ─────────────────────────────────────────────────── */
+.closing {
+  box-sizing: border-box;
+  display: grid;
+  gap: clamp(72px, 10vw, 128px);
+  width: 100%;
+  max-width: 1200px;
+  margin-inline: auto;
+  padding: clamp(72px, 10vw, 128px) clamp(20px, 4vw, 56px);
+}
+
+.section {
+  display: grid;
+  gap: 32px;
+}
+
+.h2 {
+  margin: 0;
+  font-family: var(--display);
+  font-size: clamp(1.75rem, 2.6vw, 2.5rem);
+  line-height: 1.12;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+}
+
+.p {
+  max-width: 60ch;
+  margin: 0;
+  font-size: 1.125rem;
+  line-height: 1.75rem;
+  color: var(--content-2);
+  text-wrap: pretty;
+}
+
+.lab .link {
+  color: var(--content);
+  font-size: 1.0625rem;
+  line-height: 1.5rem;
+  font-weight: 500;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
+}
+
+.lab .link:hover {
+  color: var(--accent-text);
+}
+
+.lab .link:focus-visible {
+  outline: 2px solid var(--accent-text);
+  outline-offset: 3px;
+}
+
+/* Work: picture, title, result. No card around them. */
+.work {
+  display: grid;
+  gap: 40px 32px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.lab .workLink {
+  display: grid;
+  gap: 14px;
+  color: inherit;
+  text-decoration: none;
+}
+
+.lab .workLink:focus-visible {
+  outline: 2px solid var(--accent-text);
+  outline-offset: 4px;
+}
+
+.workMedia {
+  position: relative;
+  display: block;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border-radius: 4px;
+  background: var(--raised);
+}
+
+.workImage {
+  object-fit: cover;
+}
+
+.workTitle {
+  font-family: var(--display);
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+  font-weight: 600;
+  text-wrap: balance;
+}
+
+.workLink:hover .workTitle {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
+}
+
+.workResult {
+  font-size: 1rem;
+  line-height: 1.5rem;
+  color: var(--content-2);
+  font-variant-numeric: tabular-nums;
+}
+
+/* The same projects as a table (direction B). */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.table th {
+  padding: 0 0 12px;
+  border-bottom: 1px solid var(--content);
+  font-size: 0.9375rem;
+  line-height: 1.25rem;
+  font-weight: 500;
+  color: var(--content-2);
+}
+
+.table td {
+  padding: 18px 24px 18px 0;
+  border-bottom: 1px solid var(--line);
+  font-size: 1.0625rem;
+  line-height: 1.5rem;
+  vertical-align: top;
+}
+
+.table td:last-child {
+  padding-right: 0;
+  color: var(--content-2);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.lab .rowLink {
+  color: var(--content);
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.lab .rowLink:hover {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
+}
+
+.lab .rowLink:focus-visible {
+  outline: 2px solid var(--accent-text);
+  outline-offset: 3px;
+}
+
+.hiring {
+  display: grid;
+  gap: 20px;
+  padding-top: 32px;
+  border-top: 1px solid var(--line);
+}
+
+.hiringLinks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 28px;
+  margin: 0;
+}
+
+.faq {
+  display: grid;
+  max-width: 760px;
+}
+
+.faqItem {
+  border-bottom: 1px solid var(--line);
+}
+
+.faqQuestion {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: 44px;
+  padding: 18px 0;
+  font-size: 1.125rem;
+  line-height: 1.75rem;
+  font-weight: 500;
+  cursor: pointer;
+  list-style: none;
+}
+
+.faqQuestion::-webkit-details-marker {
+  display: none;
+}
+
+.faqQuestion::after {
+  content: "";
+  flex: none;
+  width: 14px;
+  height: 14px;
+  color: var(--content-2);
+  background: linear-gradient(currentColor, currentColor) center / 14px 1.5px no-repeat,
+    linear-gradient(currentColor, currentColor) center / 1.5px 14px no-repeat;
+}
+
+/* Open: the plus loses its upright and reads as a minus. */
+.faqItem[open] .faqQuestion::after {
+  background: linear-gradient(currentColor, currentColor) center / 14px 1.5px no-repeat;
+}
+
+.faqQuestion:focus-visible {
+  outline: 2px solid var(--accent-text);
+  outline-offset: 3px;
+}
+
+.faqAnswer {
+  max-width: 60ch;
+  margin: 0;
+  padding: 0 0 22px;
+  font-size: 1.0625rem;
+  line-height: 1.625rem;
+  color: var(--content-2);
+}
+
+.final {
+  display: grid;
+  gap: 20px;
+  justify-items: start;
+}
+
+.finalTitle {
+  max-width: 16ch;
+  margin: 0;
+  font-family: var(--display);
+  font-size: clamp(2.25rem, 5vw, 4.5rem);
+  line-height: 1.02;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+@media (min-width: 768px) {
+  .work {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .hiring {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: end;
+  }
+}
+
+@media (min-width: 1100px) {
+  .work {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 767px) {
+  .closing {
+    padding-bottom: 136px;
+  }
+
+  .table td {
+    display: block;
+    padding: 0;
+    border: 0;
+  }
+
+  .table tr {
+    display: block;
+    padding: 16px 0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .table thead {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lab .cta {
+    transition: none;
+  }
+}

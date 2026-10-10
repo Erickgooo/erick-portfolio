@@ -1,0 +1,150 @@
+/* THROWAWAY (lab only). Direction A, "Voice-over".
+   Captions: white on an opaque strip, one strip per line of text. The strip is
+   what guarantees the contrast, so the footage behind it can stay bright. */
+$strip: rgb(0 0 0 / 0.88);
+
+/* The site's place and clock labels sit on the top corners of the film: a short
+   fade under them keeps them readable over bright footage. */
+.stage::after {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 132px;
+  background: linear-gradient(rgb(0 0 0 / 0.74), rgb(0 0 0 / 0));
+  pointer-events: none;
+}
+
+.beat {
+  min-height: calc(var(--screens) * 100vh);
+  min-height: calc(var(--screens) * 100svh);
+  view-timeline-name: --beat;
+  color: #ffffff;
+}
+
+.pin {
+  position: sticky;
+  top: 0;
+  box-sizing: border-box;
+  display: grid;
+  align-content: end;
+  justify-items: start;
+  gap: 14px;
+  height: 100vh;
+  height: 100svh;
+  padding: 0 clamp(16px, 4vw, 56px) 72px;
+}
+
+/* A strip per line: the background follows each line box, and the leading leaves
+   a hairline of footage between two lines so they never stack into one slab. */
+.strip {
+  padding: 0.07em 0.36em;
+  background: $strip;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+
+.title {
+  max-width: 19ch;
+  margin: 0;
+  font-family: var(--font-heading), sans-serif;
+  font-size: clamp(1.75rem, 3.9vw, 3.5rem);
+  line-height: 1.5;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.byline {
+  max-width: 44ch;
+  margin: 0;
+  font-size: 1.0625rem;
+  line-height: 1.72;
+  font-weight: 500;
+}
+
+.caption {
+  max-width: 27ch;
+  margin: 0;
+  font-family: var(--font-heading), sans-serif;
+  font-size: clamp(1.25rem, 2.3vw, 2.125rem);
+  line-height: 1.52;
+  font-weight: 500;
+}
+
+/* Doubled class: Once UI colours every `a:not(.button)` at specificity (0,1,1). */
+.more.more {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  box-sizing: border-box;
+  padding: 0 14px;
+  background: $strip;
+  color: #ffffff;
+  font-size: 1rem;
+  line-height: 1.5rem;
+  font-weight: 500;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
+}
+
+.more.more:hover {
+  color: #c1cfff;
+}
+
+.more.more:focus-visible {
+  outline: 2px solid #ffffff;
+  outline-offset: 2px;
+}
+
+.hero {
+  gap: 16px;
+}
+
+@keyframes caption-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes caption-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+/* A caption comes up with its section and fades as the next shot takes over.
+   Opacity only; without scroll timelines or with reduced motion it simply
+   scrolls in and out with its section. */
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .fade .pin > * {
+      animation: caption-in linear both, caption-out linear forwards;
+      animation-timeline: --beat, --beat;
+      animation-range: entry 78% entry 100%, exit 2% exit 30%;
+    }
+  }
+}
+
+/* Phones keep the nav bar at the bottom of the screen: captions sit above it. */
+@media (max-width: 768px) {
+  .pin {
+    padding-bottom: 124px;
+  }
+
+  .byline {
+    font-size: 0.9375rem;
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .strip,
+  .more.more {
+    background: #000000;
+  }
+}

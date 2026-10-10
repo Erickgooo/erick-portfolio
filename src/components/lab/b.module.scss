@@ -1,0 +1,144 @@
+/* THROWAWAY (lab only). Direction B, "Desk and ledger".
+   The film is a window; the text is a document on the page's own surface.
+   Display type is Archivo at an expanded width, the proportions of the
+   ERICK MAHECHA wordmark; running text stays in Geist. */
+.b {
+  --display: var(--font-lab-display), var(--font-heading), sans-serif;
+}
+
+/* Doubled class: these sit on ScrollFilm's own elements and must win over its module. */
+.film.film {
+  box-sizing: border-box;
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  column-gap: clamp(32px, 4.5vw, 80px);
+  align-items: start;
+  max-width: 1400px;
+  margin-inline: auto;
+  padding: 0 clamp(20px, 4vw, 56px);
+  color: var(--content);
+}
+
+.film .stage {
+  grid-column: 2;
+  grid-row: 1;
+  top: 104px;
+  height: calc(100vh - 136px);
+  height: calc(100svh - 136px);
+  border-radius: 6px;
+}
+
+.film .track {
+  grid-column: 1;
+  grid-row: 1;
+  margin-top: 0;
+  padding-top: 104px;
+}
+
+.entry {
+  box-sizing: border-box;
+  display: grid;
+  align-content: start;
+  justify-items: start;
+  gap: 20px;
+  min-height: 78vh;
+  min-height: 78svh;
+  padding-bottom: 96px;
+}
+
+/* The last entry ends where the window's bottom edge is, so the film can finish. */
+.entry:last-child {
+  min-height: calc(100vh - 136px);
+  min-height: calc(100svh - 136px);
+}
+
+.hero {
+  gap: 24px;
+}
+
+.title {
+  max-width: 13ch;
+  margin: 0;
+  font-family: var(--display);
+  font-stretch: 122%;
+  font-size: clamp(2.125rem, 4.1vw, 3.875rem);
+  line-height: 1.06;
+  font-weight: 640;
+  text-wrap: balance;
+}
+
+.heading {
+  max-width: 20ch;
+  margin: 0;
+  font-family: var(--display);
+  font-stretch: 116%;
+  font-size: clamp(1.375rem, 2vw, 1.875rem);
+  line-height: 1.18;
+  font-weight: 600;
+  text-wrap: balance;
+}
+
+.lead,
+.body {
+  max-width: 34em;
+  margin: 0;
+  font-size: 1.1875rem;
+  line-height: 1.6;
+  text-wrap: pretty;
+}
+
+.film .link {
+  color: var(--content);
+  font-size: 1.0625rem;
+  line-height: 1.5rem;
+  font-weight: 500;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
+}
+
+.film .link:hover {
+  color: var(--accent-text);
+}
+
+.film .link:focus-visible {
+  outline: 2px solid var(--accent-text);
+  outline-offset: 3px;
+}
+
+/* Narrow screens: the window stays at the top and the account scrolls under it. */
+@media (max-width: 899px) {
+  .film.film {
+    display: block;
+    padding: 0;
+  }
+
+  .film .stage {
+    top: 0;
+    z-index: 2;
+    height: 42vh;
+    height: 42svh;
+    border-radius: 0;
+  }
+
+  .film .track {
+    padding: 0 20px;
+  }
+
+  .entry {
+    min-height: 60vh;
+    min-height: 60svh;
+    padding: 28px 0 48px;
+  }
+
+  .entry:last-child {
+    min-height: 60vh;
+    min-height: 60svh;
+    padding-bottom: 136px;
+  }
+
+  .lead,
+  .body {
+    font-size: 1.0625rem;
+  }
+}

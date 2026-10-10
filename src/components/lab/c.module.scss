@@ -1,0 +1,158 @@
+/* THROWAWAY (lab only). Direction C, "Department of one".
+   The film runs with nothing over it. Text lives on black title cards that
+   slide over the footage between shots, the way intertitles do, so the film
+   stretch of the page is dark in both themes. */
+
+/* The site's place and clock labels sit on the top corners of the film: a short
+   fade under them keeps them readable over bright footage. */
+.stage::after {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 132px;
+  background: linear-gradient(rgb(0 0 0 / 0.74), rgb(0 0 0 / 0));
+  pointer-events: none;
+}
+
+.heroBeat {
+  min-height: 175vh;
+  min-height: 175svh;
+  color: #ffffff;
+}
+
+/* The first screen: film above, the title band docked along its bottom edge. */
+.first {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  height: 100vh;
+  height: 100svh;
+}
+
+.band {
+  box-sizing: border-box;
+  display: grid;
+  gap: 20px;
+  width: 100%;
+  padding: 28px clamp(20px, 4vw, 56px) 36px;
+  background: #000000;
+}
+
+.bandSide {
+  display: grid;
+  gap: 16px;
+  justify-items: start;
+}
+
+.title {
+  max-width: 15ch;
+  margin: 0;
+  font-family: var(--font-heading), sans-serif;
+  font-size: clamp(2rem, 5.2vw, 4.75rem);
+  line-height: 1.02;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+.byline {
+  max-width: 30ch;
+  margin: 0;
+  font-size: 1.0625rem;
+  line-height: 1.5rem;
+  color: #c7ccd1;
+}
+
+.clear {
+  min-height: calc(var(--screens) * 100vh);
+  min-height: calc(var(--screens) * 100svh);
+}
+
+.card {
+  position: relative;
+  display: grid;
+  align-items: center;
+  min-height: 100vh;
+  min-height: 100svh;
+  background: #000000;
+  color: #ffffff;
+}
+
+.cardInner {
+  box-sizing: border-box;
+  display: grid;
+  gap: 28px;
+  width: 100%;
+  max-width: 1280px;
+  margin-inline: auto;
+  padding: 112px clamp(20px, 4vw, 56px);
+}
+
+.seat {
+  margin: 0;
+  font-family: var(--font-heading), sans-serif;
+  font-size: clamp(3rem, 9vw, 8rem);
+  line-height: 0.98;
+  font-weight: 600;
+  letter-spacing: -0.025em;
+}
+
+.cardText {
+  display: grid;
+  gap: 20px;
+  justify-items: start;
+}
+
+.said {
+  max-width: 27ch;
+  margin: 0;
+  font-size: clamp(1.25rem, 1.9vw, 1.75rem);
+  line-height: 1.42;
+  text-wrap: pretty;
+}
+
+/* Doubled class: Once UI colours every `a:not(.button)` at specificity (0,1,1). */
+.link.link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: #ffffff;
+  font-size: 1.0625rem;
+  line-height: 1.5rem;
+  font-weight: 500;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
+}
+
+.link.link:hover {
+  color: #c1cfff;
+}
+
+.link.link:focus-visible {
+  outline: 2px solid #ffffff;
+  outline-offset: 2px;
+}
+
+@media (min-width: 900px) {
+  .band {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: end;
+    gap: 48px;
+    padding-top: 36px;
+    padding-bottom: 44px;
+  }
+
+  .cardInner {
+    grid-template-columns: minmax(0, 6fr) minmax(0, 5fr);
+    align-items: end;
+    gap: 64px;
+  }
+}
+
+/* Phones keep the nav bar at the bottom of the screen. */
+@media (max-width: 768px) {
+  .band {
+    padding-bottom: 116px;
+  }
+}

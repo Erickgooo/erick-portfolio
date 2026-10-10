@@ -1,6 +1,6 @@
 "use client";
 
-import { type ReactNode, useEffect, useRef, useState } from "react";
+import { type CSSProperties, type ReactNode, useEffect, useRef, useState } from "react";
 import styles from "./ScrollFilm.module.scss";
 import { type FilmBeat, type SectionBox, activeBeatId, filmTimeAt, veilAt } from "./filmMap";
 
@@ -16,8 +16,25 @@ interface ScrollFilmProps {
   stills: string;
   beats: FilmBeat[];
   duration: number;
+  /** Opacity of the black veil over the footage, at rest and during the edit's flashes; false removes it. */
+  veil?: { base: number; flash: number } | false;
+  /** The cursor glow layer above the veil. */
+  glow?: boolean;
+  /** A thin bar along the bottom of the stage that fills as the film plays. */
+  progress?: boolean;
+  /**
+   * "bleed": the stage fills the viewport behind the content. "window": the stage
+   * is a frame the page lays out itself (beside the content, or above it on
+   * narrow screens), and sections take over as they reach it.
+   */
+  layout?: "bleed" | "window";
+  className?: string;
+  stageClassName?: string;
+  trackClassName?: string;
   children: ReactNode;
 }
+
+const DEFAULT_VEIL = { base: 0.58, flash: 0.82 };
 
 /**
  * A full-viewport film pinned behind its children and scrubbed by scroll: each
@@ -35,8 +52,17 @@ export function ScrollFilm({
   stills,
   beats,
   duration,
+  veil = DEFAULT_VEIL,
+  glow = true,
+  progress = false,
+  layout = "bleed",
+  className,
+  stageClassName,
+  trackClassName,
   children,
 }: ScrollFilmProps) {
+  const veilBase = veil ? veil.base : 0;
+  const veilFlash = veil ? veil.flash : 0;
   const rootRef = useRef<HTMLDivElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -56,7 +82,8 @@ export function ScrollFilm({
   // (see custom.css). The bar sits at the top on desktop and at the bottom on phones.
   useEffect(() => {
     const root = rootRef.current;
-    if (!root) return;
+    // A window is laid out on the page's own surface: the header keeps the theme's colours.
+    if (!root || layout !== "bleed") return;
     const html = document.documentElement;
     const phone = window.matchMedia("(max-width: 768px)");
     let frame = 0;
@@ -77,7 +104,7 @@ export function ScrollFilm({
       window.removeEventListener("resize", queue);
       html.removeAttribute("data-past-film");
     };
-  }, []);
+  }, [layout]);
 
   useEffect(() => {
     const root = rootRef.current;
@@ -85,11 +112,34 @@ export function ScrollFilm({
     const video = videoRef.current;
     if (!root || !stage || !video || portrait === null) return;
     const sections = Array.from(root.querySelectorAll<HTMLElement>("[data-film-beat]"));
-    const measure = (): SectionBox[] =>
-      sections.map((el) => {
+    // Where a section takes over, and how much of the last section's scroll the
+    // stage stays pinned for (the distance from that line to the stage's bottom
+    // edge). Full bleed: the top of the viewport. A window: the middle of the
+    // reading area, which is the window's own height when the text runs beside it
+    // and the space under it when the text runs below.
+    const anchor = (): { line: number; pinned: number } => {
+      if (layout === "bleed") return { line: 0, pinned: stage.offsetHeight };
+      const rect = stage.getBoundingClientRect();
+      const stacked = rect.width >= root.clientWidth - 1;
+      const line = stacked
+        ? rect.bottom + (window.innerHeight - rect.bottom) / 2
+        : rect.top + rect.height / 2;
+      return { line, pinned: rect.bottom - line };
+    };
+    const measure = (line = 0): SectionBox[] => {
+      const boxes = sections.map((el) => {
         const rect = el.getBoundingClientRect();
-        return { id: el.dataset.filmBeat ?? "", top: rect.top, height: rect.height };
+        return { id: el.dataset.filmBeat ?? "", top: rect.top - line, height: rect.height };
       });
+      // Beside or under a window the first section is already past the line when the
+      // page loads. It plays its beat from the first frame instead: from no scroll
+      // at all to the point where the second section reaches the line.
+      if (layout === "window" && boxes.length > 1) {
+        const untilSecond = Math.max(1, boxes[1].top + window.scrollY);
+        boxes[0] = { ...boxes[0], top: -window.scrollY, height: untilSecond };
+      }
+      return boxes;
+    };
 
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (reduce || document.documentElement.dataset.fx === "lite") {
@@ -100,11 +150,17 @@ export function ScrollFilm({
       let pending = 0;
       const swap = () => {
         pending = 0;
-        const id = activeBeatId(beats, measure(), stage.offsetHeight / 2);
+        const { line } = anchor();
+        const id = activeBeatId(
+          beats,
+          measure(line),
+          layout === "bleed" ? stage.offsetHeight / 2 : 0,
+        );
         if (!img || id === shown) return;
         shown = id;
-        if (source) source.srcset = `${stills}/${id}-m.webp`;
-        img.src = `${stills}/${id}.webp`;
+        const still = beats.find((beat) => beat.id === id)?.still ?? id;
+        if (source) source.srcset = `${stills}/${still}-m.webp`;
+        img.src = `${stills}/${still}.webp`;
       };
       const queue = () => {
         if (!pending) pending = requestAnimationFrame(swap);
@@ -132,10 +188,12 @@ export function ScrollFilm({
 
     const tick = () => {
       frame = 0;
-      const target = Math.min(last, filmTimeAt(beats, measure(), stage.offsetHeight));
+      const { line, pinned } = anchor();
+      const target = Math.min(last, filmTimeAt(beats, measure(line), pinned));
       current += (target - current) * 0.2;
       if (Math.abs(target - current) < 0.004) current = target;
-      root.style.setProperty("--film-veil", String(veilAt(current)));
+      root.style.setProperty("--film-veil", String(veilAt(current, veilBase, veilFlash)));
+      root.style.setProperty("--film-progress", (current / duration).toFixed(4));
       // Never queue a seek behind one still decoding: fast flicks would pile up and freeze the clip.
       if (ready && !video.seeking && Math.abs(video.currentTime - current) > step) {
         video.currentTime = current;
@@ -228,11 +286,21 @@ export function ScrollFilm({
         URL.revokeObjectURL(objectUrl);
       }
     };
-  }, [src, srcMobile, stills, beats, duration, portrait]);
+  }, [src, srcMobile, stills, beats, duration, portrait, layout, veilBase, veilFlash]);
 
   return (
-    <div ref={rootRef} className={styles.film} data-film-root="">
-      <div ref={stageRef} className={styles.stage} data-film-stage="" aria-hidden="true">
+    <div
+      ref={rootRef}
+      className={[styles.film, className].filter(Boolean).join(" ")}
+      style={{ "--film-veil": veilBase } as CSSProperties}
+      {...(layout === "bleed" ? { "data-film-root": "" } : { "data-film-window": "" })}
+    >
+      <div
+        ref={stageRef}
+        className={[styles.stage, stageClassName].filter(Boolean).join(" ")}
+        data-film-stage=""
+        aria-hidden="true"
+      >
         <picture>
           <source media={PORTRAIT} srcSet={posterMobile} />
           <img src={poster} alt="" className={styles.media} fetchPriority="high" />
@@ -246,10 +314,11 @@ export function ScrollFilm({
           tabIndex={-1}
           data-film-video=""
         />
-        <div className={styles.veil} />
-        <div className={styles.glow} data-spotlight-target="" />
+        {veil && <div className={styles.veil} />}
+        {glow && <div className={styles.glow} data-spotlight-target="" />}
+        {progress && <div className={styles.progress} />}
       </div>
-      <div className={styles.track}>{children}</div>
+      <div className={[styles.track, trackClassName].filter(Boolean).join(" ")}>{children}</div>
     </div>
   );
 }
