@@ -117,11 +117,11 @@ Lee el §3 del spec y la referencia del lab antes de empezar. La estructura, los
 
 Datos: cada control de la nav es un `ToggleButton` de Once UI tamaño `m` (alto 2rem, clase con hash `ToggleButton_m__*`), incluido `ThemeToggle`. `Header.module.scss` `.mask` no se usa en ningún sitio.
 
-- [ ] **Step 1:** Tests que fallan en `nav.spec.ts`: a 390×844 cada enlace y botón dentro de `header` mide ≥ 44×44 px y la barra completa cabe en el ancho sin desbordar; a 1440×900 cada uno mide ≥ 28×28 px. En `system.spec.ts`: en `footer`, a 390 px cada `a` mide ≥ 44×44 px y a 1440 px ≥ 28×28 px; el footer contiene los textos «Once UI» y «CC BY-NC 4.0» con sus enlaces; ningún enlace del footer usa un color de la escala de marca (su `color` calculado es el del texto que lo rodea) y los enlaces de texto están subrayados.
-- [ ] **Step 2:** Verlos fallar.
-- [ ] **Step 3:** Nav: área mínima por control con CSS en `Header.module.scss` (hasta 768 px, 44×44; por encima no cambia). Borra `.mask`. No cambies etiquetas, iconos, orden ni el interruptor de tema.
-- [ ] **Step 4:** Footer: iconos y enlaces con el área mínima; enlaces en el color del texto y subrayados; se conserva la atribución completa y el espacio inferior para la barra en móvil.
-- [ ] **Step 5:** Gates, `test:unit`, `test:e2e`. Commit `fix(nav): controls and footer links large enough to tap`.
+- [x] **Step 1:** Tests que fallan en `nav.spec.ts`: a 390×844 cada enlace y botón dentro de `header` mide ≥ 44×44 px y la barra completa cabe en el ancho sin desbordar; a 1440×900 cada uno mide ≥ 28×28 px. En `system.spec.ts`: en `footer`, a 390 px cada `a` mide ≥ 44×44 px y a 1440 px ≥ 28×28 px; el footer contiene los textos «Once UI» y «CC BY-NC 4.0» con sus enlaces; ningún enlace del footer usa un color de la escala de marca (su `color` calculado es el del texto que lo rodea) y los enlaces de texto están subrayados.
+- [x] **Step 2:** Verlos fallar.
+- [x] **Step 3:** Nav: área mínima por control con CSS en `Header.module.scss` (hasta 768 px, 44×44; por encima no cambia). Borra `.mask`. No cambies etiquetas, iconos, orden ni el interruptor de tema.
+- [x] **Step 4:** Footer: iconos y enlaces con el área mínima; enlaces en el color del texto y subrayados; se conserva la atribución completa y el espacio inferior para la barra en móvil.
+- [x] **Step 5:** Gates, `test:unit`, `test:e2e`. Commit `fix(nav): controls and footer links large enough to tap`.
 
 ### Task 5: Work y casos de estudio
 

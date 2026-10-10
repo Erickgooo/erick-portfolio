@@ -7,7 +7,7 @@ export const Footer = () => {
   const currentYear = new Date().getFullYear();
 
   return (
-    <Row as="footer" fillWidth padding="8" horizontal="center" s={{ direction: "column" }}>
+    <Row as="footer" className={styles.footer} fillWidth padding="8" horizontal="center" s={{ direction: "column" }}>
       <Row
         className={styles.mobile}
         maxWidth="m"
@@ -37,14 +37,17 @@ export const Footer = () => {
           <Text onBackground="neutral-weak">© {currentYear} /</Text>
           <Text paddingX="4">{person.name}</Text>
           <Text onBackground="neutral-weak">
-            &nbsp;/ Based on <SmartLink href="https://once-ui.com/">Once UI</SmartLink> (adapted).
+            &nbsp;/ Based on <SmartLink className={styles.link} href="https://once-ui.com/">Once UI</SmartLink> (adapted).
             Licensed under{" "}
-            <SmartLink href="https://creativecommons.org/licenses/by-nc/4.0/">
+            <SmartLink
+              className={styles.link}
+              href="https://creativecommons.org/licenses/by-nc/4.0/"
+            >
               CC BY-NC 4.0.
             </SmartLink>
           </Text>
         </Text>
-        <Row gap="16">
+        <Row gap="16" className={styles.icons}>
           {social.map(
             (item) =>
               item.link && (

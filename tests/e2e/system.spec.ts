@@ -108,3 +108,53 @@ for (const route of ROUTES) {
     if (route.name !== "work") expect(state.filtered).toBe(0);
   });
 }
+
+const footerLinks = (page: import("@playwright/test").Page) =>
+  page.evaluate(() =>
+    Array.from(document.querySelectorAll("footer a"))
+      .filter((a) => !a.closest('[class*="FaqChatbot"]'))
+      .map((a) => {
+        const r = a.getBoundingClientRect();
+        const cs = getComputedStyle(a);
+        const parent = getComputedStyle(a.parentElement as Element);
+        return {
+          text: (a.textContent ?? "").trim() || a.getAttribute("aria-label") || "",
+          w: r.width,
+          h: r.height,
+          colour: cs.color,
+          sameColour: cs.color === parent.color,
+          underlined: cs.textDecorationLine.includes("underline"),
+          isText: (a.textContent ?? "").trim() !== "",
+        };
+      }),
+  );
+
+for (const [width, min] of [
+  [390, 44],
+  [1440, 28],
+] as const) {
+  test(`footer links are at least ${min}x${min} at ${width}px`, async ({ page }) => {
+    // The page fixture, not a fresh context, so WebKit still gets its CSP workaround.
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto("/about");
+    const links = await footerLinks(page);
+    expect(links.length).toBeGreaterThan(2);
+    expect(links.filter((l) => l.w < min - 0.5 || l.h < min - 0.5)).toEqual([]);
+  });
+}
+
+test("footer keeps its attribution, linked, in the text colour and underlined", async ({ page }) => {
+  await page.goto("/about");
+  const footer = page.locator("footer");
+  await expect(footer).toContainText("Once UI");
+  await expect(footer).toContainText("CC BY-NC 4.0");
+  await expect(footer.getByRole("link", { name: "Once UI" })).toBeVisible();
+  await expect(footer.getByRole("link", { name: /CC BY-NC 4\.0/ })).toBeVisible();
+  const links = await footerLinks(page);
+  const text = links.filter((l) => l.isText);
+  // Text links wear the colour of their sentence; the icon buttons are neutral, never cobalt.
+  expect(text.filter((l) => !l.sameColour).map((l) => l.text)).toEqual([]);
+  expect(links.filter((l) => l.colour === "rgb(45, 91, 255)")).toEqual([]);
+  expect(text.length).toBeGreaterThanOrEqual(2);
+  expect(text.filter((l) => !l.underlined).map((l) => l.text)).toEqual([]);
+});

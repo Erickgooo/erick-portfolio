@@ -1,7 +1,34 @@
 @use "./breakpoints.scss" as breakpoints;
 
+// Text links take the colour of the sentence around them and are told apart by
+// the underline. Icons and links share one minimum hit area.
+.link,
+.icons a,
+.icons button {
+    min-width: 28px;
+    min-height: 28px;
+    justify-content: center;
+}
+
+.footer .link {
+    color: inherit;
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+}
+
+.footer .link:hover {
+    color: var(--neutral-on-background-strong);
+}
+
 @media (max-width: breakpoints.$s) {
     .mobile {
         text-align: center;
+    }
+
+    .link,
+    .icons a,
+    .icons button {
+        min-width: 44px;
+        min-height: 44px;
     }
 }
