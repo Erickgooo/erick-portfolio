@@ -3,9 +3,11 @@ import { ResultsStats } from "@/components/mdx/ResultsStats";
 import { TechStack } from "@/components/mdx/TechStack";
 import { YouTubeEmbed } from "@/components/mdx/YouTubeEmbed";
 import { MDXRemote, type MDXRemoteProps } from "next-mdx-remote/rsc";
+import Link from "next/link";
 import type React from "react";
 import type { ReactNode } from "react";
 import { slugify as transliterate } from "transliteration";
+import styles from "./mdx.module.scss";
 
 import {
   Accordion,
@@ -36,28 +38,34 @@ type CustomLinkProps = React.AnchorHTMLAttributes<HTMLAnchorElement> & {
   children: ReactNode;
 };
 
+// A link in the running text is a plain inline anchor in every case, so it
+// wraps with its sentence and takes the body's link style.
 function CustomLink({ href, children, ...props }: CustomLinkProps) {
   if (href.startsWith("/")) {
     return (
-      <SmartLink href={href} {...props}>
+      <Link className={styles.link} href={href} {...props}>
         {children}
-      </SmartLink>
+      </Link>
     );
   }
 
   if (href.startsWith("#")) {
     return (
-      <a href={href} {...props}>
+      <a className={styles.link} href={href} {...props}>
         {children}
       </a>
     );
   }
 
   return (
-    <a href={href} target="_blank" rel="noopener noreferrer" {...props}>
+    <a className={styles.link} href={href} target="_blank" rel="noopener noreferrer" {...props}>
       {children}
     </a>
   );
+}
+
+function createStrong({ children }: { children: ReactNode }) {
+  return <strong className={styles.strong}>{children}</strong>;
 }
 
 function createImage({ alt, src, ...props }: MediaProps & { src: string }) {
@@ -71,7 +79,8 @@ function createImage({ alt, src, ...props }: MediaProps & { src: string }) {
       marginTop="8"
       marginBottom="16"
       enlarge
-      radius="m"
+      // Pictures take a 4px corner everywhere on the site.
+      style={{ borderRadius: "4px" }}
       border="neutral-alpha-medium"
       sizes="(max-width: 960px) 100vw, 960px"
       alt={alt}
@@ -152,8 +161,15 @@ function createCodeBlock(props: any) {
     );
   }
 
-  // Fallback for other pre tags or empty code blocks
-  return <pre {...props} />;
+  // A fenced block with no language. MDX has already turned its <code> into the
+  // inline-code chip, which is smaller than the site's minimum text size, so the
+  // text is taken out of it and set in the site's own code face.
+  const text = props.children?.props?.children ?? props.children;
+  return (
+    <pre className={styles.pre}>
+      <code>{text}</code>
+    </pre>
+  );
 }
 
 function createList({ children }: { children: ReactNode }) {
@@ -186,6 +202,7 @@ const components = {
   h6: createHeading("h6") as any,
   img: createImage as any,
   a: CustomLink as any,
+  strong: createStrong,
   code: createInlineCode as any,
   pre: createCodeBlock as any,
   ol: createList as any,

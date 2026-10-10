@@ -1,17 +1,12 @@
-"use client";
-
-import {
-  AvatarGroup,
-  Carousel,
-  Column,
-  Flex,
-  Heading,
-  SmartLink,
-  Text,
-} from "@once-ui-system/core";
+import { parseMetric, projectStills } from "@/utils/projects";
+import { AvatarGroup, Heading } from "@once-ui-system/core";
+import Image from "next/image";
+import Link from "next/link";
+import styles from "./ProjectCard.module.scss";
 
 interface ProjectCardProps {
   href: string;
+  /** Set on the cards at the top of a list: their first picture is loaded ahead of the rest. */
   priority?: boolean;
   images: string[];
   title: string;
@@ -23,8 +18,15 @@ interface ProjectCardProps {
   metric?: string;
 }
 
+/**
+ * One project in a list: its pictures, its title, the result it reports and
+ * the way into the case study. The pictures sit in a row that scrolls sideways
+ * on its own, so the card is plain server HTML: no script, nothing that
+ * animates in and nothing that plays.
+ */
 export const ProjectCard: React.FC<ProjectCardProps> = ({
   href,
+  priority = false,
   images = [],
   title,
   hasContent,
@@ -33,73 +35,76 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
   link,
   metric,
 }) => {
-  const [metricValue, metricLabel] = (metric || "").split("|").map((s) => s.trim());
+  const pictures = projectStills(images);
+  const result = parseMetric(metric);
+  const summary = description?.trim();
   return (
-    <Column fillWidth gap="m">
-      <Carousel
-        sizes="(max-width: 960px) 100vw, 960px"
-        aspectRatio="16 / 9"
-        items={images.map((image) => ({
-          slide: image,
-          alt: title,
-        }))}
-      />
-      <Flex
-        s={{ direction: "column" }}
-        fillWidth
-        paddingX="s"
-        paddingTop="12"
-        paddingBottom="24"
-        gap="l"
-      >
-        {title && (
-          <Flex flex={5} direction="column" gap="8">
-            <Heading as="h2" wrap="balance" variant="heading-strong-xl">
-              {title}
-            </Heading>
-            {metricValue && metricLabel && (
-              <Flex vertical="center" gap="8" fitWidth>
-                <Text style={{ fontWeight: 600 }} onBackground="neutral-strong" variant="body-strong-s">
-                  {metricValue}
-                </Text>
-                <Text onBackground="neutral-weak" variant="label-default-s">
-                  {metricLabel}
-                </Text>
-              </Flex>
-            )}
-          </Flex>
-        )}
-        {(avatars?.length > 0 || description?.trim() || hasContent) && (
-          <Column flex={7} gap="16">
+    <article className={styles.card}>
+      {pictures.length > 0 && (
+        <ul
+          className={pictures.length > 1 ? `${styles.strip} ${styles.scrolls}` : styles.strip}
+          data-project-media=""
+          aria-label={`${title}: pictures`}
+          // A row that scrolls has to be reachable from the keyboard.
+          tabIndex={pictures.length > 1 ? 0 : undefined}
+        >
+          {pictures.map((src, index) => (
+            <li key={src} className={styles.frame}>
+              <Image
+                className={styles.picture}
+                src={src}
+                alt={index === 0 ? title : `${title} (${index + 1})`}
+                fill
+                sizes="(max-width: 960px) 100vw, 960px"
+                priority={priority && index === 0}
+              />
+            </li>
+          ))}
+        </ul>
+      )}
+      <div className={styles.text}>
+        <div className={styles.lead}>
+          <Heading as="h2" wrap="balance" variant="heading-strong-xl">
+            {title}
+          </Heading>
+          {/* Only where the project reports one: a result is never made up to fill the row. */}
+          {result && (
+            <p className={styles.result}>
+              <span className={styles.figure}>{result.value}</span> {result.label}
+            </p>
+          )}
+        </div>
+        {(avatars?.length > 0 || summary || hasContent || link) && (
+          <div className={styles.detail}>
             {avatars?.length > 0 && <AvatarGroup avatars={avatars} size="m" reverse />}
-            {description?.trim() && (
-              <Text wrap="balance" variant="body-default-s" onBackground="neutral-weak">
-                {description}
-              </Text>
+            {summary && <p className={styles.summary}>{summary}</p>}
+            {(hasContent || link) && (
+              <p className={styles.links}>
+                {hasContent && (
+                  <Link
+                    className={styles.link}
+                    href={href}
+                    aria-label={`Read case study: ${title}`}
+                  >
+                    Read case study
+                  </Link>
+                )}
+                {link && (
+                  <a
+                    className={styles.link}
+                    href={link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={`View project: ${title}`}
+                  >
+                    View project
+                  </a>
+                )}
+              </p>
             )}
-            <Flex gap="24" wrap>
-              {hasContent && (
-                <SmartLink
-                  suffixIcon="arrowRight"
-                  style={{ margin: "0", width: "fit-content" }}
-                  href={href}
-                >
-                  <Text variant="body-default-s">Read case study</Text>
-                </SmartLink>
-              )}
-              {link && (
-                <SmartLink
-                  suffixIcon="arrowUpRightFromSquare"
-                  style={{ margin: "0", width: "fit-content" }}
-                  href={link}
-                >
-                  <Text variant="body-default-s">View project</Text>
-                </SmartLink>
-              )}
-            </Flex>
-          </Column>
+          </div>
         )}
-      </Flex>
-    </Column>
+      </div>
+    </article>
   );
 };

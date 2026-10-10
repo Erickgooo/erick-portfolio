@@ -1,22 +1,20 @@
+/* The tools of a project, as a line of plain names that wraps: each with its
+   mark where there is one. No pill, no border, no tint. */
+
 .root {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
+  gap: 0.5rem 1.5rem;
   margin: 1rem 0 1.5rem;
 }
 
 .chip {
   display: inline-flex;
   align-items: center;
-  gap: 0.4rem;
-  padding: 0.4rem 0.75rem;
-  border-radius: 999px;
-  border: 1px solid var(--neutral-alpha-medium);
-  background: var(--neutral-alpha-weak);
-  font-family: var(--font-code);
-  font-size: 0.75rem;
-  letter-spacing: 0.01em;
-  color: var(--neutral-on-background-weak);
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--neutral-on-background-strong);
   white-space: nowrap;
 }
 
@@ -25,10 +23,11 @@
   flex-shrink: 0;
 }
 
+/* Stands in for the mark of a tool that has none. */
 .chipDot {
   width: 5px;
   height: 5px;
   border-radius: 50%;
-  background: var(--scheme-brand-600, #2d5bff);
+  background: var(--neutral-on-background-weak);
   flex-shrink: 0;
 }

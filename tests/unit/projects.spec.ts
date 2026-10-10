@@ -3,6 +3,7 @@ import {
   coverImage,
   linkableProject,
   parseMetric,
+  projectStills,
   publicProjects,
   recentProjects,
   sortProjects,
@@ -12,6 +13,13 @@ test("coverImage skips videos and handles empty lists", () => {
   expect(coverImage(["/a.mp4", "/b.webp", "/c.webp"])).toBe("/b.webp");
   expect(coverImage(["/a.mp4"])).toBeNull();
   expect(coverImage([])).toBeNull();
+});
+
+test("projectStills keeps the pictures in order and leaves the clips out", () => {
+  expect(projectStills(["/a.mp4", "/b.webp", "/c.MP4", "/d.webp"])).toEqual(["/b.webp", "/d.webp"]);
+  expect(projectStills(["/a.webp", "/b.webp"])).toEqual(["/a.webp", "/b.webp"]);
+  expect(projectStills(["/a.mp4"])).toEqual([]);
+  expect(projectStills([])).toEqual([]);
 });
 
 test("parseMetric splits value|label and rejects partial input", () => {

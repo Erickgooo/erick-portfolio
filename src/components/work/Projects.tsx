@@ -40,8 +40,8 @@ export function Projects({ range, exclude, hideProtected = false }: ProjectsProp
           images={post.metadata.images}
           title={post.metadata.title}
           description={post.metadata.summary}
-          // A flag, not the body: ProjectCard is a client component, so every prop
-          // is serialized into the HTML of whichever page lists the project.
+          // A flag, not the body: the card only needs to know whether there is a
+          // case study to link to.
           hasContent={post.content.trim().length > 0}
           avatars={post.metadata.team?.map((member) => ({ src: member.avatar })) || []}
           link={post.metadata.link || ""}

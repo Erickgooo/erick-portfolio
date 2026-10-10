@@ -1,0 +1,124 @@
+@use "./system.scss" as system;
+
+/* One project in a list (spec 2026-10-10, section 4, "Work"): pictures, then
+   words on the page's own surface. No chip, no tint, no glass. */
+
+.card {
+  display: grid;
+  gap: 20px;
+  min-width: 0;
+}
+
+/* --- Pictures -------------------------------------------------------------
+   A row, not a carousel: with more than one picture it scrolls sideways by
+   itself (touch, trackpad, keyboard or the scrollbar), so there is no script
+   and nothing that animates in. */
+.strip {
+  display: flex;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.scrolls {
+  overflow-x: auto;
+  /* Keeps the scrollbar, where the system draws one, clear of the pictures. */
+  padding-bottom: 12px;
+  scroll-snap-type: x proximity;
+  overscroll-behavior-x: contain;
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--neutral-on-background-strong) 30%, transparent)
+    transparent;
+}
+
+.scrolls:focus-visible {
+  @include system.focus-ring;
+}
+
+.frame {
+  position: relative;
+  flex: 0 0 100%;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border-radius: 4px;
+  /* Shows while the picture loads. */
+  background: var(--surface-background);
+  scroll-snap-align: start;
+}
+
+/* The next picture shows at the edge, which is what says there is one. */
+.scrolls .frame {
+  flex-basis: calc(100% - 40px);
+}
+
+.picture {
+  object-fit: cover;
+}
+
+/* --- Words ----------------------------------------------------------------
+   One column on phones; title and result beside the summary from tablets up. */
+.text {
+  display: grid;
+  gap: 16px;
+}
+
+.lead,
+.detail {
+  display: grid;
+  align-content: start;
+  justify-items: start;
+  gap: 8px;
+  min-width: 0;
+}
+
+.detail {
+  gap: 12px;
+}
+
+/* The result is a line of text: the figure in the content colour, its unit in
+   the secondary one. */
+.result {
+  margin: 0;
+  color: var(--neutral-on-background-weak);
+  font-size: 1rem;
+  line-height: 1.5;
+  font-variant-numeric: tabular-nums;
+}
+
+.figure {
+  color: var(--neutral-on-background-strong);
+  font-weight: 600;
+}
+
+.summary {
+  max-width: 60ch;
+  margin: 0;
+  color: var(--neutral-on-background-weak);
+  font-size: 1rem;
+  line-height: 1.6;
+  text-wrap: pretty;
+}
+
+.links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 24px;
+  margin: 0;
+}
+
+.card .link {
+  color: var(--neutral-on-background-strong);
+  font-size: 1rem;
+  line-height: 1.5;
+  font-weight: 500;
+
+  @include system.standalone-link;
+}
+
+@media (min-width: 769px) {
+  .text {
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    gap: 32px;
+  }
+}

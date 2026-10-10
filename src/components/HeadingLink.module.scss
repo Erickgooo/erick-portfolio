@@ -1,16 +1,15 @@
+@use "./system.scss" as system;
+
 .control {
     cursor: pointer;
-
-    &:hover,
-    &:focus-within {
-        .visibility {
-            opacity: 1;
-        }
-    }
 
     &:hover {
         .text {
             text-decoration-line: underline;
+        }
+
+        .visibility {
+            color: var(--neutral-on-background-strong);
         }
     }
 }
@@ -21,22 +20,24 @@
     text-decoration-color: var(--neutral-border-strong);
 }
 
-.visibility {
-    opacity: 0;
-    transition: opacity 200ms ease-out;
+// The button that copies a link to the heading. It is always there, on every
+// device: a control that only shows on hover cannot be found by touch, and
+// fading it in and out is what the page no longer does. To stay out of the
+// heading's way it is the mark alone, in the secondary colour, with no box.
+// Two classes, to outrank Once UI's secondary button.
+.control .visibility {
+    flex-shrink: 0;
+    border-color: transparent;
+    background: transparent;
+    color: var(--neutral-on-background-weak);
 
     &:focus-visible {
-        opacity: 1;
-        outline: 2px solid var(--brand-solid-medium);
-        outline-offset: 2px;
+        @include system.focus-ring;
     }
-}
 
-// Devices without hover (touch) can never trigger `.control:hover`, so the
-// control must be visible by default there, matching Once UI's own
-// `touch="display"` behavior on its (now-replaced) HeadingLink.
-@media (hover: none) {
-    .visibility {
-        opacity: 1;
+    // A full-size target for a thumb; the mark keeps its size.
+    @media (max-width: 768px) {
+        min-width: 44px;
+        min-height: 44px;
     }
 }

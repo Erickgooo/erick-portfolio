@@ -124,16 +124,15 @@ function AnimatedStat({ stat }: { stat: Stat }) {
 export function ResultsStats({ data, title }: ResultsStatsProps) {
   const stats = parseStats(data);
   const scrollRef = useRef<HTMLDivElement>(null);
+  // Both start false: until the track has been measured, and wherever the
+  // stats fit, there is nowhere to scroll to and no arrow is shown.
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
-  const [hasOverflow, setHasOverflow] = useState(false);
 
   useEffect(() => {
     function checkScroll() {
       const el = scrollRef.current;
       if (!el) return;
-      const overflow = el.scrollWidth > el.clientWidth + 2;
-      setHasOverflow(overflow);
       setCanScrollLeft(el.scrollLeft > 2);
       setCanScrollRight(el.scrollLeft + el.clientWidth < el.scrollWidth - 2);
     }
@@ -160,19 +159,16 @@ export function ResultsStats({ data, title }: ResultsStatsProps) {
     <div className={styles.root}>
       {title && <p className={styles.title}>{title}</p>}
       <div className={styles.carouselWrapper}>
-        {hasOverflow && (
-          <button
-            type="button"
-            className={`${styles.arrow} ${styles.arrowLeft} ${
-              !canScrollLeft ? styles.arrowDisabled : ""
-            }`}
-            onClick={() => scrollByDir("left")}
-            aria-label="Scroll left"
-            disabled={!canScrollLeft}
-          >
-            ‹
-          </button>
-        )}
+        {/* An arrow that leads nowhere is not shown at all, rather than shown faded. */}
+        <button
+          type="button"
+          className={`${styles.arrow} ${styles.arrowLeft}`}
+          onClick={() => scrollByDir("left")}
+          aria-label="Scroll left"
+          hidden={!canScrollLeft}
+        >
+          ‹
+        </button>
         <div className={styles.track} ref={scrollRef}>
           {stats.map((stat, i) => (
             <div key={i} className={styles.stat}>
@@ -181,19 +177,15 @@ export function ResultsStats({ data, title }: ResultsStatsProps) {
             </div>
           ))}
         </div>
-        {hasOverflow && (
-          <button
-            type="button"
-            className={`${styles.arrow} ${styles.arrowRight} ${
-              !canScrollRight ? styles.arrowDisabled : ""
-            }`}
-            onClick={() => scrollByDir("right")}
-            aria-label="Scroll right"
-            disabled={!canScrollRight}
-          >
-            ›
-          </button>
-        )}
+        <button
+          type="button"
+          className={`${styles.arrow} ${styles.arrowRight}`}
+          onClick={() => scrollByDir("right")}
+          aria-label="Scroll right"
+          hidden={!canScrollRight}
+        >
+          ›
+        </button>
       </div>
     </div>
   );

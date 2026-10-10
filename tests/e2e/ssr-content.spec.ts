@@ -10,7 +10,8 @@ test.describe("server-rendered content", () => {
   const cases = [
     { path: "/", text: /The marketing department is one person\./ },
     { path: "/about", text: /Erick Mahecha/ },
-    { path: "/work", text: /Projects/ },
+    // The nav's own label, not the browser title ("Projects – Erick Mahecha").
+    { path: "/work", text: /^Projects$/ },
     { path: "/blog/my-workspace", text: /My Workspace/ },
     { path: "/gallery", text: /Visual Work/ },
   ];
@@ -21,6 +22,32 @@ test.describe("server-rendered content", () => {
       await expect(page.locator("h1").first()).toHaveText(c.text);
     });
   }
+});
+
+test.describe("the project list without JavaScript", () => {
+  test.use({ javaScriptEnabled: false });
+
+  // The first picture is the largest thing on /work: it has to be in the server
+  // HTML and painted, not waiting for a script to reveal it.
+  test("the first project's picture is painted", async ({ page }) => {
+    await page.goto("/work");
+    const picture = page.locator("[data-project-media] img").first();
+    await expect(picture).toBeVisible();
+    const state = await picture.evaluate((img: HTMLImageElement) => {
+      let opacity = 1;
+      for (let node: Element | null = img; node; node = node.parentElement) {
+        opacity *= Number(getComputedStyle(node).opacity);
+      }
+      return { opacity, loading: img.loading, width: img.getBoundingClientRect().width };
+    });
+    expect(state.opacity).toBe(1);
+    // Fetched with the page, not when it scrolls into view.
+    expect(state.loading).not.toBe("lazy");
+    expect(state.width).toBeGreaterThan(200);
+    await expect
+      .poll(() => picture.evaluate((img: HTMLImageElement) => img.complete && img.naturalWidth > 0))
+      .toBe(true);
+  });
 });
 
 test("home server HTML preloads a next/font woff2 file", async ({ request }) => {

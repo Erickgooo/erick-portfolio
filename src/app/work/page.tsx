@@ -28,8 +28,9 @@ export default function Work() {
           image: `${baseURL}${person.avatar}`,
         }}
       />
+      {/* The nav's label. work.title stays the browser title, the schema's and the OG image's. */}
       <Heading marginBottom="l" variant="heading-strong-xl" align="center">
-        {work.title}
+        {work.label}
       </Heading>
       <Projects />
     </Column>

@@ -1,0 +1,86 @@
+/* The pieces of the shared system (spec 2026-10-10, section 2) that pages
+   outside the Home build from: night, the hairline and the two kinds of text
+   link. Colours themselves are the tokens custom.css sets per theme. */
+
+/* Night, however it was chosen: by the theme switch, or by the system while no
+   script has set data-theme. */
+@mixin night {
+  :global(html[data-theme="dark"]) & {
+    @content;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :global(html:not([data-theme])) & {
+      @content;
+    }
+  }
+}
+
+/* The hairline colour on any property: the content colour at 14% by day and at
+   18% by night. */
+@mixin line($property) {
+  #{$property}: color-mix(in srgb, var(--neutral-on-background-strong) 14%, transparent);
+
+  @include night {
+    #{$property}: color-mix(in srgb, var(--neutral-on-background-strong) 18%, transparent);
+  }
+}
+
+/* A ring in the content colour, clear of what it surrounds. */
+@mixin focus-ring {
+  outline: 2px solid var(--neutral-on-background-strong);
+  outline-offset: 3px;
+}
+
+/* Text links are told apart by an underline, never by colour, and are large
+   enough to hit without the words growing.
+
+   Once UI colours every `a:not(.button)` with the brand scale at (0,1,1) and
+   its hover at (0,2,1). Include the two mixins below under a selector that
+   outranks both, so the resting rule and the hover rule here win. */
+
+/* The underline, in the colour of the words, and the two states a link has. */
+@mixin underlined {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
+  /* Once UI greys every link's underline with !important. */
+  text-decoration-color: currentColor !important;
+  transition: none;
+
+  &:hover {
+    color: #2549cb;
+    text-decoration-line: underline;
+
+    @include night {
+      color: #a6baff;
+    }
+  }
+
+  &:focus-visible {
+    @include focus-ring;
+  }
+}
+
+/* A link on a line of its own: a box as tall as a full target around words that
+   keep their size. */
+@mixin standalone-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+
+  @include underlined;
+}
+
+/* A link inside a sentence. An inline box takes vertical padding without moving
+   the lines around it, so the target grows and the paragraph keeps its leading:
+   44px up to 768px wide, 28px above. */
+@mixin link-in-text {
+  padding-block: calc((44px - 1em) / 2);
+
+  @include underlined;
+
+  @media (min-width: 769px) {
+    padding-block: calc((28px - 1em) / 2);
+  }
+}

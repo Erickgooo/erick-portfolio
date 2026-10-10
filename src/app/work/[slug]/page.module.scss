@@ -1,0 +1,10 @@
+@use "../../../components/system.scss" as system;
+
+/* The head of a case study: the way back, the date, the title and who made it.
+   The two links are text in the content colour with an underline, each inside
+   a full-size target. */
+.head .link {
+  color: var(--neutral-on-background-strong);
+
+  @include system.standalone-link;
+}

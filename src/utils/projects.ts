@@ -39,9 +39,18 @@ export function linkableProject<T extends { slug: string }>(
   return publicProjects(posts, config).find((post) => post.slug === slug) ?? null;
 }
 
-/** First still image of a project (case-study carousels may start with a video). */
+/**
+ * The still pictures of a project, in its own order. Its media list may also
+ * hold clips; a list of projects shows none of them, so that nothing on it
+ * plays or has to load a video.
+ */
+export function projectStills(images: string[]): string[] {
+  return images.filter((src) => !VIDEO.test(src));
+}
+
+/** First still image of a project (its media list may start with a video). */
 export function coverImage(images: string[]): string | null {
-  return images.find((src) => !VIDEO.test(src)) ?? null;
+  return projectStills(images)[0] ?? null;
 }
 
 /** "value|label" → parts; null unless both are present. */

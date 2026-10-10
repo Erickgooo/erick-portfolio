@@ -15,11 +15,12 @@ import {
   Meta,
   Row,
   Schema,
-  SmartLink,
   Text,
 } from "@once-ui-system/core";
 import type { Metadata } from "next";
+import Link from "next/link";
 import { notFound } from "next/navigation";
+import styles from "./page.module.scss";
 
 export async function generateStaticParams(): Promise<{ slug: string }[]> {
   const posts = getPosts(["src", "app", "work", "projects"]);
@@ -93,27 +94,32 @@ export default async function Project({
           image: `${baseURL}${person.avatar}`,
         }}
       />
-      <Column maxWidth="s" gap="16" horizontal="center" align="center">
-        <SmartLink href="/work">
-          <Text variant="label-strong-m">Projects</Text>
-        </SmartLink>
-        <Text variant="body-default-xs" onBackground="neutral-weak" marginBottom="12">
+      <Column className={styles.head} maxWidth="s" gap="8" horizontal="center" align="center">
+        <Text variant="label-strong-m">
+          <Link className={styles.link} href="/work">
+            Projects
+          </Link>
+        </Text>
+        <Text variant="body-default-s" onBackground="neutral-weak" marginBottom="12">
           {post.metadata.publishedAt && formatDate(post.metadata.publishedAt)}
         </Text>
         <Heading variant="display-strong-m">{post.metadata.title}</Heading>
       </Column>
-      <Row marginBottom="32" horizontal="center">
-        <Row gap="16" vertical="center">
+      <Row className={styles.head} marginBottom="32" horizontal="center">
+        <Row gap="12" vertical="center">
           {post.metadata.team && <AvatarGroup reverse avatars={avatars} size="s" />}
-          <Text variant="label-default-m" onBackground="brand-weak">
+          <Text variant="label-default-m" onBackground="neutral-weak">
             {post.metadata.team?.map((member, idx) => (
               <span key={idx}>
-                {idx > 0 && (
-                  <Text as="span" onBackground="neutral-weak">
-                    ,{" "}
-                  </Text>
-                )}
-                <SmartLink href={member.linkedIn}>{member.name}</SmartLink>
+                {idx > 0 && ", "}
+                <a
+                  className={styles.link}
+                  href={member.linkedIn}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {member.name}
+                </a>
               </span>
             ))}
           </Text>
@@ -124,7 +130,8 @@ export default async function Project({
           <Media
             priority
             aspectRatio="16 / 9"
-            radius="m"
+            // Pictures take a 4px corner everywhere on the site.
+            style={{ borderRadius: "4px" }}
             alt="image"
             src={post.metadata.images[0]}
           />

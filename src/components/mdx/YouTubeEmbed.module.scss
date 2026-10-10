@@ -1,3 +1,5 @@
+@use "../system.scss" as system;
+
 .wrapper {
   width: 100%;
   display: flex;
@@ -9,7 +11,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.25rem;
   width: 100%;
 }
 
@@ -18,15 +20,17 @@
   max-width: 390px;
   aspect-ratio: 9 / 16;
   position: relative;
-  border-radius: 12px;
+  border: 1px solid;
+  border-radius: 4px;
   overflow: hidden;
-  border: 1px solid var(--neutral-alpha-medium);
-  background: var(--neutral-background-strong);
+  background: var(--surface-background);
 
-  &.widescreen {
-    max-width: 100%;
-    aspect-ratio: 16 / 9;
-  }
+  @include system.line(border-color);
+}
+
+.container.widescreen {
+  max-width: 100%;
+  aspect-ratio: 16 / 9;
 }
 
 .iframe {
@@ -37,34 +41,20 @@
   border: none;
 }
 
-.instagramLink {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  font-size: 0.72rem;
+/* A caption that is a link: the secondary colour of a caption, the underline of
+   a link, inside a full-size target. */
+.videoBlock .instagramLink {
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  line-height: 1.5;
   font-weight: 500;
-  letter-spacing: 0.01em;
   color: var(--neutral-on-background-weak);
-  text-decoration: none;
-  padding: 0.25rem 0.6rem;
-  border-radius: 20px;
-  border: 1px solid transparent;
-  transition: color 0.2s ease, border-color 0.2s ease, background 0.2s ease;
 
-  &:hover {
-    color: #e1306c;
-    border-color: rgba(225, 48, 108, 0.25);
-    background: rgba(225, 48, 108, 0.06);
-  }
+  @include system.standalone-link;
 }
 
 .instagramIcon {
-  width: 13px;
-  height: 13px;
+  width: 16px;
+  height: 16px;
   flex-shrink: 0;
-  opacity: 0.7;
-
-  .instagramLink:hover & {
-    opacity: 1;
-  }
 }

@@ -1,0 +1,35 @@
+@use "./system.scss" as system;
+
+/* The body of a case study or a post, where MDX renders plain elements. */
+
+/* A link in the running text: the content colour and an underline. Written as
+   `a.link:any-link` (0,2,1) to outrank Once UI's brand-coloured links. */
+a.link:any-link {
+  color: var(--neutral-on-background-strong);
+
+  @include system.link-in-text;
+}
+
+/* The browser's bold is 700; the site stops at 600. */
+.strong {
+  font-weight: 600;
+}
+
+/* A fenced block with no language: a flow or a diagram written out. It wraps,
+   so one long line cannot push the page sideways on a phone. */
+.pre {
+  margin: 8px 0 16px;
+  padding: 16px;
+  border-radius: 4px;
+  background: var(--surface-background);
+  color: var(--neutral-on-background-strong);
+  font-family: var(--font-code);
+  font-size: 0.875rem;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.pre code {
+  font: inherit;
+}
