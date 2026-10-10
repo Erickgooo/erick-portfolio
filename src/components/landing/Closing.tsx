@@ -120,7 +120,7 @@ export function Closing() {
         </div>
         <script
           type="application/ld+json"
-          // biome-ignore lint/security/noDangerouslySetInnerHTML: structured data built from our own static copy, with `<` escaped
+          // biome-ignore lint/security/noDangerouslySetInnerHtml: structured data built from our own static copy, with `<` escaped
           dangerouslySetInnerHTML={{ __html: faqSchema() }}
         />
       </section>
