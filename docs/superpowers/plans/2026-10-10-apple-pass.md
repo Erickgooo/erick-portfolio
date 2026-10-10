@@ -100,12 +100,12 @@ Lee el §3 del spec y la referencia del lab antes de empezar. La estructura, los
 - Consumes: la Home de la Tarea 2 ya no usa `Reveal`, `Magnetic` ni `data-mo-io`.
 - Produces: `motion.css` solo con las variables (`--cobalt`, `--ease-fluid` y las demás que alguien lea) y el bloque de view transitions; `motionBoot` solo con `data-fx`.
 
-- [x] **Step 1:** Tests que fallan en `system.spec.ts`: en cada ruta de `ROUTES`, `html` no tiene las clases `mo-io` ni `mo-ready` y no existe ningún `[data-reveal]`, `[data-mo-io]`, `[data-kinetic-words]`; ninguna animación en curso toca `filter`. En `ssr-content.spec.ts`: el h1 de `/about` tiene el nombre accesible exacto «Erick Mahecha» y copiarlo da el texto una sola vez (son los dos casos que se conservan de `kinetic.spec.ts`).
-- [x] **Step 2:** Verlos fallar.
-- [x] **Step 3:** `about/page.tsx`: el h1 es texto plano y el bloque de introducción ya no va envuelto en `Reveal`. Borra los componentes de la lista y sus exports.
-- [x] **Step 4:** `motion.css`: fuera los keyframes y reglas de `[data-reveal]`, la rama `mo-io` y el bloque de movimiento reducido que solo los reiniciaba. Se quedan las variables y las view transitions (solo `opacity` y `translateY`). `motionBoot.ts`: fuera `mo-io` y su vigilante. `layout.tsx`: fuera `<MotionRuntime />`.
-- [x] **Step 5:** Borra los specs de la lista y el caso «mo-io matches the absence of view() support» de `motion-boot.spec.ts`.
-- [x] **Step 6:** Gates, `test:unit`, `test:e2e`. Commit `refactor: remove the motion primitives nothing uses any more`.
+- [ ] **Step 1:** Tests que fallan en `system.spec.ts`: en cada ruta de `ROUTES`, `html` no tiene las clases `mo-io` ni `mo-ready` y no existe ningún `[data-reveal]`, `[data-mo-io]`, `[data-kinetic-words]`; ninguna animación en curso toca `filter`. En `ssr-content.spec.ts`: el h1 de `/about` tiene el nombre accesible exacto «Erick Mahecha» y copiarlo da el texto una sola vez (son los dos casos que se conservan de `kinetic.spec.ts`).
+- [ ] **Step 2:** Verlos fallar.
+- [ ] **Step 3:** `about/page.tsx`: el h1 es texto plano y el bloque de introducción ya no va envuelto en `Reveal`. Borra los componentes de la lista y sus exports.
+- [ ] **Step 4:** `motion.css`: fuera los keyframes y reglas de `[data-reveal]`, la rama `mo-io` y el bloque de movimiento reducido que solo los reiniciaba. Se quedan las variables y las view transitions (solo `opacity` y `translateY`). `motionBoot.ts`: fuera `mo-io` y su vigilante. `layout.tsx`: fuera `<MotionRuntime />`.
+- [ ] **Step 5:** Borra los specs de la lista y el caso «mo-io matches the absence of view() support» de `motion-boot.spec.ts`.
+- [ ] **Step 6:** Gates, `test:unit`, `test:e2e`. Commit `refactor: remove the motion primitives nothing uses any more`.
 
 ### Task 4: Nav y footer
 
@@ -117,11 +117,11 @@ Lee el §3 del spec y la referencia del lab antes de empezar. La estructura, los
 
 Datos: cada control de la nav es un `ToggleButton` de Once UI tamaño `m` (alto 2rem, clase con hash `ToggleButton_m__*`), incluido `ThemeToggle`. `Header.module.scss` `.mask` no se usa en ningún sitio.
 
-- [x] **Step 1:** Tests que fallan en `nav.spec.ts`: a 390×844 cada enlace y botón dentro de `header` mide ≥ 44×44 px y la barra completa cabe en el ancho sin desbordar; a 1440×900 cada uno mide ≥ 28×28 px. En `system.spec.ts`: en `footer`, a 390 px cada `a` mide ≥ 44×44 px y a 1440 px ≥ 28×28 px; el footer contiene los textos «Once UI» y «CC BY-NC 4.0» con sus enlaces; ningún enlace del footer usa un color de la escala de marca (su `color` calculado es el del texto que lo rodea) y los enlaces de texto están subrayados.
-- [x] **Step 2:** Verlos fallar.
-- [x] **Step 3:** Nav: área mínima por control con CSS en `Header.module.scss` (hasta 768 px, 44×44; por encima no cambia). Borra `.mask`. No cambies etiquetas, iconos, orden ni el interruptor de tema.
-- [x] **Step 4:** Footer: iconos y enlaces con el área mínima; enlaces en el color del texto y subrayados; se conserva la atribución completa y el espacio inferior para la barra en móvil.
-- [x] **Step 5:** Gates, `test:unit`, `test:e2e`. Commit `fix(nav): controls and footer links large enough to tap`.
+- [ ] **Step 1:** Tests que fallan en `nav.spec.ts`: a 390×844 cada enlace y botón dentro de `header` mide ≥ 44×44 px y la barra completa cabe en el ancho sin desbordar; a 1440×900 cada uno mide ≥ 28×28 px. En `system.spec.ts`: en `footer`, a 390 px cada `a` mide ≥ 44×44 px y a 1440 px ≥ 28×28 px; el footer contiene los textos «Once UI» y «CC BY-NC 4.0» con sus enlaces; ningún enlace del footer usa un color de la escala de marca (su `color` calculado es el del texto que lo rodea) y los enlaces de texto están subrayados.
+- [ ] **Step 2:** Verlos fallar.
+- [ ] **Step 3:** Nav: área mínima por control con CSS en `Header.module.scss` (hasta 768 px, 44×44; por encima no cambia). Borra `.mask`. No cambies etiquetas, iconos, orden ni el interruptor de tema.
+- [ ] **Step 4:** Footer: iconos y enlaces con el área mínima; enlaces en el color del texto y subrayados; se conserva la atribución completa y el espacio inferior para la barra en móvil.
+- [ ] **Step 5:** Gates, `test:unit`, `test:e2e`. Commit `fix(nav): controls and footer links large enough to tap`.
 
 ### Task 5: Work y casos de estudio
 
@@ -133,12 +133,12 @@ Datos: cada control de la nav es un `ToggleButton` de Once UI tamaño `m` (alto 
 
 Datos: `work.title` (`content.tsx:591`) es el `<title>`, el título del schema y está en la lista permitida del OG (`src/app/api/og/generate/route.tsx:46`); el h1 visible debe ser `work.label` («Projects») sin tocar `work.title`. Las flechas de `ResultsStats` son `<button>` sin `font-family` (caen a Arial) y se atenúan a opacidad 0.3. `mdx.tsx:156` pinta un `<pre>` sin fuente (lo usa `atv-riders.mdx:71-73`).
 
-- [x] **Step 1:** Tests que fallan. `ssr-content.spec.ts`: el h1 de `/work` es exactamente «Projects». `system.spec.ts`, en `/work` y en `/work/quick-metal-shop-viral-videos`, `/work/ai-powered-ad-creatives` y `/work/atv-riders`, a 390 y 1440 px: (a) todo texto visible usa una familia que empieza por Geist (o Geist Mono dentro de `pre`/`code`); (b) ningún texto visible mide menos de 13 px; (c) ningún elemento fuera de `header`, `[data-header-fade]` y `[class*="FaqChatbot"]` tiene `backdrop-filter` distinto de `none`, ni `background-clip: text`; (d) objetivos: todo `a` y `button` de `.main-content-wrapper` ≥ 44×44 px a 390 y ≥ 28×28 a 1440; (e) ningún `button` visible tiene `opacity` menor que 1 (una flecha que no aplica no se pinta); (f) ningún enlace de `.main-content-wrapper` tiene un `color` de la escala de marca.
-- [x] **Step 2:** Verlos fallar.
-- [x] **Step 3:** Work: h1 `work.label`; `ProjectCard` con la métrica como texto y el enlace «Read case study» subrayado, en el color del contenido, con su área; sin chips ni sombras de color.
-- [x] **Step 4:** Caso de estudio: etiquetas de `ResultsStats` en `--neutral-on-background-weak`, 13 px o más; flechas con `font: inherit` y ocultas (`hidden`) cuando no hay hacia dónde ir; `pre` de `mdx.tsx` en `var(--font-code)`; migas, autor, botones de copiar enlace y «View on Instagram» con su área; enlaces del cuerpo en el color del contenido y subrayados.
-- [x] **Step 5:** Si queda algún `backdrop-filter` de un componente de Once UI en estas páginas (`Carousel`, `AvatarGroup`), elimínalo de raíz (prop del componente o sustitución por un elemento propio). No escribas `backdrop-filter: none` para taparlo.
-- [x] **Step 6:** Gates, `test:unit`, `test:e2e`. Commit `feat(work): case studies on the shared tokens, with no chips, glass or faded controls`.
+- [ ] **Step 1:** Tests que fallan. `ssr-content.spec.ts`: el h1 de `/work` es exactamente «Projects». `system.spec.ts`, en `/work` y en `/work/quick-metal-shop-viral-videos`, `/work/ai-powered-ad-creatives` y `/work/atv-riders`, a 390 y 1440 px: (a) todo texto visible usa una familia que empieza por Geist (o Geist Mono dentro de `pre`/`code`); (b) ningún texto visible mide menos de 13 px; (c) ningún elemento fuera de `header`, `[data-header-fade]` y `[class*="FaqChatbot"]` tiene `backdrop-filter` distinto de `none`, ni `background-clip: text`; (d) objetivos: todo `a` y `button` de `.main-content-wrapper` ≥ 44×44 px a 390 y ≥ 28×28 a 1440; (e) ningún `button` visible tiene `opacity` menor que 1 (una flecha que no aplica no se pinta); (f) ningún enlace de `.main-content-wrapper` tiene un `color` de la escala de marca.
+- [ ] **Step 2:** Verlos fallar.
+- [ ] **Step 3:** Work: h1 `work.label`; `ProjectCard` con la métrica como texto y el enlace «Read case study» subrayado, en el color del contenido, con su área; sin chips ni sombras de color.
+- [ ] **Step 4:** Caso de estudio: etiquetas de `ResultsStats` en `--neutral-on-background-weak`, 13 px o más; flechas con `font: inherit` y ocultas (`hidden`) cuando no hay hacia dónde ir; `pre` de `mdx.tsx` en `var(--font-code)`; migas, autor, botones de copiar enlace y «View on Instagram» con su área; enlaces del cuerpo en el color del contenido y subrayados.
+- [ ] **Step 5:** Si queda algún `backdrop-filter` de un componente de Once UI en estas páginas (`Carousel`, `AvatarGroup`), elimínalo de raíz (prop del componente o sustitución por un elemento propio). No escribas `backdrop-filter: none` para taparlo.
+- [ ] **Step 6:** Gates, `test:unit`, `test:e2e`. Commit `feat(work): case studies on the shared tokens, with no chips, glass or faded controls`.
 
 ### Task 6: About, Blog, Gallery, 404 y contraseña
 
@@ -150,19 +150,19 @@ Datos: `work.title` (`content.tsx:591`) es el `<title>`, el título del schema y
 
 Datos: `blog/page.tsx:39-41` pinta «Earlier posts» siempre y `Posts range={[4]}` no pinta nada con menos de 4 posts; `blog/[slug]/page.tsx:151-154` hace lo mismo con «Recent posts». `GalleryView.tsx:186-207` es la insignia del contador con `backdropFilter: blur(6px)`. `gallery.title` (`content.tsx:601`) también es `<title>` y OG: el h1 visible debe ser `gallery.label`. `ssr-content.spec.ts:69` fija el texto del 404.
 
-- [x] **Step 1:** Tests que fallan. `ssr-content.spec.ts`: h1 de `/gallery` exactamente «Visual Work»; 404 con h1 «Page not found» y un enlace «Go to the homepage» a `/`. `system.spec.ts`: las comprobaciones (a) a (f) de la Tarea 5 en `/about`, `/blog`, `/blog/my-workspace`, `/gallery`, `/this-page-does-not-exist` y `/unauthorized`; en `/blog` y en el post no existe ningún h2 cuyo siguiente bloque de lista esté vacío; en `/about` el enlace «Schedule a call» tiene fondo `rgb(45, 91, 255)`, texto blanco y ≥ 44 px de alto.
-- [x] **Step 2:** Verlos fallar.
-- [x] **Step 3:** About: «Schedule a call» con el estilo del CTA (Cobalto, blanco, radio 6 px); botones sociales y «View credential» con su área; fechas, instituciones y listas en el token secundario.
-- [x] **Step 4:** Blog y post: los encabezados «Earlier posts» y «Recent posts» solo si su lista tiene elementos; fechas de 13 px o más; botones de compartir con su área.
-- [x] **Step 5:** Gallery: h1 `gallery.label`; insignia del contador opaca (`#000000`, sin `backdropFilter`, radio 4 px), texto de 13 px o más.
-- [x] **Step 6:** 404: h1 «Page not found», una línea «The address may be mistyped, or the page may have moved.» y el botón «Go to the homepage». Contraseña: mismo botón y tokens; no cambies su lógica ni `RouteGuard`.
-- [x] **Step 7:** Gates, `test:unit`, `test:e2e`. Commit `feat: About, Blog, Gallery, 404 and the password screen on the shared system`.
+- [ ] **Step 1:** Tests que fallan. `ssr-content.spec.ts`: h1 de `/gallery` exactamente «Visual Work»; 404 con h1 «Page not found» y un enlace «Go to the homepage» a `/`. `system.spec.ts`: las comprobaciones (a) a (f) de la Tarea 5 en `/about`, `/blog`, `/blog/my-workspace`, `/gallery`, `/this-page-does-not-exist` y `/unauthorized`; en `/blog` y en el post no existe ningún h2 cuyo siguiente bloque de lista esté vacío; en `/about` el enlace «Schedule a call» tiene fondo `rgb(45, 91, 255)`, texto blanco y ≥ 44 px de alto.
+- [ ] **Step 2:** Verlos fallar.
+- [ ] **Step 3:** About: «Schedule a call» con el estilo del CTA (Cobalto, blanco, radio 6 px); botones sociales y «View credential» con su área; fechas, instituciones y listas en el token secundario.
+- [ ] **Step 4:** Blog y post: los encabezados «Earlier posts» y «Recent posts» solo si su lista tiene elementos; fechas de 13 px o más; botones de compartir con su área.
+- [ ] **Step 5:** Gallery: h1 `gallery.label`; insignia del contador opaca (`#000000`, sin `backdropFilter`, radio 4 px), texto de 13 px o más.
+- [ ] **Step 6:** 404: h1 «Page not found», una línea «The address may be mistyped, or the page may have moved.» y el botón «Go to the homepage». Contraseña: mismo botón y tokens; no cambies su lógica ni `RouteGuard`.
+- [ ] **Step 7:** Gates, `test:unit`, `test:e2e`. Commit `feat: About, Blog, Gallery, 404 and the password screen on the shared system`.
 
 ### Task 7: Verificación y entrega (la ejecuta el controlador)
 
 **Files:** Create `docs/design/apple-review-after.md`. Modify `scripts/design/capture.mjs` (tramos y selectores nuevos de la Home), `docs/perf-report.md` (sección nueva), `tests/unit/filmBudget.spec.ts` solo si el comentario quedó desfasado.
 
-- [x] **Step 1:** `rg` de la definición de terminado sobre `src/components` y `src/app`: `background-clip: text`, `filter: blur`, `backdrop-filter`. Solo puede quedar la excepción del §8 del spec.
+- [ ] **Step 1:** `rg` de la definición de terminado sobre `src/components` y `src/app`: `background-clip: text`, `filter: blur`, `backdrop-filter`. Solo puede quedar la excepción del §8 del spec.
 - [ ] **Step 2:** Captura «después» con `scripts/design/capture.mjs` (`--out docs/design/screens/after`), mismas páginas y anchos que el «antes», con contraste medido por píxel en las etiquetas de la nav sobre el video.
 - [ ] **Step 3:** `docs/design/apple-review-after.md` con el formato de la skill y los números medidos. Sin hallazgos Critical ni High; si aparece alguno, se corrige antes de seguir.
 - [ ] **Step 4:** Lighthouse contra `main` con el método de `docs/perf-report.md` («Lighthouse 13: branch vs `main`»): `LH_TAG=apple-pass npm run perf:lh` y `npm run perf:report -- apple-pass base-lh13`. Presupuesto del §7 del spec. Tabla nueva en `docs/perf-report.md`.
