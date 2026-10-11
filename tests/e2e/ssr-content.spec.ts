@@ -1,5 +1,4 @@
 import { expect, test } from "./fixtures";
-import { headerLink } from "./helpers";
 
 // With JavaScript disabled the page shows exactly the server HTML. Before the
 // fix RouteGuard rendered a spinner on the server, so no heading existed.
@@ -7,7 +6,7 @@ test.describe("server-rendered content", () => {
   test.use({ javaScriptEnabled: false });
 
   const cases = [
-    { path: "/", text: /I build your marketing engine from zero/ },
+    { path: "/", text: /I Build Marketing Infrastructure/ },
     { path: "/about", text: /Erick Mahecha/ },
     { path: "/work", text: /Projects/ },
     { path: "/blog/my-workspace", text: /My Workspace/ },
@@ -71,10 +70,16 @@ test("client navigation never flashes NotFound", async ({ page }) => {
       }
     }).observe(document.body, { childList: true, subtree: true });
   });
-  // headerLink() opens the menu first on phones, where the links are collapsed.
-  await (await headerLink(page, "Projects")).click();
+  // Header renders a desktop (text-labelled) and a mobile (icon-only, with
+  // an aria-label) ToggleButton for each route, both carrying the same
+  // accessible name; only one is ever in the accessibility tree at a time
+  // (the other is `display: none` at the current breakpoint), so scoping to
+  // `header` and matching by accessible name still targets exactly one link
+  // unambiguously, regardless of which variant CSS happens to show.
+  const header = page.locator("header");
+  await header.getByRole("link", { name: "Projects" }).click();
   await page.waitForURL("**/work");
-  await (await headerLink(page, "About")).click();
+  await header.getByRole("link", { name: "About" }).click();
   await page.waitForURL((url) => url.pathname === "/about");
   expect(seen).toEqual([]);
 });

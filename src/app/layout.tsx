@@ -1,7 +1,6 @@
 import "@once-ui-system/core/css/styles.css";
 import "@once-ui-system/core/css/tokens.css";
 import "@/resources/custom.css";
-import "@/components/motion/motion.css";
 
 import classNames from "classnames";
 
@@ -9,10 +8,8 @@ import { body, code, heading } from "@/app/fonts";
 import { FaqChatbot, Footer, Header, IntroLoader, Providers, RouteGuard } from "@/components";
 import { SpotlightBackground } from "@/components/SpotlightBackground";
 import spotlightStyles from "@/components/SpotlightBackground.module.scss";
-import { MotionRuntime, ViewTransitions } from "@/components/motion";
-import { motionBoot } from "@/components/motion/motionBoot";
 import { baseURL, dataStyle, home, style } from "@/resources";
-import { Background, Column, Flex, Meta, SpacingToken } from "@once-ui-system/core";
+import { Background, Column, Flex, Meta, RevealFx, SpacingToken } from "@once-ui-system/core";
 import { Analytics } from "@vercel/analytics/next";
 
 export async function generateMetadata() {
@@ -97,11 +94,6 @@ export default async function RootLayout({
             `,
           }}
         />
-        <script
-          id="motion-init"
-          // biome-ignore lint/security/noDangerouslySetInnerHtml: device tier, motion fallback and intro flags must be set before first paint; the body is our own static function, no user input
-          dangerouslySetInnerHTML={{ __html: `(${motionBoot.toString()})();` }}
-        />
       </head>
       <Providers>
         <Column
@@ -116,6 +108,7 @@ export default async function RootLayout({
         >
           <IntroLoader />
           <SpotlightBackground />
+          <Flex fillWidth minHeight="16" s={{ hide: true }} />
           <Header />
           <Flex
             zIndex={0}
@@ -130,8 +123,6 @@ export default async function RootLayout({
             </Flex>
           </Flex>
           <Footer />
-          <MotionRuntime />
-          <ViewTransitions />
           <Analytics />
           <FaqChatbot />
         </Column>

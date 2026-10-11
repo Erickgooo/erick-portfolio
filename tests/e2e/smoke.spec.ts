@@ -1,6 +1,6 @@
 import type { ConsoleMessage } from "@playwright/test";
 import { expect, test } from "./fixtures";
-import { ROUTES, trackNetwork } from "./helpers";
+import { ROUTES } from "./helpers";
 
 // Pre-existing console errors observed on this build, unrelated to the
 // harness itself (see docs/perf-baseline.md § "Known console errors").
@@ -105,10 +105,9 @@ for (const route of ROUTES) {
         errors.push(msg.text());
     });
     page.on("pageerror", (err) => errors.push(err.message));
-    const networkIdle = trackNetwork(page);
     const response = await page.goto(route.path);
     expect(response?.status()).toBe(200);
-    await networkIdle();
+    await page.waitForLoadState("networkidle");
     expect(errors).toEqual([]);
   });
 }

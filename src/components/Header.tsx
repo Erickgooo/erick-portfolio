@@ -65,14 +65,7 @@ export const Header = () => {
 
   return (
     <>
-      <Fade
-        s={{ hide: true }}
-        fillWidth
-        position="fixed"
-        height="80"
-        zIndex={9}
-        data-header-fade=""
-      />
+      <Fade s={{ hide: true }} fillWidth position="fixed" height="80" zIndex={9} />
       <Fade
         hide
         s={{ hide: false }}
@@ -82,32 +75,22 @@ export const Header = () => {
         to="top"
         height="80"
         zIndex={9}
-        data-header-fade=""
       />
       <Row
         fitHeight
         className={styles.position}
-        position="fixed"
-        top="0"
-        left="0"
+        position="sticky"
         as="header"
         zIndex={9}
         fillWidth
         padding="8"
         horizontal="center"
         data-border="rounded"
-        style={{ viewTransitionName: "site-header" }}
         s={{
           position: "fixed",
         }}
       >
-        <Row
-          paddingLeft="12"
-          fillWidth
-          vertical="center"
-          textVariant="body-default-s"
-          data-header-side=""
-        >
+        <Row paddingLeft="12" fillWidth vertical="center" textVariant="body-default-s">
           {display.location && <Row s={{ hide: true }}>{person.location}</Row>}
         </Row>
         <Row fillWidth horizontal="center">
@@ -219,7 +202,7 @@ export const Header = () => {
             </Row>
           </Row>
         </Row>
-        <Flex fillWidth horizontal="end" vertical="center" data-header-side="">
+        <Flex fillWidth horizontal="end" vertical="center">
           <Flex
             paddingRight="12"
             horizontal="end"

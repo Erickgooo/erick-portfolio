@@ -11,3 +11,4 @@ export { CustomMDX } from "@/components/mdx";
 export { FaqChatbot } from "@/components/FaqChatbot";
 export { IntroLoader } from "@/components/IntroLoader";
 export { NodeDivider } from "@/components/NodeDivider";
+export { CallToAction } from "@/components/CallToAction";

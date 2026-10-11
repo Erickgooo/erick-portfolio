@@ -1,5 +1,4 @@
 import { expect, test } from "./fixtures";
-import { trackNetwork } from "./helpers";
 
 test("no page in the sitemap has a broken image", async ({ page, request, baseURL }) => {
   test.setTimeout(180_000);
@@ -14,7 +13,6 @@ test("no page in the sitemap has a broken image", async ({ page, request, baseUR
     }
   });
 
-  const networkIdle = trackNetwork(page);
   for (const p of paths) {
     await page.goto(new URL(p, baseURL).toString());
     await page.evaluate(async () => {
@@ -23,7 +21,7 @@ test("no page in the sitemap has a broken image", async ({ page, request, baseUR
         await new Promise((r) => setTimeout(r, 120));
       }
     });
-    await networkIdle();
+    await page.waitForLoadState("networkidle");
     const broken = await page.$$eval("img", (imgs) =>
       imgs
         .filter((i) => i.complete && i.naturalWidth === 0 && !i.src.startsWith("data:"))
