@@ -111,9 +111,10 @@ La sección de newsletter (`Mailchimp`) sale de la Home: está desactivada y sol
 
 - **Alto de scroll:** héroe 175 % de la pantalla; tramos limpios 125 % (el último 160 %); tarjetas 100 % como mínimo.
 - **Velo:** 0 en reposo y 0.55 durante los destellos del montaje (los intervalos de `FILM_FLASHES`).
-- **Degradado bajo la nav:** 132 px, de negro al 74 % a transparente, dentro del escenario, para las etiquetas de lugar y hora (14 px, blancas). Peor caso calculado con video blanco: 5.33:1.
-- **Etiquetas de la nav y tema claro:** sobre el video las etiquetas de lugar y hora son blancas en los dos temas (regla actual de `custom.css`). Cuando una tarjeta clara pasa bajo la nav, vuelven al color del tema: `ScrollFilm` marca `html[data-nav-over-card]` mientras una superficie `[data-opaque]` cubre la línea de las etiquetas, y la regla de `custom.css` deja de aplicarse. Sin JS el primer fotograma es correcto, porque arriba siempre hay video. En teléfonos la barra va abajo con su propio fondo y no necesita nada.
-- **Barra de progreso:** 3 px en el borde inferior del escenario, Cobalto, `scaleX` según el tiempo del video.
+- **Etiquetas de la nav sobre el video** (lugar y hora, 14 px, solo desde 769 px de ancho): son blancas, con un degradado propio detrás, mientras cualquier parte de su caja no esté sobre una superficie opaca de la página. Toman el color del tema solo cuando una tarjeta o la banda del héroe cubre la caja entera, o cuando el borde inferior del video ya pasó por encima de ella. Vale igual en los dos temas. Sin JS el primer fotograma es correcto, porque arriba siempre hay video.
+- **Degradado bajo la nav:** 132 px, de negro al 74 % a transparente, en una capa fija al borde superior de la ventana (no del escenario), visible exactamente mientras las etiquetas están en blanco. Blanco sobre ese degradado da al menos 5.33:1 sobre cualquier fotograma, blanco puro incluido. En teléfonos no existe: la barra va abajo con su propio fondo.
+- **Mientras el video no está listo, o si su descarga falla:** cada tramo muestra su fotograma fijo, como con movimiento reducido; el velo y la barra de progreso no se ven hasta que el video puede avanzar.
+- **Barra de progreso:** 3 px, Cobalto, `scaleX` según el tiempo del video. En el borde inferior del escenario; en pantallas de hasta 768 px, en el borde superior (abajo queda bajo la barra de navegación).
 - **Peso:** los archivos de video no cambian (`tests/unit/filmBudget.spec.ts`).
 - **LCP:** el póster (`<img fetchpriority="high">`) y el h1 vienen en el HTML del servidor. Nada del héroe espera a JS ni a una animación.
 - La capa del brillo del cursor dentro del escenario desaparece.
@@ -196,6 +197,8 @@ El de `docs/perf-report.md`: ninguna página peor que `main` por más de 3 punto
   - Los videos de un proyecto que no son su portada se muestran en su caso de estudio («More from this project»), con controles y sin autoplay. La portada en video tampoco se reproduce sola.
   - Las cifras de `ResultsStats` ya no cuentan hacia arriba: muestran el valor del MDX desde el servidor.
   - El icono de copiar enlace de cada título se ve siempre (antes solo al pasar el cursor).
+  - `<Mailchimp />` sigue en `/blog` y no pinta nada mientras `newsletter.display` sea falso. Ojo: activarlo trae de vuelta una rejilla de puntos que sigue al cursor y un degradado de marca (`Mailchimp.tsx`, `once-ui.config.ts`), justo lo que este pase quitó. Hay que rediseñar ese bloque antes de encenderlo.
+  - Los enlaces que salen del sitio abren en pestaña nueva (`target="_blank" rel="noopener noreferrer"`), como hacía Once UI.
   - La pantalla de contraseña usa `Input` con un botón propio para mostrar u ocultar, porque el `PasswordInput` de Once UI no admite nombre accesible. La lógica de envío no cambió.
 
 - `src/components/FaqChatbot.module.scss` usa `backdrop-filter` en dos reglas. El chatbot no se toca, así que queda como excepción a la comprobación con `rg`. Se informa a Erick.

@@ -10,8 +10,9 @@ export default defineConfig({
   // One `next start` serves every worker, and each load of the Home pulls a 12 MB
   // film from it. With the intro gone a dozen workers no longer wait five seconds
   // before asking for it, and under that load Firefox now and then never reports
-  // `load`. Six keep the suite steady; retries would only hide the timeouts.
-  workers: 6,
+  // `load`. Six were enough for 470 tests; at about 990 they failed 3 to 5 Firefox
+  // navigations a run, and four ran clean. Retries would only hide the timeouts.
+  workers: 4,
   retries: 0,
   reporter: [["list"]],
   expect: { toHaveScreenshot: { maxDiffPixelRatio: 0.001 } },

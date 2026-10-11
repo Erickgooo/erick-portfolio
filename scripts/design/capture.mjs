@@ -1,6 +1,6 @@
 // Design capture: screenshots plus measurements of the site as it renders right now.
 //
-//   node scripts/design/capture.mjs --base http://localhost:3111 --out docs/design/screens/before [--home-path /]
+//   node scripts/design/capture.mjs --base http://localhost:3111 --out docs/design/screens/after [--home-path /]
 //
 // Needs a server already running at --base (production build: `npm run build`,
 // then `npx next start -p 3111`). Writes PNG/JPEG screenshots, metrics.json and
@@ -10,16 +10,27 @@
 // styles on fixed and sticky chrome while the full-page image is stitched, which
 // are removed again straight after each band.
 //
+// The Home it expects: a film in [data-film-root] whose text all sits on opaque
+// surfaces ([data-opaque]: the hero band and the [data-seat] title cards), with
+// empty [data-film-beat] stretches between the cards. The only text left over
+// footage is the header's side labels ([data-header-side]), so those are
+// measured at every position of the scroll.
+//
 // Options
 //   --home-path /lab?v=a   route used for everything Home-specific (default "/")
 //   --only home,work,scan,rm   run a subset: home | scan | rm | work | case-study |
-//                              about | blog | blog-post | gallery | 404
-//   --film-steps 40        scroll positions for the film background scan
-//   --film-dense 240       extra film-only positions, so short flashes are not missed (0 = off)
+//                              case-clip | about | blog | blog-post | gallery | 404 | locked
+//                              (`scan` is the pass along the film: nav labels and film background)
+//   --film-steps 40        scroll positions along the film
+//   --film-dense 240       extra positions, so short flashes are not missed (0 = off)
 //   --case /work/<slug>    case study route (default /work/quick-metal-shop-viral-videos)
+//   --clip /work/<slug>    case study with a video clip (default /work/leadbot-ai)
 //   --post /blog/<slug>    blog post route (default /blog/my-workspace)
+//   --compare <file>       metrics.json of an earlier run for the before/after section
+//                          (default: ../before/metrics.json next to --out, when it exists)
 //   --debug                also keep the text-hidden frames in <out>/_debug
-import { mkdirSync, writeFileSync } from "node:fs";
+//   --summary-only         rewrite metrics.md from the metrics.json already in --out (no browser)
+import { existsSync, mkdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { chromium, devices } from "@playwright/test";
 
@@ -42,7 +53,8 @@ function parseArgs(argv) {
 
 const args = parseArgs(process.argv.slice(2));
 const BASE = String(args.base ?? "http://localhost:3111").replace(/\/$/, "");
-const OUT = path.resolve(String(args.out ?? "docs/design/screens/before"));
+const OUT = path.resolve(String(args.out ?? "docs/design/screens/after"));
+const COMPARE = path.resolve(String(args.compare ?? path.join(OUT, "..", "before", "metrics.json")));
 const HOME_PATH = String(args["home-path"] ?? "/");
 const FILM_STEPS = Number(args["film-steps"] ?? 40);
 const FILM_DENSE = Number(args["film-dense"] ?? 240);
@@ -67,14 +79,17 @@ const THEMES = ["light", "dark"];
 const PAGES = [
   { name: "work", path: "/work" },
   { name: "case-study", path: String(args.case ?? "/work/quick-metal-shop-viral-videos") },
+  { name: "case-clip", path: String(args.clip ?? "/work/leadbot-ai") },
   { name: "about", path: "/about" },
   { name: "blog", path: "/blog" },
   { name: "blog-post", path: String(args.post ?? "/blog/my-workspace") },
   { name: "gallery", path: "/gallery" },
   { name: "404", path: "/this-page-does-not-exist" },
+  { name: "locked", path: "/unauthorized" },
 ];
-const RM_BEATS = ["hero", "tagline", "problem", "benefit-1"];
-/** Fraction of a film section's own height that is scrolled past before its frame is shot. */
+/** Home frames shot again under reduced motion. */
+const RM_FRAMES = ["hero-top", "after-brand", "brand", "after-content"];
+/** Fraction of an empty film stretch's own height that is scrolled past before its frame is shot. */
 const BEAT_PROGRESS = 0.35;
 
 mkdirSync(OUT, { recursive: true });
@@ -97,7 +112,7 @@ const log = (text) => console.log(`[${new Date().toISOString().slice(11, 19)}] $
 
 // ─── In-page library ────────────────────────────────────────────────────────
 // Serialised into every document before its own scripts run. Read-only apart
-// from the stylesheet modes and hideFixed/showFixed described at the top.
+// from the stylesheet modes and chromeOff/chromeOn described at the top.
 function capLib() {
   if (window.top !== window || window.__cap) return;
   const cap = {};
@@ -167,15 +182,23 @@ function capLib() {
   cap.desc = desc;
 
   // ── Stylesheet modes ──
-  const NO_TRANSITION = "*,*::before,*::after{transition:none!important}";
+  // The site's own stylesheets use !important too (Once UI greys every link's
+  // underline that way), and between two !important rules the more specific
+  // one wins. `:is(*, #_#_#_)` still matches every element, with the weight of
+  // three ids.
+  const ALL = ":is(*,#_#_#_)";
+  const EVERY = `${ALL},${ALL}::before,${ALL}::after,${ALL}::marker,${ALL}::placeholder`;
+  const NO_TRANSITION = `${ALL},${ALL}::before,${ALL}::after{transition:none!important}`;
   const MODES = {
     "": "",
     noTransition: NO_TRANSITION,
     // Text and everything drawn in the text colour disappears; panels, pills and
     // marker underlines stay, because they are the background the text sits on.
-    hideText: `${NO_TRANSITION}*,*::before,*::after,*::marker,*::placeholder{color:transparent!important;-webkit-text-fill-color:transparent!important;-webkit-text-stroke-color:transparent!important;-webkit-text-stroke-width:0!important;text-shadow:none!important;text-decoration-color:transparent!important;caret-color:transparent!important}[data-cap-clip]{background-image:none!important;background-color:transparent!important}`,
+    hideText: `${NO_TRANSITION}${EVERY}{color:transparent!important;-webkit-text-fill-color:transparent!important;-webkit-text-stroke-color:transparent!important;-webkit-text-stroke-width:0!important;text-shadow:none!important;text-decoration-color:transparent!important;caret-color:transparent!important}[data-cap-clip]${ALL}{background-image:none!important;background-color:transparent!important}`,
     // Only the film stage (video, veil, glow) is painted.
     filmOnly: `${NO_TRANSITION}body *{visibility:hidden!important}[data-film-stage],[data-film-stage] *{visibility:visible!important}`,
+    // Every glyph in one loud colour: compared with the text-hidden frame, it shows which pixels the text covers.
+    markText: `${NO_TRANSITION}${EVERY}{color:#ff00ff!important;-webkit-text-fill-color:#ff00ff!important;-webkit-text-stroke-width:0!important;text-shadow:none!important}`,
   };
   let sheet = null;
   cap.mode = (name) => {
@@ -338,6 +361,10 @@ function capLib() {
       veil: getComputedStyle(root).getPropertyValue("--film-veil").trim(),
       beat,
       scrollY: Math.round(scrollY),
+      progress: root.style.getPropertyValue("--film-progress") || null,
+      stageTop: stage ? Math.round(stage.getBoundingClientRect().top) : null,
+      navOverCard: document.documentElement.hasAttribute("data-nav-over-card"),
+      pastFilm: document.documentElement.hasAttribute("data-past-film"),
       video: video
         ? {
             time: round(video.currentTime, 3),
@@ -374,6 +401,8 @@ function capLib() {
     }
     return map;
   }
+  // Inside the film, "surface" is text on an opaque band or card and "film" is
+  // text straight on the footage.
   const regionOf = (el) =>
     el.closest('[class*="FaqChatbot"]')
       ? "chatbot"
@@ -381,9 +410,40 @@ function capLib() {
         ? "header"
         : el.closest("footer")
           ? "footer"
-          : el.closest("[data-film-beat]")
-            ? "film"
+          : el.closest("[data-film-root]")
+            ? el.closest("[data-film-root] [data-opaque]")
+              ? "surface"
+              : "film"
             : "main";
+  const surfaceId = (el) => (el.dataset.seat ? `card:${el.dataset.seat}` : "hero-band");
+
+  /**
+   * What lies under a horizontal strip of the viewport (the header's labels):
+   * an opaque surface of the Home ("card"), the film ("film"), the boundary
+   * between two of them ("edge"), or the ordinary page.
+   */
+  cap.underBox = (top, bottom) => {
+    const root = document.querySelector("[data-film-root]");
+    if (!root) return { kind: "page" };
+    const height = bottom - top;
+    let best = null;
+    for (const surface of root.querySelectorAll("[data-opaque]")) {
+      const r = surface.getBoundingClientRect();
+      const share = (Math.min(bottom, r.bottom) - Math.max(top, r.top)) / height;
+      if (share > 0 && (!best || share > best.share)) best = { share, id: surfaceId(surface) };
+    }
+    const rr = root.getBoundingClientRect();
+    const filmShare = Math.max(0, Math.min(bottom, rr.bottom) - Math.max(top, rr.top)) / height;
+    if (best && best.share >= 0.999) return { kind: "card", surface: best.id };
+    if (best) return { kind: "edge", surface: best.id, surfaceShare: round(best.share, 2) };
+    if (filmShare >= 0.999) {
+      // Pinned, the stage's top fade is under the labels; once it scrolls away it is not.
+      const stage = root.querySelector("[data-film-stage]").getBoundingClientRect();
+      return { kind: "film", stagePinned: Math.abs(stage.top) < 1, offsetInStage: Math.round(top - stage.top) };
+    }
+    if (filmShare > 0) return { kind: "edge", surface: "film-end", surfaceShare: round(1 - filmShare, 2) };
+    return { kind: "page" };
+  };
 
   /**
    * Visible text, grouped: leaves that share a block container (heading,
@@ -628,6 +688,9 @@ function capLib() {
       const inset = clipPath.match(/^inset\(([\d.]+)%/);
       const beat = el.closest("[data-film-beat]");
       const landing = el.closest("[data-landing-section]");
+      const opaqueSurface = el.closest("[data-film-root] [data-opaque]");
+      const side = el.closest("[data-header-side]");
+      const sides = side ? [...document.querySelectorAll("[data-header-side]")] : [];
       const text = g.texts.join(" ").replace(/\s+/g, " ").trim();
       out.push({
         key: g.key,
@@ -639,6 +702,9 @@ function capLib() {
         path: pathOf(el),
         region: regionOf(el),
         beat: beat ? beat.dataset.filmBeat : undefined,
+        onSurface: opaqueSurface ? surfaceId(opaqueSurface) : undefined,
+        headerSide: side ? (sides.indexOf(side) === 0 ? "left" : "right") : undefined,
+        under: side ? cap.underBox(y0, y1) : undefined,
         landing: landing ? landing.dataset.landingSection : undefined,
         fixed,
         paint: g.paint,
@@ -852,9 +918,9 @@ function capLib() {
     };
     const hits = [];
     const texts = cap.collectText({ mode: "viewport", minVisible: 0.01 });
-    // Boxes with their own fill, border or blur inside the pinned film sections (panels, cards, pills).
+    // Boxes with their own fill, border or blur on the Home's opaque surfaces (the button, for one).
     const panels = [];
-    for (const el of document.querySelectorAll("[data-film-beat] *")) {
+    for (const el of document.querySelectorAll("[data-film-root] [data-opaque] *")) {
       if (!el.checkVisibility(VIS) || panels.some((panel) => panel.contains(el))) continue;
       const cs = getComputedStyle(el);
       const painted =
@@ -880,7 +946,7 @@ function capLib() {
         const r = el.getBoundingClientRect();
         const hit = covered([[r.left, r.top, r.right, r.bottom]], blocker.rect);
         if (hit.px >= 24) {
-          hits.push({ by: blocker.name, kind: "panel", what: desc(el), text: (el.innerText || "").replace(/\s+/g, " ").trim().slice(0, 60), coveredPx: hit.px, covered: round(hit.fraction, 3), region: "film", beat: el.closest("[data-film-beat]")?.dataset.filmBeat });
+          hits.push({ by: blocker.name, kind: "panel", what: desc(el), text: (el.innerText || "").replace(/\s+/g, " ").trim().slice(0, 60), coveredPx: hit.px, covered: round(hit.fraction, 3), region: "surface", beat: el.closest("[data-film-beat]")?.dataset.filmBeat });
         }
       }
       for (const el of document.querySelectorAll(INTERACTIVE)) {
@@ -913,9 +979,16 @@ function capLib() {
     };
     // `value` is the first value seen; `values` counts each distinct one, because
     // the same selector can sit at blur(0px) in one section and blur(18px) in the next.
+    // Each element is also filed under its owner, so the chatbot (out of scope
+    // for the redesign) and the nav can be told apart from the rest.
+    let zone = "other";
+    const zones = new Map();
     const add = (map, key, value) => {
-      const entry = map.get(key) || { el: key, count: 0, value, values: {} };
+      const entry = map.get(key) || { el: key, zone, count: 0, value, values: {} };
       entry.count++;
+      const tally = zones.get(map) || { chatbot: 0, nav: 0, other: 0 };
+      tally[zone]++;
+      zones.set(map, tally);
       if (value in entry.values || Object.keys(entry.values).length < 6) {
         entry.values[value] = (entry.values[value] || 0) + 1;
       }
@@ -923,6 +996,11 @@ function capLib() {
     };
     for (const el of document.querySelectorAll("*")) {
       if (!el.checkVisibility()) continue;
+      zone = el.closest('[class*="FaqChatbot"]')
+        ? "chatbot"
+        : el.closest("header,[data-header-fade]")
+          ? "nav"
+          : "other";
       for (const pseudo of [null, "::before", "::after"]) {
         const s = getComputedStyle(el, pseudo);
         if (pseudo && (s.content === "none" || s.content === "normal" || s.display === "none")) continue;
@@ -953,7 +1031,12 @@ function capLib() {
     const computed = {};
     for (const [name, map] of Object.entries(cats)) {
       const list = [...map.values()].sort((a, b) => b.count - a.count);
-      computed[name] = { elements: list.reduce((n, e) => n + e.count, 0), distinct: list.length, list: list.slice(0, 60) };
+      computed[name] = {
+        elements: list.reduce((n, e) => n + e.count, 0),
+        distinct: list.length,
+        byZone: zones.get(map) || { chatbot: 0, nav: 0, other: 0 },
+        list: list.slice(0, 60),
+      };
     }
     const animationNames = {};
     for (const entry of cats.animation.values()) {
@@ -1010,6 +1093,147 @@ function capLib() {
       declaredOut[name] = { rules: list.length, list: unique.slice(0, 60) };
     }
     return { computed, animationNames, running, declared: declaredOut };
+  };
+
+  // ── The Home's film ──
+  /** Frames to shoot on the Home, top to bottom: each title card pinned, each empty stretch part-way through. */
+  cap.homePlan = (progress) => {
+    const root = document.querySelector("[data-film-root]");
+    const top = (el) => el.getBoundingClientRect().top + scrollY;
+    const frames = [];
+    for (const el of root ? root.querySelectorAll("[data-seat], [data-film-beat]") : []) {
+      if (el.dataset.seat) {
+        frames.push({ name: el.dataset.seat, kind: "card", scrollY: Math.round(top(el)), height: el.offsetHeight });
+      } else if (!el.querySelector("[data-opaque]")) {
+        // The beat that holds the hero band is the first screen; hero-top covers it.
+        frames.push({
+          name: el.dataset.filmBeat,
+          kind: "stretch",
+          scrollY: Math.round(top(el) + progress * el.offsetHeight),
+          height: el.offsetHeight,
+        });
+      }
+    }
+    const sections = [...document.querySelectorAll("[data-landing-section]")].map((el) => ({
+      id: el.dataset.landingSection,
+      hidden: !el.checkVisibility(),
+      top: top(el),
+      height: el.offsetHeight,
+    }));
+    return { frames, sections, filmBottom: root ? Math.round(root.getBoundingClientRect().bottom + scrollY) : 0 };
+  };
+
+  /** Every text element inside the film, and whether it has an opaque surface under it. */
+  cap.textOnFootage = () => {
+    const root = document.querySelector("[data-film-root]");
+    if (!root) return null;
+    const onFootage = [];
+    let checked = 0;
+    for (const [el, nodes] of leaves()) {
+      if (!root.contains(el)) continue;
+      checked++;
+      const surface = el.closest("[data-opaque]");
+      if (surface && root.contains(surface)) continue;
+      onFootage.push({
+        text: nodes.map((n) => n.nodeValue).join(" ").replace(/\s+/g, " ").trim().slice(0, 60),
+        el: desc(el),
+        path: pathOf(el),
+        rendered: el.checkVisibility(VIS),
+      });
+    }
+    const surfaces = [...root.querySelectorAll("[data-opaque]")].map((el) => {
+      const cs = getComputedStyle(el);
+      return {
+        id: surfaceId(el),
+        backgroundColor: cs.backgroundColor,
+        backgroundImage: cs.backgroundImage,
+        opacity: cs.opacity,
+        opaque: parseColor(cs.backgroundColor)[3] >= 0.999 && Number(cs.opacity) >= 0.999,
+        height: el.offsetHeight,
+        viewports: round(el.offsetHeight / innerHeight, 2),
+      };
+    });
+    const stretches = [...root.querySelectorAll("[data-film-beat]")].map((el) => ({
+      id: el.dataset.filmBeat,
+      ariaHidden: el.getAttribute("aria-hidden") === "true",
+      holdsSurface: Boolean(el.querySelector("[data-opaque]")),
+      textLength: (el.textContent || "").trim().length,
+      height: el.offsetHeight,
+    }));
+    return { textElements: checked, onFootage, surfaces, stretches };
+  };
+
+  /** Where the film, its surfaces and the nav sit, for the pass along the scroll. */
+  cap.trackGeometry = () => {
+    const root = document.querySelector("[data-film-root]");
+    if (!root) return null;
+    const r = root.getBoundingClientRect();
+    const edges = [];
+    for (const surface of root.querySelectorAll("[data-opaque]")) {
+      const b = surface.getBoundingClientRect();
+      edges.push(
+        { id: surfaceId(surface), side: "top", y: Math.round(b.top + scrollY) },
+        { id: surfaceId(surface), side: "bottom", y: Math.round(b.bottom + scrollY) },
+      );
+    }
+    edges.push({ id: "film", side: "bottom", y: Math.round(r.bottom + scrollY) });
+    let labelBox = null;
+    const range = document.createRange();
+    for (const side of document.querySelectorAll("[data-header-side]")) {
+      const walker = document.createTreeWalker(side, NodeFilter.SHOW_TEXT);
+      for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+        if (!node.nodeValue.trim() || !node.parentElement.checkVisibility(VIS)) continue;
+        range.selectNodeContents(node);
+        const b = range.getBoundingClientRect();
+        if (b.width < 1 || b.height < 1) continue;
+        labelBox = labelBox ? [Math.min(labelBox[0], b.top), Math.max(labelBox[1], b.bottom)] : [b.top, b.bottom];
+      }
+    }
+    const header = document.querySelector("header");
+    return {
+      top: r.top + scrollY,
+      height: r.height,
+      vh: innerHeight,
+      vw: innerWidth,
+      docHeight: Math.max(document.documentElement.scrollHeight, document.body.scrollHeight),
+      edges,
+      labelBox,
+      navBox: header ? paintedBox(header) : null,
+    };
+  };
+
+  /** The header as it is right now: its text (side labels and the bar's own) and its icons. */
+  cap.navReadings = () => {
+    const texts = cap.collectText({ mode: "viewport", minVisible: 0.5 }).filter((t) => t.region === "header");
+    const controls = [];
+    for (const el of document.querySelectorAll("header a[href], header button")) {
+      const svg = el.querySelector("svg");
+      if (!svg || !el.checkVisibility(VIS)) continue;
+      const r = svg.getBoundingClientRect();
+      if (r.width < 2 || r.height < 2) continue;
+      const colour = parseColor(getComputedStyle(svg).color);
+      const shape = svg.querySelector("path,circle,rect,line,polyline,polygon,ellipse");
+      const shapeStyle = shape ? getComputedStyle(shape) : null;
+      const same = (value) =>
+        Boolean(value) && value !== "none" && parseColor(value).slice(0, 3).join() === colour.slice(0, 3).join();
+      let opacity = 1;
+      for (let e = svg; e && e.nodeType === 1; e = e.parentElement) {
+        const own = parseFloat(getComputedStyle(e).opacity);
+        opacity *= Number.isNaN(own) ? 1 : own;
+      }
+      controls.push({
+        label: accessibleName(el).name.slice(0, 40),
+        el: desc(el),
+        color: colour,
+        opacity: round(opacity, 3),
+        // The text-hidden frame only removes the icon if it is drawn in the text colour.
+        followsTextColour: shapeStyle ? same(shapeStyle.fill) || same(shapeStyle.stroke) : null,
+        selected: el.getAttribute("aria-current") === "page" || /selected/i.test(el.getAttribute("class") || ""),
+        controlBackground: getComputedStyle(el).backgroundColor,
+        rect: [Math.floor(r.left), Math.floor(r.top), Math.ceil(r.right), Math.ceil(r.bottom)],
+      });
+    }
+    return { texts, controls };
   };
 
   cap.pageInfo = () => ({
@@ -1148,6 +1372,40 @@ function ratioOver(rgba, opacity, bg) {
   return contrast(luminance(mixed), luminance(bg));
 }
 
+/**
+ * The pixels a text really covers, and how they fare. A text box also holds the
+ * space above, below and between the letters; here only pixels that change by a
+ * lot between the text-hidden frame and one with the text painted magenta are
+ * taken (the body of each stroke, not its faint antialiased rim), and the text
+ * colour is rated against what the hidden frame shows at each of them.
+ */
+function glyphStats(hidden, marked, rects, rgba, opacity, required) {
+  const { data, width, height, channels } = hidden;
+  const loud = marked.data;
+  const ratios = [];
+  for (const [a, b, c, d] of rects) {
+    const x1 = Math.min(width, c);
+    const y1 = Math.min(height, d);
+    for (let y = Math.max(0, b); y < y1; y++) {
+      for (let x = Math.max(0, a); x < x1; x++) {
+        const o = (y * width + x) * channels;
+        const change = Math.max(
+          Math.abs(data[o] - loud[o]),
+          Math.abs(data[o + 1] - loud[o + 1]),
+          Math.abs(data[o + 2] - loud[o + 2]),
+        );
+        if (change >= 96) ratios.push(ratioOver(rgba, opacity, [data[o], data[o + 1], data[o + 2]]));
+      }
+    }
+  }
+  if (!ratios.length) return null;
+  ratios.sort((p, q) => p - q);
+  const firstOk = ratios.findIndex((r) => r >= required);
+  const under = firstOk === -1 ? ratios.length : firstOk;
+  const at = (q) => r2(ratios[Math.round(q * (ratios.length - 1))]);
+  return { pixels: ratios.length, shareUnder: r4(under / ratios.length), ratioMin: at(0), ratioP5: at(0.05), ratioMedian: at(0.5) };
+}
+
 /** Adds colours, background statistics and WCAG verdicts to a text entry from the page. */
 function evaluate(entry, stats) {
   const { paint } = entry;
@@ -1269,20 +1527,12 @@ async function newContext(browser, vp, theme, extra = {}) {
 
 /**
  * Loads a route and waits until it is in the state a visitor reaches on their
- * own: intro finished and gone, film ready, fonts in, entrance animations done.
+ * own: film ready, fonts in, entrance animations done.
  */
 async function open(page, route, theme, { expectFilm = true } = {}) {
   const started = Date.now();
   const response = await page.goto(BASE + route, { waitUntil: "load" });
   const info = { status: response?.status() ?? null, timings: {} };
-  const hadIntro = await page.evaluate(() => document.documentElement.classList.contains("intro-pending"));
-  if (hadIntro) {
-    // Same wait as tests/e2e/helpers.ts introDone, plus the overlay's own fade-out.
-    await page.waitForFunction(() => !document.documentElement.classList.contains("intro-pending"), null, { timeout: 15000 });
-    await page.waitForFunction(() => !document.querySelector('[class*="IntroLoader_overlay"]'), null, { timeout: 8000 }).catch(() => note("intro overlay still mounted 8 s after intro-pending cleared"));
-  }
-  info.intro = hadIntro;
-  info.timings.intro = Date.now() - started;
   await page.evaluate(() => document.fonts.ready.then(() => true));
   const hasFilm = await page.evaluate(() => Boolean(document.querySelector("[data-film-root]")));
   if (hasFilm && expectFilm) {
@@ -1538,6 +1788,26 @@ async function typeInventory(page) {
 }
 
 // ─── Runs ───────────────────────────────────────────────────────────────────
+/** The Home screenshots a complete run leaves behind, in page order. */
+const HOME_SHOTS = [
+  "hero-top",
+  "brand",
+  "after-brand",
+  "content",
+  "after-content",
+  "paid-media",
+  "after-paid-media",
+  "crm",
+  "after-crm",
+  "software",
+  "after-software",
+  "proof",
+  "hiring",
+  "faq",
+  "final-cta",
+  "footer",
+];
+
 const metrics = {
   meta: {
     base: BASE,
@@ -1545,7 +1815,14 @@ const metrics = {
     out: OUT,
     generatedAt: new Date().toISOString(),
     command: `node scripts/design/capture.mjs ${process.argv.slice(2).join(" ")}`,
-    viewports: VIEWPORTS.map(({ name, width, height, deviceScaleFactor, isMobile, hasTouch }) => ({ name, width, height, deviceScaleFactor, isMobile: Boolean(isMobile), hasTouch: Boolean(hasTouch) })),
+    viewports: VIEWPORTS.map(({ name, width, height, deviceScaleFactor, isMobile, hasTouch }) => ({
+      name,
+      width,
+      height,
+      deviceScaleFactor,
+      isMobile: Boolean(isMobile),
+      hasTouch: Boolean(hasTouch),
+    })),
     themes: THEMES,
     pages: PAGES,
     beatProgress: BEAT_PROGRESS,
@@ -1553,7 +1830,7 @@ const metrics = {
   },
   loads: [],
   home: {},
-  film: { text: {}, scan: {}, reducedMotion: null },
+  film: { text: {}, textOnFootage: {}, labels: {}, nav: {}, scan: {}, reducedMotion: null },
   pages: {},
   effects: {},
   overlaps: [],
@@ -1561,7 +1838,18 @@ const metrics = {
 };
 
 const recordLoad = (name, vp, theme, info) =>
-  metrics.loads.push({ page: name, viewport: vp.name, theme, status: info.status, themeAttribute: info.theme, themeApplied: info.themeApplied, fx: info.fx, intro: info.intro, bodyBackground: info.bodyBackground, docHeight: info.docHeight, timings: info.timings });
+  metrics.loads.push({
+    page: name,
+    viewport: vp.name,
+    theme,
+    status: info.status,
+    themeAttribute: info.theme,
+    themeApplied: info.themeApplied,
+    fx: info.fx,
+    bodyBackground: info.bodyBackground,
+    docHeight: info.docHeight,
+    timings: info.timings,
+  });
 const recordLogs = (name, vp, theme, store) => {
   metrics.logs[`${name}-${vp.name}-${theme}`] = store;
 };
@@ -1579,55 +1867,44 @@ async function runHome(browser, vp, theme) {
   const logs = attachLogs(page);
   const info = await open(page, HOME_PATH, theme);
   recordLoad("home", vp, theme, info);
-  const home = { url: HOME_PATH, status: info.status, shots: [], frames: {} };
-  ((metrics.home[vp.name] ??= {})[theme] = home);
+  const home = { url: HOME_PATH, status: info.status, shots: [] };
+  (metrics.home[vp.name] ??= {})[theme] = home;
   const filmText = ((metrics.film.text[vp.name] ??= {})[theme] = {});
 
-  // As a first-time visitor finds it: intro over, chatbot greeting on screen.
+  // As a visitor finds it a few seconds in: the chatbot greeting on screen.
   home.greetingAtTop = await waitGreeting(page);
   home.shots.push(await shot(page, `${tag}-hero-top.png`));
   await recordOverlaps(page, `${tag}-hero-top.png`);
   await dismissGreeting(page);
   home.shots.push(await shot(page, `${tag}-hero-top-clean.png`));
 
-  const frame = async (name, file) => {
+  const frame = async (name, kind, file) => {
     const state = await page.evaluate(() => window.__cap.filmState(true));
     const elements = await measureViewport(page, `${tag}-${name}.png`);
-    filmText[name] = { shot: file, scrollY: state.scrollY, film: state, ...summarise(elements), elements };
+    filmText[name] = { kind, shot: file, scrollY: state.scrollY ?? 0, film: state, ...summarise(elements), elements };
   };
-  await frame("hero-top", `${tag}-hero-top-clean.png`);
+  await frame("hero-top", "hero", `${tag}-hero-top-clean.png`);
 
-  const beats = await page.evaluate(() =>
-    [...document.querySelectorAll("[data-film-beat]")].map((el) => ({
-      id: el.dataset.filmBeat,
-      top: el.getBoundingClientRect().top + scrollY,
-      height: el.offsetHeight,
-    })),
-  );
-  if (!beats.length) note(`${HOME_PATH} has no [data-film-beat] sections: film captures skipped`);
-  home.beats = beats;
-  for (const beat of beats) {
-    await scrollTo(page, Math.round(beat.top + BEAT_PROGRESS * beat.height));
+  // The whole film, wherever it is scrolled: is any text left without a surface under it?
+  (metrics.film.textOnFootage[vp.name] ??= {})[theme] = await page.evaluate(() => window.__cap.textOnFootage());
+
+  const plan = await page.evaluate((progress) => window.__cap.homePlan(progress), BEAT_PROGRESS);
+  if (!plan.frames.length) note(`${HOME_PATH} has no [data-seat] cards or empty [data-film-beat] stretches: film frames skipped`);
+  home.frames = plan.frames;
+  for (const item of plan.frames) {
+    await scrollTo(page, item.scrollY);
     const state = await settle(page, { film: true });
-    if (state?.film && !state.settled) note(`${tag}: film did not settle at beat ${beat.id}`);
-    const file = await shot(page, `${tag}-${beat.id}.png`);
+    if (state?.film && !state.settled) note(`${tag}: film did not settle at ${item.name}`);
+    const file = await shot(page, `${tag}-${item.name}.png`);
     home.shots.push(file);
     await recordOverlaps(page, file);
-    await frame(beat.id, file);
+    await frame(item.name, item.kind, file);
   }
 
-  const sections = await page.evaluate(() =>
-    [...document.querySelectorAll("[data-landing-section]")].map((el) => ({
-      id: el.dataset.landingSection,
-      hidden: !el.checkVisibility(),
-      top: el.getBoundingClientRect().top + scrollY,
-      height: el.offsetHeight,
-    })),
-  );
-  home.sections = sections;
+  home.sections = plan.sections;
   // Clear of the nav bar, which is at the top on wide screens and at the bottom on phones.
   const offset = vp.width > 768 ? 96 : 24;
-  for (const section of sections) {
+  for (const section of plan.sections) {
     if (section.hidden) {
       note(`${tag}: section "${section.id}" is hidden, no screenshot`);
       continue;
@@ -1644,16 +1921,12 @@ async function runHome(browser, vp, theme) {
   await recordOverlaps(page, `${tag}-footer.png`);
 
   // Everything under the film, measured like any other page.
-  const filmBottom = await page.evaluate(() => {
-    const root = document.querySelector("[data-film-root]");
-    return root ? Math.round(root.getBoundingClientRect().bottom + scrollY) : 0;
-  });
-  const walked = await walkPage(page, { startY: filmBottom, label: tag });
+  const walked = await walkPage(page, { startY: plan.filmBottom, label: tag });
   const record = (((metrics.pages.home ??= {})[vp.name] ??= {})[theme] = {
     url: HOME_PATH,
     status: info.status,
-    scope: filmBottom ? `below the film (page y >= ${filmBottom})` : "whole page",
-    contrast: contrastReport(walked.entries.filter((e) => e.region !== "film")),
+    scope: plan.filmBottom ? `below the film (page y >= ${plan.filmBottom})` : "whole page",
+    contrast: contrastReport(walked.entries.filter((e) => e.region !== "film" && e.region !== "surface")),
   });
 
   if (theme === "dark") {
@@ -1667,84 +1940,352 @@ async function runHome(browser, vp, theme) {
   await context.close();
 }
 
-async function runFilmScan(browser, vp) {
-  const theme = "dark";
-  log(`film scan ${vp.name}: ${FILM_STEPS} positions, ${FILM_DENSE} film-only`);
+// ── The pass along the film ──
+/** Which kind of ground a header label stands on. */
+const labelGround = (reading) => {
+  const under = reading.under || { kind: "page" };
+  if (under.kind === "film") return under.stagePinned ? "film, stage pinned" : "film, stage scrolling away";
+  if (under.kind === "card") return "opaque surface";
+  if (under.kind === "edge") return "edge of a surface";
+  return "page";
+};
+const GROUNDS = ["film, stage pinned", "film, stage scrolling away", "opaque surface", "edge of a surface", "page"];
+
+function summariseLabels(samples) {
+  const sides = {};
+  for (const sample of samples) {
+    for (const label of sample.labels || []) {
+      if (label.ratioMedian === undefined) continue;
+      const side = (sides[label.side] ??= { text: label.text, fontSize: label.fontSize, fontWeight: label.fontWeight, required: label.required, grounds: {} });
+      const ground = (side.grounds[labelGround(label)] ??= {
+        positions: 0,
+        byKind: {},
+        colours: {},
+        underMedian: 0,
+        underP95: 0,
+        underWorst: 0,
+        underGlyph: 0,
+        worstMedian: null,
+        worstP95: null,
+        worstAny: null,
+        worstGlyph: null,
+      });
+      ground.positions++;
+      ground.byKind[sample.kind] = (ground.byKind[sample.kind] || 0) + 1;
+      ground.colours[label.color] = (ground.colours[label.color] || 0) + 1;
+      if (label.ratioMedian < label.required) ground.underMedian++;
+      if (label.ratioP95 < label.required) ground.underP95++;
+      if (label.ratioWorst < label.required) ground.underWorst++;
+      // One per cent of the glyph pixels is the floor: below that it is a few rim pixels.
+      if (label.glyph && label.glyph.shareUnder >= 0.01) ground.underGlyph++;
+      const ref = () => ({
+        glyphShareUnder: label.glyph?.shareUnder,
+        glyphRatioP5: label.glyph?.ratioP5,
+        glyphRatioMedian: label.glyph?.ratioMedian,
+        ratioMedian: label.ratioMedian,
+        ratioP95: label.ratioP95,
+        ratioP5: label.ratioP5,
+        ratioWorst: label.ratioWorst,
+        color: label.color,
+        bgMedian: label.bgMedian,
+        bgP95: label.bgP95,
+        bgP5: label.bgP5,
+        scrollY: sample.scrollY,
+        time: sample.time,
+        veil: sample.veil,
+        beat: sample.beat,
+        kind: sample.kind,
+        edge: sample.edge,
+        where: sample.where,
+        navOverCard: sample.navOverCard,
+        pastFilm: sample.pastFilm,
+        under: label.under,
+      });
+      if (!ground.worstMedian || label.ratioMedian < ground.worstMedian.ratioMedian) ground.worstMedian = ref();
+      if (!ground.worstP95 || label.ratioP95 < ground.worstP95.ratioP95) ground.worstP95 = ref();
+      if (!ground.worstAny || label.ratioWorst < ground.worstAny.ratioWorst) ground.worstAny = ref();
+      if (label.glyph && (!ground.worstGlyph || label.glyph.shareUnder > ground.worstGlyph.glyphShareUnder)) {
+        ground.worstGlyph = ref();
+      }
+    }
+  }
+  return sides;
+}
+
+/** The bar's own text and icons: the weakest reading of each across the positions it was read at. */
+function summariseNav(samples) {
+  const fold = (map, key, entry, sample, base) => {
+    const item = map.get(key) || { ...base, readings: 0, worstMedian: Infinity, worstAny: Infinity };
+    item.readings++;
+    const any = Math.min(entry.ratioP95, entry.ratioP5);
+    if (entry.ratioMedian < item.worstMedian) {
+      item.worstMedian = entry.ratioMedian;
+      item.bgAtWorst = entry.bgMedian;
+      item.scrollYAtWorst = sample.scrollY;
+    }
+    item.worstAny = Math.min(item.worstAny, any);
+    map.set(key, item);
+  };
+  const texts = new Map();
+  const icons = new Map();
+  for (const sample of samples) {
+    for (const t of sample.pill || []) {
+      if (t.ratioMedian === undefined) continue;
+      fold(texts, `${t.text}|${t.color}`, t, sample, { text: t.text, color: t.color, fontSize: t.fontSize, fontWeight: t.fontWeight, required: t.required });
+    }
+    for (const c of sample.controls || []) {
+      fold(icons, `${c.label}|${c.color}`, c, sample, { label: c.label, color: c.color, selected: c.selected, followsTextColour: c.followsTextColour, required: 3 });
+    }
+  }
+  return { texts: [...texts.values()], icons: [...icons.values()] };
+}
+
+/**
+ * One trip down the film for a viewport and theme. At every position it reads
+ * the header (side labels, the bar's text and icons) against the pixels behind
+ * it; in the dark theme it also reads the film itself, as the old film scan did.
+ * Positions: the evenly spaced ones, a dense set, and where the labels show,
+ * the stretch after the stage unpins and four positions around every edge that
+ * passes under them.
+ */
+async function runTrack(browser, vp, theme) {
+  const scan = theme === "dark";
   const context = await newContext(browser, vp, theme);
   const page = await context.newPage();
   await open(page, HOME_PATH, theme);
   await waitGreeting(page);
   await dismissGreeting(page);
-  const geo = await page.evaluate(() => {
-    const root = document.querySelector("[data-film-root]");
-    if (!root) return null;
-    const r = root.getBoundingClientRect();
-    return { top: r.top + scrollY, height: r.height, vh: innerHeight, vw: innerWidth };
-  });
+  const geo = await page.evaluate(() => window.__cap.trackGeometry());
   if (!geo) {
-    note(`${HOME_PATH} has no [data-film-root]: film scan skipped`);
+    note(`${HOME_PATH} has no [data-film-root]: pass along the film skipped`);
     await context.close();
     return;
   }
-  const clip = {
+  const labels = Boolean(geo.labelBox);
+  const start = geo.top;
+  const end = geo.top + geo.height - geo.vh;
+  const maxScroll = geo.docHeight - geo.vh;
+  const positions = [];
+  const spread = (count, kind) => {
+    for (let i = 0; i < count; i++) {
+      positions.push({ kind, scrollY: Math.round(start + ((end - start) * i) / Math.max(1, count - 1)) });
+    }
+  };
+  spread(FILM_STEPS, "base");
+  if (FILM_DENSE > 0 && (scan || labels)) spread(FILM_DENSE, "dense");
+  if (labels) {
+    // After the stage unpins it scrolls away under the labels, without its top fade.
+    const step = Math.max(8, Math.round((end - start) / Math.max(1, (FILM_DENSE || FILM_STEPS) - 1)));
+    for (let y = end + step; y <= Math.min(maxScroll, geo.top + geo.height); y += step) {
+      positions.push({ kind: "tail", scrollY: Math.round(y) });
+    }
+    const [top, bottom] = geo.labelBox;
+    const height = bottom - top;
+    // Where the edge sits in the label box. The site switches the labels' colour
+    // when a surface spans the middle of the bar, so the two positions next to
+    // the middle are the last one before and the first one after that switch.
+    const around = [
+      ["edge a quarter down the box", height * 0.25],
+      ["edge 1 px above the middle", height / 2 - 1],
+      ["edge 1 px below the middle", height / 2 + 1],
+      ["edge three quarters down the box", height * 0.75],
+    ];
+    for (const edge of geo.edges) {
+      for (const [where, into] of around) {
+        // The edge sits `into` px below the top of the label box.
+        const y = Math.round(edge.y - (top + into));
+        if (y >= 0 && y <= maxScroll) positions.push({ kind: "edge", edge: `${edge.id} ${edge.side}`, where, scrollY: y });
+      }
+    }
+    // The site turns the labels back to the theme colour when the film's end is 80 px from the top.
+    for (const [where, delta] of [["1 px before the switch", -1], ["at the switch", 0]]) {
+      const y = Math.round(geo.top + geo.height - 80 + delta);
+      if (y >= 0 && y <= maxScroll) positions.push({ kind: "edge", edge: "past-film switch", where, scrollY: y });
+    }
+  }
+  positions.sort((a, b) => a.scrollY - b.scrollY);
+  log(`film pass ${vp.name} ${theme}: ${positions.length} positions${labels ? ", labels" : ""}${scan ? ", film background" : ""}`);
+
+  const centre = {
     x: Math.round(geo.vw * 0.2),
     y: Math.round(geo.vh * 0.2),
     width: Math.round(geo.vw * 0.6),
     height: Math.round(geo.vh * 0.6),
   };
-  const whole = [[0, 0, clip.width, clip.height]];
-  const start = geo.top;
-  const end = geo.top + geo.height - geo.vh;
-  const pass = async (steps, withContent) => {
-    const samples = [];
-    for (let i = 0; i < steps; i++) {
-      const y = Math.round(start + ((end - start) * i) / Math.max(1, steps - 1));
-      await scrollTo(page, y);
-      const state = await page.evaluate(() => window.__cap.filmSettled());
-      const sample = { i, scrollY: y, progress: r4(i / Math.max(1, steps - 1)), time: state.video?.time ?? null, veil: Number(state.veil), beat: state.beat, settled: state.settled };
-      if (withContent) {
-        await page.waitForFunction(() => window.__cap.animationsIdle(), null, { timeout: 3000 }).catch(() => {});
-        const frame = await hiddenFrame(page, { clip, restore: false });
-        sample.withContent = compactStats(regionStats(frame, whole, Infinity));
+  const whole = [[0, 0, centre.width, centre.height]];
+  const navTop = geo.navBox ? Math.max(0, Math.floor(geo.navBox[1]) - 4) : 0;
+  const navBottom = geo.navBox ? Math.min(geo.vh, Math.ceil(geo.navBox[3]) + 4) : 0;
+  const navClip = geo.navBox ? { x: 0, y: navTop, width: geo.vw, height: navBottom - navTop } : null;
+  const inClip = (rects) => rects.map(([a, b, c, d]) => [a, b - navTop, c, d - navTop]);
+  const slimText = (e) => ({
+    side: e.headerSide,
+    text: e.text,
+    color: e.colorHex,
+    opacity: e.opacity,
+    fontSize: e.fontSize,
+    fontWeight: e.fontWeight,
+    required: e.required,
+    under: e.under,
+    ratioMedian: e.ratioMedian,
+    ratioP95: e.ratioP95,
+    ratioP5: e.ratioP5,
+    ratioWorst: e.ratioWorst,
+    bgMedian: e.background?.medianHex,
+    bgP95: e.background?.p95Hex,
+    bgP5: e.background?.p5Hex,
+  });
+
+  const samples = [];
+  for (const position of positions) {
+    await scrollTo(page, position.scrollY);
+    const state = await page.evaluate(() => window.__cap.filmSettled());
+    // The veil eases over 200 ms and the header's attributes follow the scroll by a frame.
+    await page.waitForFunction(() => window.__cap.animationsIdle(), null, { timeout: 3000 }).catch(() => {});
+    const sample = {
+      ...position,
+      time: state.video?.time ?? null,
+      veil: Number(state.veil),
+      beat: state.beat,
+      settled: state.settled,
+      navOverCard: state.navOverCard,
+      pastFilm: state.pastFilm,
+      stageTop: state.stageTop,
+    };
+    let touched = false;
+    if (navClip && (labels || position.kind === "base")) {
+      const nav = await page.evaluate(() => window.__cap.navReadings());
+      const frame = await hiddenFrame(page, { clip: navClip, restore: false });
+      const marked = labels ? await hiddenFrame(page, { clip: navClip, mode: "markText", restore: false }) : null;
+      touched = true;
+      const read = (t) => slimText(evaluate(t, regionStats(frame, inClip(t.rects))));
+      sample.labels = nav.texts
+        .filter((t) => t.headerSide)
+        .map((t) => {
+          const reading = read(t);
+          if (marked && t.paint.color && reading.ratioMedian !== undefined) {
+            reading.glyph = glyphStats(frame, marked, inClip(t.rects), t.paint.color, t.opacity, reading.required);
+          }
+          return reading;
+        });
+      sample.pill = nav.texts.filter((t) => !t.headerSide).map(read);
+      sample.controls = [];
+      for (const control of nav.controls) {
+        const stats = regionStats(frame, inClip([control.rect]));
+        if (!stats) continue;
+        const ratio = (bg) => r2(ratioOver(control.color, control.opacity, bg));
+        sample.controls.push({
+          label: control.label,
+          color: hex(control.color),
+          selected: control.selected,
+          followsTextColour: control.followsTextColour,
+          bgMedian: hex(stats.p50.rgb),
+          ratioMedian: ratio(stats.p50.rgb),
+          ratioP95: ratio(stats.p95.rgb),
+          ratioP5: ratio(stats.p5.rgb),
+        });
       }
-      const film = await hiddenFrame(page, { clip, mode: "filmOnly" });
-      sample.filmOnly = compactStats(regionStats(film, whole, Infinity));
-      samples.push(sample);
     }
-    return samples;
-  };
-  const brightest = (samples, layer, stat) =>
-    samples.reduce((best, s) => (!best || s[layer][stat] > best[layer][stat] ? s : best), null);
-  const pick = (s, layer) =>
-    s && { scrollY: s.scrollY, time: s.time, veil: s.veil, beat: s.beat, p95: s[layer].p95, max: s[layer].max, p95Hex: s[layer].p95Hex, maxHex: s[layer].maxHex, median: s[layer].median };
-  const samples = await pass(FILM_STEPS, true);
-  const dense = FILM_DENSE > 0 ? await pass(FILM_DENSE, false) : [];
-  metrics.film.scan[vp.name] = {
-    theme,
-    region: { ...clip, note: "central 60% of the viewport in both directions, CSS pixels" },
-    track: { startScrollY: Math.round(start), endScrollY: Math.round(end) },
-    samples,
-    brightest: {
-      withContentByP95: pick(brightest(samples, "withContent", "p95"), "withContent"),
-      withContentByMax: pick(brightest(samples, "withContent", "max"), "withContent"),
-      filmOnlyByP95: pick(brightest(samples, "filmOnly", "p95"), "filmOnly"),
-      filmOnlyByMax: pick(brightest(samples, "filmOnly", "max"), "filmOnly"),
-    },
-    dense: dense.length
-      ? {
-          steps: dense.length,
-          byP95: pick(brightest(dense, "filmOnly", "p95"), "filmOnly"),
-          byMax: pick(brightest(dense, "filmOnly", "max"), "filmOnly"),
-          veilValues: [...new Set(dense.map((s) => s.veil))].sort(),
-          // Brightest sample for each veil value, to see what the darker veil is spent on.
-          byVeil: Object.fromEntries(
-            [...new Set(dense.map((s) => s.veil))].sort().map((veil) => [veil, pick(brightest(dense.filter((s) => s.veil === veil), "filmOnly", "p95"), "filmOnly")]),
-          ),
-          samples: dense.map((s) => ({ scrollY: s.scrollY, time: s.time, veil: s.veil, beat: s.beat, median: s.filmOnly.median, p95: s.filmOnly.p95, max: s.filmOnly.max })),
-        }
-      : null,
-  };
+    if (scan && (position.kind === "base" || position.kind === "dense")) {
+      if (position.kind === "base") {
+        const withContent = await hiddenFrame(page, { clip: centre, restore: false });
+        sample.withContent = compactStats(regionStats(withContent, whole, Number.POSITIVE_INFINITY));
+      }
+      const film = await hiddenFrame(page, { clip: centre, mode: "filmOnly", restore: false });
+      sample.filmOnly = compactStats(regionStats(film, whole, Number.POSITIVE_INFINITY));
+      touched = true;
+    }
+    if (touched) await page.evaluate(() => window.__cap.restore());
+    samples.push(sample);
+  }
   await context.close();
+
+  const unsettled = samples.filter((s) => !s.settled).length;
+  if (unsettled) note(`film pass ${vp.name} ${theme}: the film did not settle at ${unsettled} positions`);
+  const counts = {};
+  for (const s of samples) counts[s.kind] = (counts[s.kind] || 0) + 1;
+
+  (metrics.film.nav[vp.name] ??= {})[theme] = { positions: samples.filter((s) => s.controls).length, ...summariseNav(samples) };
+  if (labels) {
+    (metrics.film.labels[vp.name] ??= {})[theme] = {
+      labelBox: geo.labelBox,
+      positions: counts,
+      sides: summariseLabels(samples),
+      samples: samples.map((s) => ({
+        kind: s.kind,
+        edge: s.edge,
+        where: s.where,
+        scrollY: s.scrollY,
+        time: s.time,
+        veil: s.veil,
+        beat: s.beat,
+        navOverCard: s.navOverCard,
+        pastFilm: s.pastFilm,
+        stageTop: s.stageTop,
+        labels: (s.labels || []).map(({ text, fontSize, fontWeight, required, opacity, ...rest }) => rest),
+      })),
+    };
+  }
+  if (scan) {
+    const base = samples.filter((s) => s.kind === "base");
+    const dense = samples.filter((s) => s.kind === "dense");
+    const brightest = (list, layer, stat) =>
+      list.reduce((best, s) => (s[layer] && (!best || s[layer][stat] > best[layer][stat]) ? s : best), null);
+    const pick = (s, layer) =>
+      s && {
+        scrollY: s.scrollY,
+        time: s.time,
+        veil: s.veil,
+        beat: s.beat,
+        p95: s[layer].p95,
+        max: s[layer].max,
+        p95Hex: s[layer].p95Hex,
+        maxHex: s[layer].maxHex,
+        median: s[layer].median,
+      };
+    const veils = [...new Set(dense.map((s) => s.veil))].sort();
+    metrics.film.scan[vp.name] = {
+      theme,
+      region: { ...centre, note: "central 60% of the viewport in both directions, CSS pixels" },
+      track: { startScrollY: Math.round(start), endScrollY: Math.round(end) },
+      samples: base.map((s, i) => ({
+        i,
+        scrollY: s.scrollY,
+        time: s.time,
+        veil: s.veil,
+        beat: s.beat,
+        settled: s.settled,
+        withContent: s.withContent,
+        filmOnly: s.filmOnly,
+      })),
+      brightest: {
+        withContentByP95: pick(brightest(base, "withContent", "p95"), "withContent"),
+        withContentByMax: pick(brightest(base, "withContent", "max"), "withContent"),
+        filmOnlyByP95: pick(brightest(base, "filmOnly", "p95"), "filmOnly"),
+        filmOnlyByMax: pick(brightest(base, "filmOnly", "max"), "filmOnly"),
+      },
+      dense: dense.length
+        ? {
+            steps: dense.length,
+            byP95: pick(brightest(dense, "filmOnly", "p95"), "filmOnly"),
+            byMax: pick(brightest(dense, "filmOnly", "max"), "filmOnly"),
+            veilValues: veils,
+            // Brightest sample for each veil value, to see what the veil is spent on.
+            byVeil: Object.fromEntries(
+              veils.map((veil) => [veil, pick(brightest(dense.filter((s) => s.veil === veil), "filmOnly", "p95"), "filmOnly")]),
+            ),
+            samples: dense.map((s) => ({
+              scrollY: s.scrollY,
+              time: s.time,
+              veil: s.veil,
+              beat: s.beat,
+              median: s.filmOnly.median,
+              p95: s.filmOnly.p95,
+              max: s.filmOnly.max,
+            })),
+          }
+        : null,
+    };
+  }
 }
 
 async function runReducedMotion(browser) {
@@ -1753,38 +2294,52 @@ async function runReducedMotion(browser) {
   log("reduced motion: home 1440 dark");
   const context = await newContext(browser, vp, theme, { reducedMotion: "reduce" });
   const page = await context.newPage();
-  const mp4 = [];
+  const video = [];
   page.on("request", (request) => {
-    if (/\.(mp4|webm|mov)(\?|$)/.test(request.url())) mp4.push(request.url().replace(BASE, ""));
+    if (/\.(mp4|webm|mov)(\?|$)/.test(request.url())) video.push(request.url().replace(BASE, ""));
   });
-  const info = await open(page, HOME_PATH, theme, { expectFilm: false });
+  await open(page, HOME_PATH, theme, { expectFilm: false });
   await waitGreeting(page);
   await dismissGreeting(page);
-  const result = { viewport: vp.name, theme, introPlayed: info.intro, matchesReducedMotion: await page.evaluate(() => matchMedia("(prefers-reduced-motion: reduce)").matches), frames: {}, shots: [] };
-  for (const id of RM_BEATS) {
-    const beat = await page.evaluate((beatId) => {
-      const el = document.querySelector(`[data-film-beat="${beatId}"]`);
-      return el ? { top: el.getBoundingClientRect().top + scrollY, height: el.offsetHeight } : null;
-    }, id);
-    if (!beat) {
-      note(`reduced motion: no section for beat ${id}`);
+  const result = {
+    viewport: vp.name,
+    theme,
+    matchesReducedMotion: await page.evaluate(() => matchMedia("(prefers-reduced-motion: reduce)").matches),
+    frames: {},
+    shots: [],
+  };
+  const plan = await page.evaluate((progress) => window.__cap.homePlan(progress), BEAT_PROGRESS);
+  for (const name of RM_FRAMES) {
+    const item = name === "hero-top" ? { name, kind: "hero", scrollY: 0 } : plan.frames.find((f) => f.name === name);
+    if (!item) {
+      note(`reduced motion: no frame called ${name}`);
       continue;
     }
-    await scrollTo(page, Math.round(beat.top + BEAT_PROGRESS * beat.height));
-    await page.waitForFunction(() => {
-      const img = document.querySelector("[data-film-stage] img");
-      return !img || (img.complete && img.naturalWidth > 0);
-    }, null, { timeout: 8000 }).catch(() => {});
+    await scrollTo(page, item.scrollY);
+    await page
+      .waitForFunction(() => {
+        const img = document.querySelector("[data-film-stage] img");
+        return !img || (img.complete && img.naturalWidth > 0);
+      }, null, { timeout: 8000 })
+      .catch(() => {});
     const state = await settle(page, { film: true });
-    const file = await shot(page, `home-${vp.name}-${theme}-rm-${id}.png`);
+    const file = await shot(page, `home-${vp.name}-${theme}-rm-${name}.png`);
     result.shots.push(file);
-    result.frames[id] = { shot: file, scrollY: state?.scrollY, still: state?.still, stillLoaded: state?.stillLoaded, video: state?.video, filmReadyAttribute: state?.ready, veil: state?.veil };
+    result.frames[name] = {
+      kind: item.kind,
+      shot: file,
+      scrollY: state?.scrollY,
+      still: state?.still,
+      stillLoaded: state?.stillLoaded,
+      video: state?.video,
+      filmReadyAttribute: state?.ready,
+      veil: state?.veil,
+    };
   }
   await page.waitForTimeout(500);
-  result.videoRequests = mp4;
+  result.videoRequests = video;
   const frames = Object.values(result.frames);
-  result.videoAbsent = mp4.length === 0 && frames.every((f) => f.video && !f.video.hasSrc);
-  result.stillsSwapped = new Set(frames.map((f) => f.still)).size === frames.length;
+  result.videoAbsent = video.length === 0 && frames.every((f) => f.video && !f.video.hasSrc);
   metrics.film.reducedMotion = result;
   await context.close();
 }
@@ -1810,7 +2365,9 @@ async function runPage(browser, vp, theme, def) {
     await scrollTo(page, y);
     await page.waitForTimeout(80);
   }
-  await page.waitForFunction(() => [...document.images].every((img) => img.complete || img.loading === "lazy"), null, { timeout: 8000 }).catch(() => {});
+  await page
+    .waitForFunction(() => [...document.images].every((img) => img.complete || img.loading === "lazy"), null, { timeout: 8000 })
+    .catch(() => {});
   await scrollTo(page, 0);
   await settle(page);
 
@@ -1834,7 +2391,43 @@ async function runPage(browser, vp, theme, def) {
   await context.close();
 }
 
+/** Files a run of the requested parts must have written, and which of them are missing or stale. */
+function checkFiles(startedAt) {
+  const expected = [];
+  for (const vp of VIEWPORTS) {
+    for (const theme of THEMES) {
+      if (wants("home")) {
+        for (const name of [...HOME_SHOTS, "hero-top-clean"]) expected.push(`home-${vp.name}-${theme}-${name}.png`);
+      }
+      for (const def of PAGES) {
+        if (!wants(def.name)) continue;
+        for (const suffix of ["top.png", "full.jpg", "footer.png"]) expected.push(`${def.name}-${vp.name}-${theme}-${suffix}`);
+      }
+    }
+  }
+  if (wants("rm")) for (const name of RM_FRAMES) expected.push(`home-1440-dark-rm-${name}.png`);
+  const missing = [];
+  for (const file of expected) {
+    const full = path.join(OUT, file);
+    if (!existsSync(full)) missing.push(file);
+    else if (statSync(full).mtimeMs < startedAt - 2000) missing.push(`${file} (left over from an earlier run)`);
+  }
+  return { expected: expected.length, written: expected.length - missing.length, missing };
+}
+
 // ─── Summary (metrics.md) ───────────────────────────────────────────────────
+const EFFECTS = ["backdropFilter", "backgroundClipText", "filterBlur", "filterOther", "borderRadius9999", "borderRadius50pct", "mixBlendMode", "animation"];
+
+function loadBefore() {
+  if (!existsSync(COMPARE) || COMPARE === path.join(OUT, "metrics.json")) return null;
+  try {
+    return JSON.parse(readFileSync(COMPARE, "utf8"));
+  } catch (error) {
+    note(`could not read ${COMPARE}: ${String(error).slice(0, 100)}`);
+    return null;
+  }
+}
+
 function writeSummary() {
   const lines = [];
   const p = (...text) => lines.push(...text);
@@ -1846,6 +2439,15 @@ function writeSummary() {
   };
   const clip = (s, n = 40) => (s && s.length > n ? `${s.slice(0, n - 1)}…` : s || "");
   const m = metrics;
+  const each = (fn) => {
+    for (const [name, byVp] of Object.entries(m.pages)) {
+      for (const [vp, byTheme] of Object.entries(byVp)) {
+        for (const [theme, rec] of Object.entries(byTheme)) fn(name, vp, theme, rec);
+      }
+    }
+  };
+  const site = (list) => list.filter((t) => t.region !== "chatbot");
+  const bot = (list) => list.filter((t) => t.region === "chatbot");
 
   p("# Design capture", "");
   p(`- Generated: ${m.meta.generatedAt} — ${m.meta.durationSec ?? "?"} s`);
@@ -1854,76 +2456,148 @@ function writeSummary() {
   p(`- Re-run: \`${m.meta.command}\``);
   const applied = m.loads.filter((l) => l.themeApplied).length;
   p(`- Theme forced through localStorage \`data-theme\`: applied in ${applied}/${m.loads.length} page loads. \`data-fx\`: ${[...new Set(m.loads.map((l) => l.fx))].join(", ")}`);
+  if (m.meta.files) {
+    p(`- Files: ${m.meta.files.written} of ${m.meta.files.expected} expected screenshots written${m.meta.files.missing.length ? `; missing: ${m.meta.files.missing.join(", ")}` : ", none missing"}.`);
+  }
   p("- Ratios are WCAG 2 contrast. Text counts as large from 24 px, or from 18.66 px at weight 700+: it needs 3:1, everything else 4.5:1.");
-  p("- Backgrounds are read from a second screenshot of the same frame with the text made invisible. `median` is the pixel of median luminance behind the text, `p95` the 95th percentile. A ratio already includes the element's opacity at the moment of capture.", "");
+  p("- Backgrounds are read from a second screenshot of the same frame with the text made invisible. `median` is the pixel of median luminance behind the text, `p95` the 95th percentile, `p5` the 5th. A ratio already includes the element's opacity at the moment of capture.", "");
 
-  // A — film text
-  p("## A. Text over the film", "");
-  p(`Each beat is shot with the section scrolled ${Math.round(BEAT_PROGRESS * 100)}% of its own height past the top of the viewport; \`hero-top\` is scrollY 0.`, "");
-  for (const vp of Object.keys(m.film.text)) {
-    const dark = m.film.text[vp].dark || Object.values(m.film.text[vp])[0];
-    if (!dark) continue;
-    p(`### ${vp} px (dark theme)`, "");
+  // A — opaque surfaces
+  p("## A. Text on the Home's opaque surfaces (hero band and title cards)", "");
+  const footageRows = [];
+  for (const [vp, byTheme] of Object.entries(m.film.textOnFootage)) {
+    for (const [theme, check] of Object.entries(byTheme)) {
+      if (!check) continue;
+      footageRows.push([
+        vp,
+        theme,
+        check.textElements,
+        check.onFootage.length,
+        check.onFootage.map((t) => `"${clip(t.text, 30)}" (${clip(t.el, 40)}${t.rendered ? "" : ", not rendered"})`).join("; ") || "—",
+        check.surfaces.filter((s) => !s.opaque).map((s) => s.id).join(", ") || "all opaque",
+        check.stretches.filter((s) => !s.holdsSurface && s.textLength > 0).map((s) => s.id).join(", ") || "all empty",
+      ]);
+    }
+  }
+  p("Every text element inside `[data-film-root]`, rendered or not, and whether it has a `[data-opaque]` ancestor:", "");
+  table(["width", "theme", "text elements in the film", "without an opaque surface", "which", "surfaces that are not opaque", "stretches that hold text"], footageRows);
+  const firstCheck = Object.values(Object.values(m.film.textOnFootage)[0] || {})[0];
+  if (firstCheck) {
+    table(
+      ["surface", "height (viewports)", ...Object.keys(m.film.textOnFootage).flatMap((vp) => Object.keys(m.film.textOnFootage[vp]).map((theme) => `${vp} ${theme}`))],
+      firstCheck.surfaces.map((s, i) => [
+        s.id,
+        s.viewports,
+        ...Object.values(m.film.textOnFootage).flatMap((byTheme) => Object.values(byTheme).map((c) => c?.surfaces[i]?.backgroundColor)),
+      ]),
+    );
+  }
+  for (const [vp, byTheme] of Object.entries(m.film.text)) {
+    p(`### ${vp} px`, "");
     const rows = [];
-    for (const [beat, data] of Object.entries(dark)) {
-      for (const e of data.elements) {
-        if (e.region !== "film") continue;
-        if (!e.visible) {
-          rows.push([beat, clip(e.text, 34), e.colorHex ?? "", `${e.fontSize}/${e.fontWeight}`, e.letterSpacingEm, e.opacity, "", "", "", "", "", `not painted: ${e.skipped}`]);
-          continue;
-        }
-        const surface = e.marker ? "film + marker" : e.surface ? (e.surface.backdropFilter !== "none" ? "glass" : "fill") : "film";
-        rows.push([
-          beat,
-          clip(e.text, 34) + (e.beat && e.beat !== beat && beat !== "hero-top" ? ` [${e.beat}]` : ""),
-          e.paintKind === "solid" ? e.colorHex : `${e.paintKind} ${e.colorHex}`,
-          `${e.fontSize}/${e.fontWeight}`,
-          e.letterSpacingEm,
-          e.opacity,
-          surface,
-          e.background?.medianHex,
-          e.background?.p95Hex,
-          e.ratioMedian,
-          e.ratioP95,
-          e.failMedian ? `FAIL <${e.required}` : e.failWorst ? `worst case <${e.required}` : `ok (${e.required})`,
-        ]);
-      }
-    }
-    table(["beat", "text", "colour", "px/weight", "ls em", "opacity", "behind", "bg median", "bg p95", "ratio median", "ratio p95", "verdict"], rows);
-    const light = m.film.text[vp].light;
-    if (light && m.film.text[vp].dark) {
-      let worst = 0;
-      let count = 0;
-      for (const [beat, data] of Object.entries(dark)) {
+    const worst = {};
+    for (const [theme, frames] of Object.entries(byTheme)) {
+      for (const [name, data] of Object.entries(frames)) {
         for (const e of data.elements) {
-          if (e.region !== "film" || !e.visible) continue;
-          const other = light[beat]?.elements.find((o) => o.el === e.el && o.text === e.text && o.region === "film" && o.visible);
-          if (!other) continue;
-          count++;
-          worst = Math.max(worst, Math.abs(other.ratioP95 - e.ratioP95));
+          if (e.region !== "surface") continue;
+          if (!e.visible) {
+            rows.push([theme, e.onSurface, clip(e.text, 34), e.colorHex ?? "", `${e.fontSize}/${e.fontWeight}`, e.letterSpacingEm, "", "", "", "", "", `not painted: ${e.skipped}`]);
+            continue;
+          }
+          const group = e.onSurface === "hero-band" ? "band" : "cards";
+          const key = `${group} ${theme}`;
+          if (!worst[key] || e.ratioWorst < worst[key].ratioWorst) worst[key] = { ...e, frame: name };
+          rows.push([
+            theme,
+            e.onSurface,
+            clip(e.text, 34),
+            e.colorHex,
+            `${e.fontSize}/${e.fontWeight}`,
+            e.letterSpacingEm,
+            e.background?.medianHex,
+            e.background?.p95Hex === e.background?.p5Hex ? "flat" : `${e.background?.p5Hex}–${e.background?.p95Hex}`,
+            e.ratioMedian,
+            e.ratioP95,
+            e.ratioWorst,
+            e.failMedian ? `FAIL <${e.required}` : e.failWorst ? `worst case <${e.required}` : `ok (${e.required})`,
+          ]);
         }
       }
-      p(`Light vs dark theme, same elements (${count} matched): largest difference in the p95 ratio is ${r2(worst)}.`, "");
     }
+    table(["theme", "surface", "text", "colour", "px/weight", "ls em", "bg median", "bg p5–p95", "ratio median", "ratio p95", "ratio worst", "verdict"], rows);
+    p(`Lowest ratio per surface kind and theme (${vp} px): ${Object.entries(worst).map(([key, e]) => `${key} ${e.ratioWorst} ("${clip(e.text, 24)}", ${e.colorHex} on ${e.background?.medianHex}, ${e.fontSize} px)`).join("; ") || "nothing measured"}.`, "");
     const chrome = [];
-    const chromeSeen = { total: 0 };
-    for (const [theme, frames] of Object.entries(m.film.text[vp])) {
-      for (const [beat, data] of Object.entries(frames)) {
+    let readings = 0;
+    for (const [theme, frames] of Object.entries(byTheme)) {
+      for (const [name, data] of Object.entries(frames)) {
         for (const e of data.elements) {
-          if (e.region === "film" || !e.visible) continue;
-          chromeSeen.total++;
+          if (e.region === "surface" || !e.visible) continue;
+          readings++;
           if (!(e.failMedian || e.failWorst)) continue;
-          chrome.push([theme, beat, e.region, clip(e.text, 30), e.colorHex, `${e.fontSize}/${e.fontWeight}`, e.opacity, e.background?.medianHex, e.ratioMedian, e.ratioWorst, e.failMedian ? "FAIL" : "worst case"]);
+          chrome.push([theme, name, e.region + (e.headerSide ? ` (${e.headerSide} label)` : ""), clip(e.text, 30), e.colorHex, `${e.fontSize}/${e.fontWeight}`, e.background?.medianHex, e.ratioMedian, e.ratioWorst, e.failMedian ? "FAIL" : "worst case"]);
         }
       }
     }
-    p(`Nav bar, chatbot and other text in the same frames (${vp} px, both themes): ${chromeSeen.total} readings, these fall short:`, "");
-    table(["theme", "beat", "region", "text", "colour", "px/weight", "opacity", "bg median", "ratio median", "ratio worst", "verdict"], chrome);
+    p(`Nav, chatbot and any other text in the same ${Object.keys(Object.values(byTheme)[0] || {}).length} frames (${vp} px, both themes): ${readings} readings, these fall short:`, "");
+    table(["theme", "frame", "region", "text", "colour", "px/weight", "bg median", "ratio median", "ratio worst", "verdict"], chrome);
   }
 
-  // B — scan
+  // A2 — nav labels along the film
+  p("## A2. Header side labels along the film", "");
+  p("The place and clock labels (`[data-header-side]`) are the only text left over footage. Each row is one label on one kind of ground: `film, stage pinned` has the stage's 132 px top fade under the labels; `film, stage scrolling away` is the last screen of the film, when the stage has unpinned and the labels cross it lower down; `opaque surface` is the hero band or a title card; `edge of a surface` is a position where a surface boundary cuts through the label box (four positions were placed around every such edge, plus two around the point where the site switches the labels back at the film's end). `worst` is the lower of the p5 and p95 ratios, so it catches light text on a bright patch and dark text on a dark one. Those three are read over the label's whole text box, which also holds the space around the letters; `glyph pixels under it` is read only on the pixels the letters cover (found by painting the text magenta in one more frame), and gives the share of them where the label's colour is under the threshold against the pixel behind.", "");
+  for (const [vp, byTheme] of Object.entries(m.film.labels)) {
+    for (const [theme, data] of Object.entries(byTheme)) {
+      p(`### ${vp} px — ${theme}`, "");
+      p(`Positions: ${Object.entries(data.positions).map(([k, n]) => `${n} ${k}`).join(", ")}. Label box: y ${data.labelBox.map((v) => Math.round(v)).join("–")} px.`, "");
+      const rows = [];
+      const spot = (r, key) => (r ? `${r[key]} — ${r.color} on ${key === "ratioMedian" ? r.bgMedian : key === "ratioP95" ? r.bgP95 : r.ratioP5 < r.ratioP95 ? r.bgP5 : r.bgP95}, scrollY ${r.scrollY}, film ${r.time} s, veil ${r.veil}${r.edge ? `, ${r.edge} ${r.where}` : ""}` : "");
+      for (const [side, info] of Object.entries(data.sides)) {
+        for (const ground of GROUNDS) {
+          const g = info.grounds[ground];
+          if (!g) continue;
+          const worstAny = g.worstAny;
+          const glyph = g.worstGlyph;
+          rows.push([
+            `${side} (${/^\d/.test(info.text) ? "clock" : clip(info.text, 20)})`,
+            ground,
+            g.positions,
+            Object.keys(g.colours).join(", "),
+            spot(g.worstMedian, "ratioMedian"),
+            spot(g.worstP95, "ratioP95"),
+            spot(worstAny, "ratioWorst"),
+            `${g.underMedian} / ${g.underP95} / ${g.underWorst}`,
+            glyph ? `${g.underGlyph} positions; at most ${Math.round(glyph.glyphShareUnder * 100)}% of the glyph pixels (scrollY ${glyph.scrollY}, film ${glyph.time} s, veil ${glyph.veil}; 5th-percentile ratio there ${glyph.glyphRatioP5})` : "",
+          ]);
+        }
+      }
+      table(["label", "ground", "positions", "label colour", "worst median", "worst p95", "worst (p5 or p95)", `under ${Object.values(data.sides)[0]?.required ?? 4.5}: median / p95 / worst`, "glyph pixels under it"], rows);
+      const failing = [];
+      for (const s of data.samples) {
+        for (const l of s.labels) {
+          if (l.ratioMedian === undefined) continue;
+          if (Math.min(l.ratioMedian, l.ratioWorst) >= 4.5 && !(l.glyph && l.glyph.shareUnder >= 0.01)) continue;
+          failing.push([s.scrollY, s.kind + (s.edge ? `: ${s.edge}, ${s.where}` : ""), l.side, labelGround(l) + (l.under?.surface ? ` (${l.under.surface}${l.under.surfaceShare ? ` ${Math.round(l.under.surfaceShare * 100)}%` : ""})` : ""), l.color, `${l.bgP5} / ${l.bgMedian} / ${l.bgP95}`, l.ratioMedian, l.ratioP95, l.ratioP5, l.glyph ? `${Math.round(l.glyph.shareUnder * 100)}%` : "", s.time, s.veil, s.navOverCard ? "yes" : "no", s.pastFilm ? "yes" : "no"]);
+        }
+      }
+      p(`Every reading under 4.5 at the median pixel, at the worst pixel of the box, or on at least 1% of the glyph pixels (${failing.length}):`, "");
+      table(["scrollY", "position", "label", "ground", "colour", "bg p5 / median / p95", "median", "p95", "p5", "glyph px under 4.5", "film s", "veil", "nav-over-card", "past-film"], failing.slice(0, 120));
+      if (failing.length > 120) p(`…and ${failing.length - 120} more in \`metrics.json\` (\`film.labels\`).`, "");
+    }
+  }
+  p("### The bar's own text and icons along the film", "");
+  p("Read at every position the labels were read at (1440 px) or at the evenly spaced positions (390 px, where the labels are hidden and the bar is an icon row). Icons are rated against 3:1 (WCAG 1.4.11, non-text); their colour is the SVG's computed `color`, and `drawn in text colour: no` means the text-hidden frame may still show the icon, so that reading is not reliable.", "");
+  const navRows = [];
+  for (const [vp, byTheme] of Object.entries(m.film.nav)) {
+    for (const [theme, nav] of Object.entries(byTheme)) {
+      for (const t of nav.texts) navRows.push([vp, theme, "text", clip(t.text, 24), t.color, t.bgAtWorst, t.readings, t.worstMedian, t.worstAny, t.required, t.worstMedian < t.required ? "FAIL" : t.worstAny < t.required ? "worst case" : "ok"]);
+      for (const c of nav.icons) navRows.push([vp, theme, c.selected ? "icon (current page)" : "icon", clip(c.label, 24), c.color, c.bgAtWorst, c.readings, c.worstMedian, c.worstAny, 3, (c.worstMedian < 3 ? "FAIL" : c.worstAny < 3 ? "worst case" : "ok") + (c.followsTextColour === false ? " (drawn in text colour: no)" : "")]);
+    }
+  }
+  table(["width", "theme", "what", "label", "colour", "bg at worst", "readings", "worst median", "worst p5/p95", "need", "verdict"], navRows);
+
+  // B — film background
   p("## B. Film background across the whole scroll", "");
-  p("Central 60% of the viewport, text hidden. `with content` keeps panels, pills and the button; `film only` is the stage alone (video, veil, glow). Luminance is WCAG relative luminance, 0–1. White text on a background of luminance L has contrast 1.05 / (L + 0.05).", "");
+  p("Central 60% of the viewport, text hidden, dark theme. `with content` is the page as it is (a title card covers the film while it passes); `film only` is the stage alone (video, veil, top fade, progress bar) at the same scroll position. Luminance is WCAG relative luminance, 0–1. White text on a background of luminance L has contrast 1.05 / (L + 0.05).", "");
   for (const [vp, scan] of Object.entries(m.film.scan)) {
     p(`### ${vp} px`, "");
     const b = scan.brightest;
@@ -1934,73 +2608,40 @@ function writeSummary() {
       for (const [veil, s] of Object.entries(scan.dense.byVeil)) rows.push(row(`dense pass, veil ${veil}, highest p95`, s));
     }
     table(["sample", "L p95", "L max", "max colour", "--film-veil", "scrollY", "film s", "beat", "white vs p95", "white vs max"], rows);
-    // Every colour used for text over the film, against the brightest film background found.
-    const top = scan.dense?.byMax && scan.dense.byMax.max > b.filmOnlyByMax.max ? scan.dense.byMax : b.filmOnlyByMax;
-    const topP95 = scan.dense?.byP95 && scan.dense.byP95.p95 > b.filmOnlyByP95.p95 ? scan.dense.byP95 : b.filmOnlyByP95;
-    const colours = new Map();
-    for (const frames of Object.values(m.film.text[vp] || {})) {
-      for (const data of Object.values(frames)) {
-        for (const e of data.elements) {
-          if (e.region !== "film" || !e.visible || !e.colorHex) continue;
-          const key = `${e.paintKind} ${e.colorHex}`;
-          const entry = colours.get(key) || { key, hex: e.colorHex, sizes: new Set(), smallest: Infinity };
-          entry.sizes.add(e.fontSize);
-          entry.smallest = Math.min(entry.smallest, e.fontSize);
-          colours.set(key, entry);
-        }
-      }
-    }
-    if (top && colours.size) {
-      const lumOf = (h) => luminance([1, 3, 5].map((i) => Number.parseInt(h.slice(i, i + 2), 16)));
-      p(`Text colours used over the film against the brightest film-only background (p95 L=${topP95.p95}, max L=${top.max}, both at veil ${top.veil}), at full opacity:`, "");
-      table(
-        ["paint", "smallest px", "vs brightest p95", "vs brightest max"],
-        [...colours.values()].map((c) => [c.key, c.smallest, r2(contrast(lumOf(c.hex), topP95.p95)), r2(contrast(lumOf(c.hex), top.max))]),
-      );
-    }
     table(
       ["#", "scrollY", "film s", "beat", "veil", "content p95", "content max", "film p95", "film max"],
-      scan.samples.map((s) => [s.i, s.scrollY, s.time, s.beat, s.veil, s.withContent.p95, s.withContent.max, s.filmOnly.p95, s.filmOnly.max]),
+      scan.samples.map((s) => [s.i, s.scrollY, s.time, s.beat, s.veil, s.withContent?.p95, s.withContent?.max, s.filmOnly?.p95, s.filmOnly?.max]),
     );
   }
 
   // C — other pages
   p("## C. Contrast failures outside the film", "");
-  p("`ratio` is against the median pixel behind the text; `worst` against the 5th/95th percentile, whichever is closer to the text. `bg` is `image` when an ancestor has a background image or backdrop filter, or the text sits over media.", "");
+  p("`ratio` is against the median pixel behind the text; `worst` against the 5th/95th percentile, whichever is closer to the text. `bg` is `image` when an ancestor has a background image or backdrop filter, or the text sits over media. `home` is everything below the film.", "");
   const counts = [];
-  for (const [name, byVp] of Object.entries(m.pages)) {
-    for (const [vp, byTheme] of Object.entries(byVp)) {
-      for (const [theme, rec] of Object.entries(byTheme)) {
-        const c = rec.contrast;
-        if (!c) continue;
-        counts.push([name, vp, theme, c.checked, c.failMedian, c.failWorstOnly, c.imageBackgrounds, `${c.methodCheck.pixelVsDomDisagreeOver15pct}/${c.methodCheck.solidBackgrounds}`]);
-      }
-    }
-  }
+  each((name, vp, theme, rec) => {
+    const c = rec.contrast;
+    if (c) counts.push([name, vp, theme, c.checked, c.failMedian, c.failWorstOnly, c.imageBackgrounds, `${c.methodCheck.pixelVsDomDisagreeOver15pct}/${c.methodCheck.solidBackgrounds}`]);
+  });
   table(["page", "width", "theme", "text entries", "fail", "worst case only", "on image bg", "pixel vs DOM differ >15%"], counts);
-  for (const [name, byVp] of Object.entries(m.pages)) {
-    for (const [vp, byTheme] of Object.entries(byVp)) {
-      for (const [theme, rec] of Object.entries(byTheme)) {
-        const c = rec.contrast;
-        if (!c || (!c.failures.length && !c.worstCaseOnly.length)) continue;
-        p(`### ${name} — ${vp} px — ${theme}`, "");
-        const rows = [...c.failures.map((f) => [f, "FAIL"]), ...c.worstCaseOnly.map((f) => [f, "worst case"])].map(([f, verdict]) => [
-          verdict,
-          f.region + (f.landing ? `/${f.landing}` : ""),
-          clip(f.el, 46),
-          clip(f.text, 30),
-          f.color + (f.opacity < 0.99 ? ` @${f.opacity}` : ""),
-          f.background,
-          f.bg,
-          f.ratio,
-          f.ratioWorst,
-          f.required,
-          `${f.fontSize}/${f.fontWeight}`,
-        ]);
-        table(["", "region", "element", "text", "colour", "bg", "bg kind", "ratio", "worst", "need", "px/weight"], rows);
-      }
-    }
-  }
+  each((name, vp, theme, rec) => {
+    const c = rec.contrast;
+    if (!c || (!c.failures.length && !c.worstCaseOnly.length)) return;
+    p(`### ${name} — ${vp} px — ${theme}`, "");
+    const rows = [...c.failures.map((f) => [f, "FAIL"]), ...c.worstCaseOnly.map((f) => [f, "worst case"])].map(([f, verdict]) => [
+      verdict,
+      f.region + (f.landing ? `/${f.landing}` : ""),
+      clip(f.el, 46),
+      clip(f.text, 30),
+      f.color + (f.opacity < 0.99 ? ` @${f.opacity}` : ""),
+      f.background,
+      f.bg,
+      f.ratio,
+      f.ratioWorst,
+      f.required,
+      `${f.fontSize}/${f.fontWeight}`,
+    ]);
+    table(["", "region", "element", "text", "colour", "bg", "bg kind", "ratio", "worst", "need", "px/weight"], rows);
+  });
 
   // D — type
   p("## D. Type inventory (dark theme; type does not change with the theme)", "");
@@ -2018,13 +2659,18 @@ function writeSummary() {
 
   // E — hit targets
   p("## E. Hit targets (dark theme)", "");
-  p("Smaller than 44×44 CSS px at 390, or 28×28 at 1440. `inline` marks links inside a sentence, which WCAG 2.5.8 exempts.", "");
+  p("Smaller than 44×44 CSS px at 390, or 28×28 at 1440, over `a[href]`, `button`, `summary`, inputs and ARIA widgets. `inline` marks links inside a sentence, which WCAG 2.5.8 exempts. The chatbot's controls are listed apart: it is out of scope.", "");
   for (const [name, byVp] of Object.entries(m.pages)) {
     for (const [vp, byTheme] of Object.entries(byVp)) {
       const h = byTheme.dark?.hitTargets;
       if (!h) continue;
-      p(`### ${name} — ${vp} px: ${h.small.length} of ${h.total} under ${h.min}×${h.min}, ${h.unnamed.length} without an accessible name`, "");
-      table(["size", "label", "region", "element", "inline", "page y"], h.small.map((t) => [`${t.w}×${t.h}`, clip(t.label, 34) || "(none)", t.region, clip(t.el, 50), t.inlineInText ? "inline" : "", t.pageY]));
+      p(`### ${name} — ${vp} px: ${site(h.small).length} site controls under ${h.min}×${h.min} (of ${h.total} controls in all), ${bot(h.small).length} chatbot; without an accessible name: ${site(h.unnamed).length} site, ${bot(h.unnamed).length} chatbot`, "");
+      const rows = (list) => list.map((t) => [`${t.w}×${t.h}`, clip(t.label, 34) || "(none)", t.region, clip(t.el, 50), t.inlineInText ? "inline" : "", t.iconOnly ? "icon only" : "", t.pageY]);
+      table(["size", "label", "region", "element", "inline", "icon", "page y"], rows(site(h.small)));
+      if (bot(h.small).length) {
+        p("Chatbot:", "");
+        table(["size", "label", "region", "element", "inline", "icon", "page y"], rows(bot(h.small)));
+      }
       if (h.unnamed.length) {
         p("No accessible name:", "");
         table(["size", "region", "element", "icon only", "path"], h.unnamed.map((t) => [`${t.w}×${t.h}`, t.region, clip(t.el, 50), t.iconOnly ? "yes" : "", clip(t.path, 60)]));
@@ -2034,21 +2680,32 @@ function writeSummary() {
 
   // F — effects
   p("## F. Effects inventory (1440 px, dark, computed styles of rendered elements)", "");
-  const cats = ["backdropFilter", "backgroundClipText", "filterBlur", "filterOther", "borderRadius9999", "borderRadius50pct", "mixBlendMode", "animation"];
-  table(["page", ...cats], Object.entries(m.effects).map(([name, e]) => [name, ...cats.map((c) => `${e.computed[c].elements} (${e.computed[c].distinct})`)]));
-  p("Counts are elements (distinct selectors). Details per page:", "");
+  p("Each cell: elements in all, then split `chatbot / header and nav / everything else`.", "");
+  table(
+    ["page", ...EFFECTS],
+    Object.entries(m.effects).map(([name, e]) => [
+      name,
+      ...EFFECTS.map((c) => {
+        const z = e.computed[c].byZone;
+        return e.computed[c].elements ? `${e.computed[c].elements} (${z.chatbot} / ${z.nav} / ${z.other})` : "0";
+      }),
+    ]),
+  );
   for (const [name, e] of Object.entries(m.effects)) {
     p(`### ${name}`, "");
-    for (const c of cats) {
+    for (const c of EFFECTS) {
       const cat = e.computed[c];
       if (!cat.elements) continue;
       p(`**${c}** — ${cat.elements} elements`, "");
       table(
-        ["count", "element", "value"],
+        ["count", "owner", "element", "value"],
         cat.list.slice(0, 25).map((x) => [
           x.count,
+          x.zone,
           clip(x.el, 60),
-          Object.entries(x.values).map(([v, n]) => (Object.keys(x.values).length > 1 ? `${clip(v, 70)} ×${n}` : clip(v, 90))).join(" · "),
+          Object.entries(x.values)
+            .map(([v, n]) => (Object.keys(x.values).length > 1 ? `${clip(v, 70)} ×${n}` : clip(v, 90)))
+            .join(" · "),
         ]),
       );
     }
@@ -2076,29 +2733,170 @@ function writeSummary() {
   const rm = m.film.reducedMotion;
   if (rm) {
     p("## H. Reduced motion (Home, 1440 px, dark)", "");
-    p(`- \`prefers-reduced-motion: reduce\` matched: ${rm.matchesReducedMotion}. Intro still played: ${rm.introPlayed}.`);
-    p(`- Video requests: ${rm.videoRequests.length ? rm.videoRequests.join(", ") : "none"}. Video element without a source in every frame: ${rm.videoAbsent}.`);
-    p(`- A different still per beat: ${rm.stillsSwapped}.`, "");
-    table(["beat", "still", "loaded", "video src", "data-film-ready", "veil", "shot"], Object.entries(rm.frames).map(([id, f]) => [id, f.still, f.stillLoaded, f.video?.hasSrc, f.filmReadyAttribute, f.veil, f.shot]));
+    p(`- \`prefers-reduced-motion: reduce\` matched: ${rm.matchesReducedMotion}.`);
+    p(`- Video requests: ${rm.videoRequests.length ? rm.videoRequests.join(", ") : "none"}. Video element without a source in every frame: ${rm.videoAbsent}.`, "");
+    table(["frame", "kind", "still on the stage", "loaded", "video src", "data-film-ready", "veil", "shot"], Object.entries(rm.frames).map(([id, f]) => [id, f.kind, f.still, f.stillLoaded, f.video?.hasSrc, f.filmReadyAttribute, f.veil, f.shot]));
   }
 
   // I — overlaps
   p("## I. Chatbot and nav bar over content", "");
-  p("From the named screenshots (not the full-page bands). `covered` is the share of the text or control that lies under the blocker. Nav-bar rows are listed for Home film frames only, where the content is pinned.", "");
+  p("From the named screenshots (not the full-page bands). `covered` is the share of the text, control or box that lies under the blocker. Nav-bar rows are listed for the Home's film frames only.", "");
   const overlapRows = m.overlaps
-    .filter((o) => o.by !== "nav-bar" || (o.shot.startsWith("home-") && o.region === "film"))
+    .filter((o) => o.by !== "nav-bar" || (o.shot.startsWith("home-") && (o.region === "film" || o.region === "surface")))
     .map((o) => [o.shot, o.by, o.kind, clip(o.text, 36), clip(o.what, 44), `${o.coveredPx} px2 (${Math.round(o.covered * 100)}%)`]);
   table(["shot", "under", "kind", "text / label", "element", "covered"], overlapRows);
 
+  // J — before / after
+  const before = loadBefore();
+  p("## J. Before → after", "");
+  if (!before) {
+    p(`No earlier run to compare with (looked for \`${COMPARE}\`).`, "");
+  } else {
+    p(`Before: \`${COMPARE}\`, generated ${before.meta?.generatedAt}, Home route \`${before.meta?.homePath}\`. A cell reads \`before → after\`. \`not captured\` means that page was not part of the earlier run.`, "");
+    const arrow = (a, b) => `${a ?? "not captured"} → ${b ?? "not captured"}`;
+
+    p("### Contrast failures (fail + worst-case-only, of text entries checked)", "");
+    p("Same method both times for the first number: every visible text entry against the median pixel behind it. The second number (worst case only) is not strictly like for like: this script now hides link underlines in the text-hidden frame even where the site forces their colour with `!important`, and the earlier run could leave such an underline in as a pixel behind its own link. `home` is the part below the film in both runs; the film itself is in the next table.", "");
+    const cell = (c) => (c ? `${c.failMedian} + ${c.failWorstOnly} of ${c.checked}` : null);
+    const rowsC = [];
+    for (const [name, byVp] of Object.entries(m.pages)) {
+      for (const vp of Object.keys(byVp)) {
+        const light = byVp[vp].light?.contrast;
+        const dark = byVp[vp].dark?.contrast;
+        const bl = before.pages?.[name]?.[vp]?.light?.contrast;
+        const bd = before.pages?.[name]?.[vp]?.dark?.contrast;
+        rowsC.push([name, vp, arrow(cell(bl), cell(light)), arrow(cell(bd), cell(dark))]);
+      }
+    }
+    table(["page", "width", "light", "dark"], rowsC);
+
+    p("### Text inside the Home's film", "");
+    p("Not the same thing measured twice: before, the text sat on footage and each beat was one frame of a moving background; after, it sits on opaque surfaces. The counts are comparable, the ratios are not like for like.", "");
+    const rowsF = [];
+    for (const vp of Object.keys(m.film.text)) {
+      for (const theme of Object.keys(m.film.text[vp])) {
+        const was = { n: 0, fail: 0, worst: 0, min: Infinity };
+        for (const frame of Object.values(before.film?.text?.[vp]?.[theme] || {})) {
+          for (const e of frame.elements) {
+            if (e.region !== "film" || !e.visible || e.ratioMedian === undefined) continue;
+            was.n++;
+            if (e.failMedian) was.fail++;
+            else if (e.failWorst) was.worst++;
+            was.min = Math.min(was.min, e.ratioP95);
+          }
+        }
+        const now = { n: 0, fail: 0, worst: 0, min: Infinity };
+        for (const frame of Object.values(m.film.text[vp][theme])) {
+          for (const e of frame.elements) {
+            if (e.region !== "surface" || !e.visible || e.ratioMedian === undefined) continue;
+            now.n++;
+            if (e.failMedian) now.fail++;
+            else if (e.failWorst) now.worst++;
+            now.min = Math.min(now.min, e.ratioWorst);
+          }
+        }
+        const onFootage = m.film.textOnFootage[vp]?.[theme]?.onFootage.length;
+        rowsF.push([vp, theme, `${was.n} → ${onFootage ?? "?"}`, `${was.n} → ${now.n}`, `${was.fail} + ${was.worst} → ${now.fail} + ${now.worst}`, `${was.min === Infinity ? "—" : was.min} → ${now.min === Infinity ? "—" : now.min}`]);
+      }
+    }
+    table(["width", "theme", "text entries on footage", "text entries measured in the film", "fail + worst-case-only", "lowest worst-case ratio"], rowsF);
+
+    p("### Hit targets under the minimum (dark theme; site controls, then chatbot, of all controls)", "");
+    p("Same selector and thresholds both times (44×44 at 390, 28×28 at 1440).", "");
+    const targets = (h) => (h ? `${site(h.small).length} site, ${bot(h.small).length} chatbot, of ${h.total}` : null);
+    const rowsH = [];
+    for (const [name, byVp] of Object.entries(m.pages)) {
+      rowsH.push([
+        name,
+        ...Object.keys(byVp).flatMap((vp) => [
+          arrow(targets(before.pages?.[name]?.[vp]?.dark?.hitTargets), targets(byVp[vp].dark?.hitTargets)),
+          arrow(before.pages?.[name]?.[vp]?.dark?.hitTargets?.unnamed.length, byVp[vp].dark?.hitTargets?.unnamed.length),
+        ]),
+      ]);
+    }
+    table(["page", ...Object.keys(Object.values(m.pages)[0] || {}).flatMap((vp) => [`${vp} px small`, `${vp} px unnamed`])], rowsH);
+
+    p("### Effects (1440 px, dark; elements)", "");
+    p("Totals are comparable. The split by owner exists only for the new run; the earlier file has no owner per element, so its chatbot share is recovered from element names (`FaqChatbot…`) and given in brackets as `chatbot` where it is not zero.", "");
+    const rowsE = [];
+    for (const [name, e] of Object.entries(m.effects)) {
+      const was = before.effects?.[name];
+      rowsE.push([
+        name,
+        ...EFFECTS.map((c) => {
+          const old = was?.computed?.[c];
+          const oldBot = old ? old.list.filter((x) => /FaqChatbot/.test(x.el)).reduce((n, x) => n + x.count, 0) : 0;
+          const z = e.computed[c].byZone;
+          return `${old ? old.elements + (oldBot ? ` (${oldBot} chatbot)` : "") : "not captured"} → ${e.computed[c].elements}${e.computed[c].elements ? ` (${z.chatbot} / ${z.nav} / ${z.other})` : ""}`;
+        }),
+      ]);
+    }
+    table(["page", ...EFFECTS], rowsE);
+
+    p("### Type (dark theme)", "");
+    p("Same inventory both times: distinct computed font sizes, size/weight/letter-spacing combinations and the smallest size among visible text.", "");
+    const rowsT = [];
+    for (const [name, byVp] of Object.entries(m.pages)) {
+      for (const vp of Object.keys(byVp)) {
+        const now = byVp[vp].dark?.type;
+        const was = before.pages?.[name]?.[vp]?.dark?.type;
+        if (!now) continue;
+        rowsT.push([
+          name,
+          vp,
+          arrow(was?.distinctSizes.length, now.distinctSizes.length),
+          arrow(was?.combos.length, now.combos.length),
+          arrow(was?.smallest.fontSize, now.smallest.fontSize),
+          arrow(was ? was.families.map((f) => f.family).join(", ") : null, now.families.map((f) => f.family).join(", ")),
+        ]);
+      }
+    }
+    table(["page", "width", "font sizes", "size/weight/spacing combos", "smallest px", "families"], rowsT);
+
+    p("### Film background (dark theme, central 60%, film only)", "");
+    const rowsB = [];
+    for (const [vp, scan] of Object.entries(m.film.scan)) {
+      const was = before.film?.scan?.[vp];
+      const top = (s) => {
+        if (!s) return null;
+        const byMax = s.dense?.byMax && s.dense.byMax.max > s.brightest.filmOnlyByMax.max ? s.dense.byMax : s.brightest.filmOnlyByMax;
+        const byP95 = s.dense?.byP95 && s.dense.byP95.p95 > s.brightest.filmOnlyByP95.p95 ? s.dense.byP95 : s.brightest.filmOnlyByP95;
+        return { max: `L ${byMax.max} (${byMax.maxHex}) at veil ${byMax.veil}`, p95: `L ${byP95.p95} at veil ${byP95.veil}`, veils: s.dense?.veilValues.join(", ") };
+      };
+      const a = top(was);
+      const b = top(scan);
+      rowsB.push([vp, arrow(a?.max, b?.max), arrow(a?.p95, b?.p95), arrow(a?.veils, b?.veils)]);
+    }
+    table(["width", "brightest pixel", "highest p95", "veil values seen"], rowsB);
+
+    p("### Header side labels over the film", "");
+    const oldLabels = [];
+    for (const [theme, frames] of Object.entries(before.film?.text?.["1440"] || {})) {
+      let n = 0;
+      let min = Infinity;
+      let minWorst = Infinity;
+      for (const frame of Object.values(frames)) {
+        for (const e of frame.elements) {
+          if (e.region !== "header" || !e.visible || e.ratioMedian === undefined) continue;
+          if (!(e.bbox.x < 200 || e.bbox.x > 1200)) continue;
+          n++;
+          min = Math.min(min, e.ratioMedian);
+          minWorst = Math.min(minWorst, e.ratioWorst);
+        }
+      }
+      oldLabels.push(`${theme}: ${n} readings, lowest median ${min}, lowest worst-case ${minWorst}`);
+    }
+    p(`Not comparable. Before, the labels were read only in the ten beat frames per theme, over a film that carried a 0.58 veil (${oldLabels.join("; ") || "no readings"}; picked out of the earlier file by their position at the two ends of the bar). After, they are read at every position of section A2.`, "");
+  }
+
   p("## Limits of the method", "");
-  p("- Not measured: text inside closed disclosures (FAQ answers, the chatbot panel), hover/focus/active states, text drawn by pseudo-elements, SVG text, and emoji (they ignore the text colour, so they stay in the text-hidden frame).");
-  p("- Gradient text is compared at its darkest stop against the whole box of the text, although that stop only covers part of the glyphs: the ratio is a lower bound for that text, not a per-pixel reading.");
-  p("- Outlined text (transparent fill with a stroke) is rated by its stroke colour; WCAG has no rule for outlines, so read those rows as indicative.");
-  p("- `bg median` / `p95` are single pixels picked by luminance rank from up to 60 000 samples of the text box; boxes include the gaps between lines.");
-  p("- A film frame is one scroll position. The words of the tagline light up one by one, so the opacity column there depends on the 35% position.");
-  p("- The film scan and the dense pass run in the dark theme only; type inventory, hit targets and effects are read in the dark theme only.");
+  p("- Not measured: text inside closed disclosures (FAQ answers, the chatbot panel, the gallery dialog), hover/focus/active states, text drawn by pseudo-elements, SVG text, input values, and emoji (they ignore the text colour, so they stay in the text-hidden frame).");
+  p("- `bg median` / `p5` / `p95` are single pixels picked by luminance rank from up to 60 000 samples of the text box; boxes include the gaps between lines.");
+  p("- Section A2 reads the labels at discrete scroll positions (the spacing of the dense pass is about 0.1 s of film). The film between two positions is not read, and each position is read after the film and the veil's 200 ms ease have settled, not while they move.");
+  p("- The four positions around each edge are fixed offsets into the label box; they show what happens while an edge crosses the labels, not how long a visitor stays there.");
+  p("- The film background scan and the film-only frames run in the dark theme only; type inventory, hit targets and effects are read in the dark theme only.");
   p("- Full-page JPEGs are stitched from bands of 60% of the viewport, each shot with that band at the top of the screen. Fixed chrome is painted once and sticky boxes sit at their place in the flow; `metrics.json` lists fixed boxes that fitted in neither the first nor the last band (`full.fixedLeftOut`).");
-  p("- The chatbot greeting is on screen in every `-top.png` and in `hero-top.png` (it appears 2.5 s after load and leaves after 8 s); it is dismissed before everything else is shot or measured.", "");
+  p("- The chatbot greeting is on screen in every `-top.png` and in `hero-top.png` (it appears 2.5 s after load and leaves after 8 s); it is dismissed before everything else is shot or measured. `hero-top-clean.png` is the same frame without it.", "");
   p("## Notes from the run", "");
   for (const n of m.meta.notes) p(`- ${n}`);
   if (!m.meta.notes.length) p("- none");
@@ -2107,6 +2905,13 @@ function writeSummary() {
 }
 
 // ─── Main ───────────────────────────────────────────────────────────────────
+if (args["summary-only"]) {
+  const file = path.join(OUT, "metrics.json");
+  Object.assign(metrics, JSON.parse(readFileSync(file, "utf8")));
+  writeSummary();
+  log(`metrics.md rewritten from ${file}`);
+  process.exit(0);
+}
 const startedAt = Date.now();
 const browser = await chromium.launch();
 metrics.meta.chromium = browser.version();
@@ -2121,13 +2926,15 @@ try {
       for (const def of PAGES) {
         if (wants(def.name)) await runPage(browser, vp, theme, def);
       }
+      if (wants("scan")) await runTrack(browser, vp, theme);
     }
-    if (wants("scan")) await runFilmScan(browser, vp);
   }
   if (wants("rm")) await runReducedMotion(browser);
 } finally {
   await browser.close();
   metrics.meta.durationSec = Math.round((Date.now() - startedAt) / 1000);
+  metrics.meta.files = checkFiles(startedAt);
+  for (const file of metrics.meta.files.missing) note(`missing screenshot: ${file}`);
   metrics.meta.notes = notes;
   writeFileSync(path.join(OUT, "metrics.json"), JSON.stringify(metrics, null, 1));
   writeSummary();
