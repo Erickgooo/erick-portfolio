@@ -242,7 +242,6 @@ export default function About() {
                             height={image.height}
                           >
                             <Media
-                              enlarge
                               style={{ borderRadius: 4 }}
                               sizes={image.width.toString()}
                               alt={image.alt}
@@ -360,7 +359,6 @@ export default function About() {
                             height={image.height}
                           >
                             <Media
-                              enlarge
                               style={{ borderRadius: 4 }}
                               sizes={image.width.toString()}
                               alt={image.alt}

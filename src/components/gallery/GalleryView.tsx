@@ -78,10 +78,7 @@ function CellButton({
       className={styles.cell}
       aria-label={label}
       aria-haspopup="dialog"
-      style={{
-        transform: hovered ? "scale(1.025)" : "scale(1)",
-        boxShadow: hovered ? "0 8px 32px rgba(0,0,0,0.35)" : "0 2px 8px rgba(0,0,0,0.12)",
-      }}
+      style={{ transform: hovered ? "scale(1.025)" : "scale(1)" }}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       onClick={onClick}

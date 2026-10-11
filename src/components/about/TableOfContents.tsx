@@ -1,5 +1,6 @@
 "use client";
 
+import { scrollBehavior } from "@/utils/scrollBehavior";
 import { Column, Flex, Text } from "@once-ui-system/core";
 import type React from "react";
 import styles from "./about.module.scss";
@@ -27,7 +28,7 @@ const TableOfContents: React.FC<TableOfContentsProps> = ({ structure, about }) =
 
       window.scrollTo({
         top: offsetPosition,
-        behavior: "smooth",
+        behavior: scrollBehavior(),
       });
     }
   };

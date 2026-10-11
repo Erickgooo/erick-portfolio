@@ -1,5 +1,6 @@
 "use client";
 
+import { scrollBehavior } from "@/utils/scrollBehavior";
 import { Column, Flex, Icon, Row, SmartLink, Text, useHeadingLinks } from "@once-ui-system/core";
 import { useEffect, useState } from "react";
 
@@ -138,7 +139,7 @@ export function OnThisPage() {
                     e.preventDefault();
                     window.scrollTo({
                       top: target.getBoundingClientRect().top + window.scrollY - ACTIVE_OFFSET,
-                      behavior: "smooth",
+                      behavior: scrollBehavior(),
                     });
                   }}
                   style={{

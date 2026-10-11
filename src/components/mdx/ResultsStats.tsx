@@ -1,5 +1,6 @@
 "use client";
 
+import { scrollBehavior } from "@/utils/scrollBehavior";
 import { useEffect, useRef, useState } from "react";
 import styles from "./ResultsStats.module.scss";
 
@@ -59,8 +60,7 @@ export function ResultsStats({ data, title }: ResultsStatsProps) {
     const el = scrollRef.current;
     if (!el) return;
     // The row glides to its next stats, unless the visitor asked for less motion.
-    const still = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    el.scrollBy({ left: dir === "right" ? 220 : -220, behavior: still ? "auto" : "smooth" });
+    el.scrollBy({ left: dir === "right" ? 220 : -220, behavior: scrollBehavior() });
   }
 
   return (

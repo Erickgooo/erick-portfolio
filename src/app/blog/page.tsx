@@ -35,7 +35,7 @@ export default function Blog() {
         {blog.title}
       </Heading>
       <Column fillWidth flex={1} gap="40">
-        <Posts range={[1, 1]} thumbnail />
+        <Posts range={[1, 1]} thumbnail priority />
         <Posts range={[2, 3]} columns="2" thumbnail direction="column" />
         <Mailchimp marginBottom="l" />
         {hasEarlier && (

@@ -773,6 +773,65 @@ test("with reduced motion a stats arrow jumps instead of gliding", async ({ page
   expect(moved).toBeGreaterThan(0);
 });
 
+// Once UI sets `scroll-behavior: smooth` on <html>, so the page glides to a
+// section whoever scrolls it there: a script, or the router following a link to
+// `#section`. Clicks, then reads where the page is on every frame until it has
+// been still for a while: a jump is one move, a glide passes through many places.
+const placesAfterClick = (target: import("@playwright/test").Locator) =>
+  target.evaluate(async (el: HTMLElement) => {
+    const places = [Math.round(window.scrollY)];
+    el.click();
+    const until = performance.now() + 1500;
+    while (performance.now() < until) {
+      await new Promise((resolve) => requestAnimationFrame(resolve));
+      const now = Math.round(window.scrollY);
+      if (now !== places[places.length - 1]) places.push(now);
+    }
+    return places;
+  });
+
+test("with reduced motion a section link of a post jumps instead of gliding", async ({ page }) => {
+  await page.setViewportSize({ width: DESKTOP.width, height: DESKTOP.height });
+  await page.goto("/blog/my-workspace");
+  await settled(page);
+  // After the navigation: Firefox drops media emulated before the first one on this site.
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  const links = page.locator('.main-content-wrapper a[href^="#"]').filter({ visible: true });
+  await expect.poll(() => links.count()).toBeGreaterThan(2);
+  const places = await placesAfterClick(links.nth(2));
+  // Where it was, and where the section is: nothing in between.
+  expect(places.length).toBe(2);
+  expect(places[1]).toBeGreaterThan(100);
+});
+
+test("with reduced motion the About page's section list jumps instead of gliding", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: DESKTOP.width, height: DESKTOP.height });
+  await page.goto("/about");
+  await settled(page);
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  // The list is fixed to the left edge; the same words are a heading in the page.
+  const entry = page.getByText("Work Experience", { exact: true }).first();
+  await expect(entry).toBeVisible();
+  expect(await entry.evaluate((el) => el.closest("h2") === null)).toBe(true);
+  const places = await placesAfterClick(entry);
+  expect(places.length).toBe(2);
+  expect(places[1]).toBeGreaterThan(100);
+});
+
+test("without reduced motion a section link still glides", async ({ page }) => {
+  // The other half of the two tests above: they would also pass on a page that never glides.
+  await page.setViewportSize({ width: DESKTOP.width, height: DESKTOP.height });
+  await page.goto("/about");
+  await settled(page);
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  const entry = page.getByText("Work Experience", { exact: true }).first();
+  await expect(entry).toBeVisible();
+  const places = await placesAfterClick(entry);
+  expect(places.length).toBeGreaterThan(3);
+});
+
 // ─── A case study keeps every picture and clip of its project ───────────────
 // The list shows stills only, so the page of the project is where the rest of
 // its media lives: the first entry as the hero, the others after the body.
@@ -805,6 +864,8 @@ for (const { path, files } of CLIPS) {
           width: box.width,
           height: box.height,
           corner: getComputedStyle(video.parentElement as Element).borderRadius,
+          fit: getComputedStyle(video).objectFit,
+          ground: getComputedStyle(video).backgroundColor,
         };
       });
       expect(state.controls).toBe(true);
@@ -818,6 +879,9 @@ for (const { path, files } of CLIPS) {
       expect(state.width).toBeGreaterThan(200);
       expect(state.height).toBeGreaterThan(100);
       expect(state.corner).toBe("4px");
+      // A screen recording is not 16:9: it is shown whole, on black, not cropped to the frame.
+      expect(state.fit).toBe("contain");
+      expect(state.ground).toBe("rgb(0, 0, 0)");
       // With nothing loaded the poster is all there is to see, so it has to exist.
       expect(state.poster).toMatch(/-poster\.webp$/);
       expect((await request.get(state.poster)).status()).toBe(200);
@@ -950,6 +1014,38 @@ for (const viewport of [PHONE, DESKTOP]) {
   });
 }
 
+// The cover of a post fills the column: on a phone it is told so, and asks for
+// a file its own width, not the 768px one a wide screen needs.
+test("a post: the cover asks for a file the width of a phone's screen", async ({ page }) => {
+  await page.setViewportSize({ width: PHONE.width, height: PHONE.height });
+  await page.goto("/blog/my-workspace");
+  await settled(page);
+  const cover = page.locator(
+    '.main-content-wrapper img[alt="My Workspace: The System Behind My Creative & AI Work"]',
+  );
+  await expect(cover).toHaveCount(1);
+  await expect
+    .poll(() => cover.evaluate((img: HTMLImageElement) => img.currentSrc))
+    .toContain("w=");
+  const asked = await cover.evaluate((img: HTMLImageElement) => ({
+    file: Number(new URL(img.currentSrc).searchParams.get("w")),
+    shown: img.getBoundingClientRect().width,
+    ratio: window.devicePixelRatio,
+  }));
+  expect(asked.shown).toBeLessThanOrEqual(PHONE.width);
+  expect(asked.file).toBeGreaterThanOrEqual(asked.shown * asked.ratio);
+  expect(asked.file).toBeLessThan(768 * asked.ratio);
+});
+
+test("/blog: the first post's picture is not lazy", async ({ page }) => {
+  await page.goto("/blog");
+  await settled(page);
+  const pictures = page.locator('.main-content-wrapper a[href^="/blog/"] img[alt^="Thumbnail of"]');
+  // The largest thing on the first screen: it has to start loading with the page.
+  await expect(pictures.first()).toBeVisible();
+  expect(await pictures.first().getAttribute("loading")).not.toBe("lazy");
+});
+
 // ─── Gallery ────────────────────────────────────────────────────────────────
 
 test("/gallery: a group of pictures opens without animating a filter", async ({ page }) => {
@@ -978,6 +1074,39 @@ test("/gallery: a group of pictures opens without animating a filter", async ({ 
     return [...seen];
   });
   expect(filtered).toEqual([]);
+});
+
+test("/gallery: a tile moves with transform alone, never with its shadow", async ({ page }) => {
+  await page.setViewportSize({ width: DESKTOP.width, height: DESKTOP.height });
+  await page.goto("/gallery");
+  await settled(page);
+  const tiles = await page.evaluate(() => {
+    const seconds = (value: string) =>
+      value.endsWith("ms") ? Number.parseFloat(value) / 1000 : Number.parseFloat(value);
+    return Array.from(
+      document.querySelectorAll(
+        '.main-content-wrapper button[aria-haspopup="dialog"], .main-content-wrapper [class*="youtubeHover"]',
+      ),
+    ).map((el) => {
+      const cs = getComputedStyle(el);
+      const properties = cs.transitionProperty.split(",").map((p) => p.trim());
+      const durations = cs.transitionDuration.split(",").map((d) => seconds(d.trim()));
+      return {
+        kind: el.tagName === "BUTTON" ? "picture" : "video",
+        // What would animate if it changed: every listed property with a duration.
+        moving: properties.filter((_, i) => durations[i % durations.length] > 0),
+      };
+    });
+  });
+  expect(tiles.filter((t) => t.kind === "picture").length).toBeGreaterThan(10);
+  expect(tiles.filter((t) => t.kind === "video").length).toBeGreaterThan(0);
+  expect(tiles.filter((t) => t.moving.some((p) => p !== "transform" && p !== "opacity"))).toEqual(
+    [],
+  );
+  // The hover is still there for a mouse: the scan above did not pass on tiles that never move.
+  expect(tiles.filter((t) => t.kind === "picture" && t.moving.includes("transform")).length).toBe(
+    tiles.filter((t) => t.kind === "picture").length,
+  );
 });
 
 test("/gallery: the counter on a group is opaque and square-cornered", async ({ page }) => {
@@ -1133,7 +1262,24 @@ test("/unauthorized: the field's show button says what it does", async ({ page }
 
 // ─── Pictures have 4px corners ──────────────────────────────────────────────
 
-for (const path of ["/work", "/blog", "/blog/my-workspace", "/gallery"]) {
+/**
+ * Case studies whose body holds pictures written as plain `<img>` tags, and how
+ * many: they skip the component every other picture goes through, so the page's
+ * own stylesheet has to give them their corner and keep them inside the column.
+ */
+const RAW_PICTURES: Record<string, number> = {
+  "/work/dakoma-roofing": 1,
+  "/work/quick-metal-shop-arquiexpo": 2,
+  "/work/quick-metal-shop-marketing": 2,
+};
+
+for (const path of [
+  "/work",
+  "/blog",
+  "/blog/my-workspace",
+  "/gallery",
+  ...Object.keys(RAW_PICTURES),
+]) {
   test(`${path}: every picture is clipped to 4px corners`, async ({ page }) => {
     await page.goto(path);
     await settled(page);
@@ -1141,23 +1287,80 @@ for (const path of ["/work", "/blog", "/blog/my-workspace", "/gallery"]) {
       const bad: string[] = [];
       let pictures = 0;
       for (const img of Array.from(document.querySelectorAll(".main-content-wrapper img"))) {
-        // Avatars are circles on purpose.
+        // Avatars are circles on purpose: the one kind of picture with another corner.
         if (img.closest('[class*="Avatar"]') || !img.checkVisibility()) continue;
         pictures += 1;
-        // The picture and what clips it, up to the first box that hides its overflow.
+        // The corner a picture shows is its own, or that of a box around it that
+        // clips it: one that hides its overflow and that the picture fills. A box
+        // may clip without a corner of its own (Once UI's Media does) inside one
+        // that has it (a gallery tile), so the walk goes on until a corner is found
+        // or a box is larger than the picture, whose corners are then not its.
         const radii: string[] = [];
-        for (let node: Element | null = img; node; node = node.parentElement) {
+        const own = getComputedStyle(img).borderRadius;
+        if (own !== "0px") radii.push(own);
+        const box = img.getBoundingClientRect();
+        for (let node = img.parentElement; node; node = node.parentElement) {
           const cs = getComputedStyle(node);
-          if (cs.borderRadius !== "0px") radii.push(cs.borderRadius);
-          if (node !== img && cs.overflow !== "visible") break;
+          if (cs.overflow === "visible") continue;
+          const clip = node.getBoundingClientRect();
+          const filled =
+            box.left <= clip.left + 2 &&
+            box.top <= clip.top + 2 &&
+            box.right >= clip.right - 2 &&
+            box.bottom >= clip.bottom - 2;
+          if (!filled) break;
+          if (cs.borderRadius !== "0px") {
+            radii.push(cs.borderRadius);
+            break;
+          }
         }
-        if (radii.some((radius) => radius !== "4px")) {
-          bad.push(`${radii.join(" ")} ${(img.getAttribute("src") ?? "").slice(-40)}`);
+        // A corner has to be there, and be 4px: a picture with none at all is square.
+        if (radii.length === 0 || radii.some((radius) => radius !== "4px")) {
+          bad.push(
+            `${radii.join(" ") || "no radius"} ${(img.getAttribute("src") ?? "").slice(-40)}`,
+          );
         }
       }
       return { pictures, bad };
     });
     expect(found.pictures).toBeGreaterThan(0);
     expect(found.bad).toEqual([]);
+  });
+}
+
+for (const [path, count] of Object.entries(RAW_PICTURES)) {
+  test(`${path}: a picture written straight into the body stays inside the column`, async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: PHONE.width, height: PHONE.height });
+    await page.goto(path);
+    await settled(page);
+    // next/image marks its own pictures; these are the ones that are not its.
+    const raw = page.locator(".main-content-wrapper article img:not([data-nimg])");
+    await expect(raw).toHaveCount(count);
+    for (const picture of await raw.all()) {
+      await picture.scrollIntoViewIfNeeded();
+      await expect
+        .poll(() => picture.evaluate((img: HTMLImageElement) => img.naturalWidth))
+        .toBeGreaterThan(0);
+      const box = await picture.evaluate((img: HTMLImageElement) => {
+        const cs = getComputedStyle(img);
+        const column = (img.closest("article") as HTMLElement).getBoundingClientRect();
+        const rect = img.getBoundingClientRect();
+        return {
+          radius: cs.borderRadius,
+          display: cs.display,
+          maxWidth: cs.maxWidth,
+          inside: rect.left >= column.left - 0.5 && rect.right <= column.right + 0.5,
+          // Its own proportions, not a height left over from somewhere else.
+          proportion: Math.abs(rect.width / rect.height - img.naturalWidth / img.naturalHeight),
+        };
+      });
+      expect(box.radius).toBe("4px");
+      expect(box.display).toBe("block");
+      expect(box.maxWidth).toBe("100%");
+      expect(box.inside).toBe(true);
+      expect(box.proportion).toBeLessThan(0.02);
+    }
   });
 }

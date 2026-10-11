@@ -11,6 +11,8 @@ interface PostsProps {
   exclude?: string[];
   /** Set on public pages: leaves out posts whose own page is password-protected. */
   hideProtected?: boolean;
+  /** Set on the list that opens a page: its first picture is the largest thing on the first screen. */
+  priority?: boolean;
 }
 
 /**
@@ -49,6 +51,7 @@ export function Posts({
   exclude = [],
   direction,
   hideProtected = false,
+  priority = false,
 }: PostsProps) {
   const displayedBlogs = listedPosts({ range, exclude, hideProtected });
 
@@ -56,7 +59,7 @@ export function Posts({
     <>
       {displayedBlogs.length > 0 && (
         <Grid columns={columns} s={{ columns: 1 }} fillWidth marginBottom="40" gap="16">
-          {displayedBlogs.map((post) => (
+          {displayedBlogs.map((post, index) => (
             // Only slug and metadata: Post is a client component, so the MDX body
             // would otherwise be serialized into every page that lists the post.
             <Post
@@ -64,6 +67,7 @@ export function Posts({
               post={{ slug: post.slug, metadata: post.metadata }}
               thumbnail={thumbnail}
               direction={direction}
+              priority={priority && index === 0}
             />
           ))}
         </Grid>

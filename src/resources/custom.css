@@ -113,6 +113,16 @@
   --font-weight-display-default: 400;
 }
 
+/* Once UI glides every scroll of the page (`html { scroll-behavior: smooth }`)
+   and makes no exception for a visitor who asked for less motion. This covers
+   the scrolls no script of ours decides: a link to a section of the page, which
+   the browser or the router scrolls to by itself. */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    scroll-behavior: auto;
+  }
+}
+
 /* ─── Data Callout ─────────────────────────────────────────────────────────
    Inline metrics inside running copy: same face and colour as the text around
    them, set apart by weight alone. Tabular numerals keep digits aligned.

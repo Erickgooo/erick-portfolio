@@ -168,7 +168,7 @@ export default async function Project({
             aspectRatio="16 / 9"
             // Pictures take a 4px corner everywhere on the site.
             style={{ borderRadius: "4px" }}
-            alt="image"
+            alt={title}
             src={hero}
           />
           <span
@@ -188,7 +188,7 @@ export default async function Project({
           </span>
         </Row>
       )}
-      <Column style={{ margin: "auto" }} as="article" maxWidth="xs">
+      <Column className={styles.body} style={{ margin: "auto" }} as="article" maxWidth="xs">
         <CustomMDX source={post.content} />
       </Column>
       {more.length > 0 && (

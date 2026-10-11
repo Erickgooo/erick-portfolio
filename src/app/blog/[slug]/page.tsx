@@ -112,7 +112,8 @@ export default async function Blog({ params }: { params: Promise<{ slug: string 
                 alt={post.metadata.title}
                 aspectRatio="3/4"
                 priority
-                sizes="(min-width: 768px) 100vw, 768px"
+                // As wide as the column: the screen up to 1024px, and no wider than that above.
+                sizes="(max-width: 1024px) 100vw, 1024px"
                 border="neutral-alpha-weak"
                 style={{ borderRadius: 4 }}
                 marginTop="12"

@@ -79,7 +79,6 @@ function createImage({ alt, src, ...props }: MediaProps & { src: string }) {
     <Media
       marginTop="8"
       marginBottom="16"
-      enlarge
       // Pictures take a 4px corner everywhere on the site.
       style={{ borderRadius: "4px" }}
       border="neutral-alpha-medium"

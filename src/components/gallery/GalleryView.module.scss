@@ -1,22 +1,23 @@
 @use "../system.scss" as system;
 
-// Gallery-only hover treatment for YouTubeFacade tiles, matching the scale +
-// shadow effect ImageCell/CarouselCell get from HoverWrapper. Scoped to a
-// className passed from GalleryView so MDX's YouTubeEmbed (which renders the
-// same YouTubeFacade elsewhere) is unaffected. Gated to real hover-capable
-// pointers and to users who haven't asked for reduced motion.
+// A tile's shadow, the same at rest and under the pointer: only transform and
+// opacity move on this site, so the hover lifts the tile by scale alone.
+$tile-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+
+// Gallery-only hover treatment for YouTubeFacade tiles, matching the scale
+// ImageCell/CarouselCell get from their button. Scoped to a className passed
+// from GalleryView so MDX's YouTubeEmbed (which renders the same YouTubeFacade
+// elsewhere) is unaffected. Gated to real hover-capable pointers and to users
+// who haven't asked for reduced motion.
 .youtubeHover {
   cursor: pointer;
 
   @media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
-    transition:
-      transform 0.25s ease,
-      box-shadow 0.25s ease;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+    transition: transform 0.25s ease;
+    box-shadow: $tile-shadow;
 
     &:hover {
       transform: scale(1.025);
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
     }
   }
 }
@@ -35,9 +36,8 @@
   font: inherit;
   overflow: hidden;
   cursor: pointer;
-  transition:
-    transform 0.25s ease,
-    box-shadow 0.25s ease;
+  box-shadow: $tile-shadow;
+  transition: transform 0.25s ease;
 
   &:focus-visible {
     @include system.focus-ring;

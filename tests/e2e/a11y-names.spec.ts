@@ -25,6 +25,27 @@ test("share and copy-link controls have accessible names", async ({ page }) => {
   await expect(page.getByRole("button", { name: "Copy link to this post" })).toBeVisible();
 });
 
+test("a link under an embed is named by the words it shows", async ({ page }) => {
+  await page.goto("/work/quick-metal-shop-viral-videos");
+  const links = page.locator('.main-content-wrapper a[href*="instagram.com"]');
+  await expect(links).toHaveCount(3);
+  for (const link of await links.all()) {
+    // Voice control finds a link by what is written on it, so the name must hold it.
+    const shown = ((await link.textContent()) ?? "").trim();
+    expect(shown).toBe("View metrics on Instagram");
+    await expect(link).toHaveAccessibleName(shown);
+  }
+});
+
+test("the picture that opens a case study is named after the project", async ({ page }) => {
+  await page.goto("/work/dakoma-roofing");
+  const title = ((await page.locator("h1").first().textContent()) ?? "").trim();
+  expect(title).not.toBe("");
+  const hero = page.locator("[data-project-hero] img");
+  await expect(hero).toHaveCount(1);
+  await expect(hero).toHaveAttribute("alt", title);
+});
+
 test("heading copy-link controls are real buttons with a name", async ({ page }) => {
   await page.goto("/blog/my-workspace");
   expect(await page.getByRole("button", { name: /^Copy link to section/ }).count()).toBeGreaterThan(

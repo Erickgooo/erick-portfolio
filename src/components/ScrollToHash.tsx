@@ -1,5 +1,6 @@
 "use client";
 
+import { scrollBehavior } from "@/utils/scrollBehavior";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
@@ -14,7 +15,7 @@ export function ScrollToHash() {
       const id = hash.replace("#", "");
       const element = document.getElementById(id);
       if (element) {
-        element.scrollIntoView({ behavior: "smooth" });
+        element.scrollIntoView({ behavior: scrollBehavior() });
       }
     }
   }, [router]);

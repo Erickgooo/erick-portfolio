@@ -26,11 +26,27 @@
   object-fit: cover;
 }
 
+/* A clip is shown whole: a screen recording is rarely 16:9, and cropping it to
+   the frame cuts the edges of the screen it shows. What the frame has left
+   over is black, as in any player. */
 .clip {
   display: block;
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
+  background: #000000;
+}
+
+/* --- The body -------------------------------------------------------------
+   A picture written into the MDX as a plain <img> skips the component that
+   gives every other picture its corner and its size. It takes the 4px corner
+   here and never outgrows the column. next/image marks its own pictures and
+   the components class theirs, so this reaches the plain ones only. */
+.body img:not([data-nimg]):not([class]) {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  border-radius: 4px;
 }
 
 .more {

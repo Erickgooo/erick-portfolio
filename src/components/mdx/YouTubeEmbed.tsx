@@ -35,7 +35,6 @@ export function YouTubeEmbed({
             target="_blank"
             rel="noopener noreferrer"
             className={styles.instagramLink}
-            aria-label="View on Instagram"
           >
             <svg
               className={styles.instagramIcon}
