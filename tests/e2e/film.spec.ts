@@ -1,6 +1,12 @@
 import type { Page } from "@playwright/test";
-import { expect, test } from "./fixtures";
+import { expect as baseExpect, test } from "./fixtures";
 import { wordsOnFilm } from "./helpers";
+
+// Playwright's WebKit will not play a Blob, so there the film seeks over HTTP, and
+// now and then a seek freezes the page for close to five seconds: measured at
+// 4.85 to 4.99 s, about twice in twenty seconds of scrolling. Five seconds is also
+// how long an assertion waits by default, so one that was right timed out anyway.
+const expect = baseExpect.configure({ timeout: 15_000 });
 
 const CALENDAR = "https://calendly.com/santiagomahecha2328/30min";
 const FILM_DURATION = 24.8;
@@ -42,6 +48,17 @@ const scrollInto = (page: Page, selector: string, progress: number) =>
 
 const scrollIntoBeat = (page: Page, beat: string, progress: number) =>
   scrollInto(page, `[data-film-beat="${beat}"]`, progress);
+
+/** What the stage shows under the video: the poster, or the still of a stretch. */
+const stillOnStage = (page: Page) =>
+  page.evaluate(
+    () => (document.querySelector("[data-film-stage] img") as HTMLImageElement).currentSrc,
+  );
+
+const isFilmReady = (page: Page) =>
+  page.evaluate(() =>
+    Boolean(document.querySelector("[data-film-root]")?.hasAttribute("data-film-ready")),
+  );
 
 const scrollPastFilm = (page: Page) =>
   page.evaluate(() => {
@@ -270,6 +287,49 @@ test.describe("the nav's side labels", () => {
       .first()
       .evaluate((el) => getComputedStyle(el.firstElementChild ?? el).color);
 
+  /** The box of the label's line of text: what has to be covered for it to count as on the page. */
+  const labelBox = (page: Page) =>
+    page
+      .locator("[data-header-side]")
+      .first()
+      .evaluate((el) => {
+        const rect = (el.firstElementChild ?? el).getBoundingClientRect();
+        return { top: rect.top, bottom: rect.bottom };
+      });
+
+  /**
+   * Scrolls until the top or bottom edge of an element is `y` px from the top of
+   * the viewport. The page scrolls by whole pixels and the hero band's edges are
+   * not on one, so the edge lands within a pixel of the line, on the side that
+   * keeps the line covered: a top edge at or above it, a bottom edge at or below.
+   */
+  const putEdge = (page: Page, selector: string, edge: "top" | "bottom", y: number) =>
+    page.evaluate(
+      ([target, side, at]) => {
+        const el = document.querySelector(target as string) as HTMLElement;
+        const rect = el.getBoundingClientRect();
+        const to = window.scrollY + (side === "top" ? rect.top : rect.bottom) - (at as number);
+        window.scrollTo({
+          top: side === "top" ? Math.ceil(to) : Math.floor(to),
+          behavior: "instant",
+        });
+      },
+      [selector, edge, y] as const,
+    );
+
+  /** The dark fade behind the labels: a layer fixed to the top of the viewport. */
+  const shade = (page: Page) => page.locator("[data-film-shade]");
+
+  // White over the fade, or the theme's colour with no fade: never one without the other.
+  const onFilm = async (page: Page) => {
+    await expect.poll(() => labelColour(page)).toBe(WHITE);
+    await expect(shade(page)).toBeVisible();
+  };
+  const onPage = async (page: Page) => {
+    await expect.poll(() => labelColour(page)).toBe(THEMES.light.content);
+    await expect(shade(page)).toBeHidden();
+  };
+
   test("light theme: the nav labels follow what is under them", async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
     await forceTheme(page, "light");
@@ -277,43 +337,102 @@ test.describe("the nav's side labels", () => {
     const place = page.locator("[data-header-side]").first();
     await expect(place).toContainText("Medellín, Colombia");
     // Over the footage, which is dark whatever the theme.
-    expect(await labelColour(page)).toBe(WHITE);
+    await onFilm(page);
     // A light title card pinned under the bar.
     await scrollInto(page, '[data-seat="brand"]', 0.2);
-    await expect.poll(() => labelColour(page)).toBe(THEMES.light.content);
-    // The labels change where the card's edge crosses their own middle: a card is
-    // under them from the moment its top edge passes it until its bottom edge does.
-    const middle = await place.evaluate((el) => {
-      const rect = (el.firstElementChild ?? el).getBoundingClientRect();
-      return (rect.top + rect.bottom) / 2;
-    });
-    const putCardEdge = (edge: "top" | "bottom", y: number) =>
-      page.evaluate(
-        ([side, at]) => {
-          const card = document.querySelector('[data-seat="brand"]') as HTMLElement;
-          const rect = card.getBoundingClientRect();
-          const from = side === "top" ? rect.top : rect.bottom;
-          window.scrollTo({ top: window.scrollY + from - (at as number), behavior: "instant" });
-        },
-        [edge, y] as const,
-      );
-    await putCardEdge("top", middle + 6);
-    await expect.poll(() => labelColour(page)).toBe(WHITE);
-    await putCardEdge("top", middle - 6);
-    await expect.poll(() => labelColour(page)).toBe(THEMES.light.content);
-    await putCardEdge("bottom", middle + 6);
-    await expect.poll(() => labelColour(page)).toBe(THEMES.light.content);
-    await putCardEdge("bottom", middle - 6);
-    await expect.poll(() => labelColour(page)).toBe(WHITE);
+    await onPage(page);
     // The card has left and the film is clean again.
     await scrollIntoBeat(page, "after-brand", 0.1);
-    await expect.poll(() => labelColour(page)).toBe(WHITE);
+    await onFilm(page);
     await scrollInto(page, '[data-seat="software"]', 0.5);
-    await expect.poll(() => labelColour(page)).toBe(THEMES.light.content);
+    await onPage(page);
     await scrollIntoBeat(page, "after-software", 0.1);
-    await expect.poll(() => labelColour(page)).toBe(WHITE);
+    await onFilm(page);
     await scrollPastFilm(page);
-    await expect.poll(() => labelColour(page)).toBe(THEMES.light.content);
+    await onPage(page);
+  });
+
+  // The labels are on the page only while a surface covers their whole box. With
+  // an edge inside the box part of the text is still over footage, so they stay
+  // white, over the fade, which is dark enough on a near-white card too.
+  for (const [name, surface] of [
+    ["a title card", '[data-seat="brand"]'],
+    ["the hero band", '[data-film-beat="hero"] [data-opaque]'],
+  ] as const) {
+    test(`light theme: the labels wait for ${name} to cover their whole box`, async ({ page }) => {
+      await page.setViewportSize({ width: 1440, height: 900 });
+      await forceTheme(page, "light");
+      await page.goto("/");
+      await onFilm(page);
+      const box = await labelBox(page);
+      expect(box.bottom - box.top).toBeGreaterThan(10);
+      // Arriving: the top edge 4 px short of the top of the box, then on it.
+      await putEdge(page, surface, "top", box.top + 4);
+      await onFilm(page);
+      await putEdge(page, surface, "top", Math.floor(box.top));
+      await onPage(page);
+      // Leaving: the bottom edge on the bottom of the box, then 4 px inside it.
+      await putEdge(page, surface, "bottom", Math.ceil(box.bottom));
+      await onPage(page);
+      await putEdge(page, surface, "bottom", box.bottom - 4);
+      await onFilm(page);
+    });
+  }
+
+  test("light theme: on the film's last screen the labels keep their fade", async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await forceTheme(page, "light");
+    await page.goto("/");
+    const box = await labelBox(page);
+    const stageTop = () =>
+      page.evaluate(
+        () =>
+          (document.querySelector("[data-film-stage]") as HTMLElement).getBoundingClientRect().top,
+      );
+    const width = await page.evaluate(() => document.documentElement.clientWidth);
+    // The stage has unpinned and is scrolling away, with film still under the labels.
+    for (const y of [400, box.bottom + 40, box.top + 4]) {
+      await putEdge(page, "[data-film-root]", "bottom", y);
+      expect(await stageTop()).toBeLessThan(0);
+      await onFilm(page);
+      // The fade does not leave with the stage: it is fixed to the top of the viewport.
+      const layer = await shade(page).evaluate((el) => {
+        const rect = el.getBoundingClientRect();
+        const style = getComputedStyle(el);
+        return {
+          position: style.position,
+          pointer: style.pointerEvents,
+          top: rect.top,
+          height: rect.height,
+          left: rect.left,
+          width: rect.width,
+        };
+      });
+      expect(layer).toEqual({
+        position: "fixed",
+        pointer: "none",
+        top: 0,
+        height: 132,
+        left: 0,
+        width,
+      });
+    }
+  });
+
+  test("light theme: the labels turn once the film's bottom edge is above them", async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await forceTheme(page, "light");
+    await page.goto("/");
+    const box = await labelBox(page);
+    await putEdge(page, "[data-film-root]", "bottom", box.top + 4);
+    await onFilm(page);
+    await putEdge(page, "[data-film-root]", "bottom", Math.floor(box.top) - 1);
+    await onPage(page);
+    // And back, scrolling up.
+    await putEdge(page, "[data-film-root]", "bottom", box.top + 4);
+    await onFilm(page);
   });
 
   test("light theme: the header's side labels stay readable over the film and after it", async ({
@@ -325,7 +444,7 @@ test.describe("the nav's side labels", () => {
     // Over the film, which is always dark footage: shown, and in white.
     await expect(place).toBeVisible();
     await expect(place).toContainText("Medellín, Colombia");
-    expect(await labelColour(page)).toBe(WHITE);
+    await expect.poll(() => labelColour(page)).toBe(WHITE);
     // The page-coloured (white) fade would wash out the top of the film.
     await expect(page.locator("[data-header-fade]").first()).toBeHidden();
 
@@ -340,12 +459,100 @@ test.describe("the nav's side labels", () => {
     await expect.poll(() => labelColour(page)).toBe(WHITE);
   });
 
-  test("dark theme: the header's side labels are shown on the Home", async ({ page }) => {
+  test("dark theme: the header's side labels are white over the film, on their fade", async ({
+    page,
+  }) => {
     await forceTheme(page, "dark");
     await page.goto("/");
     await expect(page.locator("[data-header-side]").first()).toBeVisible();
     await expect(page.locator("[data-header-side]").first()).toContainText("Medellín, Colombia");
+    await onFilm(page);
   });
+
+  test.describe("without JavaScript", () => {
+    test.use({ javaScriptEnabled: false });
+
+    // Nothing marks <html> without a script, and the top of the Home is film: the
+    // first frame has to be right from the stylesheet alone, whatever the scheme.
+    for (const scheme of ["light", "dark"] as const) {
+      test(`the labels are white on their fade (${scheme} scheme)`, async ({ page }) => {
+        await page.setViewportSize({ width: 1440, height: 900 });
+        await page.goto("/", { waitUntil: "domcontentloaded" });
+        // After the navigation: Firefox drops a scheme emulated before the first one.
+        await page.emulateMedia({ colorScheme: scheme });
+        await expect(page.locator("[data-header-side]").first()).toContainText(
+          "Medellín, Colombia",
+        );
+        await onFilm(page);
+        await expect(page.locator("[data-header-fade]:visible")).toHaveCount(0);
+      });
+    }
+  });
+});
+
+// The header's own fade is a gradient of the page colour with a blur behind it. Over
+// the film it would wash out the footage (light) or stack on it (dark), so it is
+// dropped there in both themes: the top one on desktop, the bottom one on phones.
+for (const theme of ["light", "dark"] as const) {
+  test(`${theme} theme: the header's fade is dropped over the film and comes back after it`, async ({
+    page,
+  }) => {
+    await forceTheme(page, theme);
+    await page.goto("/");
+    // The page rendered both fades; which one shows depends on the width.
+    await expect(page.locator("[data-header-fade]")).toHaveCount(2);
+    await expect(page.locator("[data-header-fade]:visible")).toHaveCount(0);
+    await scrollIntoBeat(page, "after-content", 0.5);
+    await expect(page.locator("[data-header-fade]:visible")).toHaveCount(0);
+    await scrollPastFilm(page);
+    await expect(page.locator("[data-header-fade]:visible")).toHaveCount(1);
+  });
+}
+
+test("on phones the progress bar runs along the top of the stage, and nothing shades it", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/");
+  await filmReady(page);
+  await scrollIntoBeat(page, "after-brand", 0.5);
+  const bar = page.locator("[data-film-progress]");
+  await expect(bar).toBeVisible();
+  const edges = await bar.evaluate((el) => {
+    const rect = el.getBoundingClientRect();
+    const stage = (el.closest("[data-film-stage]") as HTMLElement).getBoundingClientRect();
+    return { top: rect.top - stage.top, height: rect.height };
+  });
+  // At the bottom of a stage one large viewport tall it would be under the nav bar, or off screen.
+  expect(edges).toEqual({ top: 0, height: 3 });
+  // The fade is there for the place and time labels, and phones do not show them.
+  await expect(page.locator("[data-film-shade]")).toBeHidden();
+  const painted = await page.evaluate(() => {
+    const stage = document.querySelector("[data-film-stage]") as HTMLElement;
+    return getComputedStyle(stage, "::after").content;
+  });
+  expect(painted).toBe("none");
+});
+
+test("a title card is one large viewport tall", async ({ page }) => {
+  await page.goto("/");
+  // The declared value, not the computed one: here the small and the large viewport
+  // are the same height. On a phone whose URL bar has slid away they are not, and a
+  // card one small viewport tall leaves a strip of the stage showing above it.
+  const declared = await page
+    .locator("[data-seat]")
+    .first()
+    .evaluate((card) => {
+      let value = "";
+      for (const sheet of Array.from(document.styleSheets)) {
+        for (const rule of Array.from(sheet.cssRules)) {
+          if (!(rule instanceof CSSStyleRule) || !card.matches(rule.selectorText)) continue;
+          if (rule.style.minHeight) value = rule.style.minHeight;
+        }
+      }
+      return value;
+    });
+  expect(declared).toBe("100lvh");
 });
 
 const mp4Requests = (page: Page) => {
@@ -444,6 +651,70 @@ test("a failed film download leaves the poster and logs nothing", async ({ page 
     ),
   ).toBe(false);
   expect(errors).toEqual([]);
+});
+
+// A point of the film inside a flash: the veil would be up there, and the bar a third full.
+const IN_A_FLASH = { beat: "after-content", progress: 0.35, from: 8.6, to: 9.2 } as const;
+
+/** Without the film there is nothing to dim and nothing to report: stills, no veil, no bar. */
+const stageHasStillsOnly = async (page: Page) => {
+  await expect.poll(() => stillOnStage(page)).toMatch(/\/images\/film\/solution(-m)?\.webp$/);
+  await expect
+    .poll(() =>
+      page.evaluate(() => {
+        const img = document.querySelector("[data-film-stage] img") as HTMLImageElement;
+        return img.complete && img.naturalWidth > 0;
+      }),
+    )
+    .toBe(true);
+  await expect(page.locator("[data-film-veil]")).toHaveCSS("opacity", "0");
+  await expect(page.locator("[data-film-progress]")).toBeHidden();
+  expect(await isFilmReady(page)).toBe(false);
+};
+
+test("a film that never arrives leaves a still per stretch, with no veil and no bar", async ({
+  page,
+}) => {
+  const errors: string[] = [];
+  page.on("pageerror", (error) => errors.push(String(error)));
+  await page.route("**/video/home-film*.mp4", (route) => route.abort());
+  await page.goto("/");
+  await page.waitForLoadState("load");
+  await scrollIntoBeat(page, IN_A_FLASH.beat, IN_A_FLASH.progress);
+  await stageHasStillsOnly(page);
+  // And it stays that way: nothing retries, nothing flips later.
+  await page.waitForTimeout(1500);
+  await stageHasStillsOnly(page);
+  await scrollIntoBeat(page, "after-software", 0.2);
+  await expect.poll(() => stillOnStage(page)).toMatch(/\/images\/film\/process(-m)?\.webp$/);
+  expect(errors).toEqual([]);
+});
+
+test("a film that arrives late takes over at the scroll position", async ({ page }) => {
+  let release = () => {};
+  const held = new Promise<void>((resolve) => {
+    release = resolve;
+  });
+  await page.route("**/video/home-film*.mp4", async (route) => {
+    await held;
+    // The page may be gone by then if the test has already failed.
+    await route.continue().catch(() => {});
+  });
+  try {
+    await page.goto("/");
+    await page.waitForLoadState("load");
+    await scrollIntoBeat(page, IN_A_FLASH.beat, IN_A_FLASH.progress);
+    await stageHasStillsOnly(page);
+    release();
+    await filmReady(page);
+    // The video is where the page is, not on its first frame.
+    await expect.poll(() => filmTime(page)).toBeGreaterThan(IN_A_FLASH.from);
+    expect(await filmTime(page)).toBeLessThan(IN_A_FLASH.to);
+    await expect(page.locator("[data-film-progress]")).toBeVisible();
+    await expect(page.locator("[data-film-veil]")).toHaveCSS("opacity", "0.55");
+  } finally {
+    release();
+  }
 });
 
 test("there is exactly one primary call to action above the fold", async ({ page }) => {

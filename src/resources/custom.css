@@ -160,18 +160,21 @@
   padding: 0 !important;
 }
 
-/* Over the home film the header must not bring the light theme with it: the
-   footage underneath is dark whatever the theme. While it is under the nav bar
-   the page-coloured (white) fade is dropped and the side labels turn white
-   instead of dark. Both go back to the theme's own colours once the film has
-   scrolled away, and for as long as one of the Home's page-coloured surfaces
-   (the hero band or a title card) lies under the labels: ScrollFilm sets
-   data-past-film and data-nav-over-card on <html> for those two cases. */
-html[data-theme="light"]:has([data-film-root]):not([data-past-film]):not([data-nav-over-card]) [data-header-fade] {
+/* Over the home film the header must not bring the theme with it: the footage
+   underneath is film whatever the theme. While any of it is under the side
+   labels the header's own fade is dropped (a gradient of the page colour with
+   a blur: white over the film by day, one more black on it by night) and the
+   labels are white, over the dark fade ScrollFilm fixes behind them. Both go
+   back to the theme's own once the page is under the labels: the film has
+   scrolled away, or one of the Home's page-coloured surfaces (the hero band or
+   a title card) covers their whole box. ScrollFilm sets data-past-film and
+   data-nav-over-card on <html> for those two cases. No theme in the selector:
+   it has to hold with no script, when nothing has set data-theme either. */
+html:has([data-film-root]):not([data-past-film]):not([data-nav-over-card]) [data-header-fade] {
   display: none !important;
 }
 
-html[data-theme="light"]:has([data-film-root]):not([data-past-film]):not([data-nav-over-card]) [data-header-side],
-html[data-theme="light"]:has([data-film-root]):not([data-past-film]):not([data-nav-over-card]) [data-header-side] * {
+html:has([data-film-root]):not([data-past-film]):not([data-nav-over-card]) [data-header-side],
+html:has([data-film-root]):not([data-past-film]):not([data-nav-over-card]) [data-header-side] * {
   color: #ffffff !important;
 }

@@ -25,8 +25,10 @@ interface ScrollFilmProps {
  * viewport, and a child without one (a title card) holds the film where the
  * beat before it ended. The clip is fetched once after `load` and played from a
  * Blob, so every seek is instant (with the plain URL as a fallback where a Blob
- * will not play). Reduced motion and the lite tier never download it: they get
- * one still per beat instead, and every word of the content.
+ * will not play). Until it can be scrubbed, and for good if it never arrives,
+ * the stage shows one still per beat, with no veil and no progress bar: there
+ * is no film yet to dim or to report on. Reduced motion and the lite tier never
+ * download it, so the stills are all they get, with every word of the content.
  */
 export function ScrollFilm({
   src,
@@ -41,6 +43,9 @@ export function ScrollFilm({
   const rootRef = useRef<HTMLDivElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
+  // The beat whose still is on the stage. It outlives the effect below, which
+  // starts again when the device is turned and must not take the poster for granted.
+  const shownRef = useRef(beats[0]?.id ?? "");
   // null until mounted: the clip is chosen on the client, and again when the device is turned.
   const [portrait, setPortrait] = useState<boolean | null>(null);
 
@@ -53,37 +58,48 @@ export function ScrollFilm({
   }, []);
 
   // Tells the rest of the page what is under the nav bar, so the header can keep
-  // its labels readable whatever the theme (see custom.css): white over the
-  // footage, the theme's own colour once the film has scrolled away
-  // (data-past-film) or while a page-coloured surface covers them
-  // (data-nav-over-card). The bar sits at the top on desktop and at the bottom on phones.
+  // its place and time labels readable whatever the theme. Over footage they
+  // are white, on a dark fade of their own (custom.css, and `.shade` in the
+  // stylesheet). They take the theme's colour only where the page is under
+  // them: once the film has scrolled away (data-past-film) or while one of the
+  // Home's page-coloured surfaces covers them (data-nav-over-card). The bar sits
+  // at the top on desktop and at the bottom on phones.
   useEffect(() => {
     const root = rootRef.current;
     if (!root) return;
     const html = document.documentElement;
     const phone = window.matchMedia("(max-width: 768px)");
     const surfaces = Array.from(root.querySelectorAll<HTMLElement>("[data-opaque]"));
-    const labels = document.querySelector<HTMLElement>("[data-header-side]");
+    const side = document.querySelector<HTMLElement>("[data-header-side]");
+    // The line of text itself: the element around it is as tall as the whole bar.
+    const label = side?.firstElementChild ?? side;
     let frame = 0;
     const update = () => {
       frame = 0;
-      const line = phone.matches ? window.innerHeight - 40 : 80;
-      html.toggleAttribute("data-past-film", root.getBoundingClientRect().bottom <= line);
-      // The place and time labels are one line of text, centred in the bar. A
-      // surface is under them while it spans their middle, so they change colour
-      // at the same point whether its edge arrives or leaves. The line is measured
-      // because the bar's height is Once UI's. Phones do not show the labels, and
-      // their bar brings its own background.
-      let covered = false;
-      if (labels && !phone.matches) {
-        const bar = labels.getBoundingClientRect();
-        const middle = (bar.top + bar.bottom) / 2;
-        covered = surfaces.some((surface) => {
-          const rect = surface.getBoundingClientRect();
-          return rect.top <= middle && rect.bottom >= middle;
-        });
+      const film = root.getBoundingClientRect();
+      if (phone.matches || !label) {
+        // Phones do not show the labels, and their bar brings its own background:
+        // all there is to tell is whether the film is still behind the bar.
+        const line = phone.matches ? window.innerHeight - 40 : 80;
+        html.toggleAttribute("data-past-film", film.bottom <= line);
+        html.removeAttribute("data-nav-over-card");
+        return;
       }
-      html.toggleAttribute("data-nav-over-card", covered);
+      // One rule for every edge that crosses the labels: they are on the page
+      // only when no part of their box is over footage. A surface has to cover
+      // the whole box, and the film's bottom edge has to be above it; with an
+      // edge inside the box, part of the text would be dark on dark frames or
+      // white on a near-white card. The box is measured because the bar's
+      // height is Once UI's.
+      const box = label.getBoundingClientRect();
+      html.toggleAttribute("data-past-film", film.bottom <= box.top);
+      html.toggleAttribute(
+        "data-nav-over-card",
+        surfaces.some((surface) => {
+          const rect = surface.getBoundingClientRect();
+          return rect.top <= box.top && rect.bottom >= box.bottom;
+        }),
+      );
     };
     const queue = () => {
       if (!frame) frame = requestAnimationFrame(update);
@@ -112,38 +128,38 @@ export function ScrollFilm({
         return { id: el.dataset.filmBeat ?? "", top: rect.top, height: rect.height };
       });
 
+    // While there is no video to scrub, the poster is swapped for the still of
+    // whichever beat is on stage. A beat takes over when its stretch reaches the
+    // bottom edge of the stage: the title card above it still covers the screen
+    // then (a card is as tall as the stage), so the swap is not seen.
+    const img = stage.querySelector("img");
+    const source = stage.querySelector("source");
+    let pending = 0;
+    const swap = () => {
+      pending = 0;
+      const id = activeBeatId(beats, measure(), stage.offsetHeight);
+      if (!img || id === shownRef.current) return;
+      shownRef.current = id;
+      const still = beats.find((beat) => beat.id === id)?.still ?? id;
+      if (source) source.srcset = `${stills}/${still}-m.webp`;
+      img.src = `${stills}/${still}.webp`;
+    };
+    const queueSwap = () => {
+      if (!pending) pending = requestAnimationFrame(swap);
+    };
+    const stopStills = () => {
+      cancelAnimationFrame(pending);
+      pending = 0;
+      window.removeEventListener("scroll", queueSwap);
+      window.removeEventListener("resize", queueSwap);
+    };
+    window.addEventListener("scroll", queueSwap, { passive: true });
+    window.addEventListener("resize", queueSwap);
+    queueSwap();
+
+    // Reduced motion and the lite tier stop here: no video is ever fetched.
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (reduce || document.documentElement.dataset.fx === "lite") {
-      // No video: the poster is swapped for the still of whichever beat is on stage.
-      // A beat takes over when its stretch reaches the bottom edge of the stage: the
-      // title card above it still covers the screen then, so the swap is not seen
-      // (a card is one small viewport tall, so on a phone whose URL bar has slid
-      // away a strip at the top is the exception).
-      const img = stage.querySelector("img");
-      const source = stage.querySelector("source");
-      let shown = beats[0]?.id ?? "";
-      let pending = 0;
-      const swap = () => {
-        pending = 0;
-        const id = activeBeatId(beats, measure(), stage.offsetHeight);
-        if (!img || id === shown) return;
-        shown = id;
-        const still = beats.find((beat) => beat.id === id)?.still ?? id;
-        if (source) source.srcset = `${stills}/${still}-m.webp`;
-        img.src = `${stills}/${still}.webp`;
-      };
-      const queue = () => {
-        if (!pending) pending = requestAnimationFrame(swap);
-      };
-      window.addEventListener("scroll", queue, { passive: true });
-      window.addEventListener("resize", queue);
-      queue();
-      return () => {
-        cancelAnimationFrame(pending);
-        window.removeEventListener("scroll", queue);
-        window.removeEventListener("resize", queue);
-      };
-    }
+    if (reduce || document.documentElement.dataset.fx === "lite") return stopStills;
 
     const coarse = window.matchMedia("(hover: none) and (pointer: coarse)").matches;
     // Coarser steps on touch devices mean fewer decodes.
@@ -173,7 +189,13 @@ export function ScrollFilm({
       if (!frame) frame = requestAnimationFrame(tick);
     };
 
-    const reveal = () => root.setAttribute("data-film-ready", "");
+    // The video takes the stage, already on the frame the page has scrolled to.
+    // From here the scroll moves the film, the veil and the bar show, and the
+    // still under the video has nothing left to do.
+    const reveal = () => {
+      stopStills();
+      root.setAttribute("data-film-ready", "");
+    };
 
     // iOS paints nothing for a muted video that was seeked but never played, and may
     // not even report its data until play() is called. So the clip is primed as soon
@@ -225,7 +247,7 @@ export function ScrollFilm({
         video.src = objectUrl;
         video.load();
       } catch {
-        // Aborted, offline or blocked: the poster stays.
+        // Aborted, offline or blocked: the stills stay.
       }
     };
     const start = () => void load();
@@ -239,6 +261,7 @@ export function ScrollFilm({
 
     return () => {
       abort.abort();
+      stopStills();
       cancelAnimationFrame(frame);
       window.removeEventListener("load", start);
       window.removeEventListener("scroll", schedule);
@@ -247,7 +270,7 @@ export function ScrollFilm({
       video.removeEventListener("loadedmetadata", onMetadata);
       video.removeEventListener("error", onError);
       video.removeEventListener("seeked", reveal);
-      // Back to the poster until the next clip is in: a revoked source would freeze the stage.
+      // Back to the stills until the next clip is in: a revoked source would freeze the stage.
       root.removeAttribute("data-film-ready");
       if (objectUrl) {
         video.removeAttribute("src");
@@ -259,6 +282,7 @@ export function ScrollFilm({
 
   return (
     <div ref={rootRef} className={styles.film} data-film-root="">
+      <div className={styles.shade} data-film-shade="" />
       <div ref={stageRef} className={styles.stage} data-film-stage="" aria-hidden="true">
         <picture>
           <source media={PORTRAIT} srcSet={posterMobile} />
@@ -273,7 +297,7 @@ export function ScrollFilm({
           tabIndex={-1}
           data-film-video=""
         />
-        <div className={styles.veil} />
+        <div className={styles.veil} data-film-veil="" />
         <div className={styles.progress} data-film-progress="" />
       </div>
       <div className={styles.track}>{children}</div>

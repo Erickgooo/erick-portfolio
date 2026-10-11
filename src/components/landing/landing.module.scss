@@ -127,12 +127,15 @@ $display: var(--font-heading), sans-serif;
 
 /* --- Seats ---------------------------------------------------------------
    A title card is a slab of the page's surface, at least one screen tall, that
-   slides over the film. Opaque on purpose: no word ever sits on a frame. */
+   slides over the film. Opaque on purpose: no word ever sits on a frame. One
+   large viewport, like the stage it covers: with reduced motion the still is
+   swapped while the card hides the whole stage, and a card one small viewport
+   tall would leave a strip of it showing once a phone's URL bar has slid away. */
 .seat {
   display: grid;
   align-items: center;
   min-height: 100vh;
-  min-height: 100svh;
+  min-height: 100lvh;
   background: var(--page-background);
 }
 
