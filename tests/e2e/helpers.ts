@@ -1,4 +1,8 @@
+import { readFileSync, readdirSync } from "node:fs";
+import path from "node:path";
 import type { Locator, Page, Request } from "@playwright/test";
+import matter from "gray-matter";
+import { isProtectedPath } from "../../src/resources/protectedRoutes";
 
 export const ROUTES = [
   { name: "home", path: "/" },
@@ -7,6 +11,40 @@ export const ROUTES = [
   { name: "blog", path: "/blog/my-workspace" },
   { name: "gallery", path: "/gallery" },
 ] as const;
+
+export interface CaseStudy {
+  slug: string;
+  /** Its page: `/work/<slug>`. */
+  path: string;
+  title: string;
+  publishedAt: string;
+  /** "value|label", where the project reports a headline result. */
+  metric: string;
+}
+
+/**
+ * The case studies the site can show, read from where the site reads them: one
+ * MDX file each under src/app/work/projects, dated in its frontmatter. One
+ * behind the password would render the prompt, so it is left out. A test that
+ * lists them here keeps up when a project is added, renamed or redated.
+ */
+export function caseStudies(): CaseStudy[] {
+  const dir = path.join("src", "app", "work", "projects");
+  return readdirSync(dir)
+    .filter((file) => file.endsWith(".mdx"))
+    .map((file) => {
+      const slug = file.slice(0, -".mdx".length);
+      const { data } = matter(readFileSync(path.join(dir, file), "utf8"));
+      return {
+        slug,
+        path: `/work/${slug}`,
+        title: String(data.title ?? ""),
+        publishedAt: String(data.publishedAt ?? ""),
+        metric: String(data.metric ?? ""),
+      };
+    })
+    .filter((study) => !isProtectedPath(study.path));
+}
 
 /**
  * Sums layout-shift entries (excluding those caused by recent input) from page

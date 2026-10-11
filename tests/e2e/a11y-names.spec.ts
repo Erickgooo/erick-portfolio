@@ -54,13 +54,39 @@ test("heading copy-link controls are real buttons with a name", async ({ page })
   expect(await page.locator("div[aria-label='Copy']").count()).toBe(0);
 });
 
-test("heading copy-link button becomes visible on keyboard focus", async ({ page }) => {
+test("heading copy-link buttons are shown without hover or focus, each named after its section", async ({
+  page,
+}) => {
   await page.goto("/blog/my-workspace");
-  const firstCopyButton = page.getByRole("button", { name: /^Copy link to section/ }).first();
-  await firstCopyButton.focus();
-  // The reveal is an opacity transition (200ms); poll past it instead of
-  // reading a single mid-transition frame.
-  await expect.poll(() => firstCopyButton.evaluate((el) => getComputedStyle(el).opacity)).toBe("1");
+  const buttons = page.getByRole("button", { name: /^Copy link to section/ });
+  await expect(buttons.first()).toBeVisible();
+  // Nothing is hovered and nothing has focus: the mark is there all the same, at
+  // full strength. It used to fade in on hover, which a keyboard or a finger never does.
+  expect(await page.evaluate(() => document.activeElement === document.body)).toBe(true);
+  const marks = await buttons.evaluateAll((els) =>
+    els.map((el) => {
+      let opacity = 1;
+      for (let node: Element | null = el; node; node = node.parentElement) {
+        opacity *= Number(getComputedStyle(node).opacity);
+      }
+      const box = el.getBoundingClientRect();
+      // The heading and its mark share one box.
+      const heading = el
+        .closest('[class*="HeadingLink_control"]')
+        ?.querySelector("h1, h2, h3, h4, h5, h6");
+      return {
+        name: el.getAttribute("aria-label") ?? "",
+        heading: (heading?.textContent ?? "").trim(),
+        shown: el.checkVisibility({ visibilityProperty: true }) && box.width > 0 && box.height > 0,
+        opacity,
+      };
+    }),
+  );
+  expect(marks.length).toBeGreaterThan(2);
+  expect(marks.filter((mark) => !mark.shown || mark.opacity !== 1)).toEqual([]);
+  expect(marks.filter((mark) => mark.heading === "" || !mark.name.includes(mark.heading))).toEqual(
+    [],
+  );
 });
 
 test("heading copy-link button is visible on touch devices without interaction", async ({

@@ -22,6 +22,14 @@ test("gallery loads no YouTube player until a facade is activated", async ({ pag
 test("keyboard activation starts the player and moves focus into it", async ({ page }) => {
   await page.goto("/gallery");
   const facade = page.getByRole("button", { name: /^Play video:/ }).first();
+  // The button is in the server's HTML, but Enter does nothing until React has
+  // claimed it: it tags the nodes it has hydrated. Pressed before that, the key
+  // was lost, and the player never came.
+  await expect
+    .poll(() =>
+      facade.evaluate((el) => Object.keys(el).some((key) => key.startsWith("__reactFiber$"))),
+    )
+    .toBe(true);
   await facade.focus();
   await page.keyboard.press("Enter");
   const iframe = page.locator('iframe[src*="youtube-nocookie.com/embed/"]').first();

@@ -49,17 +49,25 @@ test("missing deviceMemory (Safari) is ignored, not treated as low", async ({ pa
   expect(await fx(page)).toBe("full");
 });
 
-test("headings and body use Geist; figures use Geist Mono", async ({ page }) => {
+test("the font tokens name Geist for headings and body, and Geist Mono for code", async ({
+  page,
+}) => {
   await page.goto("/about");
   const fonts = await page.evaluate(() => {
     const root = getComputedStyle(document.documentElement);
+    // The family a stack asks for first; what follows it is the fallback.
+    const first = (token: string) =>
+      root
+        .getPropertyValue(token)
+        .split(",")[0]
+        .trim()
+        .replace(/^["']|["']$/g, "");
     return {
-      heading: root.getPropertyValue("--font-heading"),
-      body: root.getPropertyValue("--font-body"),
-      code: root.getPropertyValue("--font-code"),
+      heading: first("--font-heading"),
+      body: first("--font-body"),
+      code: first("--font-code"),
     };
   });
-  expect(fonts.heading).toContain("Geist");
-  expect(fonts.body).toContain("Geist");
-  expect(fonts.code).toContain("Geist Mono");
+  // Exact names: "Geist Mono" also contains "Geist", and it is the code face only.
+  expect(fonts).toEqual({ heading: "Geist", body: "Geist", code: "Geist Mono" });
 });

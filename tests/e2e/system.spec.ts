@@ -1,6 +1,6 @@
 import type { Page } from "@playwright/test";
 import { expect, test } from "./fixtures";
-import { ROUTES } from "./helpers";
+import { ROUTES, caseStudies } from "./helpers";
 
 // The one set of tokens the whole site draws from. Later tasks add cases here.
 
@@ -14,6 +14,17 @@ const CASE_STUDIES = [
   "/work/atv-riders",
   "/work/leadbot-ai",
 ] as const;
+
+/**
+ * Case studies whose body holds pictures written as plain `<img>` tags, and how
+ * many: they skip the component every other picture goes through, so the page's
+ * own stylesheet has to give them their corner and keep them inside the column.
+ */
+const RAW_PICTURES: Record<string, number> = {
+  "/work/dakoma-roofing": 1,
+  "/work/quick-metal-shop-arquiexpo": 2,
+  "/work/quick-metal-shop-marketing": 2,
+};
 
 const forceTheme = async (page: import("@playwright/test").Page, theme: "light" | "dark") => {
   await page.addInitScript((t) => localStorage.setItem("data-theme", t), theme);
@@ -56,6 +67,8 @@ test("dark theme resolves the shared colour tokens", async ({ page }) => {
 for (const route of ROUTES) {
   test(`${route.name}: no dot grid and no cursor glow`, async ({ page }) => {
     await page.goto(route.path);
+    // A page that failed to render has no dot grid either.
+    await expect(page.locator("h1").first()).toBeVisible();
     await expect(page.locator("[data-spotlight]")).toHaveCount(0);
     await expect(page.locator("[data-spotlight-target]")).toHaveCount(0);
     const dots = await page.evaluate(
@@ -297,7 +310,9 @@ const measureSystem = (page: Page, minTarget: number) =>
       for (const el of Array.from(document.body.querySelectorAll("*"))) {
         if (el.closest("svg") || !painted(el)) continue;
         const cs = getComputedStyle(el);
-        if (!el.closest("header, [data-header-fade]")) {
+        // The site's own header and its fades: any other <header> (a dialog's
+        // title bar is one) holds to the rule like the rest of the page.
+        if (!el.closest("header:has([data-header-side]), [data-header-fade]")) {
           const blur =
             cs.getPropertyValue("backdrop-filter") ||
             cs.getPropertyValue("-webkit-backdrop-filter") ||
@@ -458,7 +473,18 @@ function followsThePageSystem(path: string, viewport: Viewport, minimum: Minimum
   });
 }
 
-const SYSTEM_PAGES = ["/work", ...CASE_STUDIES, "/about", "/blog/my-workspace"];
+/** Every case study the site has, not a sample of them: any one can break a rule on its own. */
+const ALL_CASE_STUDIES = caseStudies().map((study) => study.path);
+
+test("the page system is checked on every case study", () => {
+  // The scans below are generated from this list, so an empty one would pass by having no tests.
+  expect(ALL_CASE_STUDIES.length).toBeGreaterThanOrEqual(9);
+  for (const path of [...CASE_STUDIES, ...Object.keys(RAW_PICTURES)]) {
+    expect(ALL_CASE_STUDIES).toContain(path);
+  }
+});
+
+const SYSTEM_PAGES = ["/work", ...ALL_CASE_STUDIES, "/about", "/blog/my-workspace"];
 
 // Pages that hold a heading, a line or a card and a control, and little else.
 const SHORT_PAGES = ["/blog", "/this-page-does-not-exist", "/unauthorized"];
@@ -1261,17 +1287,6 @@ test("/unauthorized: the field's show button says what it does", async ({ page }
 });
 
 // ─── Pictures have 4px corners ──────────────────────────────────────────────
-
-/**
- * Case studies whose body holds pictures written as plain `<img>` tags, and how
- * many: they skip the component every other picture goes through, so the page's
- * own stylesheet has to give them their corner and keep them inside the column.
- */
-const RAW_PICTURES: Record<string, number> = {
-  "/work/dakoma-roofing": 1,
-  "/work/quick-metal-shop-arquiexpo": 2,
-  "/work/quick-metal-shop-marketing": 2,
-};
 
 for (const path of [
   "/work",

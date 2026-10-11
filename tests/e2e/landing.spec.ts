@@ -1,6 +1,6 @@
 import type { Page } from "@playwright/test";
 import { expect, test } from "./fixtures";
-import { wordsOnFilm } from "./helpers";
+import { caseStudies, wordsOnFilm } from "./helpers";
 
 const CALENDAR = "https://calendly.com/santiagomahecha2328/30min";
 const HEADLINE = "The marketing department is one person.";
@@ -208,8 +208,10 @@ test("nothing on the Home is glass, gradient text or a blur", async ({ page }) =
       const name = (el: Element) => `${el.tagName.toLowerCase()}.${el.getAttribute("class") ?? ""}`;
       let scanned = 0;
       for (const el of Array.from(document.querySelectorAll("body *"))) {
-        // The nav may blur what is behind it; the chatbot is out of this pass.
-        if (el.closest('header, [data-header-fade], [class*="FaqChatbot"]')) continue;
+        // The nav may blur what is behind it, and only the nav: the site's header,
+        // not any <header>. The chatbot is out of this pass.
+        const exempt = 'header:has([data-header-side]), [data-header-fade], [class*="FaqChatbot"]';
+        if (el.closest(exempt)) continue;
         scanned += 1;
         const style = getComputedStyle(el) as CSSStyleDeclaration & {
           webkitBackdropFilter?: string;
@@ -241,6 +243,15 @@ test("nothing on the Home is glass, gradient text or a blur", async ({ page }) =
 });
 
 test("Work shows the six most recent public projects", async ({ page }) => {
+  // What the page should list, from the projects' own frontmatter: newest first.
+  const newest = caseStudies()
+    .sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime())
+    .slice(0, 6);
+  expect(newest.length).toBe(6);
+  expect(newest.filter((project) => Number.isNaN(new Date(project.publishedAt).getTime()))).toEqual(
+    [],
+  );
+
   await page.goto("/");
   const work = page.locator('[data-landing-section="proof"]');
   const items = work.locator("[data-work-item]");
@@ -248,26 +259,20 @@ test("Work shows the six most recent public projects", async ({ page }) => {
   const hrefs = await items
     .locator("a")
     .evaluateAll((els) => els.map((a) => a.getAttribute("href")));
-  expect(hrefs).toEqual([
-    "/work/quick-metal-shop-viral-videos",
-    "/work/ai-powered-ad-creatives",
-    "/work/quick-metal-shop-the-brand-comes-to-life",
-    "/work/quick-metal-shop-arquiexpo",
-    "/work/quick-metal-shop-marketing",
-    "/work/dakoma-roofing",
-  ]);
-  for (const item of await items.all()) {
+  expect(hrefs).toEqual(newest.map((project) => project.path));
+  for (const [i, project] of newest.entries()) {
+    const item = items.nth(i);
     // Decorative: the item is one link whose name already carries the project's title.
     await expect(item.locator("img")).toHaveCount(1);
     await expect(item.locator("img")).toHaveAttribute("alt", "");
-    await expect(item.getByRole("link")).toHaveAccessibleName(/[A-Za-z]/);
+    // A result where the project has one, and nothing made up where it does not.
+    const [value, label] = project.metric.split("|").map((part) => part.trim());
+    const result = value && label ? `${value} ${label}` : "";
+    await expect(item.getByRole("link")).toHaveAccessibleName(`${project.title} ${result}`.trim());
   }
-  // A result where the project has one, and nothing made up where it does not.
-  await expect(items.nth(0)).toContainText("338K+ organic views");
-  await expect(items.nth(1)).toContainText("3.92x ROAS");
-  await expect(items.nth(2).getByRole("link")).toHaveAccessibleName(
-    "Quick Metal Shop: The Brand Comes to Life",
-  );
+  // Both kinds are among the six, so neither branch above went untested.
+  expect(newest.some((project) => project.metric !== "")).toBe(true);
+  expect(newest.some((project) => project.metric === "")).toBe(true);
   await expect(work.getByRole("link", { name: "See all projects" })).toHaveAttribute(
     "href",
     "/work",
