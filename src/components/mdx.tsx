@@ -124,7 +124,8 @@ function createParagraph({ children }: TextProps) {
     <Text
       style={{ lineHeight: "175%" }}
       variant="body-default-m"
-      onBackground="neutral-medium"
+      // Running text is the content colour; the grey between it and the secondary one is not a token.
+      onBackground="neutral-strong"
       marginTop="8"
       marginBottom="12"
     >

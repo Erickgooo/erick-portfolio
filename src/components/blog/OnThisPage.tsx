@@ -104,7 +104,7 @@ export function OnThisPage() {
         gap="12"
         paddingLeft="2"
         vertical="center"
-        onBackground="neutral-medium"
+        onBackground="neutral-weak"
         textVariant="label-default-s"
       >
         <Icon name="document" size="xs" />

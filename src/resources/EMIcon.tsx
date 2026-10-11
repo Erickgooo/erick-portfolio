@@ -1,8 +1,12 @@
 // Vector monogram for Erick Mahecha, traced from the official brand mark.
 // Strokes use currentColor so it inherits the surrounding icon color (theme-aware
 // automatically); the node keeps the fixed Cobalto Eléctrico brand accent.
+// `data-brand-mark` tells the colour scan in tests/e2e/system.spec.ts that this
+// Cobalt is the logo's own, the one place besides the call to action and the
+// film's progress bar where it is meant to be.
 export const EMIcon = () => (
   <svg
+    data-brand-mark=""
     viewBox="314 503 1419 1038"
     width="1em"
     height="1em"

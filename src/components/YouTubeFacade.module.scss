@@ -1,3 +1,5 @@
+@use "./system.scss" as system;
+
 .root {
   position: relative;
   width: 100%;
@@ -13,8 +15,10 @@
   cursor: pointer;
   display: block;
 
+  /* The shared ring, in the content colour. The frame around the button clips
+     whatever is drawn outside it, so the ring sits just inside the edge. */
   &:focus-visible {
-    outline: 2px solid var(--brand-solid-medium);
+    @include system.focus-ring;
     outline-offset: -2px;
   }
 }

@@ -281,6 +281,13 @@ const measureSystem = (page: Page, minTarget: number) =>
         return value;
       };
 
+      // A colour of the brand scale, whatever its alpha (the scale has 15%, 30% and 50% steps).
+      const isBrand = (colour: string) => {
+        const parts = colour.match(/^rgba?\((\d+), (\d+), (\d+)(?:, ([\d.]+))?\)$/);
+        if (!parts || Number(parts[4] ?? 1) === 0) return false;
+        return brand.includes(`rgb(${parts[1]}, ${parts[2]}, ${parts[3]})`);
+      };
+
       const offFamily: string[] = [];
       const small: string[] = [];
       const glass: string[] = [];
@@ -333,6 +340,53 @@ const measureSystem = (page: Page, minTarget: number) =>
         if (brand.includes(colour)) brandLinks.push(`${colour} ${name(el)}`);
       }
 
+      // Cobalt means the call to action and the film's progress, so nothing else in
+      // the page is filled, outlined or drawn in the brand scale. A border or an
+      // outline counts only where one is drawn: its colour is set even at 0px.
+      // The one thing left out besides them is the logo, which the redesign keeps as
+      // it is: its node is Cobalt wherever the mark is drawn.
+      const COBALT = '[data-cta], [class*="_cta__"], [data-film-progress], [data-brand-mark]';
+      const brandPaint: string[] = [];
+      let paints = 0;
+      for (const el of Array.from(document.querySelectorAll(".main-content-wrapper *"))) {
+        if (!painted(el) || el.closest(COBALT)) continue;
+        paints += 1;
+        const cs = getComputedStyle(el);
+        const drawn = (width: string, style: string) =>
+          cs.getPropertyValue(style) !== "none" &&
+          Number.parseFloat(cs.getPropertyValue(width)) > 0;
+        const found: string[] = [];
+        if (isBrand(cs.backgroundColor)) found.push(`background ${cs.backgroundColor}`);
+        for (const side of ["top", "right", "bottom", "left"]) {
+          const colour = cs.getPropertyValue(`border-${side}-color`);
+          if (drawn(`border-${side}-width`, `border-${side}-style`) && isBrand(colour)) {
+            found.push(`border-${side} ${colour}`);
+          }
+        }
+        if (drawn("outline-width", "outline-style") && isBrand(cs.outlineColor)) {
+          found.push(`outline ${cs.outlineColor}`);
+        }
+        if (el instanceof SVGElement) {
+          if (isBrand(cs.fill)) found.push(`fill ${cs.fill}`);
+          if (isBrand(cs.stroke)) found.push(`stroke ${cs.stroke}`);
+        }
+        if (found.length > 0) brandPaint.push(`${found.join(", ")} ${name(el)}`);
+      }
+
+      // A link that leaves the site opens in a tab of its own and hands this one no
+      // opener. Once UI writes `rel="noreferrer"`, which implies `noopener`.
+      const sameTab: string[] = [];
+      let external = 0;
+      for (const a of Array.from(document.querySelectorAll<HTMLAnchorElement>('a[href^="http"]'))) {
+        if (a.closest(CHATBOT) || new URL(a.href).host === location.host) continue;
+        if (a.closest(".main-content-wrapper")) external += 1;
+        const rel = (a.getAttribute("rel") ?? "").split(/\s+/);
+        const apart = rel.includes("noopener") || rel.includes("noreferrer");
+        if (a.target !== "_blank" || !apart) {
+          sameTab.push(`target="${a.target}" rel="${rel.join(" ")}" ${a.href.slice(0, 60)}`);
+        }
+      }
+
       const faded: string[] = [];
       let buttons = 0;
       for (const el of Array.from(document.querySelectorAll("button"))) {
@@ -343,7 +397,7 @@ const measureSystem = (page: Page, minTarget: number) =>
       }
 
       return {
-        counts: { texts, targets, links, buttons },
+        counts: { texts, targets, links, buttons, external, paints },
         offFamily,
         small,
         glass,
@@ -352,6 +406,8 @@ const measureSystem = (page: Page, minTarget: number) =>
         faded,
         brandLinks,
         brandText,
+        brandPaint,
+        sameTab,
       };
     },
     { minTarget, brand: BRAND_SCALE },
@@ -363,6 +419,8 @@ interface Minimums {
   targets: number;
   links: number;
   buttons: number;
+  /** Links in the body of the page that leave the site; most pages have none. */
+  external?: number;
 }
 
 const FULL_PAGE: Minimums = { texts: 10, targets: 1, links: 1, buttons: 1 };
@@ -380,6 +438,8 @@ function followsThePageSystem(path: string, viewport: Viewport, minimum: Minimum
     expect(found.counts.targets).toBeGreaterThanOrEqual(minimum.targets);
     expect(found.counts.links).toBeGreaterThanOrEqual(minimum.links);
     expect(found.counts.buttons).toBeGreaterThanOrEqual(minimum.buttons);
+    expect(found.counts.external).toBeGreaterThanOrEqual(minimum.external ?? 0);
+    expect(found.counts.paints).toBeGreaterThan(0);
 
     expect.soft(found.offFamily, "text is Geist; Geist Mono only in pre and code").toEqual([]);
     expect.soft(found.small, "no text under 13px").toEqual([]);
@@ -391,14 +451,41 @@ function followsThePageSystem(path: string, viewport: Viewport, minimum: Minimum
     expect.soft(found.faded, "no button is shown faded").toEqual([]);
     expect.soft(found.brandLinks, "no link in a brand colour").toEqual([]);
     expect.soft(found.brandText, "no text in a brand colour").toEqual([]);
+    expect
+      .soft(found.brandPaint, "no fill, border, outline or drawing in a brand colour")
+      .toEqual([]);
+    expect.soft(found.sameTab, "a link that leaves the site opens in a new tab").toEqual([]);
   });
 }
 
 const SYSTEM_PAGES = ["/work", ...CASE_STUDIES, "/about", "/blog/my-workspace"];
 
+/**
+ * Pages whose body links out, and the fewest such links the scan has to have
+ * seen there: the booking link and two profiles, and two networks to share on.
+ */
+const LINKS_OUT: Record<string, number> = { "/about": 3, "/blog/my-workspace": 2 };
+
 for (const path of SYSTEM_PAGES) {
-  for (const viewport of [PHONE, DESKTOP]) followsThePageSystem(path, viewport);
+  for (const viewport of [PHONE, DESKTOP]) {
+    followsThePageSystem(path, viewport, { ...FULL_PAGE, external: LINKS_OUT[path] ?? 0 });
+  }
 }
+
+// The Home has its own type scale and its own tests; what it shares with the
+// other pages is where the brand colour may go. The call to action and the
+// film's progress bar are the two places, and the scan leaves both out.
+test("/: only the call to action and the progress bar wear the brand colour", async ({ page }) => {
+  await page.goto("/");
+  await settled(page);
+  await expect(page.locator('.main-content-wrapper [data-cta="primary"]')).toHaveCount(2);
+  await expect(page.locator("[data-film-progress]")).toHaveCount(1);
+  const found = await measureSystem(page, DESKTOP.minTarget);
+  expect(found.counts.paints).toBeGreaterThan(50);
+  expect(found.brandPaint).toEqual([]);
+  expect(found.brandText).toEqual([]);
+  expect(found.sameTab).toEqual([]);
+});
 
 // The blog has one post to list: a card, and little else.
 for (const viewport of [PHONE, DESKTOP]) {
@@ -506,6 +593,64 @@ for (const path of [...SYSTEM_PAGES, "/gallery", ...SHORT_PAGES]) {
     expect(weights.off).toEqual([]);
   });
 }
+
+// The body of a case study or a post is set in the two text colours and nothing
+// between them. Code keeps its own palette.
+for (const path of [CASE_STUDIES[0], "/work/leadbot-ai", "/blog/my-workspace"]) {
+  test(`${path}: body copy is in the content colour, with no third grey`, async ({ page }) => {
+    await page.goto(path);
+    await settled(page);
+    const colours = await themeColours(page);
+    const body = await page.evaluate(() => {
+      const texts: { colour: string; text: string; paragraph: boolean }[] = [];
+      for (const el of Array.from(document.querySelectorAll(".main-content-wrapper article *"))) {
+        if (el.closest("pre, code, svg") || !el.checkVisibility()) continue;
+        const own = Array.from(el.childNodes).some(
+          (n) => n.nodeType === Node.TEXT_NODE && (n.textContent ?? "").trim() !== "",
+        );
+        if (!own) continue;
+        texts.push({
+          colour: getComputedStyle(el).color,
+          text: (el.textContent ?? "").trim().slice(0, 32),
+          // What the MDX `p` renders to: a block of running text with its own leading.
+          paragraph: el.matches('span[style*="line-height"]'),
+        });
+      }
+      return texts;
+    });
+    const paragraphs = body.filter((t) => t.paragraph);
+    expect(paragraphs.length).toBeGreaterThan(3);
+    expect(paragraphs.filter((t) => t.colour !== colours.strong).map((t) => t.text)).toEqual([]);
+    const allowed = [colours.strong, colours.weak];
+    expect(
+      body.filter((t) => !allowed.includes(t.colour)).map((t) => `${t.colour} ${t.text}`),
+    ).toEqual([]);
+  });
+}
+
+test("a post: its section list is in the secondary colour, the current section in the content colour", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: DESKTOP.width, height: DESKTOP.height });
+  await page.goto("/blog/my-workspace");
+  await settled(page);
+  const colours = await themeColours(page);
+  const label = page.getByText("On this page", { exact: true });
+  await expect(label).toBeVisible();
+  await expect(label).toHaveCSS("color", colours.weak);
+  // The list is built after hydration, from the headings in the page.
+  const links = page.locator('.main-content-wrapper a[href^="#"]').filter({ visible: true });
+  await expect.poll(() => links.count()).toBeGreaterThan(2);
+  const colour = () => links.evaluateAll((els) => els.map((a) => getComputedStyle(a).color));
+  // Which section is current is measured in an effect, a moment after the list appears.
+  await expect
+    .poll(async () => (await colour()).filter((c) => c === colours.strong).length)
+    .toBe(1);
+  const found = await colour();
+  expect(found.filter((colour) => colour !== colours.strong && colour !== colours.weak)).toEqual(
+    [],
+  );
+});
 
 for (const theme of ["light", "dark"] as const) {
   test(`results stats sit on the shared tokens in the ${theme} theme`, async ({ page }) => {
@@ -807,6 +952,8 @@ test("/gallery: a group of pictures opens without animating a filter", async ({ 
 });
 
 test("/gallery: the counter on a group is opaque and square-cornered", async ({ page }) => {
+  // Light, where the theme's own text colour is the one that would vanish on black.
+  await forceTheme(page, "light");
   await page.goto("/gallery");
   await settled(page);
   const badges = await page.evaluate(() =>
@@ -819,6 +966,8 @@ test("/gallery: the counter on a group is opaque and square-cornered", async ({ 
           background: cs.backgroundColor,
           radius: cs.borderRadius,
           blur: cs.getPropertyValue("backdrop-filter") || "none",
+          count: getComputedStyle(el).color,
+          icon: getComputedStyle(box.querySelector("svg") ?? box).color,
           size: Number.parseFloat(getComputedStyle(el).fontSize),
           pictures: Number((el.textContent ?? "").split("/")[1]),
         };
@@ -830,6 +979,9 @@ test("/gallery: the counter on a group is opaque and square-cornered", async ({ 
       background: "rgb(0, 0, 0)",
       radius: "4px",
       blur: "none",
+      // The badge is black in both themes, so what is on it is white in both.
+      count: "rgb(255, 255, 255)",
+      icon: "rgb(255, 255, 255)",
       size: expect.any(Number),
       pictures: expect.any(Number),
     });

@@ -48,8 +48,9 @@
   }
 }
 
-// The counter on a group's cover: opaque black under white text, so it reads on
-// any picture without a blur behind it.
+// The counter on a group's cover: opaque black under a white icon and white
+// text, so it reads on any picture without a blur behind it. White whatever the
+// theme: the badge is black in both, and the icon takes the colour set here.
 .badge {
   top: 10px;
   right: 10px;
@@ -58,6 +59,7 @@
   padding: 4px 8px;
   border-radius: 4px;
   background: #000000;
+  color: #ffffff;
 }
 
 // Weight 600 and white whatever the theme: the badge is black in both.

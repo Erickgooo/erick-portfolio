@@ -1,6 +1,7 @@
 import TableOfContents from "@/components/about/TableOfContents";
 import styles from "@/components/about/about.module.scss";
 import { about, baseURL, person, sameAs, social } from "@/resources";
+import { NEW_TAB, newTabIfExternal } from "@/utils/links";
 import {
   Avatar,
   Column,
@@ -14,7 +15,6 @@ import {
   Tag,
   Text,
 } from "@once-ui-system/core";
-import Link from "next/link";
 import type React from "react";
 
 export async function generateMetadata() {
@@ -127,9 +127,9 @@ export default function About() {
                 call to action as the Home's. */}
             {about.calendar.display && (
               <Row fitWidth marginBottom="m" className={styles.blockAlign}>
-                <Link href={about.calendar.link} className={styles.cta}>
+                <a href={about.calendar.link} className={styles.cta} {...NEW_TAB}>
                   Schedule a call
-                </Link>
+                </a>
               </Row>
             )}
             <Heading className={styles.textAlign} variant="display-strong-xl">
@@ -156,6 +156,7 @@ export default function About() {
                         href={item.link}
                         className={styles.social}
                         aria-label={item.name}
+                        {...newTabIfExternal(item.link)}
                       >
                         <Icon name={item.icon} size="s" />
                         <span className={styles.socialName}>{item.name}</span>

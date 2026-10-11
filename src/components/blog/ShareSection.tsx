@@ -1,6 +1,7 @@
 "use client";
 
 import { socialSharing } from "@/resources";
+import { newTabIfExternal } from "@/utils/links";
 import { Icon, Row, Text, useToast } from "@once-ui-system/core";
 import styles from "./blog.module.scss";
 
@@ -112,16 +113,21 @@ export function ShareSection({ title, url }: ShareSectionProps) {
         Share this post:
       </Text>
       <Row gap="16" horizontal="center" wrap>
-        {enabledPlatforms.map((platform) => (
-          <a
-            key={platform.name}
-            className={styles.share}
-            href={platform.generateUrl(title, url)}
-            aria-label={shareLabel(platform)}
-          >
-            <Icon name={platform.icon} size="s" />
-          </a>
-        ))}
+        {enabledPlatforms.map((platform) => {
+          const href = platform.generateUrl(title, url);
+          return (
+            <a
+              key={platform.name}
+              className={styles.share}
+              href={href}
+              aria-label={shareLabel(platform)}
+              // A network opens beside the post; sharing by email is a mailto and stays put.
+              {...newTabIfExternal(href)}
+            >
+              <Icon name={platform.icon} size="s" />
+            </a>
+          );
+        })}
 
         {socialSharing.platforms.copyLink && (
           <button

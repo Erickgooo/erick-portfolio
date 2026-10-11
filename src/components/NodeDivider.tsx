@@ -4,8 +4,9 @@ interface NodeDividerProps {
   maxWidth?: number;
 }
 
-// Line with a Cobalto node marker at its midpoint — the divider treatment
-// used on the homepage, extracted so detail pages (work/blog) match it.
+// A rule with a small node at its midpoint, between the body of a case study
+// or a post and the list under it. The node is drawn in the secondary text
+// colour: Cobalt is kept for the call to action and the film's progress bar.
 export function NodeDivider({ maxWidth = 48 }: NodeDividerProps) {
   return (
     <Row fitWidth position="relative">
@@ -17,7 +18,7 @@ export function NodeDivider({ maxWidth = 48 }: NodeDividerProps) {
           top: "50%",
           width: "5px",
           height: "5px",
-          background: "#2D5BFF",
+          background: "var(--neutral-on-background-weak)",
           transform: "translate(-50%, -50%) rotate(45deg)",
         }}
       />

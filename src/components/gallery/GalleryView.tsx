@@ -190,7 +190,7 @@ function CarouselCell({ item }: { item: Extract<GalleryItem, { type: "carousel" 
             nothing to count. */}
         {count > 1 && (
           <Flex position="absolute" className={styles.badge}>
-            <Icon name="gallery" size="xs" onBackground="neutral-strong" />
+            <Icon name="gallery" size="xs" />
             <Text variant="label-default-s" className={styles.badgeCount}>
               1/{count}
             </Text>
