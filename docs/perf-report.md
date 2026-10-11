@@ -328,6 +328,5 @@ Budget (no page worse than `main` by more than 3 Perf points or 0.3 s of LCP; CL
 
 - **Accessibility.** At `34b1ccd` About scored 94 on mobile, under the budget: every page but the Home failed "Document does not have a main landmark", and Lighthouse sometimes caught the chatbot greeting mid fade-in and counted it as low contrast. The final build has one `<main>` around the page content: Home 100 / 100, About 96 / 96. The remaining About failure is that same greeting (steady state 16.87:1 in the dark theme); the chatbot is out of this work's scope. It shows up now because the greeting's background, `--surface-background`, became opaque and axe can compute it.
 - **Not re-measured on the final build:** Performance for work, blog and gallery. The last round changed their markup (a `<main>` tag, link attributes, the first blog thumbnail now loads with priority) but nothing that adds weight.
-- **Home, mobile, TBT 23 -> 39 ms:** the film is requested at `load` now that the intro is gone. Still far under 200 ms.
-- **About is 250 KB lighter** (667 -> 420 KB): the Once UI carousel and avatar group no longer ship there.
+- **Home, mobile, TBT 23 -> 39 ms** and **About, total weight 667 -> 420 KB:** measured, cause not investigated.
 - A second runner worth adding: `/work/leadbot-ai`, whose hero is now a paused clip with a poster that is not preloaded.
