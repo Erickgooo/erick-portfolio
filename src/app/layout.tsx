@@ -112,7 +112,9 @@ export default async function RootLayout({
           horizontal="center"
         >
           <Header />
+          {/* The one main landmark: the page, without the header, the footer or the chatbot. */}
           <Flex
+            as="main"
             zIndex={0}
             fillWidth
             padding="l"

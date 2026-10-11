@@ -13,3 +13,14 @@
         min-height: 44px;
     }
 }
+
+// Six 44px controls with their gaps and frame are 304px wide, and the header
+// keeps 8px on each side: on a 320px screen nothing is left over. The place and
+// time labels are not shown on phones, but the 12px gutters beside them were
+// still there, and with no room to spare they pushed the bar 4px off centre,
+// up against the right edge. Below 360px they give the room back.
+@media (max-width: 359px) {
+    .side {
+        padding-inline: 0 !important;
+    }
+}

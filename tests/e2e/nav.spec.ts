@@ -75,6 +75,43 @@ test("on a phone every nav control is at least 44x44 and the bar fits", async ({
   expect(bar.docScroll).toBeLessThanOrEqual(390);
 });
 
+test("at 320px wide the whole bar is on screen and centred, every control 44x44", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 320, height: 640 });
+  await page.goto("/about");
+  await expect(page.locator("h1").first()).toBeVisible();
+  const controls = await page.evaluate(() =>
+    Array.from(document.querySelectorAll("header a, header button"))
+      .filter((el) => el.getClientRects().length > 0)
+      .map((el) => {
+        const r = el.getBoundingClientRect();
+        return {
+          name: el.getAttribute("aria-label") ?? el.textContent ?? "",
+          w: r.width,
+          h: r.height,
+          left: r.left,
+          right: r.right,
+          top: r.top,
+          bottom: r.bottom,
+        };
+      }),
+  );
+  // Home, the four sections and the theme switch.
+  expect(controls.length).toBe(6);
+  expect(controls.filter((c) => c.w < 43.5 || c.h < 43.5)).toEqual([]);
+  expect(
+    controls.filter((c) => c.left < 0 || c.right > 320 || c.top < 0 || c.bottom > 640),
+  ).toEqual([]);
+  // Six 44px controls leave 16px to spare at this width: the same air on both
+  // sides, not a gutter kept for labels that phones do not show.
+  const air = { left: controls[0].left, right: 320 - controls[controls.length - 1].right };
+  expect(air.left).toBeGreaterThanOrEqual(8);
+  expect(Math.abs(air.left - air.right)).toBeLessThanOrEqual(1);
+  const overflow = await page.evaluate(() => document.documentElement.scrollWidth);
+  expect(overflow).toBeLessThanOrEqual(320);
+});
+
 test("on desktop every nav control is at least 28x28", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/about");

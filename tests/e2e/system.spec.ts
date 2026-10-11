@@ -460,6 +460,9 @@ function followsThePageSystem(path: string, viewport: Viewport, minimum: Minimum
 
 const SYSTEM_PAGES = ["/work", ...CASE_STUDIES, "/about", "/blog/my-workspace"];
 
+// Pages that hold a heading, a line or a card and a control, and little else.
+const SHORT_PAGES = ["/blog", "/this-page-does-not-exist", "/unauthorized"];
+
 /**
  * Pages whose body links out, and the fewest such links the scan has to have
  * seen there: the booking link and two profiles, and two networks to share on.
@@ -516,6 +519,35 @@ for (const viewport of [PHONE, DESKTOP]) {
   });
 }
 
+// ─── One main landmark ──────────────────────────────────────────────────────
+// A screen reader jumps to it, so it holds the page and nothing of the site
+// around it: not the header, the footer or the chatbot.
+
+for (const path of [...ROUTES.map((route) => route.path), ...SHORT_PAGES.slice(1)]) {
+  test(`${path}: one main landmark, with the heading of the page in it`, async ({ page }) => {
+    await page.goto(path);
+    await expect(page.locator("h1").first()).toBeVisible();
+    const found = await page.evaluate(() => {
+      const mains = Array.from(document.querySelectorAll("main"));
+      const main = mains[0];
+      const around = ["header:has([data-header-side])", "footer", '[class*="FaqChatbot"]'];
+      return {
+        mains: mains.length,
+        headings: document.querySelectorAll("h1").length,
+        headingsInside: main ? main.querySelectorAll("h1").length : 0,
+        // Everything of the site that is around the page: there, and outside the landmark.
+        around: around.map((selector) => document.querySelectorAll(selector).length > 0),
+        inside: main ? around.filter((selector) => main.querySelector(selector) !== null) : [],
+      };
+    });
+    expect(found.mains).toBe(1);
+    expect(found.headings).toBeGreaterThanOrEqual(1);
+    expect(found.headingsInside).toBe(found.headings);
+    expect(found.around).toEqual([true, true, true]);
+    expect(found.inside).toEqual([]);
+  });
+}
+
 // ─── Work and the case studies ──────────────────────────────────────────────
 
 /** The text colours and the raised surface of the theme in force, as computed colours read them. */
@@ -563,9 +595,6 @@ for (const path of ["/work", CASE_STUDIES[0], CASE_STUDIES[1]]) {
     expect(links.filter((l) => l.line !== l.colour).map((l) => l.text)).toEqual([]);
   });
 }
-
-// Pages that hold a heading, a line or a card and a control, and little else.
-const SHORT_PAGES = ["/blog", "/this-page-does-not-exist", "/unauthorized"];
 
 for (const path of [...SYSTEM_PAGES, "/gallery", ...SHORT_PAGES]) {
   test(`${path}: no visible text is set outside 400, 500 and 600`, async ({ page }) => {

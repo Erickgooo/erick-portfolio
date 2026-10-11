@@ -102,6 +102,7 @@ export const Header = () => {
         }}
       >
         <Row
+          className={styles.side}
           paddingLeft="12"
           fillWidth
           vertical="center"
@@ -221,6 +222,7 @@ export const Header = () => {
         </Row>
         <Flex fillWidth horizontal="end" vertical="center" data-header-side="">
           <Flex
+            className={styles.side}
             paddingRight="12"
             horizontal="end"
             vertical="center"
