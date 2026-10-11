@@ -305,3 +305,29 @@ Headers are identical to `main` except one directive: `media-src 'self'` became 
 - A real iPhone or Mac Safari. Playwright's WebKit refuses the Blob URL and plays the film through the plain-URL fallback; whether real Safari takes the Blob or the fallback is unknown.
 - The Vercel Preview (Deployment Protection): no Lighthouse and no CSP check over https there.
 - Real mobile networks. The 10 to 12 MB film is the one number here that a local run cannot judge.
+
+
+## Apple-design pass (`feat/apple-pass`, 2026-10-10)
+
+Same machine and setup as the sections above: Lighthouse 13 CLI against a local `next start`, headless Edge (`CHROME_PATH`), median of 3. The baseline is `perf-final`, the local measurement of `main` after the load-time pass (same code as `main` today, measured 2026-10-09). The branch was measured twice: all five pages at `34b1ccd` (tag `apple-pass`), then Home and About again on the final build `bbee76a` (tag `apple-pass-final`) after the last round of fixes, which added the `<main>` landmark and changed nothing that loads.
+
+| Page | FF | `main` `perf-final` (Perf / A11y / LCP / CLS / TBT / JS / Total) | Branch |
+|---|---|---|---|
+| home | mobile | 85 / 100 / 4.21 s / 0.000 / 23 ms / 268 KB / 4950 KB | 89 / 100 / 3.62 s / 0.000 / 39 ms / 263 KB / 4911 KB (final build) |
+| home | desktop | 99 / 100 / 0.85 s / 0.001 / 0 ms / 268 KB / 12546 KB | 100 / 100 / 0.78 s / 0.001 / 0 ms / 263 KB / 12508 KB (final build) |
+| about | mobile | 89 / 98 / 3.61 s / 0.048 / 24 ms / 268 KB / 667 KB | 91 / 96 / 3.32 s / 0.031 / 15 ms / 263 KB / 420 KB (final build) |
+| about | desktop | 100 / 98 / 0.73 s / 0.026 / 0 ms / 268 KB / 663 KB | 100 / 96 / 0.71 s / 0.010 / 0 ms / 263 KB / 417 KB (final build) |
+| work | mobile | 83 / 98 / 4.51 s / 0.000 / 28 ms / 269 KB / 835 KB | 89 / 98 / 3.63 s / 0.000 / 51 ms / 265 KB / 781 KB (`34b1ccd`) |
+| work | desktop | 99 / 98 / 0.90 s / 0.000 / 0 ms / 269 KB / 845 KB | 99 / 98 / 0.95 s / 0.000 / 0 ms / 265 KB / 890 KB (`34b1ccd`) |
+| blog | mobile | 88 / 98 / 3.69 s / 0.000 / 25 ms / 272 KB / 500 KB | 88 / 98 / 3.78 s / 0.000 / 31 ms / 268 KB / 486 KB (`34b1ccd`) |
+| blog | desktop | 100 / 98 / 0.77 s / 0.000 / 0 ms / 272 KB / 499 KB | 100 / 98 / 0.78 s / 0.000 / 0 ms / 268 KB / 485 KB (`34b1ccd`) |
+| gallery | mobile | 87 / 98 / 3.84 s / 0.000 / 47 ms / 268 KB / 518 KB | 87 / 98 / 3.92 s / 0.000 / 68 ms / 263 KB / 505 KB (`34b1ccd`) |
+| gallery | desktop | 99 / 98 / 0.94 s / 0.011 / 0 ms / 268 KB / 855 KB | 99 / 98 / 0.96 s / 0.000 / 0 ms / 263 KB / 842 KB (`34b1ccd`) |
+
+Budget (no page worse than `main` by more than 3 Perf points or 0.3 s of LCP; CLS < 0.05; A11y >= 95; TBT < 200 ms): **met on all ten rows.** No page loses a Perf point; the largest LCP increase is 0.09 s (blog, mobile).
+
+- **Accessibility.** At `34b1ccd` About scored 94 on mobile, under the budget: every page but the Home failed "Document does not have a main landmark", and Lighthouse sometimes caught the chatbot greeting mid fade-in and counted it as low contrast. The final build has one `<main>` around the page content: Home 100 / 100, About 96 / 96. The remaining About failure is that same greeting (steady state 16.87:1 in the dark theme); the chatbot is out of this work's scope. It shows up now because the greeting's background, `--surface-background`, became opaque and axe can compute it.
+- **Not re-measured on the final build:** Performance for work, blog and gallery. The last round changed their markup (a `<main>` tag, link attributes, the first blog thumbnail now loads with priority) but nothing that adds weight.
+- **Home, mobile, TBT 23 -> 39 ms:** the film is requested at `load` now that the intro is gone. Still far under 200 ms.
+- **About is 250 KB lighter** (667 -> 420 KB): the Once UI carousel and avatar group no longer ship there.
+- A second runner worth adding: `/work/leadbot-ai`, whose hero is now a paused clip with a poster that is not preloaded.

@@ -42,7 +42,7 @@ Reglas:
 - **Cobalto significa dos cosas:** la acción principal (relleno del botón) y el estado del video (barra de progreso). En ningún otro lugar: ni en texto corrido, ni en chips, ni en bordes, ni en sombras.
 - **Los enlaces se distinguen por subrayado,** no por color. En hover pueden tomar `#2549cb` (claro) o `#a6baff` (oscuro).
 - **Ningún texto por debajo de 4.5:1** (3:1 desde 24 px, o 18.66 px en negrita) en ninguna página ni tema.
-- Sobre el video de la Home el texto solo va sobre la superficie opaca del tema (la banda del héroe y las tarjetas). No hay texto sobre fotogramas, salvo las etiquetas de la nav, que llevan su propio degradado (§3.2).
+- Sobre el video de la Home el texto solo va sobre la superficie opaca del tema (la banda del héroe y las tarjetas). No hay ningún texto sobre fotogramas: las etiquetas de la nav se ocultan mientras hay video debajo (§3.2).
 
 ### 2.2 Tipografía
 
@@ -111,8 +111,7 @@ La sección de newsletter (`Mailchimp`) sale de la Home: está desactivada y sol
 
 - **Alto de scroll:** héroe 175 % de la pantalla; tramos limpios 125 % (el último 160 %); tarjetas 100 % como mínimo.
 - **Velo:** 0 en reposo y 0.55 durante los destellos del montaje (los intervalos de `FILM_FLASHES`).
-- **Etiquetas de la nav sobre el video** (lugar y hora, 14 px, solo desde 769 px de ancho): son blancas, con un degradado propio detrás, mientras cualquier parte de su caja no esté sobre una superficie opaca de la página. Toman el color del tema solo cuando una tarjeta o la banda del héroe cubre la caja entera, o cuando el borde inferior del video ya pasó por encima de ella. Vale igual en los dos temas. Sin JS el primer fotograma es correcto, porque arriba siempre hay video.
-- **Degradado bajo la nav:** 132 px, de negro al 74 % a transparente, en una capa fija al borde superior de la ventana (no del escenario), visible exactamente mientras las etiquetas están en blanco. Blanco sobre ese degradado da al menos 5.33:1 sobre cualquier fotograma, blanco puro incluido. En teléfonos no existe: la barra va abajo con su propio fondo.
+- **Etiquetas de la nav (lugar y hora, solo desde 769 px de ancho):** no se muestran sobre el video. Son visibles, en el color del tema, solo cuando su caja entera está sobre una superficie opaca de la página (una tarjeta o la banda del héroe) o cuando el video ya la dejó. Vale igual en los dos temas y sin JS. No hay degradado bajo la nav. (Primero se probó dejarlas blancas con un degradado detrás: manchaba el borde de las tarjetas claras y se descartó.)
 - **Mientras el video no está listo, o si su descarga falla:** cada tramo muestra su fotograma fijo, como con movimiento reducido; el velo y la barra de progreso no se ven hasta que el video puede avanzar.
 - **Barra de progreso:** 3 px, Cobalto, `scaleX` según el tiempo del video. En el borde inferior del escenario; en pantallas de hasta 768 px, en el borde superior (abajo queda bajo la barra de navegación).
 - **Peso:** los archivos de video no cambian (`tests/unit/filmBudget.spec.ts`).

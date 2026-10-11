@@ -12,9 +12,10 @@
 //
 // The Home it expects: a film in [data-film-root] whose text all sits on opaque
 // surfaces ([data-opaque]: the hero band and the [data-seat] title cards), with
-// empty [data-film-beat] stretches between the cards. The only text left over
-// footage is the header's side labels ([data-header-side]), so those are
-// measured at every position of the scroll.
+// empty [data-film-beat] stretches between the cards. No text is meant to sit
+// on footage: the header's side labels ([data-header-side]) are hidden while
+// any of the film is under them, and that is checked at every position of the
+// scroll, together with their contrast wherever they do show.
 //
 // Options
 //   --home-path /lab?v=a   route used for everything Home-specific (default "/")
@@ -418,31 +419,75 @@ function capLib() {
   const surfaceId = (el) => (el.dataset.seat ? `card:${el.dataset.seat}` : "hero-band");
 
   /**
-   * What lies under a horizontal strip of the viewport (the header's labels):
-   * an opaque surface of the Home ("card"), the film ("film"), the boundary
-   * between two of them ("edge"), or the ordinary page.
+   * What lies under a horizontal strip of the viewport (a header label's box),
+   * worked out from where things are, not from what the site says about itself:
+   * "surface" when one opaque surface of the Home covers all of it, "page" when
+   * none of the film is under it, and "film" otherwise. "film" therefore
+   * includes every position where the edge of a surface, or the end of the
+   * film, cuts through the strip.
    */
   cap.underBox = (top, bottom) => {
     const root = document.querySelector("[data-film-root]");
     if (!root) return { kind: "page" };
     const height = bottom - top;
+    const film = root.getBoundingClientRect();
+    const filmShare = Math.max(0, Math.min(bottom, film.bottom) - Math.max(top, film.top)) / height;
+    if (filmShare <= 0) return { kind: "page" };
     let best = null;
     for (const surface of root.querySelectorAll("[data-opaque]")) {
       const r = surface.getBoundingClientRect();
+      if (r.top <= top && r.bottom >= bottom) return { kind: "surface", surface: surfaceId(surface) };
       const share = (Math.min(bottom, r.bottom) - Math.max(top, r.top)) / height;
       if (share > 0 && (!best || share > best.share)) best = { share, id: surfaceId(surface) };
     }
-    const rr = root.getBoundingClientRect();
-    const filmShare = Math.max(0, Math.min(bottom, rr.bottom) - Math.max(top, rr.top)) / height;
-    if (best && best.share >= 0.999) return { kind: "card", surface: best.id };
-    if (best) return { kind: "edge", surface: best.id, surfaceShare: round(best.share, 2) };
-    if (filmShare >= 0.999) {
-      // Pinned, the stage's top fade is under the labels; once it scrolls away it is not.
-      const stage = root.querySelector("[data-film-stage]").getBoundingClientRect();
-      return { kind: "film", stagePinned: Math.abs(stage.top) < 1, offsetInStage: Math.round(top - stage.top) };
-    }
-    if (filmShare > 0) return { kind: "edge", surface: "film-end", surfaceShare: round(1 - filmShare, 2) };
-    return { kind: "page" };
+    if (best) return { kind: "film", cut: `edge of ${best.id}`, filmShare: round(1 - best.share, 2) };
+    if (filmShare < 0.999) return { kind: "film", cut: "end of the film", filmShare: round(filmShare, 2) };
+    return { kind: "film" };
+  };
+
+  /**
+   * The header's side labels as they are right now, hidden or not: the box of
+   * each one's text, whether it is shown, and what is under that box.
+   */
+  cap.labelStates = () => {
+    const states = [];
+    const range = document.createRange();
+    [...document.querySelectorAll("[data-header-side]")].forEach((side, index) => {
+      const walker = document.createTreeWalker(side, NodeFilter.SHOW_TEXT);
+      let box = null;
+      let leaf = null;
+      let text = "";
+      for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+        if (!node.nodeValue.trim()) continue;
+        range.selectNodeContents(node);
+        // A hidden label keeps its place in the layout; one that is not rendered has no box.
+        const b = range.getBoundingClientRect();
+        if (b.width < 1 || b.height < 1) continue;
+        box = box
+          ? [Math.min(box[0], b.left), Math.min(box[1], b.top), Math.max(box[2], b.right), Math.max(box[3], b.bottom)]
+          : [b.left, b.top, b.right, b.bottom];
+        leaf = node.parentElement;
+        text += node.nodeValue;
+      }
+      if (!box) return;
+      let opacity = 1;
+      for (let e = leaf; e && e.nodeType === 1; e = e.parentElement) {
+        const own = parseFloat(getComputedStyle(e).opacity);
+        opacity *= Number.isNaN(own) ? 1 : own;
+      }
+      const cs = getComputedStyle(leaf);
+      states.push({
+        side: index === 0 ? "left" : "right",
+        text: text.replace(/\s+/g, " ").trim().slice(0, 40),
+        box: box.map((v) => round(v, 1)),
+        visibility: cs.visibility,
+        opacity: round(opacity, 3),
+        shown: cs.visibility === "visible" && opacity > 0.01,
+        color: cs.color,
+        under: cap.underBox(box[1], box[3]),
+      });
+    });
+    return states;
   };
 
   /**
@@ -1182,7 +1227,8 @@ function capLib() {
     for (const side of document.querySelectorAll("[data-header-side]")) {
       const walker = document.createTreeWalker(side, NodeFilter.SHOW_TEXT);
       for (let node = walker.nextNode(); node; node = walker.nextNode()) {
-        if (!node.nodeValue.trim() || !node.parentElement.checkVisibility(VIS)) continue;
+        // Hidden labels count too: over the film they are hidden but still laid out.
+        if (!node.nodeValue.trim()) continue;
         range.selectNodeContents(node);
         const b = range.getBoundingClientRect();
         if (b.width < 1 || b.height < 1) continue;
@@ -1943,13 +1989,52 @@ async function runHome(browser, vp, theme) {
 // ── The pass along the film ──
 /** Which kind of ground a header label stands on. */
 const labelGround = (reading) => {
-  const under = reading.under || { kind: "page" };
-  if (under.kind === "film") return under.stagePinned ? "film, stage pinned" : "film, stage scrolling away";
-  if (under.kind === "card") return "opaque surface";
-  if (under.kind === "edge") return "edge of a surface";
-  return "page";
+  const kind = reading.under?.kind || "page";
+  return kind === "surface" ? "opaque surface" : kind === "film" ? "film (must not be shown)" : "page";
 };
-const GROUNDS = ["film, stage pinned", "film, stage scrolling away", "opaque surface", "edge of a surface", "page"];
+const GROUNDS = ["opaque surface", "page", "film (must not be shown)"];
+
+/**
+ * The rule under test: a label is shown only when no film is under its box.
+ * Counts every label at every position by what is under it and whether it is
+ * shown, and lists each break of the rule in either direction.
+ */
+function summariseVisibility(samples) {
+  const out = { positions: 0, sides: {}, shownOverFilm: [], hiddenOffFilm: [], partlyShown: [], shownWithoutReading: 0 };
+  for (const sample of samples) {
+    if (!sample.states) continue;
+    out.positions++;
+    for (const state of sample.states) {
+      const side = (out.sides[state.side] ??= { text: state.text, grounds: {} });
+      const ground = (side.grounds[state.under.kind] ??= { positions: 0, shown: 0, hidden: 0 });
+      ground.positions++;
+      if (state.shown) ground.shown++;
+      else ground.hidden++;
+      const ref = {
+        side: state.side,
+        scrollY: sample.scrollY,
+        kind: sample.kind,
+        edge: sample.edge,
+        where: sample.where,
+        time: sample.time,
+        veil: sample.veil,
+        under: state.under,
+        box: state.box,
+        visibility: state.visibility,
+        opacity: state.opacity,
+        navOverCard: sample.navOverCard,
+        pastFilm: sample.pastFilm,
+      };
+      if (state.shown && state.under.kind === "film") out.shownOverFilm.push(ref);
+      if (!state.shown && state.under.kind !== "film") out.hiddenOffFilm.push(ref);
+      if (state.shown && state.opacity < 0.999) out.partlyShown.push(ref);
+      if (state.shown && !(sample.labels || []).some((l) => l.side === state.side && l.ratioMedian !== undefined)) {
+        out.shownWithoutReading++;
+      }
+    }
+  }
+  return out;
+}
 
 function summariseLabels(samples) {
   const sides = {};
@@ -2042,11 +2127,12 @@ function summariseNav(samples) {
 
 /**
  * One trip down the film for a viewport and theme. At every position it reads
- * the header (side labels, the bar's text and icons) against the pixels behind
- * it; in the dark theme it also reads the film itself, as the old film scan did.
- * Positions: the evenly spaced ones, a dense set, and where the labels show,
- * the stretch after the stage unpins and four positions around every edge that
- * passes under them.
+ * the header: whether each side label is shown and what is under it, the
+ * contrast of whatever is shown, and the bar's own text and icons; in the dark
+ * theme it also reads the film itself, as the old film scan did. Positions: the
+ * evenly spaced ones, a dense set, and where the labels are laid out, the
+ * stretch from the end of the pinned film to the page after it and seven
+ * positions around every edge that passes under them.
  */
 async function runTrack(browser, vp, theme) {
   const scan = theme === "dark";
@@ -2074,21 +2160,24 @@ async function runTrack(browser, vp, theme) {
   spread(FILM_STEPS, "base");
   if (FILM_DENSE > 0 && (scan || labels)) spread(FILM_DENSE, "dense");
   if (labels) {
-    // After the stage unpins it scrolls away under the labels, without its top fade.
+    // Past the pinned stretch the stage scrolls away under the labels, and the page follows it.
     const step = Math.max(8, Math.round((end - start) / Math.max(1, (FILM_DENSE || FILM_STEPS) - 1)));
-    for (let y = end + step; y <= Math.min(maxScroll, geo.top + geo.height); y += step) {
+    for (let y = end + step; y <= Math.min(maxScroll, geo.top + geo.height + 3 * step); y += step) {
       positions.push({ kind: "tail", scrollY: Math.round(y) });
     }
     const [top, bottom] = geo.labelBox;
     const height = bottom - top;
-    // Where the edge sits in the label box. The site switches the labels' colour
-    // when a surface spans the middle of the bar, so the two positions next to
-    // the middle are the last one before and the first one after that switch.
+    // Where an edge sits relative to the label box. The labels may show only
+    // once an edge has cleared the whole box, so the positions that matter are
+    // the ones either side of its top and of its bottom.
     const around = [
-      ["edge a quarter down the box", height * 0.25],
-      ["edge 1 px above the middle", height / 2 - 1],
-      ["edge 1 px below the middle", height / 2 + 1],
-      ["edge three quarters down the box", height * 0.75],
+      ["edge 1 px above the box", -1],
+      ["edge on the top of the box", 0],
+      ["edge 1 px inside the top", 1],
+      ["edge through the middle", height / 2],
+      ["edge 1 px inside the bottom", height - 1],
+      ["edge on the bottom of the box", height],
+      ["edge 1 px below the box", height + 1],
     ];
     for (const edge of geo.edges) {
       for (const [where, into] of around) {
@@ -2096,11 +2185,6 @@ async function runTrack(browser, vp, theme) {
         const y = Math.round(edge.y - (top + into));
         if (y >= 0 && y <= maxScroll) positions.push({ kind: "edge", edge: `${edge.id} ${edge.side}`, where, scrollY: y });
       }
-    }
-    // The site turns the labels back to the theme colour when the film's end is 80 px from the top.
-    for (const [where, delta] of [["1 px before the switch", -1], ["at the switch", 0]]) {
-      const y = Math.round(geo.top + geo.height - 80 + delta);
-      if (y >= 0 && y <= maxScroll) positions.push({ kind: "edge", edge: "past-film switch", where, scrollY: y });
     }
   }
   positions.sort((a, b) => a.scrollY - b.scrollY);
@@ -2139,7 +2223,8 @@ async function runTrack(browser, vp, theme) {
   for (const position of positions) {
     await scrollTo(page, position.scrollY);
     const state = await page.evaluate(() => window.__cap.filmSettled());
-    // The veil eases over 200 ms and the header's attributes follow the scroll by a frame.
+    // The veil eases over 200 ms, the labels fade in over 150 ms, and the header's
+    // attributes follow the scroll by a frame: all of that has to be over.
     await page.waitForFunction(() => window.__cap.animationsIdle(), null, { timeout: 3000 }).catch(() => {});
     const sample = {
       ...position,
@@ -2152,7 +2237,9 @@ async function runTrack(browser, vp, theme) {
       stageTop: state.stageTop,
     };
     let touched = false;
+    if (labels) sample.states = await page.evaluate(() => window.__cap.labelStates());
     if (navClip && (labels || position.kind === "base")) {
+      // Hidden labels are not text on the page, so they give no contrast reading here.
       const nav = await page.evaluate(() => window.__cap.navReadings());
       const frame = await hiddenFrame(page, { clip: navClip, restore: false });
       const marked = labels ? await hiddenFrame(page, { clip: navClip, mode: "markText", restore: false }) : null;
@@ -2209,6 +2296,7 @@ async function runTrack(browser, vp, theme) {
     (metrics.film.labels[vp.name] ??= {})[theme] = {
       labelBox: geo.labelBox,
       positions: counts,
+      visibility: summariseVisibility(samples),
       sides: summariseLabels(samples),
       samples: samples.map((s) => ({
         kind: s.kind,
@@ -2221,6 +2309,7 @@ async function runTrack(browser, vp, theme) {
         navOverCard: s.navOverCard,
         pastFilm: s.pastFilm,
         stageTop: s.stageTop,
+        states: (s.states || []).map(({ text, ...rest }) => rest),
         labels: (s.labels || []).map(({ text, fontSize, fontWeight, required, opacity, ...rest }) => rest),
       })),
     };
@@ -2544,11 +2633,29 @@ function writeSummary() {
 
   // A2 — nav labels along the film
   p("## A2. Header side labels along the film", "");
-  p("The place and clock labels (`[data-header-side]`) are the only text left over footage. Each row is one label on one kind of ground: `film, stage pinned` has the stage's 132 px top fade under the labels; `film, stage scrolling away` is the last screen of the film, when the stage has unpinned and the labels cross it lower down; `opaque surface` is the hero band or a title card; `edge of a surface` is a position where a surface boundary cuts through the label box (four positions were placed around every such edge, plus two around the point where the site switches the labels back at the film's end). `worst` is the lower of the p5 and p95 ratios, so it catches light text on a bright patch and dark text on a dark one. Those three are read over the label's whole text box, which also holds the space around the letters; `glyph pixels under it` is read only on the pixels the letters cover (found by painting the text magenta in one more frame), and gives the share of them where the label's colour is under the threshold against the pixel behind.", "");
+  p("The place and clock labels (`[data-header-side]`) must never be shown over footage. The site hides them (`visibility: hidden`, `opacity: 0`) while any part of their box is over the film, and shows them, in the theme's own colour, only when an opaque surface (the hero band or a title card) covers their whole box or the film has scrolled above it. Here each label's state is read at every position, after the film has settled and the labels' 150 ms fade is over: `shown` means computed `visibility: visible` and an opacity above 0 down the whole ancestor chain. What is under a label is worked out from the page's geometry, not from the attributes the site sets: `film` when any of the film is under its text box without one surface covering all of it (so every position where the edge of a surface, or the end of the film, cuts through the box counts as film), `surface` or `page` otherwise. Seven positions are placed around every edge that crosses the labels: 1 px before it reaches the box, on the top of the box, 1 px inside, through the middle, 1 px before the bottom, on the bottom, and 1 px past it.", "");
   for (const [vp, byTheme] of Object.entries(m.film.labels)) {
     for (const [theme, data] of Object.entries(byTheme)) {
       p(`### ${vp} px — ${theme}`, "");
       p(`Positions: ${Object.entries(data.positions).map(([k, n]) => `${n} ${k}`).join(", ")}. Label box: y ${data.labelBox.map((v) => Math.round(v)).join("–")} px.`, "");
+      const vis = data.visibility;
+      const stateRows = [];
+      for (const [side, info] of Object.entries(vis.sides)) {
+        for (const kind of ["film", "surface", "page"]) {
+          const g = info.grounds[kind];
+          if (g) stateRows.push([`${side} (${/^\d/.test(info.text) ? "clock" : clip(info.text, 20)})`, kind, g.positions, g.shown, g.hidden]);
+        }
+      }
+      table(["label", "under its box", "positions", "shown", "hidden"], stateRows);
+      const where = (r) => [r.scrollY, r.kind + (r.edge ? `: ${r.edge}, ${r.where}` : ""), r.side, r.under.kind + (r.under.surface ? ` (${r.under.surface})` : r.under.cut ? ` (${r.under.cut}, film under ${Math.round(r.under.filmShare * 100)}% of the box)` : ""), `${r.visibility}, opacity ${r.opacity}`, r.time, r.veil, r.navOverCard ? "yes" : "no", r.pastFilm ? "yes" : "no"];
+      const head = ["scrollY", "position", "label", "under its box", "state", "film s", "veil", "nav-over-card", "past-film"];
+      p(`**Shown while film is under the box: ${vis.shownOverFilm.length}** label readings (must be 0).`, "");
+      if (vis.shownOverFilm.length) table(head, vis.shownOverFilm.slice(0, 150).map(where));
+      p(`**Hidden although the whole box is over a surface or the page: ${vis.hiddenOffFilm.length}** label readings.`, "");
+      if (vis.hiddenOffFilm.length) table(head, vis.hiddenOffFilm.slice(0, 150).map(where));
+      p(`Shown but not at full opacity once settled: ${vis.partlyShown.length}. Shown but without a contrast reading: ${vis.shownWithoutReading}.`, "");
+      if (vis.partlyShown.length) table(head, vis.partlyShown.slice(0, 60).map(where));
+      p("Contrast where a label is shown. `worst` is the lower of the p5 and p95 ratios; those and the median are read over the label's whole text box, which also holds the space around the letters. `glyph pixels under it` is read only on the pixels the letters cover (found by painting the text magenta in one more frame) and gives the share of them where the label's colour is under the threshold against the pixel behind.", "");
       const rows = [];
       const spot = (r, key) => (r ? `${r[key]} — ${r.color} on ${key === "ratioMedian" ? r.bgMedian : key === "ratioP95" ? r.bgP95 : r.ratioP5 < r.ratioP95 ? r.bgP5 : r.bgP95}, scrollY ${r.scrollY}, film ${r.time} s, veil ${r.veil}${r.edge ? `, ${r.edge} ${r.where}` : ""}` : "");
       for (const [side, info] of Object.entries(data.sides)) {
@@ -2576,16 +2683,16 @@ function writeSummary() {
         for (const l of s.labels) {
           if (l.ratioMedian === undefined) continue;
           if (Math.min(l.ratioMedian, l.ratioWorst) >= 4.5 && !(l.glyph && l.glyph.shareUnder >= 0.01)) continue;
-          failing.push([s.scrollY, s.kind + (s.edge ? `: ${s.edge}, ${s.where}` : ""), l.side, labelGround(l) + (l.under?.surface ? ` (${l.under.surface}${l.under.surfaceShare ? ` ${Math.round(l.under.surfaceShare * 100)}%` : ""})` : ""), l.color, `${l.bgP5} / ${l.bgMedian} / ${l.bgP95}`, l.ratioMedian, l.ratioP95, l.ratioP5, l.glyph ? `${Math.round(l.glyph.shareUnder * 100)}%` : "", s.time, s.veil, s.navOverCard ? "yes" : "no", s.pastFilm ? "yes" : "no"]);
+          failing.push([s.scrollY, s.kind + (s.edge ? `: ${s.edge}, ${s.where}` : ""), l.side, labelGround(l) + (l.under?.surface ? ` (${l.under.surface})` : l.under?.cut ? ` (${l.under.cut})` : ""), l.color, `${l.bgP5} / ${l.bgMedian} / ${l.bgP95}`, l.ratioMedian, l.ratioP95, l.ratioP5, l.glyph ? `${Math.round(l.glyph.shareUnder * 100)}%` : "", s.time, s.veil, s.navOverCard ? "yes" : "no", s.pastFilm ? "yes" : "no"]);
         }
       }
-      p(`Every reading under 4.5 at the median pixel, at the worst pixel of the box, or on at least 1% of the glyph pixels (${failing.length}):`, "");
+      p(`Every reading of a shown label under 4.5 at the median pixel, at the worst pixel of the box, or on at least 1% of the glyph pixels (${failing.length}):`, "");
       table(["scrollY", "position", "label", "ground", "colour", "bg p5 / median / p95", "median", "p95", "p5", "glyph px under 4.5", "film s", "veil", "nav-over-card", "past-film"], failing.slice(0, 120));
       if (failing.length > 120) p(`…and ${failing.length - 120} more in \`metrics.json\` (\`film.labels\`).`, "");
     }
   }
   p("### The bar's own text and icons along the film", "");
-  p("Read at every position the labels were read at (1440 px) or at the evenly spaced positions (390 px, where the labels are hidden and the bar is an icon row). Icons are rated against 3:1 (WCAG 1.4.11, non-text); their colour is the SVG's computed `color`, and `drawn in text colour: no` means the text-hidden frame may still show the icon, so that reading is not reliable.", "");
+  p("Read at every position the labels were read at (1440 px) or at the evenly spaced positions (390 px, where the labels are not laid out and the bar is an icon row). Icons are rated against 3:1 (WCAG 1.4.11, non-text); their colour is the SVG's computed `color`, and `drawn in text colour: no` means the text-hidden frame may still show the icon, so that reading is not reliable.", "");
   const navRows = [];
   for (const [vp, byTheme] of Object.entries(m.film.nav)) {
     for (const [theme, nav] of Object.entries(byTheme)) {
@@ -2597,7 +2704,7 @@ function writeSummary() {
 
   // B — film background
   p("## B. Film background across the whole scroll", "");
-  p("Central 60% of the viewport, text hidden, dark theme. `with content` is the page as it is (a title card covers the film while it passes); `film only` is the stage alone (video, veil, top fade, progress bar) at the same scroll position. Luminance is WCAG relative luminance, 0–1. White text on a background of luminance L has contrast 1.05 / (L + 0.05).", "");
+  p("Central 60% of the viewport, text hidden, dark theme. `with content` is the page as it is (a title card covers the film while it passes); `film only` is the stage alone (video, veil, progress bar) at the same scroll position. Luminance is WCAG relative luminance, 0–1. White text on a background of luminance L has contrast 1.05 / (L + 0.05).", "");
   for (const [vp, scan] of Object.entries(m.film.scan)) {
     p(`### ${vp} px`, "");
     const b = scan.brightest;
@@ -2886,14 +2993,27 @@ function writeSummary() {
       }
       oldLabels.push(`${theme}: ${n} readings, lowest median ${min}, lowest worst-case ${minWorst}`);
     }
-    p(`Not comparable. Before, the labels were read only in the ten beat frames per theme, over a film that carried a 0.58 veil (${oldLabels.join("; ") || "no readings"}; picked out of the earlier file by their position at the two ends of the bar). After, they are read at every position of section A2.`, "");
+    const nowLabels = [];
+    for (const [theme, data] of Object.entries(m.film.labels?.["1440"] || {})) {
+      const vis = data.visibility;
+      let readings = 0;
+      let lowest = Infinity;
+      for (const info of Object.values(data.sides)) {
+        for (const g of Object.values(info.grounds)) {
+          readings += g.positions;
+          if (g.worstAny) lowest = Math.min(lowest, g.worstAny.ratioWorst);
+        }
+      }
+      nowLabels.push(`${theme}: shown over film in ${vis.shownOverFilm.length} of ${vis.positions * Object.keys(vis.sides).length} label readings; ${readings} readings where shown (over a surface or the page), lowest worst-case ${lowest === Infinity ? "—" : lowest}`);
+    }
+    p(`Not like for like. Before, the labels were shown over the film at every position, in white, and were read only in the ten beat frames per theme, over a film that carried a 0.58 veil (${oldLabels.join("; ") || "no readings"}; picked out of the earlier file by their position at the two ends of the bar). After, they are hidden over the film and read at every position of section A2 (${nowLabels.join("; ") || "no readings"}).`, "");
   }
 
   p("## Limits of the method", "");
   p("- Not measured: text inside closed disclosures (FAQ answers, the chatbot panel, the gallery dialog), hover/focus/active states, text drawn by pseudo-elements, SVG text, input values, and emoji (they ignore the text colour, so they stay in the text-hidden frame).");
   p("- `bg median` / `p5` / `p95` are single pixels picked by luminance rank from up to 60 000 samples of the text box; boxes include the gaps between lines.");
-  p("- Section A2 reads the labels at discrete scroll positions (the spacing of the dense pass is about 0.1 s of film). The film between two positions is not read, and each position is read after the film and the veil's 200 ms ease have settled, not while they move.");
-  p("- The four positions around each edge are fixed offsets into the label box; they show what happens while an edge crosses the labels, not how long a visitor stays there.");
+  p("- Section A2 reads the labels at discrete scroll positions, each one after the film, the veil's 200 ms ease and the labels' 150 ms fade have settled. What a label looks like while it fades in, and what happens between two positions or during a fast scroll, is not read.");
+  p("- The seven positions around each edge are whole-pixel scroll positions; an edge that lands on a fraction of a pixel is rounded to the nearest one.");
   p("- The film background scan and the film-only frames run in the dark theme only; type inventory, hit targets and effects are read in the dark theme only.");
   p("- Full-page JPEGs are stitched from bands of 60% of the viewport, each shot with that band at the top of the screen. Fixed chrome is painted once and sticky boxes sit at their place in the flow; `metrics.json` lists fixed boxes that fitted in neither the first nor the last band (`full.fixedLeftOut`).");
   p("- The chatbot greeting is on screen in every `-top.png` and in `hero-top.png` (it appears 2.5 s after load and leaves after 8 s); it is dismissed before everything else is shot or measured. `hero-top-clean.png` is the same frame without it.", "");

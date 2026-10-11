@@ -163,8 +163,8 @@ Datos: `blog/page.tsx:39-41` pinta «Earlier posts» siempre y `Posts range={[4]
 **Files:** Create `docs/design/apple-review-after.md`. Modify `scripts/design/capture.mjs` (tramos y selectores nuevos de la Home), `docs/perf-report.md` (sección nueva), `tests/unit/filmBudget.spec.ts` solo si el comentario quedó desfasado.
 
 - [ ] **Step 1:** `rg` de la definición de terminado sobre `src/components` y `src/app`: `background-clip: text`, `filter: blur`, `backdrop-filter`. Solo puede quedar la excepción del §8 del spec.
-- [ ] **Step 2:** Captura «después» con `scripts/design/capture.mjs` (`--out docs/design/screens/after`), mismas páginas y anchos que el «antes», con contraste medido por píxel en las etiquetas de la nav sobre el video.
-- [ ] **Step 3:** `docs/design/apple-review-after.md` con el formato de la skill y los números medidos. Sin hallazgos Critical ni High; si aparece alguno, se corrige antes de seguir.
-- [ ] **Step 4:** Lighthouse contra `main` con el método de `docs/perf-report.md` («Lighthouse 13: branch vs `main`»): `LH_TAG=apple-pass npm run perf:lh` y `npm run perf:report -- apple-pass base-lh13`. Presupuesto del §7 del spec. Tabla nueva en `docs/perf-report.md`.
-- [ ] **Step 5:** Revisión final de toda la rama, correcciones y una sola re-revisión.
+- [x] **Step 2:** Captura «después» con `scripts/design/capture.mjs` (`--out docs/design/screens/after`), mismas páginas y anchos que el «antes», con contraste medido por píxel en las etiquetas de la nav sobre el video.
+- [x] **Step 3:** `docs/design/apple-review-after.md` con el formato de la skill y los números medidos. Sin hallazgos Critical ni High; si aparece alguno, se corrige antes de seguir.
+- [x] **Step 4:** Lighthouse contra `main` con el método de `docs/perf-report.md` («Lighthouse 13: branch vs `main`»): `LH_TAG=apple-pass npm run perf:lh` y `npm run perf:report -- apple-pass base-lh13`. Presupuesto del §7 del spec. Tabla nueva en `docs/perf-report.md`.
+- [x] **Step 5:** Revisión final de toda la rama, correcciones y una sola re-revisión.
 - [ ] **Step 6:** Push de `feat/apple-pass`, Preview, capturas de antes y después por página, nota de memoria y resumen para Erick. **Sin merge.**

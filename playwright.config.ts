@@ -21,7 +21,17 @@ export default defineConfig({
     { name: "unit", testMatch: /unit[\\/].*\.spec\.ts$/ },
     { name: "chromium", testMatch: e2e, use: { ...devices["Desktop Chrome"] } },
     { name: "mobile-chromium", testMatch: e2e, use: { ...devices["Pixel 7"] } },
-    { name: "firefox", testMatch: e2e, use: { ...devices["Desktop Firefox"] } },
+    // Firefox, run alongside the other three engines against one `next start`, now and
+    // then never reports `load` for a page that has rendered (3 or 4 navigations in 250,
+    // a different test each run; none when Firefox runs alone). Tracing makes it more
+    // likely, so it is off here, and a navigation that stalls is tried once more: the
+    // reporter lists it as flaky rather than letting it pass unseen.
+    {
+      name: "firefox",
+      testMatch: e2e,
+      retries: 1,
+      use: { ...devices["Desktop Firefox"], trace: "off" },
+    },
     { name: "webkit", testMatch: e2e, use: { ...devices["Desktop Safari"] } },
   ],
   // Requires `npm run build` first. Reuses a server already listening on PORT.
