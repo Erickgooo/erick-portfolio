@@ -170,21 +170,36 @@
   padding: 0 !important;
 }
 
-/* Over the home film the header must not bring the theme with it: the footage
-   underneath is film whatever the theme. While any of it is under the side
-   labels the header's own fade is dropped (a gradient of the page colour with
-   a blur: white over the film by day, one more black on it by night) and the
-   labels are white, over the dark fade ScrollFilm fixes behind them. Both go
-   back to the theme's own once the page is under the labels: the film has
-   scrolled away, or one of the Home's page-coloured surfaces (the hero band or
-   a title card) covers their whole box. ScrollFilm sets data-past-film and
-   data-nav-over-card on <html> for those two cases. No theme in the selector:
-   it has to hold with no script, when nothing has set data-theme either. */
+/* Over the home film the header brings nothing of the page with it. While any
+   of the film is under the side labels (the place and the clock), the header's
+   own fade is dropped (a gradient of the page colour with a blur: white over
+   the film by day, one more black on it by night) and the labels are hidden:
+   no text sits on footage, and nothing is laid over the film to make it
+   readable there. Both come back once the page is under the labels: the film
+   has scrolled away, or one of the Home's page-coloured surfaces (the hero
+   band or a title card) covers their whole box. ScrollFilm sets data-past-film
+   and data-nav-over-card on <html> for those two cases, and the labels then
+   wear the theme's own colour like any other text. No theme in the selector:
+   it has to hold with no script, when nothing has set data-theme either, and
+   the top of the Home is film. */
 html:has([data-film-root]):not([data-past-film]):not([data-nav-over-card]) [data-header-fade] {
   display: none !important;
 }
 
-html:has([data-film-root]):not([data-past-film]):not([data-nav-over-card]) [data-header-side],
-html:has([data-film-root]):not([data-past-film]):not([data-nav-over-card]) [data-header-side] * {
-  color: #ffffff !important;
+html:has([data-film-root]):not([data-past-film]):not([data-nav-over-card]) [data-header-side] {
+  opacity: 0;
+  visibility: hidden;
+}
+
+/* They ease in when the page arrives under them. Only opacity moves:
+   visibility switches at once, so labels that are hidden are neither read out
+   nor left half-shown over a frame on their way out. */
+[data-header-side] {
+  transition: opacity 150ms linear;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-header-side] {
+    transition: none;
+  }
 }

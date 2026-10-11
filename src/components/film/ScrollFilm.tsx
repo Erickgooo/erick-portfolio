@@ -57,13 +57,12 @@ export function ScrollFilm({
     return () => query.removeEventListener("change", update);
   }, []);
 
-  // Tells the rest of the page what is under the nav bar, so the header can keep
-  // its place and time labels readable whatever the theme. Over footage they
-  // are white, on a dark fade of their own (custom.css, and `.shade` in the
-  // stylesheet). They take the theme's colour only where the page is under
-  // them: once the film has scrolled away (data-past-film) or while one of the
-  // Home's page-coloured surfaces covers them (data-nav-over-card). The bar sits
-  // at the top on desktop and at the bottom on phones.
+  // Tells the rest of the page what is under the nav bar. No text sits on
+  // footage, so the header's place and time labels are hidden over the film
+  // (custom.css) and shown, in the theme's own colour, only where the page is
+  // under them: once the film has scrolled away (data-past-film) or while one
+  // of the Home's page-coloured surfaces covers them (data-nav-over-card). The
+  // bar sits at the top on desktop and at the bottom on phones.
   useEffect(() => {
     const root = rootRef.current;
     if (!root) return;
@@ -88,9 +87,9 @@ export function ScrollFilm({
       // One rule for every edge that crosses the labels: they are on the page
       // only when no part of their box is over footage. A surface has to cover
       // the whole box, and the film's bottom edge has to be above it; with an
-      // edge inside the box, part of the text would be dark on dark frames or
-      // white on a near-white card. The box is measured because the bar's
-      // height is Once UI's.
+      // edge inside the box, part of the text would be over a frame. The box
+      // is measured because the bar's height is Once UI's, and it still has
+      // its place in the layout while the labels are hidden.
       const box = label.getBoundingClientRect();
       html.toggleAttribute("data-past-film", film.bottom <= box.top);
       html.toggleAttribute(
@@ -282,7 +281,6 @@ export function ScrollFilm({
 
   return (
     <div ref={rootRef} className={styles.film} data-film-root="">
-      <div className={styles.shade} data-film-shade="" />
       <div ref={stageRef} className={styles.stage} data-film-stage="" aria-hidden="true">
         <picture>
           <source media={PORTRAIT} srcSet={posterMobile} />

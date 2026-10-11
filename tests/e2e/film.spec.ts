@@ -10,7 +10,6 @@ const expect = baseExpect.configure({ timeout: 15_000 });
 
 const CALENDAR = "https://calendly.com/santiagomahecha2328/30min";
 const FILM_DURATION = 24.8;
-const WHITE = "rgb(255, 255, 255)";
 const THEMES = {
   light: { page: "rgb(244, 245, 247)", content: "rgb(11, 12, 14)" },
   dark: { page: "rgb(0, 0, 0)", content: "rgb(244, 245, 247)" },
@@ -276,26 +275,25 @@ for (const theme of ["light", "dark"] as const) {
   });
 }
 
+// The place and the clock beside the nav are text, and no text sits on footage:
+// they are shown only where the page is under them, in the theme's own colour,
+// and hidden wherever any part of their box is over the film.
 test.describe("the nav's side labels", () => {
   test.beforeEach(({ page: _page }, testInfo) => {
     test.skip(testInfo.project.name === "mobile-chromium", "the side labels are a desktop feature");
   });
 
+  const side = (page: Page) => page.locator("[data-header-side]").first();
+
   const labelColour = (page: Page) =>
-    page
-      .locator("[data-header-side]")
-      .first()
-      .evaluate((el) => getComputedStyle(el.firstElementChild ?? el).color);
+    side(page).evaluate((el) => getComputedStyle(el.firstElementChild ?? el).color);
 
   /** The box of the label's line of text: what has to be covered for it to count as on the page. */
   const labelBox = (page: Page) =>
-    page
-      .locator("[data-header-side]")
-      .first()
-      .evaluate((el) => {
-        const rect = (el.firstElementChild ?? el).getBoundingClientRect();
-        return { top: rect.top, bottom: rect.bottom };
-      });
+    side(page).evaluate((el) => {
+      const rect = (el.firstElementChild ?? el).getBoundingClientRect();
+      return { top: rect.top, bottom: rect.bottom };
+    });
 
   /**
    * Scrolls until the top or bottom edge of an element is `y` px from the top of
@@ -317,157 +315,113 @@ test.describe("the nav's side labels", () => {
       [selector, edge, y] as const,
     );
 
-  /** The dark fade behind the labels: a layer fixed to the top of the viewport. */
-  const shade = (page: Page) => page.locator("[data-film-shade]");
-
-  // White over the fade, or the theme's colour with no fade: never one without the other.
-  const onFilm = async (page: Page) => {
-    await expect.poll(() => labelColour(page)).toBe(WHITE);
-    await expect(shade(page)).toBeVisible();
+  // Hidden, not only faded: nothing to read, and nothing left for a screen reader.
+  const hidden = async (page: Page) => {
+    await expect(side(page)).toBeHidden();
+    await expect(side(page)).toHaveCSS("visibility", "hidden");
+    await expect(side(page)).toHaveCSS("opacity", "0");
   };
-  const onPage = async (page: Page) => {
-    await expect.poll(() => labelColour(page)).toBe(THEMES.light.content);
-    await expect(shade(page)).toBeHidden();
+  // Shown in full, in the colour the theme gives its text: never a colour of their own.
+  const shown = async (page: Page, theme: keyof typeof THEMES) => {
+    await expect(side(page)).toBeVisible();
+    await expect(side(page)).toHaveCSS("opacity", "1");
+    await expect.poll(() => labelColour(page)).toBe(THEMES[theme].content);
   };
 
-  test("light theme: the nav labels follow what is under them", async ({ page }) => {
+  const openHome = async (page: Page, theme: keyof typeof THEMES) => {
     await page.setViewportSize({ width: 1440, height: 900 });
-    await forceTheme(page, "light");
+    await forceTheme(page, theme);
     await page.goto("/");
-    const place = page.locator("[data-header-side]").first();
-    await expect(place).toContainText("Medellín, Colombia");
-    // Over the footage, which is dark whatever the theme.
-    await onFilm(page);
-    // A light title card pinned under the bar.
-    await scrollInto(page, '[data-seat="brand"]', 0.2);
-    await onPage(page);
-    // The card has left and the film is clean again.
-    await scrollIntoBeat(page, "after-brand", 0.1);
-    await onFilm(page);
-    await scrollInto(page, '[data-seat="software"]', 0.5);
-    await onPage(page);
-    await scrollIntoBeat(page, "after-software", 0.1);
-    await onFilm(page);
-    await scrollPastFilm(page);
-    await onPage(page);
-  });
+    await expect(side(page)).toContainText("Medellín, Colombia");
+  };
 
-  // The labels are on the page only while a surface covers their whole box. With
-  // an edge inside the box part of the text is still over footage, so they stay
-  // white, over the fade, which is dark enough on a near-white card too.
-  for (const [name, surface] of [
-    ["a title card", '[data-seat="brand"]'],
-    ["the hero band", '[data-film-beat="hero"] [data-opaque]'],
-  ] as const) {
-    test(`light theme: the labels wait for ${name} to cover their whole box`, async ({ page }) => {
-      await page.setViewportSize({ width: 1440, height: 900 });
-      await forceTheme(page, "light");
-      await page.goto("/");
-      await onFilm(page);
-      const box = await labelBox(page);
-      expect(box.bottom - box.top).toBeGreaterThan(10);
-      // Arriving: the top edge 4 px short of the top of the box, then on it.
-      await putEdge(page, surface, "top", box.top + 4);
-      await onFilm(page);
-      await putEdge(page, surface, "top", Math.floor(box.top));
-      await onPage(page);
-      // Leaving: the bottom edge on the bottom of the box, then 4 px inside it.
-      await putEdge(page, surface, "bottom", Math.ceil(box.bottom));
-      await onPage(page);
-      await putEdge(page, surface, "bottom", box.bottom - 4);
-      await onFilm(page);
+  for (const theme of ["light", "dark"] as const) {
+    test(`${theme} theme: the labels show over the page and never over the film`, async ({
+      page,
+    }) => {
+      await openHome(page, theme);
+      // The top of the Home is film.
+      await hidden(page);
+      // A title card pinned under the bar.
+      await scrollInto(page, '[data-seat="brand"]', 0.2);
+      await shown(page, theme);
+      // The card has left: a clean stretch of film.
+      await scrollIntoBeat(page, "after-brand", 0.1);
+      await hidden(page);
+      await scrollInto(page, '[data-seat="software"]', 0.5);
+      await shown(page, theme);
+      await scrollIntoBeat(page, "after-software", 0.1);
+      await hidden(page);
+      await scrollPastFilm(page);
+      await shown(page, theme);
+      // And back up over the film.
+      await page.evaluate(() => window.scrollTo({ top: 0, behavior: "instant" }));
+      await hidden(page);
     });
-  }
 
-  test("light theme: on the film's last screen the labels keep their fade", async ({ page }) => {
-    await page.setViewportSize({ width: 1440, height: 900 });
-    await forceTheme(page, "light");
-    await page.goto("/");
-    const box = await labelBox(page);
-    const stageTop = () =>
-      page.evaluate(
-        () =>
-          (document.querySelector("[data-film-stage]") as HTMLElement).getBoundingClientRect().top,
-      );
-    const width = await page.evaluate(() => document.documentElement.clientWidth);
-    // The stage has unpinned and is scrolling away, with film still under the labels.
-    for (const y of [400, box.bottom + 40, box.top + 4]) {
-      await putEdge(page, "[data-film-root]", "bottom", y);
-      expect(await stageTop()).toBeLessThan(0);
-      await onFilm(page);
-      // The fade does not leave with the stage: it is fixed to the top of the viewport.
-      const layer = await shade(page).evaluate((el) => {
-        const rect = el.getBoundingClientRect();
-        const style = getComputedStyle(el);
-        return {
-          position: style.position,
-          pointer: style.pointerEvents,
-          top: rect.top,
-          height: rect.height,
-          left: rect.left,
-          width: rect.width,
-        };
-      });
-      expect(layer).toEqual({
-        position: "fixed",
-        pointer: "none",
-        top: 0,
-        height: 132,
-        left: 0,
-        width,
+    // With an edge inside the box, part of the text would still be over footage:
+    // the labels wait until a surface covers the whole of it.
+    for (const [name, surface] of [
+      ["a title card", '[data-seat="brand"]'],
+      ["the hero band", '[data-film-beat="hero"] [data-opaque]'],
+    ] as const) {
+      test(`${theme} theme: the labels wait for ${name} to cover their whole box`, async ({
+        page,
+      }) => {
+        await openHome(page, theme);
+        await hidden(page);
+        const box = await labelBox(page);
+        expect(box.bottom - box.top).toBeGreaterThan(10);
+        // Arriving: the top edge 4 px short of the top of the box, then on it.
+        await putEdge(page, surface, "top", box.top + 4);
+        await hidden(page);
+        await putEdge(page, surface, "top", Math.floor(box.top));
+        await shown(page, theme);
+        // Leaving: the bottom edge on the bottom of the box, then 4 px inside it.
+        await putEdge(page, surface, "bottom", Math.ceil(box.bottom));
+        await shown(page, theme);
+        await putEdge(page, surface, "bottom", box.bottom - 4);
+        await hidden(page);
       });
     }
-  });
 
-  test("light theme: the labels turn once the film's bottom edge is above them", async ({
-    page,
-  }) => {
-    await page.setViewportSize({ width: 1440, height: 900 });
-    await forceTheme(page, "light");
-    await page.goto("/");
-    const box = await labelBox(page);
-    await putEdge(page, "[data-film-root]", "bottom", box.top + 4);
-    await onFilm(page);
-    await putEdge(page, "[data-film-root]", "bottom", Math.floor(box.top) - 1);
-    await onPage(page);
-    // And back, scrolling up.
-    await putEdge(page, "[data-film-root]", "bottom", box.top + 4);
-    await onFilm(page);
-  });
+    test(`${theme} theme: on the film's last screen the labels wait for the film to leave`, async ({
+      page,
+    }) => {
+      await openHome(page, theme);
+      const box = await labelBox(page);
+      const stageTop = () =>
+        page.evaluate(
+          () =>
+            (document.querySelector("[data-film-stage]") as HTMLElement).getBoundingClientRect()
+              .top,
+        );
+      // The stage has unpinned and is scrolling away, with film still under the labels.
+      for (const y of [400, box.bottom + 40, box.top + 4]) {
+        await putEdge(page, "[data-film-root]", "bottom", y);
+        expect(await stageTop()).toBeLessThan(0);
+        await hidden(page);
+      }
+      // The film's bottom edge is above the box: the page is under the labels.
+      await putEdge(page, "[data-film-root]", "bottom", Math.floor(box.top) - 1);
+      await shown(page, theme);
+      // And back, scrolling up.
+      await putEdge(page, "[data-film-root]", "bottom", box.top + 4);
+      await hidden(page);
+    });
 
-  test("light theme: the header's side labels stay readable over the film and after it", async ({
-    page,
-  }) => {
-    await forceTheme(page, "light");
-    await page.goto("/");
-    const place = page.locator("[data-header-side]").first();
-    // Over the film, which is always dark footage: shown, and in white.
-    await expect(place).toBeVisible();
-    await expect(place).toContainText("Medellín, Colombia");
-    await expect.poll(() => labelColour(page)).toBe(WHITE);
-    // The page-coloured (white) fade would wash out the top of the film.
-    await expect(page.locator("[data-header-fade]").first()).toBeHidden();
-
-    // Past the film the page is light again: the labels go back to the theme's dark text.
-    await scrollPastFilm(page);
-    await expect.poll(() => labelColour(page)).not.toBe(WHITE);
-    await expect(place).toBeVisible();
-    await expect(page.locator("[data-header-fade]").first()).toBeVisible();
-
-    // And back up over the film.
-    await page.evaluate(() => window.scrollTo({ top: 0, behavior: "instant" }));
-    await expect.poll(() => labelColour(page)).toBe(WHITE);
-  });
-
-  test("dark theme: the header's side labels are white over the film, on their fade", async ({
-    page,
-  }) => {
-    await forceTheme(page, "dark");
-    await page.goto("/");
-    await expect(page.locator("[data-header-side]").first()).toBeVisible();
-    await expect(page.locator("[data-header-side]").first()).toContainText("Medellín, Colombia");
-    await onFilm(page);
-  });
+    test(`${theme} theme: on a page without the film the labels are simply there`, async ({
+      page,
+    }) => {
+      await page.setViewportSize({ width: 1440, height: 900 });
+      await forceTheme(page, theme);
+      await page.goto("/about");
+      await expect(side(page)).toContainText("Medellín, Colombia");
+      await shown(page, theme);
+      await page.evaluate(() => window.scrollTo({ top: 900, behavior: "instant" }));
+      await shown(page, theme);
+    });
+  }
 
   test.describe("without JavaScript", () => {
     test.use({ javaScriptEnabled: false });
@@ -475,19 +429,31 @@ test.describe("the nav's side labels", () => {
     // Nothing marks <html> without a script, and the top of the Home is film: the
     // first frame has to be right from the stylesheet alone, whatever the scheme.
     for (const scheme of ["light", "dark"] as const) {
-      test(`the labels are white on their fade (${scheme} scheme)`, async ({ page }) => {
+      test(`the labels are hidden at the top of the Home (${scheme} scheme)`, async ({ page }) => {
         await page.setViewportSize({ width: 1440, height: 900 });
         await page.goto("/", { waitUntil: "domcontentloaded" });
         // After the navigation: Firefox drops a scheme emulated before the first one.
         await page.emulateMedia({ colorScheme: scheme });
-        await expect(page.locator("[data-header-side]").first()).toContainText(
-          "Medellín, Colombia",
-        );
-        await onFilm(page);
+        // In the markup, for the pages that show them; not on screen here.
+        await expect(side(page)).toContainText("Medellín, Colombia");
+        await hidden(page);
         await expect(page.locator("[data-header-fade]:visible")).toHaveCount(0);
       });
     }
   });
+});
+
+// Nothing is laid over the film for the labels' sake any more: no fade fixed to
+// the viewport, and none painted on the stage.
+test("no gradient sits on the film under the nav", async ({ page }) => {
+  await page.goto("/");
+  await expect(page.locator("[data-film-stage]")).toHaveCount(1);
+  await expect(page.locator("[data-film-shade]")).toHaveCount(0);
+  const painted = await page.evaluate(() => {
+    const stage = document.querySelector("[data-film-stage]") as HTMLElement;
+    return ["::before", "::after"].map((pseudo) => getComputedStyle(stage, pseudo).content);
+  });
+  expect(painted).toEqual(["none", "none"]);
 });
 
 // The header's own fade is a gradient of the page colour with a blur behind it. Over
@@ -509,9 +475,7 @@ for (const theme of ["light", "dark"] as const) {
   });
 }
 
-test("on phones the progress bar runs along the top of the stage, and nothing shades it", async ({
-  page,
-}) => {
+test("on phones the progress bar runs along the top of the stage", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/");
   await filmReady(page);
@@ -525,13 +489,6 @@ test("on phones the progress bar runs along the top of the stage, and nothing sh
   });
   // At the bottom of a stage one large viewport tall it would be under the nav bar, or off screen.
   expect(edges).toEqual({ top: 0, height: 3 });
-  // The fade is there for the place and time labels, and phones do not show them.
-  await expect(page.locator("[data-film-shade]")).toBeHidden();
-  const painted = await page.evaluate(() => {
-    const stage = document.querySelector("[data-film-stage]") as HTMLElement;
-    return getComputedStyle(stage, "::after").content;
-  });
-  expect(painted).toBe("none");
 });
 
 test("a title card is one large viewport tall", async ({ page }) => {

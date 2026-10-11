@@ -15,36 +15,6 @@
   background: #000000;
 }
 
-/* The site's place and time labels sit on the top corners of the film, in white:
-   a short fade behind them keeps them readable over bright footage. It is fixed
-   to the viewport, over the film and its cards and under the header, and not
-   painted on the stage: the stage scrolls away on the film's last screen and a
-   card's edge crosses the labels, and they are still white then. It shows for
-   exactly as long as they are: ScrollFilm marks <html> once the page is under
-   them (see custom.css, which turns the labels on the same two attributes).
-   With no script nothing is marked, and the top of the Home is film. Phones do
-   not show the labels, so they get no fade. */
-.shade {
-  display: none;
-}
-
-@media (min-width: 769px) {
-  .shade {
-    display: block;
-    position: fixed;
-    inset: 0 0 auto;
-    z-index: 2;
-    height: 132px;
-    background: linear-gradient(rgb(0 0 0 / 0.74), rgb(0 0 0 / 0));
-    pointer-events: none;
-  }
-
-  :global(html[data-past-film]) .shade,
-  :global(html[data-nav-over-card]) .shade {
-    display: none;
-  }
-}
-
 .media {
   position: absolute;
   inset: 0;
