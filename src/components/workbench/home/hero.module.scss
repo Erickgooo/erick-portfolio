@@ -1,4 +1,4 @@
-// Workbench: hero layout.
+// Workbench: hero layout (sober, 2026-10-22: the same in both variants).
 @use "../shared" as *;
 
 .hero {
@@ -42,10 +42,9 @@
   line-height: 1.35;
 
   strong {
-    @include display(700);
+    @include s-h3;
     display: block;
-    font-size: 19px;
-    letter-spacing: -0.015em;
+    font-size: 17px;
   }
 }
 
@@ -61,33 +60,30 @@
   object-fit: cover;
 }
 
-// The headline is 13.2 % of the text column, written in viewport units (the
-// column's width per layout) rather than as a size container, so the first
-// frame needs no extra container pass. It breaks evenly on its own, so it
-// skips text-wrap: balance (several line-breaking passes in the first frame).
+// The headline in Montserrat Black, sized from the text column in viewport
+// units (the column's width per layout) rather than as a size container, so
+// the first frame needs no extra container pass. Its longest word,
+// "infrastructure", is about 6.9 em wide, so 13.5 % of the column keeps it on
+// one line on phones. It breaks evenly on its own, so it skips text-wrap:
+// balance (several line-breaking passes in the first frame).
 .title {
-  @include display(750);
-  font-size: clamp(40px, calc(13.2vw - 4.2px), 92px);
-  line-height: 0.96;
-  letter-spacing: -0.04em;
+  @include title;
+  font-size: clamp(34px, calc((100vw - 32px) * 0.135), 64px);
+  line-height: 1.04;
+  letter-spacing: -0.025em;
 
   @include from-tablet {
-    font-size: clamp(40px, calc(13.2vw - 8.4px), 92px);
+    font-size: clamp(34px, calc((100vw - 64px) * 0.1), 64px);
   }
 
   @include from-desk {
-    font-size: clamp(40px, calc((min(100vw, 1280px) - 144px) * 0.0595), 92px);
+    font-size: clamp(34px, calc((min(100vw, 1280px) - 144px) * 0.054), 64px);
   }
 }
 
 .offer {
-  max-width: 36ch;
-  font-size: 18px;
-  color: var(--wb-ink-2);
-
-  @include from-desk {
-    font-size: 20px;
-  }
+  @include s-lede;
+  max-width: 38ch;
 }
 
 .actions {

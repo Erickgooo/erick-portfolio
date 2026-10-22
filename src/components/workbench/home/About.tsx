@@ -1,4 +1,5 @@
-// Workbench: a short about, with the photo pinned to the bench.
+// Workbench: a short about, with the photo beside it (sober, 2026-10-22:
+// straight and flat, no tape).
 import { about, person } from "@/resources/content";
 import Image from "next/image";
 import Link from "next/link";
@@ -20,7 +21,6 @@ export function About() {
       <div className={styles.inner}>
         <div className={styles.photoCol}>
           <figure className={styles.photo} data-reveal="">
-            <span className={styles.tape} aria-hidden="true" />
             <Image
               src={MEDIA.avatar.src}
               width={MEDIA.avatar.w}

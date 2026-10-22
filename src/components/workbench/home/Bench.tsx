@@ -1,9 +1,11 @@
 "use client";
 
-// Workbench: the hero's workbench. Objects rise into place one after another
-// (CSS keyframes, overshoot) as the site intro lifts, then bob on long offset
-// loops that pause off-screen. On desktop the cluster leans with the pointer;
-// on touch, a tap brings an object forward. Only transform and opacity move.
+// Workbench: the hero's workbench, redrawn straight and flat (sober,
+// 2026-10-22): the same composition of objects, none tilted, taped or
+// pinned. Objects rise into place one after another (CSS keyframes, a gentle
+// settle) as the site intro lifts, then float on long offset loops that
+// pause off-screen. On desktop the cluster follows the pointer a little; on
+// touch, a tap brings an object forward. Only transform and opacity move.
 // Only the tablet screenshot, the likely LCP element, loads with priority.
 import Image from "next/image";
 import {
@@ -17,15 +19,14 @@ import {
 import { MEDIA } from "../media";
 import styles from "./bench.module.scss";
 
+/** Where an object lies: desktop (x, y, w) and phone (mx, my, mw), in % of the bench. */
 type Place = {
   x: number;
   y: number;
   w: number;
-  r: number;
   mx: number;
   my: number;
   mw: number;
-  mr: number;
   depth: number;
   bob: number;
 };
@@ -45,11 +46,9 @@ function Slot({
     "--x": `${place.x}%`,
     "--y": `${place.y}%`,
     "--w": `${place.w}%`,
-    "--r": `${place.r}deg`,
     "--mx": `${place.mx}%`,
     "--my": `${place.my}%`,
     "--mw": `${place.mw}%`,
-    "--mr": `${place.mr}deg`,
     "--depth": place.depth,
     "--bob": `${place.bob}s`,
     "--d": index,
@@ -68,18 +67,10 @@ function Slot({
   );
 }
 
-function Tag({
-  value,
-  caption,
-  paper,
-}: {
-  value: string;
-  caption: string;
-  paper: "cobalt" | "ink" | "mist" | "paper";
-}) {
+/** A figure on a plain tag; `lead` gives the first figure the accent. */
+function Tag({ value, caption, lead = false }: { value: string; caption: string; lead?: boolean }) {
   return (
-    <div className={`${styles.tagPaper} ${styles[paper]}`}>
-      <span className={styles.hole} aria-hidden="true" />
+    <div className={`${styles.tagPaper} ${lead ? styles.lead : ""}`}>
       <strong className={styles.value}>{value}</strong>
       <span className={styles.caption}>{caption}</span>
     </div>
@@ -216,7 +207,7 @@ export function Bench() {
         <Slot
           index={0}
           kind="screen"
-          place={{ x: 6, y: 17, w: 64, r: -3, mx: 2, my: 15, mw: 84, mr: -3, depth: 0.5, bob: 5 }}
+          place={{ x: 3, y: 17, w: 61, mx: 0, my: 16, mw: 80, depth: 0.5, bob: 5 }}
         >
           <div className={styles.glass}>
             <Image
@@ -234,18 +225,16 @@ export function Bench() {
         <Slot
           index={1}
           kind="print"
-          place={{ x: 63, y: 3, w: 32, r: 7, mx: 62, my: 0, mw: 35, mr: 7, depth: 1.1, bob: 4.4 }}
+          place={{ x: 68, y: 2, w: 28, mx: 63, my: 0, mw: 35, depth: 1.1, bob: 4.4 }}
         >
-          <span className={`${styles.tape} ${styles.tapeCobalt}`} aria-hidden="true" />
           <PrintImage piece={MEDIA.coqui} sizes="(min-width: 720px) 232px, 36vw" ready={ready} />
         </Slot>
         {/* 2: a campaign creative */}
         <Slot
           index={2}
           kind="print"
-          place={{ x: 1, y: 55, w: 25, r: -8, mx: 0, my: 57, mw: 29, mr: -7, depth: 0.9, bob: 4.8 }}
+          place={{ x: 3, y: 65, w: 19, mx: 4, my: 64, mw: 27, depth: 0.9, bob: 4.8 }}
         >
-          <span className={styles.clip} aria-hidden="true" />
           <PrintImage
             piece={MEDIA.panettone}
             sizes="(min-width: 720px) 180px, 30vw"
@@ -256,63 +245,40 @@ export function Bench() {
         <Slot
           index={3}
           kind="print"
-          place={{ x: 75, y: 41, w: 21, r: 5, mx: 70, my: 46, mw: 26, mr: 6, depth: 1.3, bob: 4.2 }}
+          place={{ x: 73, y: 36, w: 20, mx: 73, my: 45, mw: 25, depth: 1.3, bob: 4.2 }}
         >
-          <span className={styles.pin} aria-hidden="true" />
           <PrintImage piece={MEDIA.arqui} sizes="(min-width: 720px) 152px, 27vw" ready={ready} />
         </Slot>
       </div>
-      {/* 4-7: the figures, as paper tags: on the bench on desktop, a row of tags under it on phones */}
+      {/* 4-7: the figures, as plain tags: on the bench on desktop, a row of tags under it on phones */}
       <div className={styles.tags}>
         <Slot
           index={4}
           kind="tag"
-          place={{ x: 46, y: 53, w: 29, r: 4, mx: 0, my: 0, mw: 100, mr: -2, depth: 0.8, bob: 4.6 }}
+          place={{ x: 44, y: 52, w: 27, mx: 0, my: 0, mw: 100, depth: 0.8, bob: 4.6 }}
         >
-          <Tag value="85%" caption="of conversations automated by LeadBot AI" paper="cobalt" />
+          <Tag value="85%" caption="of conversations automated by LeadBot AI" lead />
         </Slot>
         <Slot
           index={5}
           kind="tag"
-          place={{ x: 29, y: 2, w: 30, r: -5, mx: 0, my: 0, mw: 100, mr: 2, depth: 1.5, bob: 5.2 }}
+          place={{ x: 30, y: 0, w: 30, mx: 0, my: 0, mw: 100, depth: 1.5, bob: 5.2 }}
         >
-          <Tag value="338K+" caption="organic views at $0 ad spend" paper="mist" />
+          <Tag value="338K+" caption="organic views at $0 ad spend" />
         </Slot>
         <Slot
           index={6}
           kind="tag"
-          place={{
-            x: 25,
-            y: 74,
-            w: 26,
-            r: 3,
-            mx: 0,
-            my: 0,
-            mw: 100,
-            mr: 1.5,
-            depth: 1.2,
-            bob: 4.3,
-          }}
+          place={{ x: 26, y: 73, w: 26, mx: 0, my: 0, mw: 100, depth: 1.2, bob: 4.3 }}
         >
-          <Tag value="3.92x" caption="ROAS on AI ad creatives" paper="ink" />
+          <Tag value="3.92x" caption="ROAS on AI ad creatives" />
         </Slot>
         <Slot
           index={7}
           kind="tag"
-          place={{
-            x: 52,
-            y: 79,
-            w: 27,
-            r: -4,
-            mx: 0,
-            my: 0,
-            mw: 100,
-            mr: -2.5,
-            depth: 1,
-            bob: 4.9,
-          }}
+          place={{ x: 56, y: 79, w: 27, mx: 0, my: 0, mw: 100, depth: 1, bob: 4.9 }}
         >
-          <Tag value="$3.45" caption="cost per lead in technical B2B" paper="paper" />
+          <Tag value="$3.45" caption="cost per lead in technical B2B" />
         </Slot>
       </div>
     </div>

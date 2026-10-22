@@ -1,5 +1,7 @@
-// Workbench: the projects as a stack of cards that fans out when it enters on
-// wide screens, and a horizontal scroll-snap row below that.
+// Workbench: the projects (sober, 2026-10-22): straight cards in a grid of
+// three on desktop and two on tablets, rising one after another as they
+// enter (they used to fan out like a hand); a horizontal scroll-snap row on
+// phones.
 import Image from "next/image";
 import Link from "next/link";
 import type { CSSProperties } from "react";
@@ -10,7 +12,6 @@ import styles from "./projects.module.scss";
 
 export function Projects({ hideProtected }: { hideProtected: boolean }) {
   const cards = getFanCards({ hideProtected });
-  const mid = (cards.length - 1) / 2;
   const cases = inWords(cards.length);
 
   return (
@@ -29,16 +30,16 @@ export function Projects({ hideProtected }: { hideProtected: boolean }) {
           <li
             key={card.slug}
             className={styles.slot}
-            style={{ "--i": i, "--o": i - mid, zIndex: i + 1 } as CSSProperties}
+            style={{ "--i": i } as CSSProperties}
           >
-            <Link href={card.href} className={`${styles.card} ${styles[card.paper]}`}>
+            <Link href={card.href} className={styles.card}>
               <span className={styles.print}>
                 <Image
                   src={card.cover.src}
                   width={card.cover.w}
                   height={card.cover.h}
                   alt=""
-                  sizes="(min-width: 1280px) 240px, (min-width: 420px) 300px, 74vw"
+                  sizes="(min-width: 1024px) 380px, (min-width: 720px) 46vw, 78vw"
                 />
               </span>
               <span className={styles.metric}>

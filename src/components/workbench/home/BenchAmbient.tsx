@@ -1,24 +1,24 @@
 "use client";
 
 // Home, scene (type 3): the hero's ambient layer, a canvas behind the bench.
-// Cut-paper bits from the workbench (squares, dots, diamonds, tape, eyelets)
-// in the brand's colours. As the site intro fades the layer rises into
-// place, then each bit floats on its own slow loop. It draws nothing else:
-// the page dots and the pointer glow show through everywhere around the bits.
-// It holds behind the intro like the bench (start.ts), runs only on screen,
-// and with reduced motion it is one still frame.
+// A few quiet marks around the objects (sober, 2026-10-22): rings, dots,
+// squares and short strokes, drawn in line in variant A and as soft flat
+// shapes in variant B, never tilted. As the site intro fades the layer
+// rises into place, then each mark drifts on its own slow loop. It draws
+// nothing else: the page dots and the pointer glow show through everywhere
+// around the marks. It holds behind the intro like the bench (start.ts),
+// runs only on screen, and with reduced motion it is one still frame.
 import { useCallback, useRef } from "react";
 import { CanvasLoop, type Frame } from "../scenes/CanvasLoop";
 import styles from "./ambient.module.scss";
 
-type Kind = "square" | "dot" | "diamond" | "tape" | "ring";
+type Kind = "square" | "dot" | "ring" | "dash";
 type Bit = {
   x: number;
   y: number;
   size: number;
   kind: Kind;
-  tone: 0 | 1 | 2 | 3;
-  rot: number;
+  accent: boolean;
   ax: number;
   ay: number;
   period: number;
@@ -32,40 +32,42 @@ function makeBits(count: number): Bit[] {
     seed = (seed * 16807) % 2147483647;
     return seed / 2147483647;
   };
-  const kinds: Kind[] = ["square", "dot", "diamond", "tape", "ring", "dot", "square", "diamond"];
+  const kinds: Kind[] = ["ring", "dot", "square", "dash", "dot", "ring"];
   const bits: Bit[] = [];
   while (bits.length < count) {
     const x = rnd();
     const y = rnd();
-    // Keep the middle of the bench clear: the bits live around the objects.
-    const dx = (x - 0.5) / 0.36;
-    const dy = (y - 0.5) / 0.34;
+    // Keep the middle of the bench clear: the marks live around the objects.
+    const dx = (x - 0.5) / 0.38;
+    const dy = (y - 0.5) / 0.36;
     if (dx * dx + dy * dy < 1) continue;
     const kind = kinds[Math.floor(rnd() * kinds.length)];
     bits.push({
       x,
       y,
       kind,
-      size: kind === "tape" ? 20 + rnd() * 14 : kind === "dot" ? 4 + rnd() * 5 : 8 + rnd() * 9,
-      tone: Math.floor(rnd() * 4) as Bit["tone"],
-      rot: rnd() * Math.PI,
-      ax: 2 + rnd() * 5,
-      ay: 4 + rnd() * 8,
-      period: 5 + rnd() * 4.5,
+      size: kind === "dash" ? 14 + rnd() * 10 : kind === "dot" ? 3 + rnd() * 3 : 7 + rnd() * 7,
+      accent: rnd() < 0.3,
+      ax: 2 + rnd() * 4,
+      ay: 3 + rnd() * 6,
+      period: 6 + rnd() * 4.5,
       phase: rnd() * Math.PI * 2,
     });
   }
   return bits;
 }
 
-const BITS = makeBits(36);
+const BITS = makeBits(22);
 
-// cobalt, tape (a light cobalt), ink or white, and the light cobalt eyelet.
-function colour(tone: Bit["tone"], dark: boolean) {
-  if (tone === 0) return "#2d5bff";
-  if (tone === 1) return "#a6baff";
-  if (tone === 2) return dark ? "rgba(245, 245, 247, 0.6)" : "rgba(19, 19, 22, 0.55)";
-  return dark ? "#e7edff" : "#6f8fff";
+// TEMPORARY (sober variants): which of the two treatments is on.
+function variantB() {
+  return document.documentElement.getAttribute("data-wb-variant") === "b";
+}
+
+function colour(bit: Bit, dark: boolean, b: boolean) {
+  if (bit.accent) return b ? (dark ? "#3d5fd6" : "#a6baff") : "#2d5bff";
+  if (b) return dark ? "#2a2a31" : "#e7edff";
+  return dark ? "rgba(245, 245, 247, 0.32)" : "rgba(19, 19, 22, 0.28)";
 }
 
 export function BenchAmbient() {
@@ -77,50 +79,40 @@ export function BenchAmbient() {
   const draw = useCallback((ctx: CanvasRenderingContext2D, f: Frame) => {
     const { w, h, t, dark } = f;
     ctx.clearRect(0, 0, w, h);
-    // Fewer bits on a small layer (phones), never crowded.
-    const count = Math.max(14, Math.min(BITS.length, Math.round((w * h) / 21000)));
+    const b = variantB();
+    // Fewer marks on a small layer (phones), never crowded.
+    const count = Math.max(10, Math.min(BITS.length, Math.round((w * h) / 30000)));
     const unit = Math.max(0.75, Math.min(1.25, w / 640));
+    ctx.lineWidth = 1.25;
     for (let i = 0; i < count; i++) {
-      const b = BITS[i];
-      const a = (t / b.period) * Math.PI * 2 + b.phase;
-      const x = b.x * w + Math.cos(a * 0.7) * b.ax * unit;
-      const y = b.y * h + Math.sin(a) * b.ay * unit;
-      const s = b.size * unit;
-      ctx.save();
-      ctx.translate(x, y);
-      ctx.rotate(b.rot + Math.sin(a * 0.8) * 0.25);
-      ctx.fillStyle = colour(b.tone, dark);
-      ctx.strokeStyle = colour(b.tone, dark);
-      if (b.kind === "square") {
-        ctx.fillRect(-s / 2, -s / 2, s, s);
-      } else if (b.kind === "diamond") {
-        ctx.rotate(Math.PI / 4);
-        ctx.fillRect(-s / 2.6, -s / 2.6, s / 1.3, s / 1.3);
-      } else if (b.kind === "dot") {
+      const bit = BITS[i];
+      const a = (t / bit.period) * Math.PI * 2 + bit.phase;
+      const x = bit.x * w + Math.cos(a * 0.7) * bit.ax * unit;
+      const y = bit.y * h + Math.sin(a) * bit.ay * unit;
+      const s = bit.size * unit * (b ? 1.15 : 1);
+      const c = colour(bit, dark, b);
+      ctx.fillStyle = c;
+      ctx.strokeStyle = c;
+      if (bit.kind === "dot") {
         ctx.beginPath();
-        ctx.arc(0, 0, s / 2, 0, Math.PI * 2);
+        ctx.arc(x, y, s / 2, 0, Math.PI * 2);
         ctx.fill();
-      } else if (b.kind === "ring") {
-        ctx.lineWidth = Math.max(1.5, s * 0.22);
+      } else if (bit.kind === "ring") {
         ctx.beginPath();
-        ctx.arc(0, 0, s / 2.4, 0, Math.PI * 2);
-        ctx.stroke();
+        ctx.arc(x, y, s / 2, 0, Math.PI * 2);
+        if (b) ctx.fill();
+        else ctx.stroke();
+      } else if (bit.kind === "square") {
+        if (b) ctx.fillRect(x - s / 2, y - s / 2, s, s);
+        else ctx.strokeRect(x - s / 2 + 0.5, y - s / 2 + 0.5, s, s);
+      } else if (b) {
+        ctx.fillRect(x - s / 2, y - 1.5, s, 3);
       } else {
-        // A strip of tape with notched ends.
-        const tw = s;
-        const th = s * 0.34;
-        ctx.globalAlpha = 0.85;
         ctx.beginPath();
-        ctx.moveTo(-tw / 2, -th / 2);
-        ctx.lineTo(tw / 2, -th / 2);
-        ctx.lineTo(tw / 2 - th * 0.25, 0);
-        ctx.lineTo(tw / 2, th / 2);
-        ctx.lineTo(-tw / 2, th / 2);
-        ctx.lineTo(-tw / 2 + th * 0.25, 0);
-        ctx.closePath();
-        ctx.fill();
+        ctx.moveTo(x - s / 2, y);
+        ctx.lineTo(x + s / 2, y);
+        ctx.stroke();
       }
-      ctx.restore();
     }
   }, []);
 

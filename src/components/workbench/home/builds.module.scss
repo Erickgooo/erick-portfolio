@@ -1,5 +1,6 @@
 // Workbench: what I build. The head with its activity window, then the
 // stepper of the four builds (its layout is in scenes/stepper.module.scss).
+// Sober (2026-10-22): the same in both variants except the window.
 @use "../shared" as *;
 
 .builds {
@@ -11,11 +12,11 @@
 
 .inner {
   @include wrap;
-  padding-top: 56px;
+  padding-top: 72px;
   padding-bottom: 104px;
 
   @include from-desk {
-    padding-top: 72px;
+    padding-top: 112px;
     padding-bottom: 72px;
   }
 }
@@ -36,14 +37,18 @@
 .headText {
   @include reveal;
   display: grid;
-  gap: 16px;
+  gap: 14px;
 
   h2 {
-    @include h2;
+    @include s-h2;
   }
 
+  // The motto line, an existing phrase, in the accent face.
   p {
-    @include lede;
+    @include accent;
+    max-width: 22ch;
+    font-size: clamp(26px, 2.6vw, 34px);
+    color: var(--wb-ink);
   }
 }
 

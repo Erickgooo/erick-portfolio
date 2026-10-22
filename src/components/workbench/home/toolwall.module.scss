@@ -1,13 +1,24 @@
-// Workbench: the tool wall band. Always the opposite of the page:
-// charcoal on the light bench, white on the dark one.
+// Workbench: the tool wall (sober, 2026-10-22). It is no longer a dark band:
+// variant A lays it on the page itself (the dots show through) and draws
+// each tile with a hairline; variant B gives it a soft band, mist in light
+// and the palette's dark surface in dark, with flat tiles. Unlit tiles show
+// each logo as a quiet silhouette; a lit tile shows it in its own colours on
+// white (in dark, logos stay light silhouettes, since many are black).
+// Keep this file ASCII-only.
 @use "../shared" as *;
 
 .wall {
   @include below-fold(2600px, 300vh);
   position: relative;
   z-index: 1;
-  background: var(--wb-band);
-  color: var(--wb-band-ink);
+  border-top: 1px solid var(--wb-line);
+  border-bottom: 1px solid var(--wb-line);
+  color: var(--wb-ink);
+
+  @include vb {
+    border-color: transparent;
+    background: var(--wb-soft);
+  }
 }
 
 .track {
@@ -29,14 +40,14 @@
 
 .inner {
   @include wrap;
-  padding-top: 88px;
-  padding-bottom: 96px;
+  padding-top: 96px;
+  padding-bottom: 104px;
 
   @include from-desk {
     display: grid;
     grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
     align-items: center;
-    gap: 64px;
+    gap: 72px;
     padding-top: 32px;
     padding-bottom: 32px;
   }
@@ -44,27 +55,29 @@
 
 .title {
   @include reveal;
-  @include display(750);
-  font-size: clamp(38px, 4.4vw, 64px);
-  line-height: 0.98;
-  letter-spacing: -0.04em;
-  text-wrap: balance;
+  @include s-h2;
+  font-size: clamp(32px, 3.6vw, 48px);
 }
 
 .lede {
   @include reveal;
-  max-width: 34ch;
-  margin-top: 16px;
-  font-size: 18px;
-  color: var(--wb-band-ink-2);
+  @include s-lede;
+  max-width: 36ch;
+  margin-top: 14px;
 }
 
-// A lit tile is white paper, so each logo shows in its own colours; cobalt
-// marks the active group.
-.group,
-.cell {
-  --paper: var(--wb-paper);
-  --paper-ink: var(--wb-charcoal);
+// The tile surfaces: --tile is an unlit tile, --tile-hot a lit one.
+.wall {
+  --tile: var(--wb-page);
+  --tile-hot: var(--wb-page);
+  --tile-line: var(--wb-rule);
+
+  @include vb {
+    --tile: var(--wb-soft-2);
+    --tile-hot: var(--wb-raised);
+    --tile-line: transparent;
+  }
+
 }
 
 .groups {
@@ -76,24 +89,28 @@
 
   @include from-desk {
     gap: 0;
-    margin-top: 36px;
+    margin-top: 40px;
   }
 }
 
 .group {
   @include from-desk {
     position: relative;
-    padding: 14px 0 14px;
-    border-top: 1px solid color-mix(in srgb, var(--wb-band-ink) 16%, transparent);
+    padding: 16px 0;
+    border-top: 1px solid var(--wb-rule);
+
+    @include vb {
+      border-top-color: color-mix(in srgb, var(--wb-ink) 12%, transparent);
+    }
 
     // The progress underline.
     &::after {
       content: "";
       position: absolute;
       left: 0;
-      top: -2px;
+      top: -1px;
       width: 100%;
-      height: 3px;
+      height: 2px;
       background: var(--wb-accent);
       transform-origin: left center;
       scale: 0 1;
@@ -103,35 +120,43 @@
 }
 
 .groupTitle {
-  @include display(700);
+  @include s-h3;
   display: flex;
   align-items: center;
   gap: 12px;
-  font-size: 26px;
-  line-height: 1.1;
-  letter-spacing: -0.02em;
+  font-size: 22px;
+  line-height: 1.25;
 
   @include from-desk {
-    font-size: 22px;
-    opacity: 0.55;
+    font-size: 20px;
+    opacity: 0.5;
     transition: opacity 0.4s var(--wb-ease-soft);
   }
 }
 
+// A small cobalt square marks each group; the active group's grows to full
+// size (it used to turn into a diamond).
 .swatch {
   flex: none;
-  width: 14px;
-  height: 14px;
-  border-radius: 3px;
+  width: 9px;
+  height: 9px;
+  border-radius: 2px;
   background: var(--wb-accent);
-  rotate: -8deg;
-  transition: rotate 0.5s var(--wb-ease-pop);
+  transition:
+    scale 0.5s $ease-settle,
+    opacity 0.4s var(--wb-ease-soft);
+
+  @include from-desk {
+    scale: 0.66;
+    opacity: 0.5;
+  }
 }
 
 .line {
-  margin-top: 8px;
+  margin-top: 6px;
   font-size: 17px;
-  color: var(--wb-band-ink-2);
+  line-height: 1.55;
+  color: var(--wb-ink-2);
 
   @include from-desk {
     font-size: 16px;
@@ -144,7 +169,7 @@
 .tiles {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 10px;
+  gap: 8px;
   margin-top: 20px;
   list-style: none;
   padding: 0;
@@ -170,20 +195,20 @@
   align-content: center;
   justify-items: center;
   gap: 8px;
-  min-height: 116px;
+  min-height: 112px;
   padding: 12px 6px;
-  border-radius: 12px;
-  background: var(--paper);
-  color: var(--paper-ink);
-  box-shadow: inset 0 0 0 1px rgba(19, 19, 22, 0.08);
+  border: 1px solid var(--tile-line);
+  border-radius: var(--v-radius);
+  background: var(--tile-hot);
+  color: var(--wb-ink);
   text-align: center;
 
   @media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
     opacity: 0.12;
-    scale: 0.86;
+    scale: 0.92;
     transition:
       opacity 0.6s var(--wb-ease-soft),
-      scale 0.6s var(--wb-ease-pop);
+      scale 0.6s $ease-settle;
     transition-delay: calc(var(--i) * 90ms);
 
     &[data-in] {
@@ -205,25 +230,29 @@
   display: block;
   width: auto;
   max-width: 80%;
-  height: 28px;
+  height: 26px;
   object-fit: contain;
+
+  // In dark every logo is a light silhouette (many are black).
+  @include dark {
+    filter: brightness(0) invert(1);
+  }
 }
 
-// Unlit board cells show each logo as a flat silhouette in the band's ink;
-// the lit face on top shows it in its own colours.
+// Unlit board cells show each logo as a flat silhouette in the ink.
 .face:not(.hot) .logo {
-  filter: brightness(0) invert(1);
-  opacity: 0.55;
+  filter: brightness(0);
+  opacity: 0.4;
 
   @include dark {
-    filter: brightness(0);
+    filter: brightness(0) invert(1);
   }
 }
 
 .name {
   font-size: 16px;
-  font-weight: 600;
-  line-height: 1.15;
+  font-weight: 500;
+  line-height: 1.2;
 }
 
 // Desktop board: 24 tiles, groups scattered across it.
@@ -233,21 +262,21 @@
   @include from-desk {
     display: grid;
     grid-template-columns: repeat(6, minmax(0, 1fr));
-    gap: 12px;
+    gap: 10px;
   }
 }
 
 .cell {
   position: relative;
   aspect-ratio: 1;
-  border-radius: 14px;
+  border-radius: var(--v-radius);
 
   @media (scripting: enabled) {
-    opacity: 0.2;
-    scale: 0.9;
+    opacity: 0.25;
+    scale: 0.94;
     transition:
       opacity 0.6s var(--wb-ease-soft),
-      scale 0.55s var(--wb-ease-pop);
+      scale 0.55s $ease-settle;
     transition-delay: calc(var(--k) * 90ms);
   }
 
@@ -270,23 +299,30 @@
   justify-items: center;
   gap: 8px;
   padding: 8px;
+  border: 1px solid var(--tile-line);
   border-radius: inherit;
-  background: var(--wb-band-tile);
-  color: var(--wb-band-ink);
+  background: var(--tile);
+  color: var(--wb-ink-2);
   text-align: center;
 }
 
+// The lit face: the logo in its colours and a cobalt hairline (A), or a
+// raised tile (B).
 .hot {
-  background: var(--paper);
-  color: var(--paper-ink);
-  box-shadow: inset 0 0 0 2px var(--wb-accent);
+  border-color: var(--wb-accent);
+  background: var(--tile-hot);
+  color: var(--wb-ink);
   opacity: 0;
   transition: opacity 0.5s var(--wb-ease-soft);
   transition-delay: calc(var(--k) * 90ms);
+
+  @include vb {
+    border-color: transparent;
+  }
 }
 
 // The stepper: groups before the active one stay lit, the active one lights
-// up, the rest wait in the dark.
+// up, the rest wait.
 @for $a from 0 through 3 {
   .wall[data-active="#{$a}"] {
     @for $g from 0 through 3 {
@@ -313,7 +349,8 @@
           }
 
           .swatch {
-            rotate: 45deg;
+            scale: 1;
+            opacity: 1;
           }
         }
       }
@@ -324,11 +361,13 @@
 @include reduced {
   .cell,
   .groupTitle,
-  .line {
+  .line,
+  .swatch {
     opacity: 1 !important;
   }
 
-  .cell {
+  .cell,
+  .swatch {
     scale: 1 !important;
   }
 
