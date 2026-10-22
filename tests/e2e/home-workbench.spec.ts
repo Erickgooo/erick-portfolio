@@ -61,3 +61,81 @@ test("with reduced motion every section shows without scrolling or animation", a
   );
   expect(running).toEqual([]);
 });
+
+// Scenes (redesign 2026, step 3): drawn, aria-hidden, held behind the intro.
+
+test("the hero's ambient layer waits behind the intro, then rises", async ({ page }) => {
+  await page.goto("/");
+  const ambient = page.locator('[class*="ambient_ambient"]');
+  await expect(ambient).toHaveCount(1);
+  if (await page.locator(INTRO).count()) await expect(ambient).not.toHaveAttribute("data-on", "");
+  await expect(page.locator(INTRO)).toHaveCount(0, { timeout: 9000 });
+  await expect(ambient).toHaveAttribute("data-on", "");
+});
+
+test("every scene is hidden from assistive tech and reserves its box", async ({ page }) => {
+  await page.goto("/");
+  const scenes = page.locator("main [data-scene]");
+  expect(await scenes.count()).toBeGreaterThan(4);
+  const report = await scenes.evaluateAll((els) =>
+    els.map((el) => ({
+      hidden: el.closest('[aria-hidden="true"]') !== null,
+      size: el.getBoundingClientRect().width * el.getBoundingClientRect().height,
+    })),
+  );
+  for (const scene of report) {
+    expect(scene.hidden).toBe(true);
+    expect(scene.size).toBeGreaterThan(0);
+  }
+});
+
+test("with reduced motion every scene shows its final state at once", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/");
+  await expect(page.locator(INTRO)).toHaveCount(0, { timeout: 9000 });
+  const scenes = await page.locator("main [data-scene]").evaluateAll((els) =>
+    els.map((el) => ({
+      last: (el.dataset.steps ?? "0").split(",").length - 1,
+      at: el.dataset.step,
+    })),
+  );
+  expect(scenes.length).toBeGreaterThan(0);
+  for (const scene of scenes) expect(Number(scene.at)).toBe(scene.last);
+  const typedDone = await page
+    .locator("main [data-type]")
+    .evaluateAll((els) => els.every((el) => el.hasAttribute("data-typed")));
+  expect(typedDone).toBe(true);
+});
+
+test("the builds stepper pins and changes scene on desktop, and stacks on phones", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await expect(page.locator(INTRO)).toHaveCount(0, { timeout: 9000 });
+  const stepper = page.locator("[data-stepper]");
+  const layers = stepper.locator("[data-scene-layer]");
+  await expect(layers).toHaveCount(4);
+  if ((page.viewportSize()?.width ?? 0) < 1024) {
+    await expect(stepper).toHaveAttribute("data-active", "stack");
+    await expect(stepper.locator("[data-scene-layer][data-on]")).toHaveCount(4);
+    return;
+  }
+  // Six tenths of the way through the track: the third step.
+  const y = await stepper.locator("[data-track]").evaluate((track: HTMLElement) => {
+    const top = track.getBoundingClientRect().top + window.scrollY;
+    return top + (track.offsetHeight - window.innerHeight) * 0.6;
+  });
+  await page.evaluate((top) => window.scrollTo(0, top), y);
+  await expect(stepper).toHaveAttribute("data-active", "2");
+  await expect(stepper.locator("[data-scene-layer][data-on]")).toHaveCount(1);
+  await expect(stepper.locator('[data-scene-layer][data-step="2"]')).toHaveAttribute("data-on", "");
+});
+
+test("the LeadBot case tells what the bot does in a drawn scene", async ({ page }) => {
+  await page.goto("/work/leadbot-ai");
+  const scene = page.locator("main [data-scene]");
+  await expect(scene).toHaveCount(1);
+  await expect(scene).toHaveAttribute("aria-hidden", "true");
+  // Its figure is the case's own.
+  await expect(scene.locator("[data-count]")).toHaveAttribute("data-count", "85%");
+});
