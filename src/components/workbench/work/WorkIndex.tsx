@@ -1,14 +1,37 @@
 // Workbench, Projects: every case as a straight card in a grid of three on
 // desktop, two on tablets and one column on phones; each card carries its
-// cover and, where the case has one, its figure. Server-rendered; the only
-// script is the page's reveal observer.
+// cover and, where the case has one, its figure. The head carries the figure
+// counter (a scene). Server-rendered; the scripts are the page's reveal
+// observer and scene driver.
 import Image from "next/image";
 import Link from "next/link";
 import type { CSSProperties } from "react";
 import { FiArrowRight } from "react-icons/fi";
 import { inWords } from "../data";
-import { getCases } from "./cases";
+import { FigureCounter } from "../scenes/projects/FigureCounter";
+import { type Case, getCases } from "./cases";
 import styles from "./work.module.scss";
+
+/** The order the head's counter types the figures in (the scene map's). */
+const COUNTER_ORDER = [
+  "leadbot-ai",
+  "quick-metal-shop-viral-videos",
+  "ai-powered-ad-creatives",
+  "atv-riders",
+  "quick-metal-shop-arquiexpo",
+  "ai-portfolio",
+];
+
+function counterFigures(cases: Case[]) {
+  const ranked = (slug: string) => {
+    const at = COUNTER_ORDER.indexOf(slug);
+    return at < 0 ? COUNTER_ORDER.length : at;
+  };
+  return cases
+    .filter((c) => c.metric)
+    .sort((a, b) => ranked(a.slug) - ranked(b.slug))
+    .map((c) => c.metric?.value ?? "");
+}
 
 export function WorkIndex({ hideProtected }: { hideProtected: boolean }) {
   const cases = getCases({ hideProtected });
@@ -18,10 +41,13 @@ export function WorkIndex({ hideProtected }: { hideProtected: boolean }) {
     <>
       <header className={styles.head}>
         <h1 className={styles.title}>Projects</h1>
-        <p className={styles.lede}>
-          AI systems, automation workflows and marketing infrastructure, built and shipped.{" "}
-          {count.charAt(0).toUpperCase() + count.slice(1)} cases, newest first.
-        </p>
+        <div className={styles.headSide}>
+          <p className={styles.lede}>
+            AI systems, automation workflows and marketing infrastructure, built and shipped.{" "}
+            {count.charAt(0).toUpperCase() + count.slice(1)} cases, newest first.
+          </p>
+          <FigureCounter figures={counterFigures(cases)} />
+        </div>
       </header>
 
       <section className={styles.bench} aria-label="All projects">

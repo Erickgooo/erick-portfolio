@@ -1,0 +1,68 @@
+// Scene: FigureCounter (see FigureCounter.tsx). A hairline box with the figure
+// in Montserrat Black above a thin cobalt rule. Its size is fixed by the
+// widest figure (the Typed sizer), so typing never moves the head.
+// Keep this file ASCII-only.
+@use "../../shared" as *;
+@use "../scene" as *;
+
+// The entrance of the scene root itself: before() matches descendants of a
+// scene only, so the root reads its own step attribute.
+@mixin root-before($n) {
+  @media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
+    &:not([data-s#{$n}]) {
+      @content;
+    }
+  }
+}
+
+// The scene's own content box (Scene wraps the children) stacks the figure
+// over the rule.
+.counter {
+  width: fit-content;
+  min-width: 220px;
+  padding: 18px 22px 20px;
+  border: 1px solid var(--wb-rule);
+  border-radius: 4px;
+  transition:
+    opacity 0.8s $ease-soft,
+    translate 1s $ease-soft;
+
+  @include root-before(0) {
+    opacity: 0;
+    translate: 0 24px;
+  }
+}
+
+.figure {
+  @include title;
+  display: block;
+  font-size: 48px;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  color: var(--wb-ink);
+
+  @include from-desk {
+    font-size: 56px;
+  }
+}
+
+.rule {
+  display: block;
+  width: 100%;
+  height: 2px;
+  margin-top: 14px;
+  background: var(--wb-accent);
+  transform-origin: left center;
+  transition: scale 0.9s $ease-soft 0.2s;
+
+  @include before(0) {
+    scale: 0 1;
+  }
+}
+
+@include reduced {
+  .counter,
+  .rule {
+    transition: none !important;
+  }
+}

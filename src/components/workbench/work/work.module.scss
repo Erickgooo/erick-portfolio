@@ -42,6 +42,12 @@
   letter-spacing: -0.03em;
 }
 
+.headSide {
+  display: grid;
+  justify-items: start;
+  gap: 28px;
+}
+
 .lede {
   @include s-lede;
   max-width: 40ch;
