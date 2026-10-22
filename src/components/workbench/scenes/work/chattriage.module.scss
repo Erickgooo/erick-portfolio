@@ -1,0 +1,595 @@
+// Scene: ChatTriage (see ChatTriage.tsx). Portrait (4:5, 100 x 125 cqi).
+// Drawn with hairlines on the sheet's tokens; cobalt marks what the bot does
+// and the buyers it passes on. Keep this file ASCII-only.
+@use "../../shared" as *;
+@use "../scene" as *;
+
+.scene {
+  position: absolute;
+  inset: 0;
+  color: var(--wb-ink);
+  font-size: fs(3.4);
+  line-height: 1.25;
+}
+
+// The four objects ---------------------------------------------------------------
+
+.inbox,
+.chat,
+.advisor,
+.silent {
+  position: absolute;
+  border: 1px solid var(--sc-line);
+  border-radius: 1.6cqi;
+  background: var(--sc-obj);
+  transition:
+    opacity 0.8s $ease-soft,
+    translate 1s $ease-soft;
+
+  @include before(0) {
+    opacity: 0;
+    translate: 0 5cqi;
+  }
+}
+
+.inbox {
+  left: 5cqi;
+  top: 5cqi;
+  width: 30cqi;
+  height: 62cqi;
+}
+
+.chat {
+  left: 39cqi;
+  top: 5cqi;
+  width: 56cqi;
+  height: 62cqi;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition-delay: 0.1s;
+}
+
+.advisor,
+.silent {
+  left: 5cqi;
+  width: 90cqi;
+  display: grid;
+  align-content: start;
+  gap: 1.4cqi;
+  padding: 2cqi 2.4cqi;
+}
+
+.advisor {
+  top: 71cqi;
+  height: 22cqi;
+  transition-delay: 0.18s;
+}
+
+.silent {
+  top: 97cqi;
+  height: 21cqi;
+  transition-delay: 0.24s;
+}
+
+.laneName {
+  font-weight: 600;
+}
+
+// The inbox: the burst of new chats, and the day's volume --------------------------
+
+.rows {
+  display: grid;
+  padding: 1cqi 2.4cqi 0;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 1.4cqi;
+  height: 6.6cqi;
+  border-bottom: 1px solid var(--sc-line);
+  transition:
+    opacity 0.35s $ease-soft,
+    translate 0.5s $ease-soft;
+  transition-delay: calc(var(--k) * 230ms);
+
+  &:last-child {
+    border-bottom: 0;
+  }
+
+  i {
+    flex: none;
+    width: 4cqi;
+    aspect-ratio: 1;
+    border: 1px solid var(--sc-line);
+    border-radius: 50%;
+  }
+
+  b {
+    position: relative;
+    flex: 1;
+    height: 0.9cqi;
+    border-radius: 1cqi;
+    background: var(--sc-bar);
+
+    // The unread mark of a new chat.
+    &::after {
+      content: "";
+      position: absolute;
+      right: -0.4cqi;
+      top: 50%;
+      width: 1.6cqi;
+      aspect-ratio: 1;
+      margin-top: -0.8cqi;
+      border-radius: 50%;
+      background: var(--wb-accent);
+    }
+  }
+
+  @include before(1) {
+    opacity: 0;
+    translate: 0 -2.4cqi;
+  }
+}
+
+.volume {
+  position: absolute;
+  left: 2.4cqi;
+  right: 2.4cqi;
+  bottom: 2.2cqi;
+  display: grid;
+  gap: 0.6cqi;
+  padding-top: 1.8cqi;
+  border-top: 1px solid var(--sc-line);
+}
+
+.value {
+  @include title;
+  font-size: 7cqi;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  color: var(--wb-accent);
+
+  @include dark {
+    color: #6688ff;
+  }
+}
+
+.caption {
+  font-weight: 500;
+  color: var(--wb-ink-2);
+}
+
+// The chat --------------------------------------------------------------------------
+
+.head {
+  display: flex;
+  align-items: center;
+  gap: 1.8cqi;
+  padding: 2cqi 2.4cqi;
+  border-bottom: 1px solid var(--sc-line);
+}
+
+// The assistant: a cobalt disc with a small square, as in the LeadBot scene.
+.avatar {
+  position: relative;
+  flex: none;
+  width: 5.6cqi;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: var(--wb-accent);
+
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 36%;
+    border-radius: 0.2cqi;
+    background: #ffffff;
+  }
+}
+
+.name {
+  font-weight: 600;
+}
+
+.thread {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 1.6cqi;
+  padding: 2.4cqi;
+}
+
+.slot {
+  display: grid;
+  justify-items: end;
+  width: 100%;
+
+  > * {
+    grid-area: 1 / 1;
+  }
+}
+
+// The greeting: the bot's message, a cobalt outline.
+.greet {
+  max-width: 88%;
+  margin: 0;
+  padding: 0.6em 0.85em;
+  border: 1px solid var(--wb-accent);
+  border-radius: 0.9em;
+  border-bottom-right-radius: 0.25em;
+  background: var(--sc-obj);
+  transform-origin: right bottom;
+  transition:
+    opacity 0.45s $ease-soft,
+    translate 0.6s $ease-soft,
+    scale 0.5s $ease-settle;
+
+  @include before(3) {
+    opacity: 0;
+    translate: 0 1.5cqi;
+    scale: 0.96;
+  }
+}
+
+// The bot is typing: shown at step 2 only.
+.dots {
+  display: inline-flex;
+  align-self: end;
+  gap: 0.3em;
+  padding: 0.75em 0.9em;
+  border: 1px solid var(--wb-accent);
+  border-radius: 0.9em;
+  border-bottom-right-radius: 0.25em;
+  background: var(--sc-obj);
+  opacity: 0;
+  transition: opacity 0.3s $ease-soft;
+
+  @include from(2) {
+    opacity: 1;
+  }
+
+  @include from(3) {
+    opacity: 0;
+  }
+
+  i {
+    width: 0.42em;
+    height: 0.42em;
+    border-radius: 50%;
+    background: var(--wb-accent);
+
+    @include live {
+      animation: dot 1s ease-in-out infinite;
+
+      &:nth-child(2) {
+        animation-delay: 0.15s;
+      }
+
+      &:nth-child(3) {
+        animation-delay: 0.3s;
+      }
+    }
+  }
+}
+
+// The three buttons under the greeting, tap to select.
+.buttons {
+  display: grid;
+  gap: 1.1cqi;
+  width: 88%;
+}
+
+.button {
+  position: relative;
+  padding: 0.45em 0.6em;
+  border: 1px solid var(--sc-line);
+  border-radius: 0.6em;
+  background: var(--sc-obj);
+  font-weight: 500;
+  text-align: center;
+  white-space: nowrap;
+  transition:
+    opacity 0.4s $ease-soft,
+    translate 0.55s $ease-soft;
+  transition-delay: calc(0.35s + var(--k) * 140ms);
+
+  @include before(3) {
+    opacity: 0;
+    translate: 0 1.2cqi;
+  }
+}
+
+// The buyer's tap: a cobalt outline settles on "I Want to Buy".
+.ring {
+  position: absolute;
+  inset: -1px;
+  border: 1.5px solid var(--wb-accent);
+  border-radius: inherit;
+  transition: opacity 0.3s $ease-soft;
+
+  @include before(4) {
+    opacity: 0;
+  }
+
+  &::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 9cqi;
+    aspect-ratio: 1;
+    margin: -4.5cqi 0 0 -4.5cqi;
+    border: 1.5px solid var(--wb-accent);
+    border-radius: 50%;
+    opacity: 0;
+
+    @include from(4) {
+      animation: tap 0.8s $ease-soft both;
+    }
+  }
+}
+
+// The advisor lane: sales-ready buyers ---------------------------------------------
+
+.cards {
+  display: flex;
+  gap: 2cqi;
+}
+
+.card {
+  flex: 1;
+  display: grid;
+  align-content: center;
+  height: 10cqi;
+  padding: 0 2cqi;
+  border: 1px solid var(--wb-accent);
+  border-radius: 1cqi;
+  background: var(--sc-obj);
+  color: var(--wb-accent);
+
+  @include dark {
+    color: #6688ff;
+  }
+
+  b {
+    display: grid;
+    gap: 1cqi;
+
+    &::before,
+    &::after {
+      content: "";
+      height: 0.9cqi;
+      border-radius: 1cqi;
+      background: currentColor;
+      opacity: 0.35;
+    }
+
+    &::after {
+      width: 62%;
+    }
+  }
+}
+
+// The buyer's chat travels from the tapped button to the lane.
+.newCard {
+  transition:
+    opacity 0.4s $ease-soft,
+    translate 1s cubic-bezier(0.6, 0, 0.3, 1),
+    scale 1s cubic-bezier(0.6, 0, 0.3, 1);
+
+  @include before(5) {
+    opacity: 0;
+    translate: -8cqi -26cqi;
+    scale: 0.7;
+  }
+}
+
+// The silent chat: a follow-up at 60 minutes, then closed --------------------------
+
+.flow {
+  display: flex;
+  align-items: center;
+  gap: 1.4cqi;
+  height: 8cqi;
+}
+
+.quiet {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 1cqi;
+  width: 15cqi;
+  height: 8cqi;
+  padding: 0 1.4cqi;
+  border: 1px solid var(--sc-line);
+  border-radius: 1cqi;
+  opacity: 0.5;
+  transition:
+    opacity 0.6s $ease-soft,
+    translate 0.7s $ease-soft;
+
+  i {
+    flex: none;
+    width: 3.4cqi;
+    aspect-ratio: 1;
+    border: 1px solid var(--sc-line);
+    border-radius: 50%;
+  }
+
+  b {
+    flex: 1;
+    height: 0.9cqi;
+    border-radius: 1cqi;
+    background: var(--sc-bar);
+  }
+
+  @include before(7) {
+    opacity: 1;
+  }
+
+  @include before(5) {
+    opacity: 0;
+    translate: 0 1.5cqi;
+  }
+}
+
+.wait {
+  display: grid;
+  flex: 1;
+  justify-items: center;
+  gap: 0.8cqi;
+  min-width: 0;
+  // Lift the label so the line sits level with the cards.
+  margin-top: -5.2cqi;
+}
+
+.waitLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
+  font-weight: 500;
+  color: var(--wb-ink-2);
+  white-space: nowrap;
+  transition: opacity 0.4s $ease-soft 0.2s;
+
+  @include before(6) {
+    opacity: 0;
+  }
+}
+
+// A small clock: a hairline dial with two hands.
+.clock {
+  position: relative;
+  width: 1em;
+  aspect-ratio: 1;
+  border: 1px solid currentColor;
+  border-radius: 50%;
+
+  &::before,
+  &::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    bottom: 50%;
+    width: 1px;
+    background: currentColor;
+  }
+
+  &::before {
+    height: 34%;
+  }
+
+  &::after {
+    height: 26%;
+    rotate: 90deg;
+    transform-origin: bottom center;
+  }
+}
+
+.link {
+  height: 1px;
+  background: var(--wb-ink-2);
+  opacity: 0.7;
+  transform-origin: left center;
+  transition: scale 0.8s $ease-soft;
+}
+
+.link1 {
+  width: 100%;
+
+  @include before(6) {
+    scale: 0 1;
+  }
+}
+
+.link2 {
+  flex: none;
+  width: 5cqi;
+  transition-delay: 0.1s;
+
+  @include before(7) {
+    scale: 0 1;
+  }
+}
+
+// The follow-up message: the bot's, a cobalt outline.
+.follow {
+  display: grid;
+  align-content: center;
+  flex: none;
+  width: 9cqi;
+  height: 6.4cqi;
+  padding: 0 1.4cqi;
+  border: 1px solid var(--wb-accent);
+  border-radius: 1cqi 1cqi 0.3cqi 1cqi;
+  color: var(--wb-accent);
+  transition:
+    opacity 0.4s $ease-soft,
+    scale 0.55s $ease-settle;
+  transition-delay: 0.75s;
+
+  b {
+    height: 0.9cqi;
+    border-radius: 1cqi;
+    background: currentColor;
+    opacity: 0.35;
+  }
+
+  @include before(6) {
+    opacity: 0;
+    scale: 0.8;
+  }
+}
+
+.closed {
+  flex: none;
+  padding: 0.3em 0.6em;
+  border: 1px solid var(--wb-ink-2);
+  border-radius: 0.4em;
+  font-weight: 500;
+  color: var(--wb-ink-2);
+  white-space: nowrap;
+  transition:
+    opacity 0.4s $ease-soft,
+    translate 0.6s $ease-soft;
+  transition-delay: 0.55s;
+
+  @include before(7) {
+    opacity: 0;
+    translate: 1.5cqi 0;
+  }
+}
+
+@keyframes dot {
+  0%,
+  100% {
+    translate: 0 0;
+    opacity: 0.55;
+  }
+
+  40% {
+    translate: 0 -0.22em;
+    opacity: 1;
+  }
+}
+
+@keyframes tap {
+  from {
+    opacity: 0.6;
+    scale: 0.2;
+  }
+
+  to {
+    opacity: 0;
+    scale: 1.6;
+  }
+}
+
+@include reduced {
+  .scene * {
+    transition: none !important;
+  }
+}

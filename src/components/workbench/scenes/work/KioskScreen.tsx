@@ -6,7 +6,8 @@
 // grid filling in, a tap, one panel full screen, a swipe, back to the grid.
 // With reduced motion it shows the full grid. Sober (2026-10-22): the app
 // takes the page's tone in either theme; its tiles are outlined (cobalt ones
-// filled).
+// filled). With `line` (the case's larger screen) the full-screen panels are
+// drawn in line too; the home's BoothApp keeps the filled ones.
 import { useRef } from "react";
 import { CanvasLoop, type Frame } from "../CanvasLoop";
 
@@ -83,11 +84,31 @@ function lerpRect(a: Rect, b: Rect, p: number): Rect {
   };
 }
 
-/** A perforated panel: holes on a staggered grid. */
-function panel(ctx: CanvasRenderingContext2D, r: Rect, tone: Tone, p: Palette) {
-  ctx.fillStyle = p.tone[tone];
-  ctx.fillRect(r.x, r.y, r.w, r.h);
-  ctx.fillStyle = tone === "cobalt" || tone === "ink" ? p.holesOnStrong : p.holesOnLight;
+/**
+ * A perforated panel: holes on a staggered grid. With `line`, the panel is
+ * drawn in line instead of filled: a hairline frame in its tone on the app's
+ * paper, the holes as dots in its tone.
+ */
+function panel(
+  ctx: CanvasRenderingContext2D,
+  r: Rect,
+  tone: Tone,
+  p: Palette,
+  line = false,
+) {
+  if (line) {
+    ctx.fillStyle = p.paper;
+    ctx.fillRect(r.x, r.y, r.w, r.h);
+    const lw = Math.max(1, r.w * 0.006);
+    ctx.lineWidth = lw;
+    ctx.strokeStyle = p.tone[tone];
+    ctx.strokeRect(r.x + lw / 2, r.y + lw / 2, r.w - lw, r.h - lw);
+    ctx.fillStyle = p.tone[tone];
+  } else {
+    ctx.fillStyle = p.tone[tone];
+    ctx.fillRect(r.x, r.y, r.w, r.h);
+    ctx.fillStyle = tone === "cobalt" || tone === "ink" ? p.holesOnStrong : p.holesOnLight;
+  }
   const step = r.w / 8;
   const rad = step * 0.2;
   for (let row = 0, y = r.y + step * 0.6; y < r.y + r.h - rad; row++, y += step * 0.8) {
@@ -99,7 +120,14 @@ function panel(ctx: CanvasRenderingContext2D, r: Rect, tone: Tone, p: Palette) {
   }
 }
 
-export function KioskScreen({ className }: { className?: string }) {
+export function KioskScreen({
+  className,
+  line = false,
+}: {
+  className?: string;
+  /** Draw the full-screen panels in line (the case's larger screen), not filled. */
+  line?: boolean;
+}) {
   const zero = useRef(-1);
 
   const draw = (ctx: CanvasRenderingContext2D, f: Frame) => {
@@ -205,7 +233,7 @@ export function KioskScreen({ className }: { className?: string }) {
       const from = cell(TAPPED.c, TAPPED.r);
       const back = cell(TAPPED.c + 1, TAPPED.r);
       if (zout > 0) {
-        panel(ctx, lerpRect(content, back, zout), tileTone(TAPPED.c + 1, TAPPED.r), pal);
+        panel(ctx, lerpRect(content, back, zout), tileTone(TAPPED.c + 1, TAPPED.r), pal, line);
       } else {
         const a = lerpRect(from, content, zin);
         ctx.save();
@@ -217,6 +245,7 @@ export function KioskScreen({ className }: { className?: string }) {
           { ...a, x: a.x - sw * (content.w + gap * 4) },
           tileTone(TAPPED.c, TAPPED.r),
           pal,
+          line,
         );
         if (sw > 0) {
           panel(
@@ -224,6 +253,7 @@ export function KioskScreen({ className }: { className?: string }) {
             { ...content, x: content.x + (1 - sw) * (content.w + gap * 4) },
             tileTone(TAPPED.c + 1, TAPPED.r),
             pal,
+            line,
           );
         }
         ctx.restore();

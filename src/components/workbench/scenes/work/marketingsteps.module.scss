@@ -1,0 +1,782 @@
+// Scenes: MarketingSteps (see MarketingSteps.tsx). MarginStepper sheets:
+// 5:4, 100 x 80 cqi, the top 14 cqi kept for the step's name. Drawn with
+// hairlines on the sheet's tokens; cobalt marks what moves through the
+// system. Keep this file ASCII-only.
+@use "../../shared" as *;
+@use "../scene" as *;
+
+.scene {
+  position: absolute;
+  inset: 0;
+  color: var(--wb-ink);
+  font-size: fs(3.4);
+  line-height: 1.25;
+}
+
+// Every boxed object enters the same way.
+.book,
+.week,
+.engine,
+.store,
+.drafter,
+.feed,
+.shop,
+.tracker,
+.form,
+.zap,
+.crm {
+  position: absolute;
+  border: 1px solid var(--sc-line);
+  border-radius: 1.2cqi;
+  background: var(--sc-obj);
+  transition:
+    opacity 0.8s $ease-soft,
+    translate 1s $ease-soft;
+
+  @include before(0) {
+    opacity: 0;
+    translate: 0 4cqi;
+  }
+}
+
+// A hairline between two objects, drawn from its left end.
+.wire,
+.feedWire,
+.route {
+  position: absolute;
+  height: 1px;
+  background: var(--wb-ink-2);
+  opacity: 0.7;
+  transform-origin: left center;
+  transition: scale 0.7s $ease-soft;
+}
+
+.bar {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1cqi;
+  padding: 1.4cqi 2cqi;
+  border-bottom: 1px solid var(--sc-line);
+}
+
+.storeName,
+.engineName,
+.feedName,
+.trackerName,
+.boxName {
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.kind {
+  font-weight: 500;
+  color: var(--wb-ink-2);
+}
+
+// 1. The brand manual -----------------------------------------------------------------
+
+.book {
+  left: 8cqi;
+  top: 20cqi;
+  width: 66cqi;
+  height: 52cqi;
+  display: flex;
+  gap: 1cqi;
+  padding: 1.4cqi;
+}
+
+.page {
+  position: relative;
+  flex: 1;
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  gap: 3cqi;
+  border: 1px solid var(--sc-line);
+  border-radius: 0.6cqi;
+  background: var(--sc-obj);
+}
+
+// The right page unfolds from the spine.
+.pageRight {
+  transform-origin: left center;
+  transition:
+    opacity 0.4s $ease-soft,
+    scale 0.9s cubic-bezier(0.6, 0, 0.3, 1);
+
+  @include before(1) {
+    opacity: 0;
+    scale: 0.04 1;
+  }
+}
+
+.swatches {
+  display: flex;
+  gap: 1.6cqi;
+
+  i {
+    width: 6cqi;
+    aspect-ratio: 1;
+    border-radius: 0.6cqi;
+    transition: scale 0.5s $ease-settle;
+    transition-delay: calc(var(--k) * 120ms);
+
+    @include before(2) {
+      scale: 0;
+    }
+  }
+}
+
+.cobalt {
+  background: var(--wb-cobalt);
+}
+
+.ink {
+  background: #1d1d22;
+
+  @include dark {
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.22);
+  }
+}
+
+.mist {
+  background: var(--wb-mist);
+  box-shadow: inset 0 0 0 1px rgba(19, 19, 22, 0.1);
+}
+
+.specimen {
+  @include title;
+  font-size: 9cqi;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  transition:
+    opacity 0.5s $ease-soft 0.3s,
+    translate 0.7s $ease-soft 0.3s;
+
+  @include before(2) {
+    opacity: 0;
+    translate: 0 1.5cqi;
+  }
+}
+
+// The tone of voice (lines), and a mark in its clear space (usage).
+.tone {
+  display: grid;
+  gap: 1.2cqi;
+  width: 70%;
+
+  i {
+    height: 1cqi;
+    border-radius: 1cqi;
+    background: var(--sc-bar);
+    transform-origin: left center;
+    transition: scale 0.5s $ease-soft;
+    transition-delay: calc(var(--k) * 160ms);
+
+    &:nth-child(2) {
+      width: 84%;
+    }
+
+    &:nth-child(3) {
+      width: 62%;
+    }
+
+    @include before(3) {
+      scale: 0 1;
+    }
+  }
+}
+
+.usage {
+  display: grid;
+  place-items: center;
+  width: 14cqi;
+  aspect-ratio: 1;
+  border: 1px dashed var(--wb-ink-2);
+  border-radius: 0.4cqi;
+  transition: opacity 0.5s $ease-soft 0.4s;
+
+  i {
+    width: 50%;
+    aspect-ratio: 1;
+    border: 1.5px solid var(--wb-accent);
+    border-radius: 0.4cqi;
+  }
+
+  @include before(3) {
+    opacity: 0;
+  }
+}
+
+.week {
+  left: 78cqi;
+  top: 20cqi;
+  width: 16cqi;
+  padding: 1.6cqi 0 1.4cqi;
+  border-top: 2px solid var(--wb-accent);
+  font-weight: 600;
+  text-align: center;
+  white-space: nowrap;
+  transition-delay: 0.15s;
+}
+
+// 2. SEO automation ----------------------------------------------------------------------
+
+.engine,
+.drafter {
+  display: grid;
+  align-content: start;
+  gap: 2.4cqi;
+  padding: 2cqi 2.4cqi;
+}
+
+.engine {
+  left: 6cqi;
+  top: 22cqi;
+  width: 32cqi;
+  height: 48cqi;
+}
+
+// The article being written: lines that draw in, one after another.
+.article {
+  display: grid;
+  gap: 1.6cqi;
+
+  i {
+    height: 1cqi;
+    border-radius: 1cqi;
+    background: var(--sc-bar);
+    transform-origin: left center;
+    transition: scale 0.45s $ease-soft;
+    transition-delay: calc(var(--k) * 260ms);
+
+    &:first-child {
+      width: 80%;
+      height: 1.6cqi;
+      background: var(--wb-ink);
+    }
+
+    &:nth-child(3) {
+      width: 88%;
+    }
+
+    &:nth-child(4) {
+      width: 66%;
+    }
+
+    @include before(1) {
+      scale: 0 1;
+    }
+  }
+}
+
+.store {
+  left: 52cqi;
+  width: 42cqi;
+  height: 27cqi;
+  overflow: hidden;
+  transition-delay: 0.1s;
+}
+
+.storeTop {
+  top: 17cqi;
+}
+
+.storeBottom {
+  top: 49cqi;
+  transition-delay: 0.2s;
+}
+
+.posts {
+  display: grid;
+  gap: 1.2cqi;
+  padding: 1.6cqi 2cqi;
+}
+
+.post {
+  display: grid;
+  align-content: center;
+  height: 4.4cqi;
+  padding: 0 1.4cqi;
+  border: 1px solid var(--sc-line);
+  border-radius: 0.6cqi;
+
+  i {
+    height: 0.9cqi;
+    border-radius: 1cqi;
+    background: var(--sc-bar);
+  }
+}
+
+// The new article lands at the top of each list.
+.newPost {
+  border-color: var(--wb-accent);
+  transition:
+    opacity 0.4s $ease-soft,
+    translate 0.6s $ease-settle;
+
+  i {
+    background: var(--wb-accent);
+    opacity: 0.45;
+  }
+
+  .storeBottom & {
+    transition-delay: 0.2s;
+  }
+
+  @include before(3) {
+    opacity: 0;
+    translate: 0 -3cqi;
+  }
+}
+
+.wire {
+  left: 38cqi;
+  width: 14cqi;
+
+  @include before(2) {
+    scale: 0 1;
+  }
+}
+
+.wireTop {
+  top: 30.5cqi;
+}
+
+.wireBottom {
+  top: 62.5cqi;
+  transition-delay: 0.1s;
+}
+
+// A copy of the article on its way along each wire.
+.copy {
+  position: absolute;
+  left: 38cqi;
+  width: 5cqi;
+  height: 3.6cqi;
+  margin-top: -1.8cqi;
+  border: 1px solid var(--wb-accent);
+  border-radius: 0.5cqi;
+  background: var(--sc-obj);
+  opacity: 0;
+  translate: 9cqi 0;
+  transition:
+    opacity 0.3s $ease-soft,
+    translate 0.9s cubic-bezier(0.6, 0, 0.3, 1);
+
+  @include before(2) {
+    translate: 0 0;
+  }
+
+  @include from(2) {
+    opacity: 1;
+  }
+
+  @include from(3) {
+    opacity: 0;
+  }
+}
+
+.copyTop {
+  top: 30.5cqi;
+}
+
+.copyBottom {
+  top: 62.5cqi;
+  transition-delay: 0.1s;
+}
+
+// 3. LinkedIn with Holo AI --------------------------------------------------------------
+
+.drafter {
+  left: 6cqi;
+  top: 30cqi;
+  width: 28cqi;
+  height: 30cqi;
+}
+
+.feedWire {
+  left: 34cqi;
+  top: 45cqi;
+  width: 8cqi;
+
+  @include before(1) {
+    scale: 0 1;
+  }
+}
+
+.feed {
+  left: 42cqi;
+  top: 18cqi;
+  width: 52cqi;
+  height: 58cqi;
+  display: grid;
+  align-content: start;
+  gap: 1.6cqi;
+  padding: 2cqi 2.4cqi;
+  transition-delay: 0.1s;
+}
+
+.feedPost {
+  display: flex;
+  align-items: center;
+  gap: 1.6cqi;
+  height: 13cqi;
+  padding: 0 1.8cqi;
+  border: 1px solid var(--sc-line);
+  border-radius: 0.8cqi;
+  transition:
+    opacity 0.4s $ease-soft,
+    translate 0.6s $ease-settle;
+
+  i {
+    flex: none;
+    width: 5cqi;
+    aspect-ratio: 1;
+    border: 1px solid var(--wb-accent);
+    border-radius: 50%;
+  }
+
+  b {
+    display: grid;
+    flex: 1;
+    gap: 1.2cqi;
+
+    &::before,
+    &::after {
+      content: "";
+      height: 0.9cqi;
+      border-radius: 1cqi;
+      background: var(--sc-bar);
+    }
+
+    &::after {
+      width: 64%;
+    }
+  }
+}
+
+// The feed's name is its first child, so the posts are children 2 to 4.
+@for $n from 1 through 3 {
+  .feedPost:nth-child(#{$n + 1}) {
+    @include before($n) {
+      opacity: 0;
+      translate: -3cqi 0;
+    }
+  }
+}
+
+// 4. The Meta Pixel on both stores ---------------------------------------------------------
+
+.shop {
+  top: 18cqi;
+  width: 40cqi;
+  height: 30cqi;
+}
+
+.shop.left {
+  left: 6cqi;
+}
+
+.shop.right {
+  left: 54cqi;
+  transition-delay: 0.1s;
+}
+
+.lines {
+  display: grid;
+  gap: 1.4cqi;
+  padding: 2.4cqi 2cqi;
+
+  i {
+    height: 0.9cqi;
+    border-radius: 1cqi;
+    background: var(--sc-bar);
+
+    &:last-child {
+      width: 70%;
+    }
+  }
+}
+
+// The pixel: a small cobalt square in the corner of each store.
+.pixel {
+  position: absolute;
+  right: 2cqi;
+  bottom: 2cqi;
+  width: 2.6cqi;
+  aspect-ratio: 1;
+  border-radius: 0.3cqi;
+  background: var(--wb-accent);
+  transition:
+    opacity 0.3s $ease-soft,
+    scale 0.5s $ease-settle;
+
+  .right & {
+    transition-delay: 0.2s;
+  }
+
+  @include before(1) {
+    opacity: 0;
+    scale: 0.2;
+  }
+}
+
+// From each store down to the tracker: a line, and events travelling on it.
+.drop {
+  position: absolute;
+  top: 48cqi;
+  width: 1px;
+  height: 10cqi;
+  background: var(--wb-ink-2);
+  transform-origin: center top;
+  transition: scale 0.6s $ease-soft;
+
+  &.left {
+    left: 26cqi;
+  }
+
+  &.right {
+    left: 74cqi;
+  }
+
+  @include before(2) {
+    scale: 1 0;
+  }
+
+  i {
+    position: absolute;
+    left: -0.8cqi;
+    top: -0.8cqi;
+    width: 1.6cqi;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: var(--wb-accent);
+    opacity: 0;
+
+    @include live {
+      animation: event 1.3s $ease-soft infinite;
+    }
+  }
+
+  &.right i {
+    animation-delay: 0.55s;
+  }
+}
+
+.tracker {
+  left: 18cqi;
+  top: 58cqi;
+  width: 64cqi;
+  height: 16cqi;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 3cqi;
+  padding: 0 3cqi;
+  transition-delay: 0.2s;
+}
+
+.events {
+  display: flex;
+  align-items: flex-end;
+  gap: 1.2cqi;
+  height: 6cqi;
+
+  i {
+    width: 1.2cqi;
+    height: 100%;
+    border-radius: 0.3cqi;
+    background: var(--wb-accent);
+    transform-origin: center bottom;
+    transition: scale 0.4s $ease-settle;
+    transition-delay: calc(var(--k) * 80ms);
+
+    &:nth-child(3n + 2) {
+      height: 60%;
+    }
+
+    &:nth-child(3n) {
+      height: 80%;
+    }
+
+    @include before(3) {
+      scale: 1 0;
+    }
+  }
+}
+
+// 5. The lead route: Instant Form, Zapier, Odoo CRM ----------------------------------------
+
+.form,
+.crm {
+  display: grid;
+  align-content: start;
+  gap: 2cqi;
+  padding: 2cqi 2.2cqi;
+}
+
+.form {
+  left: 6cqi;
+  top: 22cqi;
+  width: 27cqi;
+  height: 46cqi;
+}
+
+.fields {
+  display: grid;
+  gap: 1.6cqi;
+
+  i {
+    position: relative;
+    height: 5cqi;
+    border: 1px solid var(--sc-line);
+    border-radius: 0.6cqi;
+
+    // What the visitor typed.
+    &::after {
+      content: "";
+      position: absolute;
+      left: 1.4cqi;
+      top: 50%;
+      width: 55%;
+      height: 0.9cqi;
+      margin-top: -0.45cqi;
+      border-radius: 1cqi;
+      background: var(--wb-ink-2);
+      opacity: 0.6;
+      transform-origin: left center;
+      transition: scale 0.4s $ease-soft;
+      transition-delay: calc(var(--k) * 220ms);
+    }
+
+    @include before(1) {
+      &::after {
+        scale: 0 1;
+      }
+    }
+  }
+}
+
+.submit {
+  height: 5cqi;
+  border: 1px solid var(--wb-accent);
+  border-radius: 0.6cqi;
+}
+
+.route {
+  top: 45cqi;
+
+  @include before(2) {
+    scale: 0 1;
+  }
+}
+
+.route1 {
+  left: 33cqi;
+  width: 6cqi;
+}
+
+.route2 {
+  left: 59cqi;
+  width: 7cqi;
+
+  @include before(3) {
+    scale: 0 1;
+  }
+}
+
+.zap {
+  left: 39cqi;
+  top: 38.5cqi;
+  width: 20cqi;
+  height: 13cqi;
+  display: grid;
+  place-items: center;
+  font-weight: 600;
+  transition-delay: 0.1s;
+}
+
+.crm {
+  left: 66cqi;
+  top: 18cqi;
+  width: 28cqi;
+  height: 56cqi;
+  transition-delay: 0.2s;
+}
+
+.crmCards {
+  display: grid;
+  gap: 1.4cqi;
+}
+
+.crmCard {
+  display: grid;
+  align-content: center;
+  height: 8cqi;
+  padding: 0 1.6cqi;
+  border: 1px solid var(--sc-line);
+  border-radius: 0.6cqi;
+  background: var(--sc-obj);
+
+  i {
+    height: 0.9cqi;
+    border-radius: 1cqi;
+    background: var(--sc-bar);
+  }
+}
+
+// The lead: it leaves the form, passes through Zapier and lands in the CRM.
+.lead {
+  border-color: var(--wb-accent);
+  transition:
+    opacity 0.3s $ease-soft,
+    translate 1s cubic-bezier(0.6, 0, 0.3, 1),
+    scale 1s cubic-bezier(0.6, 0, 0.3, 1);
+
+  i {
+    background: var(--wb-accent);
+    opacity: 0.45;
+  }
+
+  @include before(3) {
+    translate: -31cqi 12cqi;
+    scale: 0.5;
+  }
+
+  @include before(2) {
+    translate: -61cqi 26cqi;
+    scale: 0.5;
+  }
+
+  @include before(1) {
+    opacity: 0;
+  }
+}
+
+@keyframes event {
+  0% {
+    opacity: 0;
+    translate: 0 0;
+  }
+
+  15% {
+    opacity: 1;
+  }
+
+  85% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+    translate: 0 10cqi;
+  }
+}
+
+@include reduced {
+  .scene * {
+    transition: none !important;
+  }
+}

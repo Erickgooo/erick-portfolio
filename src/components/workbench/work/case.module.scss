@@ -234,12 +234,19 @@
   }
 }
 
+// From 1024 px the margin keeps at least 320 px, so its scenes and prints
+// stay readable before the text column reaches its 700 px measure (at
+// 1024 px the margin used to be 148 px wide); from 1280 px nothing changes.
 .chapter {
   display: grid;
   gap: 40px;
 
   @include from-desk {
-    grid-template-columns: minmax(0, 700px) minmax(0, 1fr);
+    grid-template-columns: minmax(0, 700px) minmax(320px, 1fr);
+    gap: 56px;
+  }
+
+  @include from-wide {
     gap: 80px;
   }
 }

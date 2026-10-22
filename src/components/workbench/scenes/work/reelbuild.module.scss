@@ -444,6 +444,79 @@ $slide: cubic-bezier(0.65, 0, 0.35, 1);
   color: var(--wb-ink-2);
 }
 
+// The case's version (`views`, always portrait) -----------------------------------
+// The three flagship reels land one by one under the pipeline, each with its
+// views, then the total. Only the case carries these classes.
+
+.landed {
+  position: absolute;
+  left: 51cqi;
+  top: 41cqi;
+  width: 44cqi;
+  display: flex;
+  justify-content: space-between;
+}
+
+.landedReel {
+  display: grid;
+  justify-items: center;
+  gap: 1.4cqi;
+  transition:
+    opacity 0.4s $ease-soft,
+    translate 0.7s $ease-settle;
+
+  .thumb {
+    width: 13cqi;
+    border-radius: 1.2cqi;
+  }
+}
+
+@for $k from 1 through 3 {
+  .landedReel:nth-child(#{$k}) {
+    @include before(5 + $k) {
+      opacity: 0;
+      translate: 0 -5cqi;
+    }
+  }
+}
+
+.reelViews {
+  @include title;
+  font-size: 4.6cqi;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  color: var(--wb-ink);
+}
+
+.total {
+  position: absolute;
+  left: 5cqi;
+  top: 85cqi;
+  width: 90cqi;
+  height: 32cqi;
+  display: grid;
+  align-content: center;
+  gap: 1cqi;
+  padding: 3cqi 3.4cqi;
+  border: 1px solid var(--sc-line);
+  border-radius: 1cqi;
+  background: var(--sc-obj);
+  transition:
+    opacity 0.6s $ease-soft,
+    translate 0.8s $ease-soft,
+    scale 0.6s $ease-settle;
+
+  @include before(9) {
+    opacity: 0;
+    translate: 0 3cqi;
+    scale: 0.98;
+  }
+
+  .value {
+    font-size: 12cqi;
+  }
+}
+
 @keyframes wave {
   from {
     scale: 1 var(--h);
