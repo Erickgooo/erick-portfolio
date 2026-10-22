@@ -63,21 +63,24 @@
 // The headline in Montserrat Black, sized from the text column in viewport
 // units (the column's width per layout) rather than as a size container, so
 // the first frame needs no extra container pass. Its longest word,
-// "infrastructure", is about 6.9 em wide, so 13.5 % of the column keeps it on
-// one line on phones. It breaks evenly on its own, so it skips text-wrap:
+// "infrastructure", is 7.24 em wide, so 13 % of the column keeps it on one
+// line on phones with a little to spare. It breaks evenly on its own, so it skips text-wrap:
 // balance (several line-breaking passes in the first frame).
 .title {
   @include title;
-  font-size: clamp(34px, calc((100vw - 32px) * 0.135), 64px);
+  font-size: clamp(34px, calc((100vw - 32px) * 0.13), 64px);
   line-height: 1.04;
   letter-spacing: -0.025em;
 
+  // On tablets the column is wide enough to leave a last word alone.
   @include from-tablet {
     font-size: clamp(34px, calc((100vw - 64px) * 0.1), 64px);
+    text-wrap: balance;
   }
 
   @include from-desk {
     font-size: clamp(34px, calc((min(100vw, 1280px) - 144px) * 0.054), 64px);
+    text-wrap: wrap;
   }
 }
 

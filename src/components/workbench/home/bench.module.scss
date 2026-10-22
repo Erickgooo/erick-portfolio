@@ -2,7 +2,10 @@
 // are in container units so the whole cluster scales as one object from 360
 // to 1440. Variant A draws every object with a hairline; variant B lays them
 // on soft surfaces with no outline. Nothing is tilted, taped or pinned.
-// Keep this file ASCII-only.
+// From 1280 px the figures lie on the bench among the objects; below that
+// (phones, tablets and the narrow desktop, where a tag would be too narrow
+// for its caption) the objects keep the bench and the figures lie in a grid
+// of tags under it. Keep this file ASCII-only.
 @use "../shared" as *;
 
 .bench {
@@ -17,7 +20,7 @@
   user-select: none;
   -webkit-user-select: none;
 
-  @include phone {
+  @include below-wide {
     aspect-ratio: auto;
   }
 
@@ -37,7 +40,7 @@
 }
 
 .stage {
-  @include phone {
+  @include below-wide {
     position: relative;
     aspect-ratio: 1 / 0.98;
   }
@@ -50,13 +53,13 @@
     pointer-events: auto;
   }
 
-  // Phones: the figures leave the bench and lie in a row of tags under it.
-  @include phone {
+  // Below 1280 px: the figures leave the bench and lie in a grid of tags under it.
+  @include below-wide {
     position: static;
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 12px;
-    margin-top: 6cqi;
+    margin-top: 5cqi;
     pointer-events: auto;
 
     .slot {
@@ -76,7 +79,7 @@
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
 
-  @include phone {
+  @include below-wide {
     left: var(--mx);
     top: var(--my);
     width: var(--mw);
@@ -196,9 +199,9 @@
     background: var(--wb-soft);
   }
 
-  @include phone {
-    gap: 1.2cqi;
-    padding: 3.2cqi 3.6cqi 3.6cqi;
+  @include below-wide {
+    gap: 6px;
+    padding: 16px 18px 18px;
   }
 }
 
@@ -208,8 +211,8 @@
   line-height: 1;
   letter-spacing: -0.03em;
 
-  @include phone {
-    font-size: 8cqi;
+  @include below-wide {
+    font-size: clamp(30px, 8cqi, 40px);
   }
 }
 
@@ -227,7 +230,7 @@
   line-height: 1.35;
   color: var(--wb-ink-2);
 
-  @include phone {
+  @include below-wide {
     font-size: 16px;
   }
 }
