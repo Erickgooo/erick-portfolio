@@ -1,7 +1,7 @@
 "use client";
 
-// Workbench: the password field of the protected-content screen, the slot cut
-// into the locked sheet. It takes the same props PasswordPrompt passed to Once
+// Workbench: the password field of the protected-content screen, a hairline
+// box on the locked sheet. It takes the same props PasswordPrompt passed to Once
 // UI's PasswordInput (id, label, value, onChange, onKeyDown, errorMessage) and
 // keeps its behaviour: a visible label tied to the input, the error described
 // by id with aria-invalid, and a key to show or hide the password, which here
