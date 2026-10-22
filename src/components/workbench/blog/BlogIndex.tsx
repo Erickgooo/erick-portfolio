@@ -1,7 +1,9 @@
 // Workbench, Blog: the posts as sheets, newest first. The newest lies open and
 // large; the rest follow as smaller sheets in two columns.
 import { blog } from "@/resources";
+import { formatDate } from "@/utils/formatDate";
 import type { CSSProperties } from "react";
+import { TitleSheet } from "../scenes/blog/TitleSheet";
 import { PostSheet } from "./PostSheet";
 import styles from "./blog.module.scss";
 import { getPostCards } from "./posts";
@@ -13,7 +15,12 @@ export function BlogIndex({ hideProtected }: { hideProtected: boolean }) {
     <>
       <header className={styles.head}>
         <h1 className={styles.title}>{blog.title}</h1>
-        <p className={styles.lede}>{blog.description}.</p>
+        <div className={styles.headSide}>
+          <p className={styles.lede}>{blog.description}.</p>
+          {newest ? (
+            <TitleSheet title={newest.title} date={formatDate(newest.publishedAt)} />
+          ) : null}
+        </div>
       </header>
 
       <section className={styles.bench} aria-label="All posts">

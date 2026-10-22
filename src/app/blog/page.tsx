@@ -1,6 +1,7 @@
 import { Closing } from "@/components/workbench/Closing";
 import { RevealObserver } from "@/components/workbench/RevealObserver";
 import { BlogIndex } from "@/components/workbench/blog/BlogIndex";
+import { SceneDriver } from "@/components/workbench/scenes/SceneDriver";
 import { baseURL, blog, person } from "@/resources";
 import { isProtectedPath } from "@/resources/protectedRoutes";
 import { Meta, Schema } from "@once-ui-system/core";
@@ -36,6 +37,7 @@ export default function Blog() {
       <BlogIndex hideProtected={!isProtectedPath(blog.path)} />
       <Closing />
       <RevealObserver />
+      <SceneDriver />
     </>
   );
 }
