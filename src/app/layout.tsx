@@ -37,23 +37,6 @@ export default async function RootLayout({
       className={classNames(heading.variable, body.variable, code.variable)}
     >
       <head>
-        {/* The two Workbench faces (declared in custom.css), fetched in
-            parallel with the stylesheets so the first frames already use
-            them. */}
-        <link
-          rel="preload"
-          href="/fonts/bricolage-grotesque-opsz96-latin.woff2"
-          as="font"
-          type="font/woff2"
-          crossOrigin="anonymous"
-        />
-        <link
-          rel="preload"
-          href="/fonts/onest-latin.woff2"
-          as="font"
-          type="font/woff2"
-          crossOrigin="anonymous"
-        />
         <script
           id="theme-init"
           // biome-ignore lint/security/noDangerouslySetInnerHtml: the theme must be applied before first paint to avoid a light/dark flash; the script body is a static string built from our own config, with no user input
