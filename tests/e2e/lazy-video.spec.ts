@@ -4,7 +4,11 @@ import { expect, test } from "./fixtures";
 // A recompressed video must never ship more bytes than this to the browser.
 const PRE_TASK_VIDEOHOME_BYTES = 3_611_663;
 
-test.describe("home video", () => {
+// The loop that used to open the home now opens on About (Workbench, step 2):
+// a small print on the bench that opens into a wide frame once half of its box
+// is on screen. The test id sits on the reserved box (the stage), which never
+// changes size; the frame inside it only transforms.
+test.describe("about video", () => {
   test("downloads 0 video bytes on load and plays once scrolled into view", async ({
     page,
     browserName,
@@ -17,11 +21,11 @@ test.describe("home video", () => {
     page.on("response", (r) => {
       if (/videohome\.(mp4|webm)/.test(r.url())) videoResponses.push(r);
     });
-    await page.goto("/");
+    await page.goto("/about");
     await page.waitForLoadState("networkidle");
     expect(videoRequests).toEqual([]);
 
-    const video = page.locator('[data-testid="home-video"] video');
+    const video = page.locator('[data-testid="about-video"] video');
     await video.scrollIntoViewIfNeeded();
 
     // WebKit's media-element network loads aren't surfaced through Playwright's
@@ -50,8 +54,8 @@ test.describe("home video", () => {
     browserName,
   }) => {
     await page.emulateMedia({ reducedMotion: "reduce" });
-    await page.goto("/");
-    const wrap = page.locator('[data-testid="home-video"]');
+    await page.goto("/about");
+    const wrap = page.locator('[data-testid="about-video"]');
     await wrap.scrollIntoViewIfNeeded();
     await page.waitForTimeout(800);
     expect(await wrap.locator("video").evaluate((v: HTMLVideoElement) => v.paused)).toBe(true);
@@ -66,11 +70,11 @@ test.describe("home video", () => {
   });
 
   test("reserves its box so it causes no layout shift", async ({ page }) => {
-    await page.goto("/");
-    const before = await page.locator('[data-testid="home-video"]').boundingBox();
-    await page.locator('[data-testid="home-video"]').scrollIntoViewIfNeeded();
+    await page.goto("/about");
+    const before = await page.locator('[data-testid="about-video"]').boundingBox();
+    await page.locator('[data-testid="about-video"]').scrollIntoViewIfNeeded();
     await page.waitForTimeout(1000);
-    const after = await page.locator('[data-testid="home-video"]').boundingBox();
+    const after = await page.locator('[data-testid="about-video"]').boundingBox();
     expect(Math.round(after?.height ?? 0)).toBe(Math.round(before?.height ?? -1));
   });
 
@@ -81,8 +85,8 @@ test.describe("home video", () => {
     // One browser is enough to cover the toggle button's behaviour; chromium
     // autoplays reliably here (see the first test above).
     test.skip(browserName !== "chromium", "one engine is enough for this toggle-button check");
-    await page.goto("/");
-    const wrap = page.locator('[data-testid="home-video"]');
+    await page.goto("/about");
+    const wrap = page.locator('[data-testid="about-video"]');
     const video = wrap.locator("video");
     await wrap.scrollIntoViewIfNeeded();
     await expect.poll(() => video.evaluate((v: HTMLVideoElement) => !v.paused)).toBe(true);
