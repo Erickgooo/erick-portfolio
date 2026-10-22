@@ -1,5 +1,5 @@
 import { PasswordPrompt } from "@/components/PasswordPrompt";
-import { Column } from "@once-ui-system/core";
+import { LockedScreen } from "@/components/workbench/system/LockedScreen";
 
 export const metadata = {
   title: "Password required",
@@ -12,8 +12,8 @@ export const metadata = {
  */
 export default function Unauthorized() {
   return (
-    <Column fillWidth horizontal="center">
+    <LockedScreen>
       <PasswordPrompt />
-    </Column>
+    </LockedScreen>
   );
 }

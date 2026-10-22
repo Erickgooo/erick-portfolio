@@ -1,0 +1,262 @@
+// Workbench: the 404 page and its bench with an empty spot.
+@use "../shared" as *;
+
+.lost {
+  position: relative;
+  z-index: 1;
+  overflow-x: clip;
+}
+
+.inner {
+  @include wrap;
+  display: grid;
+  gap: 48px;
+  padding-top: 40px;
+  padding-bottom: 88px;
+
+  @include from-tablet {
+    padding-top: 64px;
+  }
+
+  @include from-desk {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    align-items: center;
+    gap: 64px;
+    min-height: calc(100svh - 160px);
+    padding-top: 48px;
+    padding-bottom: 96px;
+  }
+}
+
+.text {
+  display: grid;
+  justify-items: start;
+  gap: 20px;
+}
+
+.mark {
+  display: inline-flex;
+  font-size: 56px;
+  line-height: 1;
+  color: var(--wb-ink);
+}
+
+.code {
+  @include display(800);
+  margin-top: 8px;
+  font-size: 22px;
+  letter-spacing: -0.01em;
+  color: var(--wb-accent);
+
+  @include dark {
+    color: var(--wb-tape);
+  }
+}
+
+.title {
+  @include display(800);
+  max-width: 12ch;
+  font-size: clamp(44px, 7vw, 96px);
+  line-height: 0.94;
+  letter-spacing: -0.045em;
+  text-wrap: balance;
+}
+
+.line {
+  @include lede;
+  max-width: 42ch;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 28px;
+  margin-top: 12px;
+}
+
+// The bench: objects placed in percent of a fixed-ratio stage.
+.bench {
+  position: relative;
+  width: 100%;
+  max-width: 420px;
+  justify-self: center;
+  aspect-ratio: 5 / 4;
+
+  @include from-desk {
+    max-width: 560px;
+  }
+}
+
+.slot {
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  width: var(--w);
+}
+
+.rise {
+  display: block;
+
+  @media (prefers-reduced-motion: no-preference) {
+    animation: rise 0.8s $ease-pop both;
+    animation-delay: calc(120ms + var(--d) * 90ms);
+  }
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    translate: 0 48px;
+    scale: 0.9;
+  }
+
+  to {
+    opacity: 1;
+    translate: 0 0;
+    scale: 1;
+  }
+}
+
+.bob {
+  display: block;
+
+  @media (prefers-reduced-motion: no-preference) {
+    animation: bob var(--bob) ease-in-out infinite;
+    animation-delay: calc(var(--d) * -1.3s);
+    animation-play-state: paused;
+
+    .bench[data-live] & {
+      animation-play-state: running;
+    }
+  }
+}
+
+@keyframes bob {
+  0%,
+  100% {
+    translate: 0 0;
+    rotate: 0deg;
+  }
+
+  50% {
+    translate: 0 -6px;
+    rotate: 0.7deg;
+  }
+}
+
+.object {
+  position: relative;
+  display: block;
+  border-radius: 3px;
+  rotate: var(--r);
+}
+
+.cobalt {
+  aspect-ratio: 4 / 5;
+  background: var(--wb-cobalt);
+  box-shadow: var(--wb-shadow);
+}
+
+.mist {
+  aspect-ratio: 1;
+  background: var(--wb-mist);
+  box-shadow: var(--wb-shadow);
+}
+
+// A paper tag with its eyelet.
+.ink {
+  aspect-ratio: 2.6;
+  background: var(--wb-ink-paper);
+  box-shadow: var(--wb-shadow);
+
+  @include dark {
+    box-shadow:
+      inset 0 0 0 1px rgba(255, 255, 255, 0.1),
+      var(--wb-shadow);
+  }
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 10%;
+    width: 12%;
+    aspect-ratio: 1;
+    translate: 0 -50%;
+    border-radius: 50%;
+    background: var(--wb-page);
+  }
+}
+
+// Where a print should be: a dashed outline with its pin still in the bench.
+.empty {
+  aspect-ratio: 3 / 4;
+  border: 3px dashed var(--wb-ink-2);
+  border-radius: 4px;
+}
+
+.pin {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  width: 18px;
+  height: 18px;
+  margin-left: -9px;
+  border-radius: 50%;
+  background: var(--wb-cobalt);
+  box-shadow: 0 3px 5px rgba(19, 19, 22, 0.35);
+
+  &::after {
+    content: "";
+    position: absolute;
+    top: 22%;
+    left: 24%;
+    width: 30%;
+    height: 30%;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.7);
+  }
+}
+
+.print {
+  padding: 7px;
+  background: var(--wb-paper);
+  box-shadow:
+    inset 0 0 0 1px var(--wb-line),
+    var(--wb-shadow);
+
+  @include dark {
+    box-shadow: var(--wb-shadow);
+  }
+}
+
+.blank {
+  display: block;
+  aspect-ratio: 1;
+  background: #ececf0;
+}
+
+.tape {
+  position: absolute;
+  z-index: 2;
+  top: -9px;
+  left: 50%;
+  width: 46%;
+  height: 20px;
+  translate: -50% 0;
+  rotate: -5deg;
+  background: var(--wb-tape);
+  clip-path: polygon(
+    0 0,
+    5% 25%,
+    0 50%,
+    5% 75%,
+    0 100%,
+    100% 100%,
+    95% 75%,
+    100% 50%,
+    95% 25%,
+    100% 0
+  );
+}
