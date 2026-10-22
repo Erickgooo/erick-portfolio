@@ -1,7 +1,7 @@
 // Workbench scenes: the stepper (see SceneStepper.tsx). Sober (2026-10-22):
 // the scenes' sheets alternate between two surface tones (white and a pale
-// mist, or their dark equivalents), never cobalt; variant A outlines them
-// with a hairline, variant B leaves them flat. Keep this file ASCII-only.
+// mist, or their dark equivalents), never cobalt, each outlined with a
+// hairline. Keep this file ASCII-only.
 @use "../shared" as *;
 
 $max-steps: 8;
@@ -181,14 +181,14 @@ $header: 76px;
 // object laid on it: the sheet's tone in A, a raised surface in B).
 .sheet {
   --sc-bg: var(--sc-tone-a);
-  --sc-obj: var(--sc-obj-fill, var(--sc-bg));
+  --sc-obj: var(--sc-bg);
 
   position: relative;
   width: 100%;
   aspect-ratio: var(--sheet-ratio-phone);
   overflow: hidden;
   border: 1px solid var(--sc-sheet-line);
-  border-radius: var(--v-radius);
+  border-radius: 4px;
   container-type: inline-size;
   background: var(--sc-bg);
   color: var(--wb-ink);

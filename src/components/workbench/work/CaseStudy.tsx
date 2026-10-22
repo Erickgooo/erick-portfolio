@@ -1,10 +1,9 @@
-// Workbench, case study: the case opened like a project folder. The header
-// carries the title, client, role and date beside the folder with the cover
-// print and the figure; the text follows in parts, each with its prints pinned
-// in the margin; then the next case. Server-rendered except the video prints.
+// Workbench, case study. The header carries the title, client, role and date
+// beside the cover panel with the cover and the figure; the text follows in
+// parts, each with its prints in the margin; then the next case.
+// Server-rendered except the video prints.
 import Image from "next/image";
 import Link from "next/link";
-import type { CSSProperties } from "react";
 import { FiArrowLeft, FiArrowRight } from "react-icons/fi";
 import { BookCall } from "../BookCall";
 import { EndMark, Prose } from "../prose/Prose";
@@ -58,13 +57,7 @@ export function CaseHeader({ c }: { c: Case }) {
           <BookCall />
         </div>
 
-        <div className={styles.folder} data-front={c.metric ? "" : undefined}>
-          <div className={styles.folderBack}>
-            <span className={styles.folderTab} aria-hidden="true">
-              {c.name}
-            </span>
-          </div>
-          <span className={styles.folderSheet} aria-hidden="true" />
+        <div className={styles.panel}>
           {c.cover ? (
             <figure className={styles.cover}>
               <Image
@@ -78,7 +71,7 @@ export function CaseHeader({ c }: { c: Case }) {
             </figure>
           ) : null}
           {c.metric ? (
-            <p className={styles.folderFront}>
+            <p className={styles.panelFigure}>
               <strong>{c.metric.value}</strong>
               <span>{c.metric.label}</span>
             </p>
@@ -91,19 +84,12 @@ export function CaseHeader({ c }: { c: Case }) {
 
 const RESULTS = /^(results|impact|the outcome|why it)/i;
 
-function Pinned({ m, label, i }: { m: CaseMedia; label: string; i: number }) {
-  const tilt = i % 2 ? 2.2 : -2;
-  const pin = i % 2 ? "pin" : "tape";
+function Pinned({ m, label }: { m: CaseMedia; label: string }) {
   if (m.kind === "video") {
-    return <VideoPrint src={m.src} width={m.w} height={m.h} label={label} tilt={tilt} pin={pin} />;
+    return <VideoPrint src={m.src} width={m.w} height={m.h} label={label} />;
   }
   return (
-    <figure
-      className={styles.pinned}
-      style={{ "--tilt": `${tilt}deg` } as CSSProperties}
-      data-reveal=""
-    >
-      <span className={pin === "tape" ? styles.tape : styles.pin} aria-hidden="true" />
+    <figure className={styles.pinned} data-reveal="">
       <span className={styles.pinnedFrame}>
         <Image
           src={m.src}
@@ -122,13 +108,13 @@ export function CaseBody({ c }: { c: Case }) {
   const last = chapters.length - 1;
 
   // Each extra print goes beside a part of the text, from the second part on.
-  const pins = new Map<number, { m: CaseMedia; label: string; n: number }[]>();
+  const pins = new Map<number, { m: CaseMedia; label: string }[]>();
   const counts = { image: 0, video: 0 };
   c.extras.forEach((m, k) => {
     counts[m.kind] += 1;
     const at = Math.max(0, Math.min(1 + k, last));
     const list = pins.get(at) ?? [];
-    list.push({ m, label: `${c.name}, ${m.kind} ${counts[m.kind]}`, n: k });
+    list.push({ m, label: `${c.name}, ${m.kind} ${counts[m.kind]}` });
     pins.set(at, list);
   });
   const resultsAt = c.metric ? chapters.findIndex((ch) => RESULTS.test(ch.heading)) : -1;
@@ -163,7 +149,7 @@ export function CaseBody({ c }: { c: Case }) {
                     </div>
                   ))}
                   {prints.map((p) => (
-                    <Pinned key={p.m.src} m={p.m} label={p.label} i={p.n} />
+                    <Pinned key={p.m.src} m={p.m} label={p.label} />
                   ))}
                   {showTag && c.metric ? (
                     <p className={`${styles.bigTag} ${styles.deskOnly}`} data-reveal="">
@@ -191,7 +177,7 @@ export function NextCase({ next }: { next: Case }) {
   return (
     <nav className={styles.next} aria-label="Next case">
       <div className={styles.nextInner} data-reveal="">
-        <article className={`${styles.nextCard} ${styles[next.paper]}`}>
+        <article className={styles.nextCard}>
           <div className={styles.nextText}>
             <p className={styles.nextLabel}>Next case</p>
             <p className={styles.nextTitle}>

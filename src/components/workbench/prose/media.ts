@@ -50,13 +50,3 @@ export function isVideo(src: string): boolean {
 export function isImage(src: string): boolean {
   return /\.(webp|jpe?g|png|avif|gif)$/i.test(src);
 }
-
-/** A small, stable tilt for a print, so the same piece always lies the same way. */
-export function tiltFor(key: string, range = 1.6): number {
-  let hash = 0;
-  for (const ch of key) hash = (hash * 31 + ch.charCodeAt(0)) | 0;
-  const unit = ((Math.abs(hash) % 1000) / 1000) * 2 - 1;
-  const tilt = unit * range;
-  // Never lie perfectly straight: at least half a degree either way.
-  return Math.round(Math.sign(tilt || 1) * Math.max(Math.abs(tilt), 0.5) * 10) / 10;
-}

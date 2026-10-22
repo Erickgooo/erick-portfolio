@@ -1,9 +1,9 @@
 "use client";
 
-// Workbench, case study: a video pinned beside the text as a print. It plays
+// Workbench, case study: a video beside the text as a print. It plays
 // muted only while on screen, never on its own under reduced motion, and
 // always has a play and pause key.
-import { type CSSProperties, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { FiPause, FiPlay } from "react-icons/fi";
 import styles from "./case.module.scss";
 
@@ -12,15 +12,11 @@ export function VideoPrint({
   width,
   height,
   label,
-  tilt,
-  pin,
 }: {
   src: string;
   width: number;
   height: number;
   label: string;
-  tilt: number;
-  pin: "tape" | "pin";
 }) {
   const ref = useRef<HTMLVideoElement>(null);
   const wanted = useRef(true);
@@ -63,12 +59,7 @@ export function VideoPrint({
   };
 
   return (
-    <figure
-      className={styles.pinned}
-      style={{ "--tilt": `${tilt}deg` } as CSSProperties}
-      data-reveal=""
-    >
-      <span className={pin === "tape" ? styles.tape : styles.pin} aria-hidden="true" />
+    <figure className={styles.pinned} data-reveal="">
       <span className={styles.pinnedFrame}>
         <video
           ref={ref}

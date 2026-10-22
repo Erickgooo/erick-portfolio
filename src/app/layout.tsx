@@ -95,18 +95,6 @@ export default async function RootLayout({
             `,
           }}
         />
-        {/* TEMPORARY (sober variants): ?v=b shows variant B of the sober
-            preview on the home and the LeadBot case, with no parameter
-            variant A. It sets an attribute before first paint, so the pages
-            stay statically rendered. Step 4 removes it; never on main. */}
-        <script
-          id="wb-variant"
-          // biome-ignore lint/security/noDangerouslySetInnerHtml: TEMPORARY (sober variants): a static string with no user input; it only reads the query string to pick between two fixed values
-          dangerouslySetInnerHTML={{
-            __html:
-              "try{document.documentElement.setAttribute('data-wb-variant',new URLSearchParams(location.search).get('v')==='b'?'b':'a')}catch(e){}",
-          }}
-        />
       </head>
       <Providers>
         <Column

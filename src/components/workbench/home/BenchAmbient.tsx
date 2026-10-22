@@ -2,11 +2,10 @@
 
 // Home, scene (type 3): the hero's ambient layer, a canvas behind the bench.
 // A few quiet marks around the objects (sober, 2026-10-22): rings, dots,
-// squares and short strokes, drawn in line in variant A and as soft flat
-// shapes in variant B, never tilted. As the site intro fades the layer
-// rises into place, then each mark drifts on its own slow loop. It draws
-// nothing else: the page dots and the pointer glow show through everywhere
-// around the marks. It holds behind the intro like the bench (start.ts),
+// squares and short strokes, drawn in line, never tilted. As the site intro
+// fades the layer rises into place, then each mark drifts on its own slow
+// loop. It draws nothing else: the page dots and the pointer glow show
+// through everywhere around the marks. It holds behind the intro like the bench (start.ts),
 // runs only on screen, and with reduced motion it is one still frame.
 import { useCallback, useRef } from "react";
 import { CanvasLoop, type Frame } from "../scenes/CanvasLoop";
@@ -59,14 +58,8 @@ function makeBits(count: number): Bit[] {
 
 const BITS = makeBits(22);
 
-// TEMPORARY (sober variants): which of the two treatments is on.
-function variantB() {
-  return document.documentElement.getAttribute("data-wb-variant") === "b";
-}
-
-function colour(bit: Bit, dark: boolean, b: boolean) {
-  if (bit.accent) return b ? (dark ? "#3d5fd6" : "#a6baff") : "#2d5bff";
-  if (b) return dark ? "#2a2a31" : "#e7edff";
+function colour(bit: Bit, dark: boolean) {
+  if (bit.accent) return "#2d5bff";
   return dark ? "rgba(245, 245, 247, 0.32)" : "rgba(19, 19, 22, 0.28)";
 }
 
@@ -79,7 +72,6 @@ export function BenchAmbient() {
   const draw = useCallback((ctx: CanvasRenderingContext2D, f: Frame) => {
     const { w, h, t, dark } = f;
     ctx.clearRect(0, 0, w, h);
-    const b = variantB();
     // Fewer marks on a small layer (phones), never crowded.
     const count = Math.max(10, Math.min(BITS.length, Math.round((w * h) / 30000)));
     const unit = Math.max(0.75, Math.min(1.25, w / 640));
@@ -89,8 +81,8 @@ export function BenchAmbient() {
       const a = (t / bit.period) * Math.PI * 2 + bit.phase;
       const x = bit.x * w + Math.cos(a * 0.7) * bit.ax * unit;
       const y = bit.y * h + Math.sin(a) * bit.ay * unit;
-      const s = bit.size * unit * (b ? 1.15 : 1);
-      const c = colour(bit, dark, b);
+      const s = bit.size * unit;
+      const c = colour(bit, dark);
       ctx.fillStyle = c;
       ctx.strokeStyle = c;
       if (bit.kind === "dot") {
@@ -100,13 +92,9 @@ export function BenchAmbient() {
       } else if (bit.kind === "ring") {
         ctx.beginPath();
         ctx.arc(x, y, s / 2, 0, Math.PI * 2);
-        if (b) ctx.fill();
-        else ctx.stroke();
+        ctx.stroke();
       } else if (bit.kind === "square") {
-        if (b) ctx.fillRect(x - s / 2, y - s / 2, s, s);
-        else ctx.strokeRect(x - s / 2 + 0.5, y - s / 2 + 0.5, s, s);
-      } else if (b) {
-        ctx.fillRect(x - s / 2, y - 1.5, s, 3);
+        ctx.strokeRect(x - s / 2 + 0.5, y - s / 2 + 0.5, s, s);
       } else {
         ctx.beginPath();
         ctx.moveTo(x - s / 2, y);

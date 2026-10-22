@@ -147,9 +147,9 @@ $ease-pop: cubic-bezier(0.3, 1.6, 0.5, 1);
   }
 }
 
-// Sober Workbench (Erick, 2026-10-22) ----------------------------------------
-// Used by the home and the LeadBot case; the other pages keep the mixins
-// above until the style reaches them (step 4).
+// Sober Workbench (Erick, 2026-10-22; variant A, "Line", chosen the same day) -
+// Every page's type and shapes. The display mixins above are the first
+// Workbench style's; pages move off them as they take the sober style.
 
 $ease-settle: cubic-bezier(0.25, 1.22, 0.5, 1);
 
@@ -202,30 +202,4 @@ $ease-settle: cubic-bezier(0.25, 1.22, 0.5, 1);
   font-weight: 500;
   line-height: 1.3;
   color: var(--wb-ink-2);
-}
-
-// TEMPORARY (sober variants): variant B hangs off html[data-wb-variant="b"],
-// set by the wb-variant script in src/app/layout.tsx (?v=b). Step 4 keeps
-// one variant and removes these mixins; they never reach main.
-@mixin vb {
-  :global(html[data-wb-variant="b"]) & {
-    @content;
-  }
-}
-
-// TEMPORARY (sober variants): the shared pieces (closing, buttons, the case
-// and its prose) take the sober style only inside [data-sober], which the
-// home and the LeadBot case put around their content, so every other page
-// keeps its look until step 4.
-@mixin sober {
-  :global([data-sober]) & {
-    @content;
-  }
-}
-
-// TEMPORARY (sober variants): variant B inside [data-sober].
-@mixin sober-b {
-  :global(html[data-wb-variant="b"] [data-sober]) & {
-    @content;
-  }
 }

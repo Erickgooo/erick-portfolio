@@ -1,12 +1,15 @@
 // Workbench prose: the text of case studies and posts. Every rule hangs from a
 // class the MDX component map (Prose.tsx) puts on its own elements, so nothing
-// outside that MDX changes. Keep this file ASCII-only.
+// outside that MDX changes. Sober (Erick, 2026-10-22): titles in Montserrat
+// Black, text in Poppins, a bold line on its own as a short quote in the
+// accent face; objects drawn with hairlines, nothing tilted or taped; prints
+// rise and fade in with their old timing. Keep this file ASCII-only.
 @use "../shared" as *;
 
 // Reading sizes: 17 px on phones, 18 on tablets, 19 on desktops.
 @mixin reading {
   font-size: 17px;
-  line-height: 1.65;
+  line-height: 1.7;
 
   @include from-tablet {
     font-size: 18px;
@@ -17,21 +20,18 @@
   }
 }
 
-// A piece that rises into place and settles at its tilt when it enters.
-@mixin pin-in {
+// A piece that rises into place and fades in when it enters.
+@mixin rise-in {
   @media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
     opacity: 0;
     translate: 0 40px;
-    rotate: 0deg;
     transition:
       opacity 0.8s var(--wb-ease-soft),
-      translate 1s var(--wb-ease-soft),
-      rotate 1s var(--wb-ease-pop);
+      translate 1s var(--wb-ease-soft);
 
     &[data-in] {
       opacity: 1;
       translate: 0 0;
-      rotate: var(--tilt);
     }
   }
 }
@@ -51,19 +51,18 @@
 
 .row2 {
   margin: 72px 0 22px;
-  padding-top: 34px;
+  padding-top: 30px;
 
-  // The small cobalt square every part of the text starts from.
+  // A short cobalt stroke each part of the text starts from.
   &::before {
     content: "";
     position: absolute;
     top: 0;
-    left: 2px;
-    width: 16px;
-    height: 16px;
-    border-radius: 3px;
+    left: 0;
+    width: 28px;
+    height: 2px;
+    border-radius: 1px;
     background: var(--wb-cobalt);
-    rotate: 12deg;
   }
 
   @include from-desk {
@@ -89,30 +88,28 @@
 }
 
 .h2 {
-  @include display(750);
-  max-width: 20ch;
-  font-size: clamp(32px, 4.4vw, 58px);
-  line-height: 1.02;
-  letter-spacing: -0.04em;
+  @include title;
+  max-width: 22ch;
+  font-size: clamp(28px, 3.3vw, 42px);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
 }
 
 .h3 {
-  @include display(700);
+  @include s-h3;
   max-width: 34ch;
-  font-size: 23px;
-  line-height: 1.15;
-  letter-spacing: -0.02em;
+  font-size: 21px;
+  line-height: 1.3;
 
   @include from-desk {
-    font-size: 27px;
+    font-size: 23px;
   }
 }
 
 .h4 {
-  @include display(700);
-  font-size: 20px;
-  line-height: 1.2;
-  letter-spacing: -0.015em;
+  @include s-h3;
+  font-size: 19px;
+  line-height: 1.3;
 }
 
 // The copy key: on hover and focus, always on touch screens.
@@ -173,63 +170,47 @@
 }
 
 .strong {
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .em {
   font-style: normal;
-  font-weight: 600;
+  font-weight: 500;
 }
 
 .a {
   --link-deco: underline;
   --link-line: var(--wb-accent);
   --link-offset: 4px;
-  --link-thick: 2px;
+  --link-thick: 1px;
 
-  font-weight: 550;
+  font-weight: 500;
   overflow-wrap: anywhere;
 }
 
-// A line in bold on its own: a note stuck to the bench.
+// A line in bold on its own: a short quote in the accent face, with a cobalt
+// hairline beside it.
 .note {
-  @include display(650);
-  position: relative;
-  max-width: 34ch;
-  margin: 36px 0 40px !important;
-  padding: 26px 26px 24px;
-  border-radius: 4px;
-  background: var(--wb-mist);
-  color: var(--wb-charcoal);
-  font-size: 21px;
-  line-height: 1.22;
-  letter-spacing: -0.015em;
-  box-shadow: var(--wb-shadow);
-  rotate: -0.8deg;
-
-  &::before {
-    content: "";
-    position: absolute;
-    top: -11px;
-    left: 28px;
-    width: 84px;
-    height: 22px;
-    background: var(--wb-tape);
-    rotate: -3deg;
-  }
+  @include accent;
+  max-width: 30ch;
+  margin: 40px 0 44px !important;
+  padding: 4px 0 4px 26px;
+  border-left: 1px solid var(--wb-accent);
+  color: var(--wb-ink);
+  font-size: 28px;
+  line-height: 1.3;
 
   @include from-desk {
-    font-size: 24px;
+    font-size: 32px;
   }
 }
 
 // "**Stack:**" and friends: the label of what follows.
 .label {
-  @include display(700);
+  @include s-h3;
   margin: 36px 0 12px !important;
-  font-size: 21px;
+  font-size: 18px;
   line-height: 1.2;
-  letter-spacing: -0.015em;
 }
 
 // An italic line alone (a kicker, a source line under figures): no italics
@@ -239,9 +220,9 @@
   margin: 0 0 24px !important;
   color: var(--wb-ink-2);
   font-size: 16px;
-  font-weight: 600;
+  font-weight: 500;
   line-height: 1.45;
-  letter-spacing: 0.01em;
+  letter-spacing: 0;
 }
 
 // Lists ------------------------------------------------------------------
@@ -276,28 +257,28 @@
   }
 }
 
+// Bullets: a small straight cobalt square.
 .ul > .li {
-  padding-left: 30px;
+  padding-left: 26px;
 
   &::before {
     content: "";
     position: absolute;
-    left: 4px;
-    top: 0.62em;
-    width: 10px;
-    height: 10px;
-    border-radius: 2px;
+    left: 2px;
+    top: 0.72em;
+    width: 6px;
+    height: 6px;
+    border-radius: 1px;
     background: var(--wb-cobalt);
-    rotate: 45deg;
   }
 }
 
+// Numbered steps: the number in a small hairline square.
 .ol > .li {
   counter-increment: wb-step;
   padding-left: 46px;
 
   &::before {
-    @include display(750);
     content: counter(wb-step);
     position: absolute;
     left: 0;
@@ -306,28 +287,27 @@
     place-items: center;
     width: 32px;
     height: 32px;
-    border-radius: 6px;
-    background: var(--wb-mist);
+    border: 1px solid var(--wb-rule);
+    border-radius: 4px;
     color: var(--wb-cobalt);
-    font-size: 17px;
+    font-family: var(--font-wb-text), system-ui, sans-serif;
+    font-size: 15px;
+    font-weight: 600;
     line-height: 1;
+    letter-spacing: -0.025em;
   }
 }
 
 // Quotes, rules, code, tables -------------------------------------------
 
 .quote {
-  @include display(600);
+  @include accent;
   max-width: 40ch;
   margin: 36px 0 !important;
-  padding: 24px 26px;
-  border-radius: 4px;
-  background: var(--wb-mist);
-  color: var(--wb-charcoal);
-  font-size: 21px;
-  line-height: 1.3;
-  box-shadow: var(--wb-shadow);
-  rotate: -0.6deg;
+  padding: 4px 0 4px 26px;
+  border-left: 1px solid var(--wb-accent);
+  color: var(--wb-ink);
+  font-size: 28px;
 
   .p {
     max-width: none;
@@ -337,13 +317,11 @@
 }
 
 .hr {
-  width: 72px;
-  height: 4px;
+  width: 48px;
+  height: 1px;
   margin: 56px 0;
   border: 0;
-  border-radius: 2px;
-  background: var(--wb-cobalt);
-  rotate: -2deg;
+  background: var(--wb-rule);
 }
 
 .code {
@@ -358,22 +336,15 @@
   max-width: 100%;
   margin: 24px 0 32px;
   padding: 20px 22px;
-  border-radius: 6px;
-  background: var(--wb-ink-paper);
-  color: #ffffff;
+  border: 1px solid var(--wb-rule);
+  border-radius: 4px;
+  color: var(--wb-ink);
   font-family: var(--font-wb-text), system-ui, sans-serif;
   font-size: 16px;
-  font-weight: 550;
+  font-weight: 500;
   line-height: 1.7;
   white-space: pre-wrap;
   overflow-wrap: anywhere;
-  box-shadow: var(--wb-shadow);
-
-  @include dark {
-    box-shadow:
-      inset 0 0 0 1px rgba(255, 255, 255, 0.08),
-      var(--wb-shadow);
-  }
 
   code {
     font: inherit;
@@ -416,15 +387,13 @@
 
 // Media ------------------------------------------------------------------
 
-// The white border of a print; the piece inside keeps its own proportions.
+// A print: the piece behind a hairline, at its own proportions.
 .frame {
   display: block;
-  padding: 10px;
-  border-radius: 3px;
+  overflow: hidden;
+  border: 1px solid var(--wb-rule);
+  border-radius: 4px;
   background: var(--wb-paper);
-  box-shadow:
-    inset 0 0 0 1px var(--wb-line),
-    var(--wb-shadow);
 
   img {
     display: block;
@@ -432,17 +401,12 @@
     height: auto;
     border-radius: 1px;
   }
-
-  @include from-desk {
-    padding: 12px;
-  }
 }
 
 .figure {
-  @include pin-in;
+  @include rise-in;
   max-width: 700px;
   margin: 44px 0 !important;
-  rotate: var(--tilt);
 }
 
 .portrait {
@@ -463,10 +427,9 @@
 }
 
 .video {
-  @include pin-in;
+  @include rise-in;
   position: relative;
   margin: 48px 0 !important;
-  rotate: var(--tilt);
 }
 
 .videoTall {
@@ -520,30 +483,6 @@
   }
 }
 
-.tape {
-  position: absolute;
-  z-index: 2;
-  top: -12px;
-  left: 50%;
-  width: 96px;
-  height: 26px;
-  translate: -50% 0;
-  rotate: -4deg;
-  background: var(--wb-tape);
-  clip-path: polygon(
-    0 0,
-    5% 25%,
-    0 50%,
-    5% 75%,
-    0 100%,
-    100% 100%,
-    95% 75%,
-    100% 50%,
-    95% 25%,
-    100% 0
-  );
-}
-
 .videoCaption {
   margin-top: 10px;
   padding-inline: 4px;
@@ -562,7 +501,7 @@
   font-weight: 600;
 }
 
-// Figures: the numbers of a case as paper tags ----------------------------
+// Figures: the numbers of a case as plain tags, the first in cobalt -------
 
 .figures {
   margin: 28px 0 40px;
@@ -581,41 +520,28 @@
     display: grid;
     gap: 4px;
     min-width: 128px;
-    padding: 14px 18px 15px 32px;
-    background: var(--wb-mist);
-    color: var(--wb-charcoal);
-    clip-path: polygon(18px 0, 100% 0, 100% 100%, 18px 100%, 0 calc(100% - 14px), 0 14px);
-    rotate: var(--t);
-
-    // The punched hole of the tag.
-    &::before {
-      content: "";
-      position: absolute;
-      top: 50%;
-      left: 11px;
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: var(--wb-page);
-      translate: 0 -50%;
-    }
+    padding: 14px 18px 15px;
+    border: 1px solid var(--wb-rule);
+    border-radius: 4px;
+    color: var(--wb-ink);
   }
 
   strong {
-    @include display(800);
-    font-size: 30px;
-    line-height: 0.95;
-    letter-spacing: -0.04em;
+    @include title;
+    font-size: 28px;
+    line-height: 1;
+    letter-spacing: -0.03em;
 
     @include from-desk {
-      font-size: 36px;
+      font-size: 32px;
     }
   }
 
   span {
     font-size: 16px;
-    font-weight: 600;
+    font-weight: 500;
     line-height: 1.25;
+    color: var(--wb-ink-2);
   }
 
   @media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
@@ -635,31 +561,28 @@
   }
 }
 
-.figureList .figureLead {
-  background: var(--wb-cobalt);
-  color: #ffffff;
+.figureList .figureLead strong {
+  color: var(--wb-accent);
 }
 
-// Stack: the tools as tags ------------------------------------------------
+// Stack: the tools as plain tags ------------------------------------------
 
 .stack {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 8px;
   max-width: 66ch;
   margin: 14px 0 28px !important;
   padding: 0;
   list-style: none;
 
   li {
-    padding: 8px 12px;
-    border: 2px solid var(--wb-ink);
+    padding: 7px 12px;
+    border: 1px solid var(--wb-rule);
     border-radius: 4px;
-    background: var(--wb-page);
     font-size: 16px;
-    font-weight: 600;
+    font-weight: 500;
     line-height: 1.3;
-    rotate: var(--t);
   }
 }
 
@@ -674,25 +597,13 @@
   @include from-tablet {
     grid-template-columns: 1fr 1fr;
   }
-
-  > :nth-child(odd) {
-    rotate: -0.6deg;
-  }
-
-  > :nth-child(even) {
-    rotate: 0.5deg;
-  }
 }
 
 .card {
   padding: 16px 20px 20px;
-  border-top: 6px solid var(--wb-cobalt);
+  border: 1px solid var(--wb-rule);
   border-radius: 4px;
-  background: var(--wb-paper);
-  color: var(--wb-charcoal);
-  box-shadow:
-    inset 0 0 0 1px rgba(19, 19, 22, 0.08),
-    var(--wb-shadow);
+  color: var(--wb-ink);
 }
 
 .col {
@@ -715,11 +626,10 @@
 }
 
 .cardTitle {
-  @include display(700);
+  @include s-h3;
   display: block;
-  font-size: 22px;
+  font-size: 20px;
   line-height: 1.15;
-  letter-spacing: -0.02em;
 }
 
 .cardText {
@@ -741,9 +651,8 @@
   &::after {
     content: "";
     flex: 1;
-    height: 2px;
-    border-radius: 1px;
-    background: var(--wb-line);
+    height: 1px;
+    background: var(--wb-rule);
   }
 }
 
@@ -753,352 +662,6 @@
   line-height: 0;
 }
 
-// Sober (Erick, 2026-10-22) ----------------------------------------------------
-// TEMPORARY (sober variants): scoped to [data-sober], which only the LeadBot
-// case carries for now; step 4 makes this the style of every case and post.
-// Titles in Montserrat Black, text in Poppins, a bold line on its own as a
-// short quote in the accent face. Variant A draws with hairlines (--v-line),
-// variant B lays things on soft surfaces (--v-fill). Nothing is tilted or
-// taped; prints rise and fade in with their old timing.
-
-.row2 {
-  @include sober {
-    padding-top: 30px;
-
-    // A short cobalt stroke each part starts from (it was a tilted square).
-    &::before {
-      top: 0;
-      left: 0;
-      width: 28px;
-      height: 2px;
-      border-radius: 1px;
-      rotate: none;
-    }
-  }
-}
-
-.h2 {
-  @include sober {
-    @include title;
-    max-width: 22ch;
-    font-size: clamp(28px, 3.3vw, 42px);
-    line-height: 1.1;
-    letter-spacing: -0.02em;
-  }
-}
-
-.h3 {
-  @include sober {
-    @include s-h3;
-    font-size: 21px;
-    line-height: 1.3;
-
-    @include from-desk {
-      font-size: 23px;
-    }
-  }
-}
-
-.h4 {
-  @include sober {
-    @include s-h3;
-    font-size: 19px;
-    line-height: 1.3;
-  }
-}
-
-.p {
-  @include sober {
-    line-height: 1.7;
-  }
-}
-
-.li {
-  @include sober {
-    line-height: 1.7;
-  }
-}
-
-.strong {
-  @include sober {
-    font-weight: 600;
-  }
-}
-
-.em {
-  @include sober {
-    font-weight: 500;
-  }
-}
-
-.a {
-  @include sober {
-    --link-thick: 1px;
-
-    font-weight: 500;
-  }
-}
-
-// A line in bold on its own: a short quote in the accent face. A: a cobalt
-// hairline beside it; B: a soft surface.
-.note {
-  @include sober {
-    @include accent;
-    max-width: 30ch;
-    margin: 40px 0 44px !important;
-    padding: 4px 0 4px 26px;
-    border-left: 1px solid var(--wb-accent);
-    border-radius: 0;
-    background: none;
-    color: var(--wb-ink);
-    font-size: 28px;
-    line-height: 1.3;
-    box-shadow: none;
-    rotate: none;
-
-    &::before {
-      display: none;
-    }
-
-    @include from-desk {
-      font-size: 32px;
-    }
-  }
-
-  @include sober-b {
-    padding: 28px 30px;
-    border-left: 0;
-    border-radius: 8px;
-    background: var(--wb-soft);
-  }
-}
-
-.label {
-  @include sober {
-    @include s-h3;
-    font-size: 18px;
-  }
-}
-
-.kicker {
-  @include sober {
-    font-weight: 500;
-    letter-spacing: 0;
-  }
-}
-
-// Bullets: a small straight cobalt square (they were diamonds).
-.ul > .li {
-  @include sober {
-    padding-left: 26px;
-
-    &::before {
-      left: 2px;
-      top: 0.72em;
-      width: 6px;
-      height: 6px;
-      border-radius: 1px;
-      rotate: none;
-    }
-  }
-}
-
-.ol > .li {
-  @include sober {
-    &::before {
-      font-family: var(--font-wb-text), system-ui, sans-serif;
-      font-weight: 600;
-      border: 1px solid var(--v-line);
-      border-radius: 4px;
-      background: var(--v-fill);
-      font-size: 15px;
-    }
-  }
-}
-
-.quote {
-  @include sober {
-    @include accent;
-    padding: 4px 0 4px 26px;
-    border-left: 1px solid var(--wb-accent);
-    border-radius: 0;
-    background: none;
-    color: var(--wb-ink);
-    font-size: 28px;
-    box-shadow: none;
-    rotate: none;
-  }
-
-  @include sober-b {
-    padding: 28px 30px;
-    border-left: 0;
-    border-radius: 8px;
-    background: var(--wb-soft);
-  }
-}
-
-.hr {
-  @include sober {
-    width: 48px;
-    height: 1px;
-    border-radius: 0;
-    background: var(--wb-rule);
-    rotate: none;
-  }
-}
-
-.pre {
-  @include sober {
-    border: 1px solid var(--v-line);
-    border-radius: var(--v-radius);
-    background: var(--v-fill);
-    color: var(--wb-ink);
-    font-weight: 500;
-    box-shadow: none;
-  }
-}
-
-// Prints: A behind a hairline, B on a soft mat; straight.
-.frame {
-  @include sober {
-    padding: 0;
-    overflow: hidden;
-    border: 1px solid var(--wb-rule);
-    border-radius: 4px;
-    box-shadow: none;
-  }
-
-  @include sober-b {
-    padding: 10px;
-    border-color: transparent;
-    border-radius: 8px;
-    background: var(--wb-soft);
-  }
-}
-
-.figure,
-.video {
-  @include sober {
-    rotate: none;
-
-    @media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
-      rotate: none;
-      transition:
-        opacity 0.8s var(--wb-ease-soft),
-        translate 1s var(--wb-ease-soft);
-
-      &[data-in] {
-        rotate: none;
-      }
-    }
-  }
-}
-
-.tape {
-  @include sober {
-    display: none;
-  }
-}
-
-// Figures: plain tags, the first figure in cobalt.
-.figureList {
-  @include sober {
-    li {
-      padding: 14px 18px 15px;
-      border: 1px solid var(--v-line);
-      border-radius: var(--v-radius);
-      background: var(--v-fill);
-      color: var(--wb-ink);
-      clip-path: none;
-      rotate: none;
-
-      &::before {
-        display: none;
-      }
-    }
-
-    strong {
-      @include title;
-      font-size: 28px;
-      line-height: 1;
-      letter-spacing: -0.03em;
-
-      @include from-desk {
-        font-size: 32px;
-      }
-    }
-
-    span {
-      font-weight: 500;
-      color: var(--wb-ink-2);
-    }
-  }
-}
-
-.figureList .figureLead {
-  @include sober {
-    border-color: var(--v-line);
-    background: var(--v-fill);
-    color: var(--wb-ink);
-
-    strong {
-      color: var(--wb-accent);
-    }
-  }
-}
-
-// The stack: the tools as plain tags.
-.stack {
-  @include sober {
-    gap: 8px;
-
-    li {
-      padding: 7px 12px;
-      border: 1px solid var(--v-line);
-      border-radius: 4px;
-      background: var(--v-fill);
-      font-weight: 500;
-      rotate: none;
-    }
-  }
-}
-
-.cards {
-  @include sober {
-    > :nth-child(odd),
-    > :nth-child(even) {
-      rotate: none;
-    }
-  }
-}
-
-.card {
-  @include sober {
-    border: 1px solid var(--v-line);
-    border-radius: var(--v-radius);
-    background: var(--v-fill);
-    color: var(--wb-ink);
-    box-shadow: none;
-  }
-}
-
-.cardTitle {
-  @include sober {
-    @include s-h3;
-    font-size: 20px;
-  }
-}
-
-.end {
-  @include sober {
-    &::before,
-    &::after {
-      height: 1px;
-      border-radius: 0;
-      background: var(--wb-rule);
-    }
-  }
-}
 @include reduced {
   .copy,
   .figureList li,

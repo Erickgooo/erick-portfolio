@@ -1,6 +1,5 @@
 // Workbench: the projects on the home (sober, 2026-10-22). Straight cards:
-// variant A draws the cover with a hairline and leaves the card unfilled;
-// variant B lays each card on a soft surface. Keep this file ASCII-only.
+// the cover behind a hairline, the card unfilled. Keep this file ASCII-only.
 @use "../shared" as *;
 
 .work {
@@ -118,12 +117,6 @@
   gap: 4px;
   height: 100%;
 
-  @include vb {
-    padding: 14px 14px 18px;
-    border-radius: 8px;
-    background: var(--wb-soft);
-  }
-
   @include fine-pointer {
     &:hover {
       translate: 0 -4px;
@@ -142,12 +135,6 @@
   border: 1px solid var(--wb-rule);
   border-radius: 4px;
   background: var(--wb-soft-2);
-
-  @include vb {
-    margin-bottom: 16px;
-    border-color: transparent;
-    background: var(--wb-soft-2);
-  }
 
   img {
     display: block;

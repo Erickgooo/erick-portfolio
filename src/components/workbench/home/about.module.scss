@@ -1,6 +1,6 @@
-// Workbench: about (sober, 2026-10-22). The photo stands straight: variant
-// A frames it with a hairline, variant B lays it on a soft surface. It rises
-// and fades in with the timing it had (it used to land tilted).
+// Workbench: about (sober, 2026-10-22). The photo stands straight behind a
+// hairline. It rises and fades in with the timing it had (it used to land
+// tilted).
 // Keep this file ASCII-only.
 @use "../shared" as *;
 
@@ -41,12 +41,6 @@
   margin-inline: auto;
   color: var(--wb-ink);
 
-  @include vb {
-    padding: 12px 12px 16px;
-    border-radius: 8px;
-    background: var(--wb-soft);
-  }
-
   @include from-desk {
     width: 100%;
     margin-inline: 0;
@@ -71,10 +65,6 @@
     height: auto;
     border: 1px solid var(--wb-rule);
     border-radius: 4px;
-
-    @include vb {
-      border-color: transparent;
-    }
   }
 
   figcaption {

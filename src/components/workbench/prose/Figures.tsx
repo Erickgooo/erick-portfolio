@@ -1,6 +1,6 @@
-// Workbench prose: a case's figures as paper tags, from the ResultsStats data
+// Workbench prose: a case's figures as plain tags, from the ResultsStats data
 // string the MDX already carries ("110K|views|2,411|likes"). The figures are
-// printed as written; the tags rise and pop into place when they enter.
+// printed as written; the tags grow into place when they enter.
 import type { CSSProperties } from "react";
 import styles from "./prose.module.scss";
 
@@ -22,7 +22,7 @@ export function Figures({ data = "", title }: { data?: string; title?: string })
           <li
             key={`${figure.label}-${figure.value}`}
             className={i === 0 ? styles.figureLead : undefined}
-            style={{ "--i": i, "--t": `${i % 2 ? 1.2 : -1.4}deg` } as CSSProperties}
+            style={{ "--i": i } as CSSProperties}
           >
             <strong>{figure.value}</strong>
             <span>{figure.label}</span>
