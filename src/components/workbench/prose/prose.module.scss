@@ -372,9 +372,9 @@
   line-height: 1.5;
 
   th {
-    @include display(700);
+    @include s-h3;
     padding: 10px 14px 10px 0;
-    border-bottom: 2px solid var(--wb-ink);
+    border-bottom: 1px solid var(--wb-ink);
     text-align: left;
   }
 
@@ -459,26 +459,27 @@
 // The shared YouTube facade, restyled only inside these prints.
 .frame .player {
   border-radius: 1px;
-  background: var(--wb-ink-paper);
+  background: var(--wb-soft-2);
 
   button:focus-visible {
     outline: 3px solid var(--wb-accent);
     outline-offset: -3px;
   }
 
-  // The play key: a cobalt key instead of a grey disc.
+  // The play key: a flat cobalt key with a small radius instead of a grey
+  // disc.
   button > span {
     width: 64px;
     height: 64px;
-    border-radius: 14px;
+    border-radius: 8px;
     background: var(--wb-cobalt);
-    box-shadow: var(--wb-shadow);
-    transition: scale 0.45s var(--wb-ease-pop);
+    box-shadow: none;
+    transition: scale 0.45s var(--wb-ease-settle);
   }
 
   @include fine-pointer {
     button:hover > span {
-      scale: 1.08;
+      scale: 1.04;
     }
   }
 }
@@ -492,13 +493,14 @@
   --link-deco: underline;
   --link-line: var(--wb-accent);
   --link-offset: 5px;
+  --link-thick: 1px;
 
   display: inline-flex;
   align-items: center;
   gap: 6px;
   min-height: 44px;
   font-size: 16px;
-  font-weight: 600;
+  font-weight: 500;
 }
 
 // Figures: the numbers of a case as plain tags, the first in cobalt -------
@@ -547,10 +549,10 @@
   @media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
     li {
       opacity: 0;
-      scale: 0.7;
+      scale: 0.94;
       transition:
         opacity 0.5s var(--wb-ease-soft),
-        scale 0.6s var(--wb-ease-pop);
+        scale 0.6s var(--wb-ease-settle);
       transition-delay: calc(var(--i, 0) * 90ms + 150ms);
     }
 
@@ -620,9 +622,9 @@
 .cardLabel {
   display: block;
   font-size: 16px;
-  font-weight: 600;
+  font-weight: 500;
   line-height: 1.3;
-  color: #55555f;
+  color: var(--wb-ink-2);
 }
 
 .cardTitle {
