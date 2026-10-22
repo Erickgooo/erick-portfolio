@@ -137,8 +137,13 @@ $sweep: 3.6s;
 
 // The two tracks -----------------------------------------------------------------
 
+// The names sit over the cut lines, on the sheet's own tone, so a cut that
+// crosses a name breaks behind it.
 .trackName {
   left: $left;
+  z-index: 1;
+  padding-right: 1.2cqi;
+  background: var(--sc-bg);
   font-weight: 600;
   color: var(--wb-ink-2);
 }

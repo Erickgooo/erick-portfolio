@@ -8,9 +8,9 @@
 // Facts: src/app/work/projects/quick-metal-shop-arquiexpo.mdx (metric
 // "48h|dev to deploy"; "Core Application Features": single-image mode and
 // grid gallery mode; 285 panel variants, drawn as 285 tiles). The screen is
-// KioskScreen (the canvas of the home's BoothApp), unchanged: it comes on at
-// step 3 and plays the app from step 4, on its own clock. Drawn in the
-// site's palette, not the client's. Portrait (4:5) only.
+// KioskScreen (the canvas of the home's BoothApp), with its panels drawn in
+// line: it comes on at step 3 and plays the app from step 4, on its own
+// clock. Drawn in the site's palette, not the client's. Portrait (4:5) only.
 import type { CSSProperties } from "react";
 import { CountUp, Scene } from "../Scene";
 import { KioskScreen } from "./KioskScreen";
@@ -36,7 +36,7 @@ export function KioskStand() {
     <Scene className={s.scene} steps={[800, 2900, 500, 900, 4700, 3800, 3800]} loop>
       <div className={s.kiosk}>
         <div className={s.screen}>
-          <KioskScreen className={s.canvas} />
+          <KioskScreen className={s.canvas} line />
         </div>
         <span className={s.post} />
         <span className={s.base} />
