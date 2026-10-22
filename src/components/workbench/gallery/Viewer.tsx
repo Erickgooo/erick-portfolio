@@ -3,8 +3,8 @@
 // Workbench, Visual Work: the viewer. Opening any piece on the bench lifts it
 // to the middle of the screen over a dimmed bench, in a native modal <dialog>
 // (focus stays inside, Escape closes, the page behind is inert). One instance
-// serves the whole page: the prints are server-rendered buttons carrying
-// [data-piece], found by one delegated click listener. A video's player is
+// serves the whole page: each print is a PieceButton, which asks for its
+// piece through open.ts. A video's player is
 // mounted only here, after the visitor asked for it; a carousel is a scroll-
 // snap track (swipe), with keys and the arrow keys to deal through it.
 import { youTubeEmbedUrl } from "@/utils/youtube";
@@ -12,6 +12,7 @@ import Image from "next/image";
 import { type CSSProperties, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { FiArrowLeft, FiArrowRight, FiX } from "react-icons/fi";
 import type { Piece, Slide } from "./data";
+import { onOpenPiece } from "./open";
 import styles from "./viewer.module.scss";
 
 function reducedMotion() {
@@ -23,16 +24,25 @@ function Deck({
   index,
   onIndex,
   trackRef,
+  targetRef,
 }: {
   slides: Slide[];
   index: number;
   onIndex: (i: number) => void;
   trackRef: React.RefObject<HTMLDivElement | null>;
+  targetRef: React.RefObject<number | null>;
 }) {
   // The counter follows the track, whether it moved by swipe, key or arrow.
+  // While a key or arrow scrolls it (targetRef), the counter already shows the
+  // target, so the positions passed on the way are skipped.
   const onScroll = () => {
     const track = trackRef.current;
     if (!track || !track.clientWidth) return;
+    const target = targetRef.current;
+    if (target !== null) {
+      if (Math.abs(track.scrollLeft - target * track.clientWidth) < 2) targetRef.current = null;
+      return;
+    }
     const i = Math.round(track.scrollLeft / track.clientWidth);
     if (i !== index) onIndex(Math.max(0, Math.min(slides.length - 1, i)));
   };
@@ -67,24 +77,23 @@ export function Viewer({ pieces }: { pieces: Piece[] }) {
   const trackRef = useRef<HTMLDivElement>(null);
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const triggerRef = useRef<HTMLElement | null>(null);
+  const targetRef = useRef<number | null>(null);
   const [current, setCurrent] = useState<Piece | null>(null);
   const [index, setIndex] = useState(0);
   const byId = useMemo(() => new Map(pieces.map((p) => [p.id, p])), [pieces]);
 
   // Any print on the page opens its piece.
-  useEffect(() => {
-    const onClick = (e: MouseEvent) => {
-      const trigger = (e.target as HTMLElement).closest<HTMLElement>("[data-piece]");
-      if (!trigger) return;
-      const piece = byId.get(trigger.dataset.piece ?? "");
-      if (!piece) return;
-      triggerRef.current = trigger;
-      setIndex(0);
-      setCurrent(piece);
-    };
-    document.addEventListener("click", onClick);
-    return () => document.removeEventListener("click", onClick);
-  }, [byId]);
+  useEffect(
+    () =>
+      onOpenPiece(({ id, trigger }) => {
+        const piece = byId.get(id);
+        if (!piece) return;
+        triggerRef.current = trigger;
+        setIndex(0);
+        setCurrent(piece);
+      }),
+    [byId],
+  );
 
   // Open the dialog once its content is there; the page behind stops scrolling.
   useEffect(() => {
@@ -92,6 +101,8 @@ export function Viewer({ pieces }: { pieces: Piece[] }) {
     if (!dialog || !current || dialog.open) return;
     dialog.showModal();
     document.documentElement.style.overflow = "hidden";
+    // showModal focuses the close key; a video hands focus to its player.
+    if (current.kind === "video") iframeRef.current?.focus();
   }, [current]);
 
   // However it closes (Escape, the close key, a click on the dimmed bench),
@@ -116,6 +127,13 @@ export function Viewer({ pieces }: { pieces: Piece[] }) {
       const track = trackRef.current;
       if (!track || !slides.length) return;
       const next = Math.max(0, Math.min(slides.length - 1, to));
+      if (Math.abs(track.scrollLeft - next * track.clientWidth) >= 2) {
+        targetRef.current = next;
+        // A scroll that never arrives (cut short by a swipe) frees the counter.
+        window.setTimeout(() => {
+          if (targetRef.current === next) targetRef.current = null;
+        }, 1200);
+      }
       track.scrollTo({
         left: next * track.clientWidth,
         behavior: reducedMotion() ? "auto" : "smooth",
@@ -207,6 +225,7 @@ export function Viewer({ pieces }: { pieces: Piece[] }) {
                   index={index}
                   onIndex={setIndex}
                   trackRef={trackRef}
+                targetRef={targetRef}
                 />
               )}
             </div>

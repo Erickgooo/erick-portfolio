@@ -2,8 +2,8 @@
 // divider with the client's name, then the pieces by format: videos as
 // phone-shaped prints, carousels as fanned stacks, single posts as taped
 // prints on a wall of rows that keeps every file's own proportions. Every
-// piece is a button that opens the viewer (see Viewer.tsx); nothing here
-// needs JavaScript to render.
+// piece is a PieceButton that opens the viewer (see Viewer.tsx); nothing
+// else here needs JavaScript.
 import { youTubeThumbnail } from "@/utils/youtube";
 import Image from "next/image";
 import Link from "next/link";
@@ -11,6 +11,7 @@ import type { CSSProperties } from "react";
 import { FiArrowRight, FiLayers, FiPlay } from "react-icons/fi";
 import { type ClientShelf, countOf, formatsLine, piecesIn } from "./data";
 import styles from "./gallery.module.scss";
+import { PieceButton } from "./PieceButton";
 
 /** Each print sits at its own small angle, the same on every visit. */
 const TILTS = [-1.4, 0.9, -0.5, 1.2, -1, 0.6, 1.5, -0.8];
@@ -98,10 +99,9 @@ export function ClientSection({
                   data-reveal=""
                   style={{ "--i": i % 6, "--tilt": tilt(i) } as CSSProperties}
                 >
-                  <button
-                    type="button"
+                  <PieceButton
                     className={styles.phone}
-                    data-piece={video.id}
+                    piece={video.id}
                     aria-haspopup="dialog"
                     aria-label={`Play video: ${video.title}`}
                   >
@@ -120,7 +120,7 @@ export function ClientSection({
                         <FiPlay />
                       </span>
                     </span>
-                  </button>
+                  </PieceButton>
                   <p className={styles.caption}>{video.caption}</p>
                 </li>
               ))}
@@ -140,10 +140,9 @@ export function ClientSection({
                     data-reveal=""
                     style={{ "--i": i % 3, "--tilt": tilt(i + 3) } as CSSProperties}
                   >
-                    <button
-                      type="button"
+                    <PieceButton
                       className={styles.deck}
-                      data-piece={deck.id}
+                      piece={deck.id}
                       aria-haspopup="dialog"
                       aria-label={`Open carousel, ${deck.slides.length} slides: ${deck.title}`}
                     >
@@ -167,7 +166,7 @@ export function ClientSection({
                         <FiLayers />
                         {deck.slides.length} slides
                       </span>
-                    </button>
+                    </PieceButton>
                     <p className={styles.caption}>{deck.caption}</p>
                   </li>
                 );
@@ -189,10 +188,9 @@ export function ClientSection({
                 const fix = i % 3;
                 return (
                   <li key={post.id} className={styles.wallItem} data-reveal="" style={style}>
-                    <button
-                      type="button"
+                    <PieceButton
                       className={styles.post}
-                      data-piece={post.id}
+                      piece={post.id}
                       aria-haspopup="dialog"
                       aria-label={`Open image: ${post.title}`}
                     >
@@ -211,7 +209,7 @@ export function ClientSection({
                           sizes={postSizes(w / h)}
                         />
                       </span>
-                    </button>
+                    </PieceButton>
                   </li>
                 );
               })}

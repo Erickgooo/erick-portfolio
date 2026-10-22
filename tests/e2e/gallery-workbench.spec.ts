@@ -73,6 +73,8 @@ test("the password screen keeps a labelled field, a named reveal key and Submit"
   page,
 }) => {
   await page.goto("/unauthorized");
+  // The reveal key works once the page has hydrated; a click before that is lost.
+  await page.waitForLoadState("networkidle");
   const field = page.getByLabel("Password", { exact: true });
   await expect(field).toHaveAttribute("type", "password");
   const reveal = page.getByRole("button", { name: "Show password" });
