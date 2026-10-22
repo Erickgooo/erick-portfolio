@@ -1,20 +1,22 @@
 "use client";
 
-// Workbench, 404: the bench with an empty spot. The objects rise into place on
-// load (CSS), then bob on long offset loops that run only while the bench is
-// on screen, like the home's. Decorative: hidden from assistive technology.
+// Workbench, 404: the bench with an empty spot (sober, 2026-10-22). Straight
+// objects drawn with a hairline; where a print should be, a dashed outline.
+// The objects rise into place on load (CSS), then drift on long offset loops
+// that run only while the bench is on screen, like the home's. Decorative:
+// hidden from assistive technology.
 import { type CSSProperties, useEffect, useRef } from "react";
 import styles from "./notfound.module.scss";
 
-type Place = { x: number; y: number; w: number; r: number; bob: number; kind: string };
+type Place = { x: number; y: number; w: number; bob: number; kind: string };
 
 // The empty spot stays clear in the middle; the other objects sit around it.
 const OBJECTS: Place[] = [
-  { x: 3, y: 38, w: 26, r: -9, bob: 4.8, kind: "cobalt" },
-  { x: 72, y: 3, w: 22, r: 7, bob: 5.2, kind: "mist" },
-  { x: 35, y: 12, w: 31, r: -3, bob: 4.4, kind: "empty" },
-  { x: 70, y: 50, w: 26, r: 5, bob: 4.6, kind: "print" },
-  { x: 37, y: 80, w: 24, r: 3, bob: 5, kind: "ink" },
+  { x: 3, y: 38, w: 26, bob: 4.8, kind: "sheet" },
+  { x: 72, y: 3, w: 22, bob: 5.2, kind: "square" },
+  { x: 35, y: 12, w: 31, bob: 4.4, kind: "empty" },
+  { x: 70, y: 50, w: 26, bob: 4.6, kind: "print" },
+  { x: 37, y: 80, w: 24, bob: 5, kind: "tag" },
 ];
 
 export function EmptySpot() {
@@ -42,7 +44,6 @@ export function EmptySpot() {
               "--x": `${o.x}%`,
               "--y": `${o.y}%`,
               "--w": `${o.w}%`,
-              "--r": `${o.r}deg`,
               "--bob": `${o.bob}s`,
               "--d": i,
             } as CSSProperties
@@ -51,13 +52,8 @@ export function EmptySpot() {
           <span className={styles.rise}>
             <span className={styles.bob}>
               <span className={`${styles.object} ${styles[o.kind]}`}>
-                {o.kind === "empty" && <span className={styles.pin} />}
-                {o.kind === "print" && (
-                  <>
-                    <span className={styles.tape} />
-                    <span className={styles.blank} />
-                  </>
-                )}
+                {o.kind === "sheet" && <span className={styles.stroke} />}
+                {o.kind === "print" && <span className={styles.blank} />}
               </span>
             </span>
           </span>
