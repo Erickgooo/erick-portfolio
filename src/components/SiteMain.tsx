@@ -15,7 +15,7 @@ import { usePathname } from "next/navigation";
 // HTML and the hydrated markup match.
 
 /** Routes not redesigned yet. An entry ending in "/" matches every page below it. */
-const LEGACY_ROUTES = ["/about", "/work", "/work/", "/blog", "/blog/", "/gallery", "/unauthorized"];
+const LEGACY_ROUTES = ["/about", "/work", "/work/", "/blog", "/blog/"];
 
 function isLegacy(pathname: string) {
   return LEGACY_ROUTES.some((route) =>
