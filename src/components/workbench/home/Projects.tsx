@@ -27,11 +27,7 @@ export function Projects({ hideProtected }: { hideProtected: boolean }) {
       </div>
       <ul className={styles.fan} data-reveal="">
         {cards.map((card, i) => (
-          <li
-            key={card.slug}
-            className={styles.slot}
-            style={{ "--i": i } as CSSProperties}
-          >
+          <li key={card.slug} className={styles.slot} style={{ "--i": i } as CSSProperties}>
             <Link href={card.href} className={styles.card}>
               <span className={styles.print}>
                 <Image
