@@ -1,5 +1,6 @@
 // Workbench: the hero. Text is readable from the first frame; the objects on
-// the bench beside it rise into place as the site intro lifts.
+// the bench beside it rise into place as the site intro lifts, over an
+// ambient layer of paper bits that rises with them (BenchAmbient).
 import { person } from "@/resources/content";
 import Image from "next/image";
 import { FiArrowDown } from "react-icons/fi";
@@ -7,6 +8,7 @@ import { BookCall } from "../BookCall";
 import { MEDIA } from "../media";
 import ui from "../ui.module.scss";
 import { Bench } from "./Bench";
+import { BenchAmbient } from "./BenchAmbient";
 import styles from "./hero.module.scss";
 
 export function Hero() {
@@ -36,6 +38,7 @@ export function Hero() {
           </div>
         </div>
         <div className={styles.benchCol}>
+          <BenchAmbient />
           <Bench />
         </div>
       </div>

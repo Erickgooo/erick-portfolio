@@ -1,8 +1,9 @@
-// Workbench: index cards.
+// Workbench: what I build. The head with its activity window, then the
+// stepper of the four builds (its layout is in scenes/stepper.module.scss).
 @use "../shared" as *;
 
 .builds {
-  @include below-fold(1500px, 760px);
+  @include below-fold(3600px, 4200px);
   position: relative;
   z-index: 1;
   overflow-x: clip;
@@ -15,22 +16,27 @@
 
   @include from-desk {
     padding-top: 72px;
-    padding-bottom: 144px;
+    padding-bottom: 72px;
   }
 }
 
 .head {
+  display: grid;
+  gap: 40px;
+  margin-bottom: 56px;
+
+  @include from-desk {
+    grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+    align-items: center;
+    column-gap: 64px;
+    margin-bottom: 24px;
+  }
+}
+
+.headText {
   @include reveal;
   display: grid;
   gap: 16px;
-  margin-bottom: 48px;
-
-  @include from-desk {
-    grid-template-columns: 1fr 1fr;
-    column-gap: 48px;
-    align-items: end;
-    margin-bottom: 64px;
-  }
 
   h2 {
     @include h2;
@@ -41,145 +47,11 @@
   }
 }
 
-.cards {
-  display: grid;
-  gap: 28px;
-  list-style: none;
-  padding: 0;
-
-  @include from-tablet {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 32px 28px;
-  }
+.window {
+  width: 100%;
+  max-width: 560px;
 
   @include from-desk {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 24px;
-  }
-}
-
-.card {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-  min-height: 300px;
-  padding: 36px 24px 24px;
-  border-radius: 4px;
-  box-shadow: var(--wb-shadow);
-  rotate: var(--r);
-
-  @include from-desk {
-    min-height: 380px;
-  }
-
-  // Dealt onto the bench: rises and settles at its angle with a small overshoot.
-  @media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
-    opacity: 0;
-    translate: 0 64px;
-    rotate: 0deg;
-    transition:
-      opacity 0.7s var(--wb-ease-soft),
-      translate 1s var(--wb-ease-soft),
-      rotate 1s var(--wb-ease-pop);
-    transition-delay: calc(var(--i) * 90ms);
-
-    &[data-in] {
-      opacity: 1;
-      translate: 0 0;
-      rotate: var(--r);
-    }
-  }
-
-  h3 {
-    @include display(700);
-    font-size: 27px;
-    line-height: 1.05;
-    letter-spacing: -0.025em;
-    text-wrap: balance;
-  }
-
-  p {
-    font-size: 17px;
-    line-height: 1.5;
-  }
-}
-
-.card .where {
-  margin-top: auto;
-  padding-top: 14px;
-  border-top: 2px solid currentColor;
-  font-size: 16px;
-  font-weight: 600;
-}
-
-.icon {
-  display: inline-grid;
-  place-items: center;
-  width: 52px;
-  height: 52px;
-  margin-bottom: 6px;
-  border-radius: 10px;
-  background: var(--wb-paper);
-  color: var(--wb-charcoal);
-  font-size: 28px;
-}
-
-.clip {
-  position: absolute;
-  top: -10px;
-  left: 28px;
-  width: 54px;
-  height: 20px;
-  border-radius: 4px;
-  background: var(--wb-charcoal);
-
-  @include dark {
-    background: #3a3a42;
-  }
-
-  &::before {
-    content: "";
-    position: absolute;
-    left: 12px;
-    right: 12px;
-    bottom: 85%;
-    height: 12px;
-    border: 3px solid #9a9aa4;
-    border-bottom: 0;
-    border-radius: 6px 6px 0 0;
-  }
-}
-
-.cobalt {
-  background: var(--wb-cobalt);
-  color: #ffffff;
-}
-
-.mist {
-  background: var(--wb-mist);
-  color: var(--wb-charcoal);
-}
-
-.ink {
-  background: var(--wb-ink-paper);
-  color: #ffffff;
-
-  @include dark {
-    box-shadow:
-      inset 0 0 0 1px rgba(255, 255, 255, 0.08),
-      var(--wb-shadow);
-  }
-}
-
-.paper {
-  background: var(--wb-paper);
-  color: var(--wb-charcoal);
-  box-shadow:
-    inset 0 0 0 1px var(--wb-line),
-    var(--wb-shadow);
-
-  .icon {
-    background: var(--wb-mist);
+    justify-self: end;
   }
 }

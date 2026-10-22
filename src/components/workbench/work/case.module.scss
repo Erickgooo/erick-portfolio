@@ -316,6 +316,13 @@
   }
 }
 
+// A drawn scene in the margin (see caseScenes.tsx): it rises in like a print.
+.scene {
+  @include reveal(32px);
+  width: 100%;
+  max-width: 460px;
+}
+
 .pinned {
   position: relative;
   margin: 0;

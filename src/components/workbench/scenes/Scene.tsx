@@ -19,6 +19,7 @@
 //   Its size is reserved by its own CSS (an aspect-ratio or fixed boxes), so
 //   nothing it does moves the layout.
 import type { CSSProperties, ReactNode } from "react";
+import type { Paper } from "../data";
 import styles from "./scenes.module.scss";
 import { TYPE_MS } from "./start";
 
@@ -145,5 +146,29 @@ export function CountUp({
         {zeroOf(value)}
       </span>
     </span>
+  );
+}
+
+/**
+ * A scene's paper outside a stepper: a coloured sheet that reserves the
+ * scene's box (4:5 on phones, 5:4 from 720 px, or always 4:5 with
+ * `portrait`) and gives it its container units.
+ */
+export function SceneSheet({
+  paper,
+  portrait = false,
+  className,
+  children,
+}: {
+  paper: Paper;
+  portrait?: boolean;
+  className?: string;
+  children: ReactNode;
+}) {
+  const names = [styles.sheet, styles[paper], portrait ? styles.sheetPortrait : "", className];
+  return (
+    <div className={names.filter(Boolean).join(" ")} aria-hidden="true">
+      {children}
+    </div>
   );
 }

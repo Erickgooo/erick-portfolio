@@ -12,6 +12,7 @@ import { splitChapters } from "../prose/source";
 import ui from "../ui.module.scss";
 import { VideoPrint } from "./VideoPrint";
 import styles from "./case.module.scss";
+import { scenesFor } from "./caseScenes";
 import { type Case, type CaseMedia, monthYear } from "./cases";
 
 export function CaseHeader({ c }: { c: Case }) {
@@ -144,6 +145,7 @@ export function CaseBody({ c }: { c: Case }) {
       ) : null}
       {chapters.map((chapter, i) => {
         const prints = pins.get(i) ?? [];
+        const scenes = scenesFor(c.slug, chapter.heading);
         const showTag = i === resultsAt && c.metric;
         const showBook = i === last;
         return (
@@ -152,9 +154,14 @@ export function CaseBody({ c }: { c: Case }) {
               <Prose source={chapter.body} />
               {i === last ? <EndMark /> : null}
             </div>
-            {prints.length > 0 || showTag || showBook ? (
+            {prints.length > 0 || scenes.length > 0 || showTag || showBook ? (
               <div className={styles.pins}>
                 <div className={styles.pinsInner}>
+                  {scenes.map((s) => (
+                    <div key={s.id} className={styles.scene} data-reveal="">
+                      {s.scene}
+                    </div>
+                  ))}
                   {prints.map((p) => (
                     <Pinned key={p.m.src} m={p.m} label={p.label} i={p.n} />
                   ))}

@@ -26,6 +26,10 @@ export type Frame = {
   dpr: number;
   /** The site's dark theme is on. */
   dark: boolean;
+  /** Reduced motion: this is the one still frame. */
+  still: boolean;
+  /** The canvas, e.g. to read the step of the scene around it. */
+  el: HTMLCanvasElement;
 };
 
 export type Draw = (ctx: CanvasRenderingContext2D, frame: Frame) => void;
@@ -84,7 +88,7 @@ export function CanvasLoop({
       if (!w || !h) return;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       const dark = document.documentElement.getAttribute("data-theme") === "dark";
-      drawRef.current(ctx, { t, dt, w, h, dpr, dark });
+      drawRef.current(ctx, { t, dt, w, h, dpr, dark, still: reduced, el: canvas });
     };
 
     const loop = (now: number) => {

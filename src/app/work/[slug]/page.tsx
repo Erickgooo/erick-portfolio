@@ -1,6 +1,7 @@
 import { ScrollToHash } from "@/components/ScrollToHash";
 import { Closing } from "@/components/workbench/Closing";
 import { RevealObserver } from "@/components/workbench/RevealObserver";
+import { SceneDriver } from "@/components/workbench/scenes/SceneDriver";
 import { CaseBody, CaseHeader, NextCase } from "@/components/workbench/work/CaseStudy";
 import { getCase, getNextCase } from "@/components/workbench/work/cases";
 import { about, baseURL, person, work } from "@/resources";
@@ -89,6 +90,7 @@ export default async function Project({
       {next ? <NextCase next={next} /> : null}
       <Closing />
       <RevealObserver />
+      <SceneDriver />
       <ScrollToHash />
     </>
   );

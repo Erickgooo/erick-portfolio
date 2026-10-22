@@ -5,6 +5,7 @@ import { Builds } from "@/components/workbench/home/Builds";
 import { Hero } from "@/components/workbench/home/Hero";
 import { Projects } from "@/components/workbench/home/Projects";
 import { ToolWall } from "@/components/workbench/home/ToolWall";
+import { SceneDriver } from "@/components/workbench/scenes/SceneDriver";
 import { about, baseURL, home, person } from "@/resources";
 import { isProtectedPath } from "@/resources/protectedRoutes";
 import { Meta, Schema } from "@once-ui-system/core";
@@ -44,6 +45,7 @@ export default function Home() {
       <About />
       <Closing />
       <RevealObserver />
+      <SceneDriver />
     </>
   );
 }

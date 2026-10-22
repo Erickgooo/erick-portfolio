@@ -1,0 +1,512 @@
+// Scene: AdReturn (see AdReturn.tsx), drawn for the mist sheet. Landscape
+// (5:4) from 720 px, portrait (4:5) on phones and with .portrait.
+// Keep this file ASCII-only.
+@use "../../shared" as *;
+@use "../scene" as *;
+
+$pop: cubic-bezier(0.3, 1.6, 0.5, 1);
+
+.scene {
+  --t: 2.3cqi;
+
+  position: absolute;
+  inset: 0;
+  color: var(--wb-charcoal);
+  font-size: max(12px, var(--t));
+  line-height: 1.2;
+}
+
+.portrait {
+  --t: 3.4cqi;
+}
+
+@include phone {
+  .scene {
+    --t: 3.4cqi;
+  }
+}
+
+.ad,
+.tag,
+.coins,
+.leads {
+  position: absolute;
+  transition:
+    opacity 0.8s $ease-soft,
+    translate 1s $ease-soft;
+
+  @include before(0) {
+    opacity: 0;
+    translate: 0 5cqi;
+  }
+}
+
+// The ads ---------------------------------------------------------------------------
+
+.ad {
+  top: 7cqi;
+  width: 27cqi;
+  height: 46cqi;
+  display: flex;
+  flex-direction: column;
+  gap: 1.3cqi;
+  padding: 1.8cqi;
+  border-radius: 1.6cqi;
+  background: #ffffff;
+  box-shadow: 0 1px 2px rgba(19, 19, 22, 0.1), 0 1.6cqi 3cqi -1.4cqi rgba(19, 19, 22, 0.4);
+
+  @include portrait(".portrait") {
+    top: 8cqi;
+    width: 43cqi;
+    height: 59cqi;
+    gap: 2cqi;
+    padding: 2.6cqi;
+    border-radius: 2.4cqi;
+  }
+}
+
+.adC {
+  left: 5cqi;
+}
+
+.adB {
+  left: 37cqi;
+  transition-delay: 0.1s;
+
+  @include portrait(".portrait") {
+    left: 52cqi;
+  }
+}
+
+.label {
+  position: absolute;
+  top: -2.4cqi;
+  left: 1.6cqi;
+  padding: 0.2em 0.55em;
+  border-radius: 0.3em;
+  background: var(--wb-charcoal);
+  color: #ffffff;
+  font-weight: 700;
+  rotate: -3deg;
+
+  @include portrait(".portrait") {
+    top: -3.4cqi;
+  }
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  gap: 1.2cqi;
+
+  i {
+    width: 3.6cqi;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: var(--wb-mist);
+  }
+
+  b {
+    width: 46%;
+    height: 1.2cqi;
+    border-radius: 1cqi;
+    background: #d9d9de;
+  }
+
+  @include portrait(".portrait") {
+    gap: 1.8cqi;
+
+    i {
+      width: 5.6cqi;
+    }
+
+    b {
+      height: 1.8cqi;
+    }
+  }
+}
+
+// The creative: a sketched frame (the concept) that fills in.
+.creative {
+  position: relative;
+  flex: 1;
+  border: 0.35cqi dashed #b4b4c0;
+  border-radius: 1cqi;
+}
+
+.fill {
+  position: absolute;
+  inset: -0.35cqi;
+  overflow: hidden;
+  border-radius: 1cqi;
+  transition:
+    opacity 0.6s $ease-soft,
+    scale 0.7s $pop;
+
+  .adC & {
+    background: var(--wb-cobalt);
+
+    @include before(1) {
+      opacity: 0;
+      scale: 0.92;
+    }
+  }
+
+  .adB & {
+    background: var(--wb-ink-paper);
+
+    @include before(2) {
+      opacity: 0;
+      scale: 0.92;
+    }
+  }
+}
+
+// B2C: the product, a perforated panel.
+.panel {
+  position: absolute;
+  inset: 16% 18%;
+  border-radius: 0.6cqi;
+  background-color: rgba(255, 255, 255, 0.14);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='34'%3E%3Cg fill='%23ffffff'%3E%3Ccircle cx='5' cy='6' r='3'/%3E%3Ccircle cx='15' cy='23' r='3'/%3E%3C/g%3E%3C/svg%3E");
+  background-size: 2cqi auto;
+}
+
+// B2B: the presenter, an avatar on camera.
+.presenter {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  width: 46%;
+  aspect-ratio: 1 / 1.05;
+  translate: -50% 0;
+
+  &::before {
+    content: "";
+    position: absolute;
+    left: 28%;
+    top: 0;
+    width: 44%;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: #ffffff;
+  }
+
+  &::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 46%;
+    border-radius: 50% 50% 0 0 / 70% 70% 0 0;
+    background: var(--wb-mist);
+  }
+}
+
+.cta {
+  height: 3.6cqi;
+  border-radius: 0.8cqi;
+
+  .adC & {
+    background: var(--wb-charcoal);
+  }
+
+  .adB & {
+    background: var(--wb-cobalt);
+  }
+
+  @include portrait(".portrait") {
+    height: 5.4cqi;
+  }
+}
+
+// The audience: gathers around (step 2), then joins the ad (step 3).
+.audience {
+  --sx: 1.12;
+  --sy: 1;
+
+  position: absolute;
+  left: 50%;
+  top: 46%;
+  width: 0;
+  height: 0;
+
+  i {
+    position: absolute;
+    left: -1.3cqi;
+    top: -1.3cqi;
+    width: 2.6cqi;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: var(--wb-charcoal);
+    box-shadow: 0 0 0 0.5cqi #ffffff;
+    opacity: 0;
+    scale: 0.3;
+    transition:
+      opacity 0.5s $ease-soft,
+      translate 0.9s cubic-bezier(0.6, 0, 0.3, 1),
+      scale 0.6s $ease-soft;
+    transition-delay: calc(var(--k) * 70ms);
+
+    @include before(3) {
+      opacity: 1;
+      scale: 1;
+      translate: calc(var(--dx) * var(--sx)) calc(var(--dy) * var(--sy));
+    }
+
+    @include before(2) {
+      opacity: 0;
+      scale: 0.6;
+    }
+
+    @include portrait(".portrait") {
+      left: -2cqi;
+      top: -2cqi;
+      width: 4cqi;
+    }
+  }
+
+  @include portrait(".portrait") {
+    --sx: 1.75;
+    --sy: 1.45;
+  }
+}
+
+// The results ---------------------------------------------------------------------------
+
+.tag {
+  top: 58cqi;
+  width: 27cqi;
+  height: 17cqi;
+  display: grid;
+  align-content: center;
+  gap: 0.6cqi;
+  padding: 0 2cqi 0 5cqi;
+  background: #ffffff;
+  clip-path: polygon(3.4cqi 0, 100% 0, 100% 100%, 3.4cqi 100%, 0 calc(100% - 3.4cqi), 0 3.4cqi);
+  transition:
+    opacity 0.6s $ease-soft,
+    translate 0.8s $ease-soft,
+    scale 0.6s $pop;
+
+  @include before(5) {
+    opacity: 0;
+    translate: 0 3cqi;
+    scale: 0.94;
+  }
+
+  @include portrait(".portrait") {
+    top: 72cqi;
+    width: 43cqi;
+    height: 20cqi;
+    padding: 0 3cqi 0 7cqi;
+    clip-path: polygon(5cqi 0, 100% 0, 100% 100%, 5cqi 100%, 0 calc(100% - 5cqi), 0 5cqi);
+  }
+}
+
+.tagC {
+  left: 5cqi;
+}
+
+.tagB {
+  left: 37cqi;
+  transition-delay: 0.12s;
+
+  @include portrait(".portrait") {
+    left: 52cqi;
+  }
+}
+
+.value {
+  @include display(800);
+  font-size: 7cqi;
+  line-height: 0.9;
+  letter-spacing: -0.045em;
+  color: var(--wb-cobalt);
+
+  @include portrait(".portrait") {
+    font-size: 9cqi;
+  }
+}
+
+.caption {
+  font-weight: 600;
+}
+
+// The budget comes back: one coin in, nearly four out.
+.coins,
+.leads {
+  border-radius: 1.6cqi;
+  background: #ffffff;
+  box-shadow: 0 1px 2px rgba(19, 19, 22, 0.1), 0 1.6cqi 3cqi -1.4cqi rgba(19, 19, 22, 0.4);
+}
+
+.coins {
+  left: 68cqi;
+  top: 7cqi;
+  width: 27cqi;
+  height: 34cqi;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 2cqi;
+  padding-bottom: 5cqi;
+  transition-delay: 0.2s;
+
+  @include portrait(".portrait") {
+    left: 5cqi;
+    top: 96cqi;
+    width: 43cqi;
+    height: 25cqi;
+    gap: 3cqi;
+    padding-bottom: 4cqi;
+    border-radius: 2.4cqi;
+  }
+}
+
+.spend {
+  width: 7.4cqi;
+  height: 2.6cqi;
+  margin-bottom: 0.4cqi;
+  border-radius: 50%;
+  background: var(--wb-ink-paper);
+  box-shadow: inset 0 -0.6cqi 0 #000000;
+  transition:
+    opacity 0.4s $ease-soft,
+    translate 0.6s $pop;
+
+  @include before(4) {
+    opacity: 0;
+    translate: 0 -4cqi;
+  }
+
+  @include portrait(".portrait") {
+    width: 10cqi;
+    height: 3.6cqi;
+  }
+}
+
+.arrow {
+  width: 2.4cqi;
+  height: 2.4cqi;
+  margin-bottom: 0.5cqi;
+  border: solid var(--wb-charcoal);
+  border-width: 0.45cqi 0.45cqi 0 0;
+  rotate: 45deg;
+  transition: opacity 0.4s $ease-soft 0.2s;
+
+  @include before(4) {
+    opacity: 0;
+  }
+
+  @include portrait(".portrait") {
+    width: 3.4cqi;
+    height: 3.4cqi;
+    border-width: 0.6cqi 0.6cqi 0 0;
+  }
+}
+
+.stack {
+  display: flex;
+  flex-direction: column-reverse;
+
+  i {
+    width: 10cqi;
+    height: 3.4cqi;
+    margin-top: -1.1cqi;
+    border-radius: 50%;
+    background: var(--wb-cobalt);
+    box-shadow: inset 0 -0.6cqi 0 #1f46d8, 0 0 0 0.25cqi var(--wb-mist);
+    transition:
+      opacity 0.35s $ease-soft,
+      translate 0.6s $pop;
+    transition-delay: calc(0.35s + var(--k) * 140ms);
+
+    // The fourth coin is not quite whole.
+    &:last-child {
+      scale: 1 0.92;
+      transform-origin: center bottom;
+    }
+
+    @include before(4) {
+      opacity: 0;
+      translate: 0 -5cqi;
+    }
+
+    @include portrait(".portrait") {
+      width: 13cqi;
+      height: 4.4cqi;
+      margin-top: -1.5cqi;
+    }
+  }
+}
+
+// The B2B ad's leads, filed one by one.
+.leads {
+  left: 68cqi;
+  top: 45cqi;
+  width: 27cqi;
+  height: 30cqi;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-content: center;
+  gap: 1.4cqi;
+  padding: 2.4cqi;
+  transition-delay: 0.25s;
+
+  @include portrait(".portrait") {
+    left: 52cqi;
+    top: 96cqi;
+    width: 43cqi;
+    height: 25cqi;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 1.2cqi;
+    padding: 2.4cqi;
+    border-radius: 2.4cqi;
+  }
+
+  i {
+    position: relative;
+    aspect-ratio: 3 / 4;
+    border-radius: 0.8cqi;
+    background: var(--wb-mist);
+    transition:
+      opacity 0.35s $ease-soft,
+      scale 0.5s $pop;
+    transition-delay: calc(0.3s + var(--k) * 120ms);
+
+    &::before {
+      content: "";
+      position: absolute;
+      left: 30%;
+      top: 18%;
+      width: 40%;
+      aspect-ratio: 1;
+      border-radius: 50%;
+      background: var(--wb-ink-paper);
+    }
+
+    &::after {
+      content: "";
+      position: absolute;
+      left: 18%;
+      right: 18%;
+      bottom: 18%;
+      height: 12%;
+      border-radius: 1cqi;
+      background: var(--wb-cobalt);
+    }
+
+    @include before(4) {
+      opacity: 0;
+      scale: 0.4;
+    }
+  }
+}
+
+@include reduced {
+  .scene * {
+    transition: none !important;
+  }
+}

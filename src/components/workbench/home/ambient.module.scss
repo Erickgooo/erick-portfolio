@@ -1,0 +1,32 @@
+// Home: the ambient layer behind the bench (see BenchAmbient.tsx). It bleeds a
+// little past the bench column (the hero clips the sides) and is transparent
+// wherever it does not draw. Keep this file ASCII-only.
+@use "../shared" as *;
+
+.ambient {
+  position: absolute;
+  inset: -6% -8%;
+  pointer-events: none;
+
+  @include phone {
+    inset: -3% -4%;
+  }
+
+  @media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
+    opacity: 0;
+    translate: 0 48px;
+    transition:
+      opacity 0.6s linear,
+      translate 1.6s $ease-soft;
+
+    &[data-on] {
+      opacity: 1;
+      translate: 0 0;
+    }
+  }
+}
+
+.canvas {
+  position: absolute;
+  inset: 0;
+}

@@ -92,3 +92,47 @@
     opacity: 0.85;
   }
 }
+
+// SceneSheet: the paper a scene is drawn on, outside a stepper.
+.sheet {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  border-radius: 6px;
+  container-type: inline-size;
+  box-shadow: var(--wb-shadow);
+
+  @include from-tablet {
+    &:not(.sheetPortrait) {
+      aspect-ratio: 5 / 4;
+    }
+  }
+}
+
+.sheetPortrait {
+  aspect-ratio: 4 / 5;
+}
+
+.cobalt {
+  background: var(--wb-cobalt);
+  color: #ffffff;
+}
+
+.ink {
+  background: var(--wb-ink-paper);
+  color: #ffffff;
+}
+
+.mist {
+  background: var(--wb-mist);
+  color: var(--wb-charcoal);
+}
+
+.paper {
+  background: var(--wb-paper);
+  color: var(--wb-charcoal);
+  box-shadow:
+    inset 0 0 0 1px var(--wb-line),
+    var(--wb-shadow);
+}
