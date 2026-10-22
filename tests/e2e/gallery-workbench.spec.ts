@@ -83,3 +83,61 @@ test("the password screen keeps a labelled field, a named reveal key and Submit"
   await expect(reveal).toHaveAttribute("aria-pressed", "true");
   await expect(page.getByRole("button", { name: "Submit" })).toBeEnabled();
 });
+
+// The scenes of these pages (README, "Step 3: scenes"): drawings only.
+test.describe("scenes", () => {
+  test("Visual Work shows how the pieces are made: four steps, each with an aria-hidden scene", async ({
+    page,
+  }) => {
+    await page.goto("/gallery");
+    const section = page.locator("section", {
+      has: page.getByRole("heading", { level: 2, name: "How the pieces are made" }),
+    });
+    await expect(section.getByRole("heading", { level: 3 })).toHaveText([
+      "Avatar",
+      "Motion",
+      "Voice",
+      "Edit and post",
+    ]);
+    const scenes = section.locator("[data-scene]");
+    await expect(scenes).toHaveCount(4);
+    for (const scene of await scenes.all()) {
+      await expect(scene).toHaveAttribute("aria-hidden", "true");
+    }
+    await section.scrollIntoViewIfNeeded();
+    const box = await scenes.first().boundingBox();
+    expect(box?.width).toBeGreaterThan(200);
+    expect(box?.height).toBeGreaterThan(150);
+  });
+
+  test("the 404 scene types the address that was asked for", async ({ page }) => {
+    await page.goto("/no/such-page");
+    const scene = page.locator("main [data-scene]");
+    await expect(scene).toHaveAttribute("aria-hidden", "true");
+    await expect(scene.locator("[data-typed-text]")).toHaveText("/no/such-page");
+    await expect(scene).toHaveAttribute("data-s2", "");
+  });
+
+  test("with reduced motion the 404 and the locked drawer show their final state at once", async ({
+    page,
+  }) => {
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    await page.goto("/no/such-page");
+    const lost = page.locator("main [data-scene]");
+    await expect(lost).toHaveAttribute("data-s2", "");
+    await expect(lost.locator("[data-typed-text]")).toHaveText("/no/such-page");
+    await page.goto("/unauthorized");
+    await expect(page.locator("main [data-scene]")).toHaveAttribute("data-s2", "");
+  });
+
+  test("the locked drawer is a drawing beside the password field, never around it", async ({
+    page,
+  }) => {
+    await page.goto("/unauthorized");
+    const drawing = page.locator("main [data-scene]");
+    await expect(drawing).toHaveAttribute("aria-hidden", "true");
+    await expect(drawing.locator("input, button, a")).toHaveCount(0);
+    await expect(page.locator("[data-scene] #password")).toHaveCount(0);
+    await expect(page.getByLabel("Password", { exact: true })).toBeVisible();
+  });
+});
