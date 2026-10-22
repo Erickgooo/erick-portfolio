@@ -1,7 +1,124 @@
-@use "./breakpoints.scss" as breakpoints;
+// The site footer, in Workbench. Transparent over the page dots.
+@use "./workbench/shared" as *;
 
-@media (max-width: breakpoints.$s) {
-    .mobile {
-        text-align: center;
+.footer {
+  @include below-fold(760px, 360px);
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  border-top: 1px solid var(--wb-line);
+  padding-bottom: 32px;
+
+  // Phones: room for the header pill fixed at the bottom of the screen and the
+  // chatbot button above it, so nothing in the footer ends up under them.
+  @include bottom-nav {
+    padding-bottom: 168px;
+  }
+}
+
+.inner {
+  @include wrap;
+  display: grid;
+  gap: 40px;
+  padding-top: 56px;
+  padding-bottom: 40px;
+
+  @include from-tablet {
+    grid-template-columns: 1.4fr 1fr;
+    align-items: start;
+  }
+}
+
+.lead {
+  display: grid;
+  justify-items: start;
+  gap: 16px;
+
+  p {
+    max-width: 34ch;
+    color: var(--wb-ink-2);
+  }
+}
+
+.wordmark {
+  @include display(750);
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 44px;
+  font-size: 22px;
+  letter-spacing: -0.03em;
+  white-space: nowrap;
+}
+
+// Erick's monogram: strokes in the ink colour, the node in cobalt.
+.mark {
+  display: inline-flex;
+  font-size: 30px;
+  transition: rotate 0.5s var(--wb-ease-pop);
+
+  @include fine-pointer {
+    .wordmark:hover & {
+      rotate: -8deg;
     }
+  }
+}
+
+.cols {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+
+  ul {
+    list-style: none;
+    padding: 0;
+  }
+
+  a {
+    --link-deco-hover: underline;
+    --link-line: var(--wb-accent);
+
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 44px;
+    min-height: 44px;
+    font-weight: 500;
+  }
+}
+
+.icon {
+  flex: none;
+  font-size: 18px;
+  color: var(--wb-ink-2);
+}
+
+.base {
+  @include wrap;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 24px;
+  font-size: 16px;
+  color: var(--wb-ink-2);
+
+  // The chatbot button floats in the bottom-right corner on larger screens.
+  @include from-tablet {
+    padding-right: 112px;
+  }
+
+  span {
+    padding-block: 10px;
+  }
+
+  // Inline links in a sentence: the vertical padding gives a 44px target
+  // without spreading the lines apart.
+  a {
+    --link-deco: underline;
+    --link-thick: 1px;
+    --link-offset: 4px;
+    --link-line: var(--wb-accent);
+
+    padding-block: 12px;
+  }
 }
