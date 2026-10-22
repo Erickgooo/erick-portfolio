@@ -36,21 +36,22 @@
 }
 
 // The name on two lines, as large as the text column allows: the longer word
-// is about 4.3 em wide, so the size follows the column's width per layout
-// (viewport units, no container pass in the first frame).
+// measures 3.77 em, so the size follows the column's width per layout
+// (viewport units, no container pass in the first frame), with a few per cent
+// to spare for the fallback face.
 .name {
   @include display(800);
   display: grid;
-  font-size: calc((100vw - 32px) / 4.6);
+  font-size: calc((100vw - 32px) / 4);
   line-height: 0.9;
   letter-spacing: -0.05em;
 
   @include from-tablet {
-    font-size: min(150px, calc((100vw - 64px) / 4.6));
+    font-size: min(150px, calc((100vw - 64px) / 4));
   }
 
   @include from-desk {
-    font-size: min(176px, calc((min(100vw, 1280px) - 160px) * 0.136));
+    font-size: min(176px, calc((min(100vw, 1280px) - 160px) * 0.158));
   }
 }
 
