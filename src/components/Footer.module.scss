@@ -94,32 +94,16 @@
   color: var(--wb-ink-2);
 }
 
+// A single line: the copyright, aligned with the column above.
 .base {
   @include wrap;
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 4px 24px;
+  padding-block: 10px;
   font-size: 16px;
+  line-height: 1.5;
   color: var(--wb-ink-2);
 
   // The chatbot button floats in the bottom-right corner on larger screens.
   @include from-tablet {
     padding-right: 112px;
-  }
-
-  span {
-    padding-block: 10px;
-  }
-
-  // Inline links in a sentence: the vertical padding gives a 44px target
-  // without spreading the lines apart.
-  a {
-    --link-deco: underline;
-    --link-thick: 1px;
-    --link-offset: 4px;
-    --link-line: var(--wb-accent);
-
-    padding-block: 12px;
   }
 }

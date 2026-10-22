@@ -1,6 +1,6 @@
 // The site footer, in Workbench (redesign 2026), on every page: Erick's
-// monogram with his name, the pages, the social links and the Once UI licence
-// line. Server-rendered; transparent over the page dots.
+// monogram with his name, the pages, the social links and the copyright line.
+// Server-rendered; transparent over the page dots.
 import scope from "@/components/workbench/scope.module.scss";
 import { about, blog, gallery, person, routes, social, work } from "@/resources";
 import { EMIcon } from "@/resources/EMIcon";
@@ -71,13 +71,7 @@ export const Footer = () => {
         </nav>
       </div>
       <div className={styles.base}>
-        <span>
-          &copy; {currentYear} {person.name}
-        </span>
-        <span>
-          Based on <a href="https://once-ui.com/">Once UI</a> (adapted). Licensed under{" "}
-          <a href="https://creativecommons.org/licenses/by-nc/4.0/">CC BY-NC 4.0</a>.
-        </span>
+        &copy; {currentYear} {person.name}
       </div>
     </footer>
   );
