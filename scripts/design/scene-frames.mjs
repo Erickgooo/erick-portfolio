@@ -23,9 +23,11 @@
 //   --mask-media         images, videos and iframes become flat boxes (the
 //                        media rule: for our own checks, never the pieces)
 //   --reduced            emulate prefers-reduced-motion: reduce
+//   --query <q>          add a query string to the page (e.g. v=b, the sober
+//                        variant switch); it goes into the file names too
 //   --out <dir>          default docs/design/screens/rediseno-2026-escenas/frames
 //
-// Files: <out>/<name>-<width>-<theme>-<n>.png (n from 1).
+// Files: <out>/<name>[-<query>]-<width>-<theme>-<n>.png (n from 1).
 import { mkdir } from "node:fs/promises";
 import path from "node:path";
 import { chromium, devices } from "@playwright/test";
@@ -52,6 +54,9 @@ const themes = arg("themes", "light,dark").split(",");
 const out = arg("out", "docs/design/screens/rediseno-2026-escenas/frames");
 const maskMedia = flag("mask-media");
 const reduced = flag("reduced");
+const query = arg("query", "");
+const suffix = query ? `-${query.replace(/[^a-z0-9]+/gi, "-")}` : "";
+const url = query ? `${pagePath}${pagePath.includes("?") ? "&" : "?"}${query}` : pagePath;
 
 if (!selector) {
   console.error("--selector is required");
@@ -85,7 +90,7 @@ for (const width of widths) {
     }, theme);
     const page = await ctx.newPage();
     page.on("pageerror", (e) => errors.push(`${width} ${theme}: ${e.message}`));
-    await page.goto(`${base}${pagePath}`, { waitUntil: "domcontentloaded" });
+    await page.goto(`${base}${url}`, { waitUntil: "domcontentloaded" });
     if (maskMedia) await page.addStyleTag({ content: MASK_CSS });
 
     if (atLoad) {
@@ -156,7 +161,7 @@ for (const width of widths) {
         width: Math.min(vp.width - x, box.w + pad * 2),
         height: Math.min(vp.height - y, box.h + pad * 2),
       };
-      const file = path.join(out, `${name}-${width}-${theme}-${n}.png`);
+      const file = path.join(out, `${name}${suffix}-${width}-${theme}-${n}.png`);
       await page.screenshot({ path: file, clip });
       if (n < count) await page.waitForTimeout(interval);
     }

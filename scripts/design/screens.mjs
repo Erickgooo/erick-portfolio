@@ -2,13 +2,16 @@
 // stitched, at 390 and 1440 px in light and dark.
 //
 //   npm run build && npx next start -p 3301
-//   node scripts/design/screens.mjs [--base http://localhost:3301] [--out docs/design/screens/rediseno-2026] [--pages home,about] [--mask-media]
+//   node scripts/design/screens.mjs [--base http://localhost:3301] [--out docs/design/screens/rediseno-2026] [--pages home,about] [--mask-media] [--query v=b]
+//
+// --query adds a query string to every page (for example v=b, the sober
+// variant switch) and puts it in the file names: home-v-b-390-light.png.
 //
 // --mask-media turns every image, video and iframe into a flat translucent box,
 // so a layout check never shows the media pieces themselves (Erick's rule: they
 // are not opened, watched, described or evaluated). Captures for Erick omit it.
 //
-// Files: <out>/<page>-<390|1440>-<light|dark>.png
+// Files: <out>/<page>[-<query>]-<390|1440>-<light|dark>.png
 import { mkdir } from "node:fs/promises";
 import path from "node:path";
 import { chromium, devices } from "@playwright/test";
@@ -33,6 +36,9 @@ const ALL = {
 };
 const only = arg("pages", Object.keys(ALL).join(",")).split(",");
 const maskMedia = args.includes("--mask-media");
+const query = arg("query", "");
+const suffix = query ? `-${query.replace(/[^a-z0-9]+/gi, "-")}` : "";
+const withQuery = (pagePath) => (query ? `${pagePath}${pagePath.includes("?") ? "&" : "?"}${query}` : pagePath);
 const MASK_CSS =
   "img, video, iframe, picture, svg image { filter: brightness(0) !important; opacity: 0.14 !important; }";
 const VIEWPORTS = {
@@ -107,11 +113,11 @@ for (const name of only) {
   for (const width of [390, 1440]) {
     for (const theme of ["light", "dark"]) {
       const { ctx, page } = await newPage(browser, width, theme);
-      await page.goto(`${base}${ALL[name]}`, { waitUntil: "networkidle" });
+      await page.goto(`${base}${withQuery(ALL[name])}`, { waitUntil: "networkidle" });
       if (maskMedia) await page.addStyleTag({ content: MASK_CSS });
       // The intro plays for five seconds on every document load.
       await page.waitForTimeout(6500);
-      await stitchedShot(browser, page, path.join(out, `${name}-${width}-${theme}.png`));
+      await stitchedShot(browser, page, path.join(out, `${name}${suffix}-${width}-${theme}.png`));
       await ctx.close();
     }
   }
