@@ -11,11 +11,7 @@ export function RecentPosts({ posts }: { posts: PostCard[] }) {
       <h2 id="recent-posts">Recent posts</h2>
       <ul className={styles.sheets}>
         {posts.map((post, i) => (
-          <li
-            key={post.slug}
-            data-reveal=""
-            style={{ "--i": i, "--t": `${i % 2 ? 0.8 : -0.9}deg` } as CSSProperties}
-          >
+          <li key={post.slug} data-reveal="" style={{ "--i": i } as CSSProperties}>
             <PostSheet post={post} headingLevel={3} />
           </li>
         ))}

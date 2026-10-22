@@ -1,6 +1,6 @@
-// Workbench, Blog: one post as a printed sheet: the date on a small rotated
-// label, the title in Bricolage, the summary and the cover print. The whole
-// sheet opens the post; it lifts on hover and while a finger is on it.
+// Workbench, Blog: one post as a sheet behind a hairline: the date, the title,
+// the summary and the cover. The whole sheet opens the post; it lifts a little
+// on hover, on focus and while a finger is on it.
 import { formatDate } from "@/utils/formatDate";
 import Image from "next/image";
 import Link from "next/link";

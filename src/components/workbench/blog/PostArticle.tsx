@@ -1,6 +1,6 @@
-// Workbench, post: a post reads like a case. One column of Onest, the cover
-// print taped beside the title, the index in the margin on desktop, Erick's
-// monogram as the last mark, then the share keys.
+// Workbench, post: a post reads like a case. One column of text, the cover
+// behind a hairline beside the title, the index in the margin on desktop,
+// Erick's monogram as the last mark, then the share keys.
 import { person } from "@/resources";
 import { formatDate } from "@/utils/formatDate";
 import Image from "next/image";
@@ -57,7 +57,6 @@ export function PostArticle({
         </div>
         {cover ? (
           <figure className={styles.cover}>
-            <span className={styles.tape} aria-hidden="true" />
             <span className={styles.coverFrame}>
               <Image
                 src={cover.src}
