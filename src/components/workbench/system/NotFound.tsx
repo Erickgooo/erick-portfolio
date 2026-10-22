@@ -1,13 +1,15 @@
-// Workbench: the 404. A bench with one empty spot where a print should be,
-// Erick's monogram, and two ways back. Also rendered by RouteGuard (a client
+// Workbench: the 404. Erick's monogram, two ways back, and a scene: a field
+// types the address that was asked for, an empty frame marks where a piece
+// would be (scenes/system/LostScene). Also rendered by RouteGuard (a client
 // component) for disabled routes, so nothing here is server-only; it carries
 // the Workbench scope itself because a disabled route may sit outside it.
 import { EMIcon } from "@/resources/EMIcon";
 import Link from "next/link";
 import { FiArrowRight, FiHome } from "react-icons/fi";
 import scope from "../scope.module.scss";
+import { SceneDriver } from "../scenes/SceneDriver";
+import { LostScene } from "../scenes/system/LostScene";
 import ui from "../ui.module.scss";
-import { EmptySpot } from "./EmptySpot";
 import styles from "./notfound.module.scss";
 
 export function NotFound() {
@@ -38,8 +40,9 @@ export function NotFound() {
             </Link>
           </div>
         </div>
-        <EmptySpot />
+        <LostScene />
       </div>
+      <SceneDriver />
     </section>
   );
 }
