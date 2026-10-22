@@ -2,9 +2,19 @@
    brand/accent share one scale (the manual defines a single accent: Cobalto Eléctrico).
    neutral-100 = Obsidiana Profunda exactly (dark-mode page background);
    neutral-1200 = Blanco Titanio exactly; neutral-500/800 snap to Grafito/Plata Satinada. */
-:root {
-  /* Labels use the body Inter instance (one font download instead of two). */
+/* Labels use the body Inter instance (one font download instead of two).
+   Also on body, where the root layout puts the next/font variables. */
+:root,
+body {
   --font-label: var(--font-body);
+}
+
+/* Once UI sets the text face on html; body repeats it for the same reason. */
+body {
+  font-family: var(--font-body);
+}
+
+:root {
 
   --scheme-brand-100: #0a0e1f;
   --scheme-brand-200: #0d1431;

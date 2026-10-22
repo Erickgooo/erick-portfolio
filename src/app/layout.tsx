@@ -118,7 +118,17 @@ export default async function RootLayout({
           as="body"
           background="page"
           fillWidth
-          className={spotlightStyles.pageDots}
+          // The font variables also go on <body>: Once UI's tokens declare
+          // `:root { --font-heading: var(--font-heading) }` (same for body,
+          // label, code), which empties next/font's variables on <html> when
+          // that stylesheet lands after the font one, and Next's CSS chunking
+          // does not keep a fixed order. On <body> they win whatever the order.
+          className={classNames(
+            spotlightStyles.pageDots,
+            heading.variable,
+            body.variable,
+            code.variable,
+          )}
           style={{ minHeight: "100vh", position: "relative" }}
           margin="0"
           padding="0"
