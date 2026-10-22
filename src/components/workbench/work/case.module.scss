@@ -698,6 +698,447 @@
   }
 }
 
+// Sober (Erick, 2026-10-22) ----------------------------------------------------
+// TEMPORARY (sober variants): scoped to [data-sober], which only the LeadBot
+// case carries for now (src/app/work/[slug]/page.tsx); step 4 makes this the
+// style of every case. Variant A draws objects with hairlines (--v-line),
+// variant B lays them on soft surfaces (--v-fill). Nothing tilts, nothing is
+// taped or pinned; every entrance keeps its timing, now as a rise and a fade.
+
+.fileLabel {
+  @include sober {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    padding: 0;
+    border-radius: 0;
+    background: none;
+    color: var(--wb-ink-2);
+    font-weight: 500;
+    rotate: none;
+
+    &::before {
+      content: "";
+      width: 24px;
+      height: 1px;
+      background: var(--wb-accent);
+    }
+  }
+}
+
+.title {
+  @include sober {
+    gap: 12px;
+  }
+}
+
+.name {
+  @include sober {
+    @include title;
+    font-size: clamp(40px, 6vw, 80px);
+    line-height: 1.02;
+    letter-spacing: -0.03em;
+
+    [data-long] > & {
+      font-size: clamp(36px, 4.8vw, 64px);
+      line-height: 1.04;
+    }
+  }
+}
+
+.subtitle {
+  @include sober {
+    max-width: 26ch;
+    font-family: var(--font-wb-text), system-ui, sans-serif;
+    font-size: clamp(20px, 2vw, 26px);
+    font-weight: 500;
+    line-height: 1.3;
+    letter-spacing: -0.01em;
+    color: var(--wb-ink-2);
+  }
+}
+
+.summary {
+  @include sober {
+    @include s-lede;
+    max-width: 46ch;
+  }
+}
+
+.facts {
+  @include sober {
+    border-top: 1px solid var(--wb-rule);
+
+    dt {
+      @include s-label;
+    }
+
+    dd {
+      font-size: 16px;
+      font-weight: 500;
+    }
+  }
+}
+
+// The folder becomes a plain panel: the cover, then the figure under it.
+.folder {
+  @include sober {
+    display: grid;
+    align-content: start;
+    gap: 20px;
+    aspect-ratio: auto;
+
+    &[data-front] {
+      aspect-ratio: auto;
+    }
+  }
+
+  @include sober-b {
+    padding: 16px 16px 20px;
+    border-radius: 8px;
+    background: var(--wb-soft);
+  }
+}
+
+.folderBack,
+.folderSheet {
+  @include sober {
+    display: none;
+  }
+}
+
+.cover {
+  @include sober {
+    position: relative;
+    inset: auto;
+    padding: 0;
+    overflow: hidden;
+    border: 1px solid var(--v-line);
+    border-radius: 4px;
+    background: var(--wb-soft-2);
+    box-shadow: none;
+    rotate: none;
+
+    @media (prefers-reduced-motion: no-preference) {
+      animation: coverRise 1s var(--wb-ease-soft) 0.2s both;
+    }
+  }
+}
+
+.folderFront {
+  @include sober {
+    position: relative;
+    inset: auto;
+    height: auto;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: flex-start;
+    gap: 6px 18px;
+    padding: 0;
+    border-radius: 0;
+    background: none;
+    color: var(--wb-ink);
+
+    strong {
+      @include title;
+      font-size: clamp(48px, 11cqi, 76px);
+      line-height: 1;
+      letter-spacing: -0.03em;
+      color: var(--wb-accent);
+
+      @media (prefers-reduced-motion: no-preference) {
+        animation: settleIn 0.6s $ease-settle 1s both;
+      }
+    }
+
+    span {
+      font-size: 17px;
+      font-weight: 500;
+      color: var(--wb-ink-2);
+    }
+  }
+
+  @include sober-b {
+    padding: 4px 4px 0;
+  }
+}
+
+.folderFront strong {
+  @include sober {
+    @include dark {
+      color: #6688ff;
+    }
+  }
+}
+
+// The prints in the margin stand straight: A behind a hairline, B on a mat.
+.pinned {
+  @include sober {
+    rotate: none;
+
+    @media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
+      rotate: none;
+      transition:
+        opacity 0.8s var(--wb-ease-soft),
+        translate 1s var(--wb-ease-soft);
+
+      &[data-in] {
+        rotate: none;
+      }
+    }
+  }
+}
+
+.pinnedFrame {
+  @include sober {
+    padding: 0;
+    overflow: hidden;
+    border: 1px solid var(--wb-rule);
+    border-radius: 4px;
+    box-shadow: none;
+
+    video {
+      background: var(--wb-soft-2);
+    }
+  }
+
+  @include sober-b {
+    padding: 10px;
+    border-color: transparent;
+    border-radius: 8px;
+    background: var(--wb-soft);
+  }
+}
+
+.tape,
+.pin {
+  @include sober {
+    display: none;
+  }
+}
+
+.playKey {
+  @include sober {
+    left: 12px;
+    bottom: 12px;
+    border-radius: 6px;
+    background: rgba(19, 19, 22, 0.78);
+  }
+
+  @include sober-b {
+    left: 20px;
+    bottom: 20px;
+  }
+}
+
+// The figure beside the results: a plain tag.
+.bigTag {
+  @include sober {
+    gap: 6px;
+    padding: 24px 28px;
+    border: 1px solid var(--v-line);
+    border-radius: var(--v-radius);
+    background: var(--v-fill);
+    color: var(--wb-ink);
+    clip-path: none;
+    rotate: none;
+
+    @media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
+      scale: 0.94;
+      transition:
+        opacity 0.5s var(--wb-ease-soft),
+        scale 0.6s $ease-settle;
+    }
+
+    strong {
+      @include title;
+      font-size: 56px;
+      line-height: 1;
+      letter-spacing: -0.03em;
+      color: var(--wb-accent);
+
+      @include dark {
+        color: #6688ff;
+      }
+    }
+
+    span {
+      font-size: 16px;
+      font-weight: 500;
+      color: var(--wb-ink-2);
+    }
+  }
+}
+
+.bookNote {
+  @include sober {
+    gap: 16px;
+    border: 1px solid var(--v-line);
+    border-radius: var(--v-radius);
+    background: var(--v-fill);
+
+    p {
+      @include s-h3;
+      font-size: 21px;
+      line-height: 1.3;
+    }
+  }
+}
+
+// The next case: a straight card, unfilled with a hairline (A) or on a soft
+// surface (B); its cover print and figure stand straight too.
+.nextCard {
+  @include sober {
+    border: 1px solid var(--v-line);
+    border-radius: var(--v-radius);
+    background: var(--v-fill);
+    color: var(--wb-ink);
+    box-shadow: none;
+    rotate: none;
+    transition: translate 0.45s var(--wb-ease-soft);
+
+    &::after {
+      display: none;
+    }
+
+    @include fine-pointer {
+      &:hover {
+        translate: 0 -4px;
+        rotate: none;
+      }
+    }
+
+    &:focus-within {
+      translate: 0 -4px;
+      rotate: none;
+    }
+  }
+}
+
+.nextLabel {
+  @include sober {
+    @include s-label;
+    opacity: 1;
+  }
+}
+
+.nextName {
+  @include sober {
+    @include title;
+    font-size: clamp(30px, 3.8vw, 50px);
+    line-height: 1.04;
+    letter-spacing: -0.025em;
+  }
+}
+
+.nextSub {
+  @include sober {
+    font-weight: 500;
+    color: var(--wb-ink-2);
+  }
+}
+
+.nextOpen {
+  @include sober {
+    padding-top: 0;
+    border-top: 0;
+    font-weight: 500;
+
+    svg {
+      color: var(--wb-accent);
+    }
+  }
+}
+
+.nextPrint {
+  @include sober {
+    padding: 0;
+    border-radius: 4px;
+    background: none;
+    rotate: none;
+
+    img {
+      border: 1px solid var(--v-line);
+      border-radius: 4px;
+    }
+  }
+}
+
+.nextTag {
+  @include sober {
+    top: -14px;
+    right: -12px;
+    padding: 10px 14px 11px;
+    border: 1px solid var(--wb-rule);
+    border-radius: 4px;
+    background: var(--wb-page);
+    color: var(--wb-ink);
+    clip-path: none;
+    rotate: none;
+
+    strong {
+      @include title;
+      font-size: 26px;
+      line-height: 1;
+      letter-spacing: -0.03em;
+    }
+
+    span {
+      font-size: 16px;
+      font-weight: 500;
+      color: var(--wb-ink-2);
+    }
+  }
+
+  @include sober-b {
+    border-color: transparent;
+    border-radius: 8px;
+    background: var(--wb-raised);
+  }
+}
+
+// The papers of the next card give way to the variant's surface.
+.ink,
+.mist,
+.cobalt,
+.paper {
+  @include sober {
+    background: var(--v-fill);
+    color: var(--wb-ink);
+    box-shadow: none;
+
+    .nextPrint {
+      background: none;
+    }
+
+    .nextTag {
+      background: var(--wb-page);
+      color: var(--wb-ink);
+    }
+  }
+
+  @include sober-b {
+    .nextTag {
+      background: var(--wb-raised);
+    }
+  }
+}
+
+@keyframes coverRise {
+  from {
+    opacity: 0;
+    translate: 0 8cqi;
+  }
+}
+
+@keyframes settleIn {
+  from {
+    opacity: 0;
+    scale: 0.9;
+  }
+}
+
 @keyframes folderIn {
   from {
     translate: 0 40px;

@@ -753,6 +753,352 @@
   line-height: 0;
 }
 
+// Sober (Erick, 2026-10-22) ----------------------------------------------------
+// TEMPORARY (sober variants): scoped to [data-sober], which only the LeadBot
+// case carries for now; step 4 makes this the style of every case and post.
+// Titles in Montserrat Black, text in Poppins, a bold line on its own as a
+// short quote in the accent face. Variant A draws with hairlines (--v-line),
+// variant B lays things on soft surfaces (--v-fill). Nothing is tilted or
+// taped; prints rise and fade in with their old timing.
+
+.row2 {
+  @include sober {
+    padding-top: 30px;
+
+    // A short cobalt stroke each part starts from (it was a tilted square).
+    &::before {
+      top: 0;
+      left: 0;
+      width: 28px;
+      height: 2px;
+      border-radius: 1px;
+      rotate: none;
+    }
+  }
+}
+
+.h2 {
+  @include sober {
+    @include title;
+    max-width: 22ch;
+    font-size: clamp(28px, 3.3vw, 42px);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+  }
+}
+
+.h3 {
+  @include sober {
+    @include s-h3;
+    font-size: 21px;
+    line-height: 1.3;
+
+    @include from-desk {
+      font-size: 23px;
+    }
+  }
+}
+
+.h4 {
+  @include sober {
+    @include s-h3;
+    font-size: 19px;
+    line-height: 1.3;
+  }
+}
+
+.p {
+  @include sober {
+    line-height: 1.7;
+  }
+}
+
+.li {
+  @include sober {
+    line-height: 1.7;
+  }
+}
+
+.strong {
+  @include sober {
+    font-weight: 600;
+  }
+}
+
+.em {
+  @include sober {
+    font-weight: 500;
+  }
+}
+
+.a {
+  @include sober {
+    --link-thick: 1px;
+
+    font-weight: 500;
+  }
+}
+
+// A line in bold on its own: a short quote in the accent face. A: a cobalt
+// hairline beside it; B: a soft surface.
+.note {
+  @include sober {
+    @include accent;
+    max-width: 30ch;
+    margin: 40px 0 44px !important;
+    padding: 4px 0 4px 26px;
+    border-left: 1px solid var(--wb-accent);
+    border-radius: 0;
+    background: none;
+    color: var(--wb-ink);
+    font-size: 28px;
+    line-height: 1.3;
+    box-shadow: none;
+    rotate: none;
+
+    &::before {
+      display: none;
+    }
+
+    @include from-desk {
+      font-size: 32px;
+    }
+  }
+
+  @include sober-b {
+    padding: 28px 30px;
+    border-left: 0;
+    border-radius: 8px;
+    background: var(--wb-soft);
+  }
+}
+
+.label {
+  @include sober {
+    @include s-h3;
+    font-size: 18px;
+  }
+}
+
+.kicker {
+  @include sober {
+    font-weight: 500;
+    letter-spacing: 0;
+  }
+}
+
+// Bullets: a small straight cobalt square (they were diamonds).
+.ul > .li {
+  @include sober {
+    padding-left: 26px;
+
+    &::before {
+      left: 2px;
+      top: 0.72em;
+      width: 6px;
+      height: 6px;
+      border-radius: 1px;
+      rotate: none;
+    }
+  }
+}
+
+.ol > .li {
+  @include sober {
+    &::before {
+      font-family: var(--font-wb-text), system-ui, sans-serif;
+      font-weight: 600;
+      border: 1px solid var(--v-line);
+      border-radius: 4px;
+      background: var(--v-fill);
+      font-size: 15px;
+    }
+  }
+}
+
+.quote {
+  @include sober {
+    @include accent;
+    padding: 4px 0 4px 26px;
+    border-left: 1px solid var(--wb-accent);
+    border-radius: 0;
+    background: none;
+    color: var(--wb-ink);
+    font-size: 28px;
+    box-shadow: none;
+    rotate: none;
+  }
+
+  @include sober-b {
+    padding: 28px 30px;
+    border-left: 0;
+    border-radius: 8px;
+    background: var(--wb-soft);
+  }
+}
+
+.hr {
+  @include sober {
+    width: 48px;
+    height: 1px;
+    border-radius: 0;
+    background: var(--wb-rule);
+    rotate: none;
+  }
+}
+
+.pre {
+  @include sober {
+    border: 1px solid var(--v-line);
+    border-radius: var(--v-radius);
+    background: var(--v-fill);
+    color: var(--wb-ink);
+    font-weight: 500;
+    box-shadow: none;
+  }
+}
+
+// Prints: A behind a hairline, B on a soft mat; straight.
+.frame {
+  @include sober {
+    padding: 0;
+    overflow: hidden;
+    border: 1px solid var(--wb-rule);
+    border-radius: 4px;
+    box-shadow: none;
+  }
+
+  @include sober-b {
+    padding: 10px;
+    border-color: transparent;
+    border-radius: 8px;
+    background: var(--wb-soft);
+  }
+}
+
+.figure,
+.video {
+  @include sober {
+    rotate: none;
+
+    @media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
+      rotate: none;
+      transition:
+        opacity 0.8s var(--wb-ease-soft),
+        translate 1s var(--wb-ease-soft);
+
+      &[data-in] {
+        rotate: none;
+      }
+    }
+  }
+}
+
+.tape {
+  @include sober {
+    display: none;
+  }
+}
+
+// Figures: plain tags, the first figure in cobalt.
+.figureList {
+  @include sober {
+    li {
+      padding: 14px 18px 15px;
+      border: 1px solid var(--v-line);
+      border-radius: var(--v-radius);
+      background: var(--v-fill);
+      color: var(--wb-ink);
+      clip-path: none;
+      rotate: none;
+
+      &::before {
+        display: none;
+      }
+    }
+
+    strong {
+      @include title;
+      font-size: 28px;
+      line-height: 1;
+      letter-spacing: -0.03em;
+
+      @include from-desk {
+        font-size: 32px;
+      }
+    }
+
+    span {
+      font-weight: 500;
+      color: var(--wb-ink-2);
+    }
+  }
+}
+
+.figureList .figureLead {
+  @include sober {
+    border-color: var(--v-line);
+    background: var(--v-fill);
+    color: var(--wb-ink);
+
+    strong {
+      color: var(--wb-accent);
+    }
+  }
+}
+
+// The stack: the tools as plain tags.
+.stack {
+  @include sober {
+    gap: 8px;
+
+    li {
+      padding: 7px 12px;
+      border: 1px solid var(--v-line);
+      border-radius: 4px;
+      background: var(--v-fill);
+      font-weight: 500;
+      rotate: none;
+    }
+  }
+}
+
+.cards {
+  @include sober {
+    > :nth-child(odd),
+    > :nth-child(even) {
+      rotate: none;
+    }
+  }
+}
+
+.card {
+  @include sober {
+    border: 1px solid var(--v-line);
+    border-radius: var(--v-radius);
+    background: var(--v-fill);
+    color: var(--wb-ink);
+    box-shadow: none;
+  }
+}
+
+.cardTitle {
+  @include sober {
+    @include s-h3;
+    font-size: 20px;
+  }
+}
+
+.end {
+  @include sober {
+    &::before,
+    &::after {
+      height: 1px;
+      border-radius: 0;
+      background: var(--wb-rule);
+    }
+  }
+}
 @include reduced {
   .copy,
   .figureList li,
