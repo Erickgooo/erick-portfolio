@@ -3,6 +3,7 @@
 // comes from it or from the work experience.
 import { person } from "@/resources/content";
 import type { CSSProperties } from "react";
+import { SupportQueue } from "../scenes/about/SupportQueue";
 import { FilmFrame } from "./FilmFrame";
 import styles from "./film.module.scss";
 
@@ -76,19 +77,24 @@ export function Film() {
             </p>
           </div>
         </div>
-        <ul className={styles.tags} aria-label="In figures">
-          {TAGS.map((tag, i) => (
-            <li
-              key={tag.value}
-              className={styles.tag}
-              data-reveal=""
-              style={{ "--i": i } as CSSProperties}
-            >
-              <strong className={styles.value}>{tag.value}</strong>
-              <span className={styles.caption}>{tag.caption}</span>
-            </li>
-          ))}
-        </ul>
+        <div className={styles.side}>
+          <div className={styles.queue}>
+            <SupportQueue />
+          </div>
+          <ul className={styles.tags} aria-label="In figures">
+            {TAGS.map((tag, i) => (
+              <li
+                key={tag.value}
+                className={styles.tag}
+                data-reveal=""
+                style={{ "--i": i } as CSSProperties}
+              >
+                <strong className={styles.value}>{tag.value}</strong>
+                <span className={styles.caption}>{tag.caption}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
     </section>
   );

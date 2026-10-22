@@ -229,8 +229,25 @@
   }
 }
 
-// The figures beside the story, as plain tags: a 2 x 2 grid on phones, a
-// column from desktops.
+// Beside the story: the support-queue window (a scene, see
+// scenes/about/SupportQueue.tsx), then the figures.
+.side {
+  display: grid;
+  align-content: start;
+  gap: 40px;
+
+  @include from-desk {
+    gap: 48px;
+    padding-top: 8px;
+  }
+}
+
+.queue {
+  width: 100%;
+  max-width: 460px;
+}
+
+// The figures, as plain tags: a 2 x 2 grid on phones, a column from desktops.
 .tags {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -246,7 +263,6 @@
   @include from-desk {
     grid-template-columns: minmax(0, 1fr);
     gap: 16px;
-    padding-top: 8px;
   }
 }
 

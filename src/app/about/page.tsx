@@ -5,6 +5,7 @@ import { Experience } from "@/components/workbench/about/Experience";
 import { Film } from "@/components/workbench/about/Film";
 import { Intro } from "@/components/workbench/about/Intro";
 import { Skills } from "@/components/workbench/about/Skills";
+import { SceneDriver } from "@/components/workbench/scenes/SceneDriver";
 import { about, baseURL, person, sameAs } from "@/resources";
 import { Meta, Schema } from "@once-ui-system/core";
 
@@ -47,6 +48,7 @@ export default function About() {
       <Credentials />
       <Closing />
       <RevealObserver />
+      <SceneDriver />
     </>
   );
 }
