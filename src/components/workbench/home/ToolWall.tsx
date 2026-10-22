@@ -44,11 +44,7 @@ export function ToolWall() {
               </p>
               <ul className={styles.groups}>
                 {TOOL_GROUPS.map((group, g) => (
-                  <li
-                    key={group.id}
-                    className={styles.group}
-                    data-g={g}
-                  >
+                  <li key={group.id} className={styles.group} data-g={g}>
                     <h3 className={styles.groupTitle}>
                       <span className={styles.swatch} aria-hidden="true" />
                       {group.title}
