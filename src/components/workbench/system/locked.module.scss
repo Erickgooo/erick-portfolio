@@ -24,6 +24,17 @@
   }
 }
 
+// The drawing of the locked drawer, above the sheet and as wide as it.
+.drawing {
+  width: 100%;
+  max-width: 560px;
+  margin-bottom: 20px;
+
+  @include from-tablet {
+    margin-bottom: 28px;
+  }
+}
+
 // The drawer opens: the sheet slides down into place once, on load, and
 // settles.
 .drawer {
