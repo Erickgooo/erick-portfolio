@@ -28,6 +28,7 @@ const ALL = {
   about: "/about",
   work: "/work",
   caso: "/work/leadbot-ai",
+  viral: "/work/quick-metal-shop-viral-videos",
   blog: "/blog",
   "blog-post": "/blog/my-workspace",
   gallery: "/gallery",
