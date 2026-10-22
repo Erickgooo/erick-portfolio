@@ -1,6 +1,9 @@
-import { Projects } from "@/components/work/Projects";
+import { Closing } from "@/components/workbench/Closing";
+import { RevealObserver } from "@/components/workbench/RevealObserver";
+import { WorkIndex } from "@/components/workbench/work/WorkIndex";
 import { about, baseURL, person, work } from "@/resources";
-import { Column, Heading, Meta, Schema } from "@once-ui-system/core";
+import { isProtectedPath } from "@/resources/protectedRoutes";
+import { Meta, Schema } from "@once-ui-system/core";
 
 export async function generateMetadata() {
   return Meta.generate({
@@ -12,9 +15,11 @@ export async function generateMetadata() {
   });
 }
 
+// Projects, in Workbench: every case as a print on the bench. A public page
+// leaves out the cases whose own page is password-protected.
 export default function Work() {
   return (
-    <Column maxWidth="m" paddingTop="24">
+    <>
       <Schema
         as="webPage"
         baseURL={baseURL}
@@ -28,10 +33,9 @@ export default function Work() {
           image: `${baseURL}${person.avatar}`,
         }}
       />
-      <Heading marginBottom="l" variant="heading-strong-xl" align="center">
-        {work.title}
-      </Heading>
-      <Projects />
-    </Column>
+      <WorkIndex hideProtected={!isProtectedPath(work.path)} />
+      <Closing />
+      <RevealObserver />
+    </>
   );
 }
