@@ -6,9 +6,9 @@
 import { EMIcon } from "@/resources/EMIcon";
 import Link from "next/link";
 import { FiArrowRight, FiHome } from "react-icons/fi";
-import scope from "../scope.module.scss";
 import { SceneDriver } from "../scenes/SceneDriver";
 import { LostScene } from "../scenes/system/LostScene";
+import scope from "../scope.module.scss";
 import ui from "../ui.module.scss";
 import styles from "./notfound.module.scss";
 
