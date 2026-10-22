@@ -5,7 +5,8 @@ import "@/resources/custom.css";
 import classNames from "classnames";
 
 import { body, code, heading } from "@/app/fonts";
-import { FaqChatbot, Footer, Header, IntroLoader, Providers, RouteGuard } from "@/components";
+import { FaqChatbot, Footer, Header, IntroLoader, Providers } from "@/components";
+import { SiteMain } from "@/components/SiteMain";
 import { SpotlightBackground } from "@/components/SpotlightBackground";
 import spotlightStyles from "@/components/SpotlightBackground.module.scss";
 import { baseURL, dataStyle, home, style } from "@/resources";
@@ -100,7 +101,17 @@ export default async function RootLayout({
           as="body"
           background="page"
           fillWidth
-          className={spotlightStyles.pageDots}
+          // The font variables also go on <body>: Once UI's tokens declare
+          // `:root { --font-heading: var(--font-heading) }` (same for body,
+          // label, code), which empties next/font's variables on <html> when
+          // that stylesheet lands after the font one, and Next's CSS chunking
+          // does not keep a fixed order. On <body> they win whatever the order.
+          className={classNames(
+            spotlightStyles.pageDots,
+            heading.variable,
+            body.variable,
+            code.variable,
+          )}
           style={{ minHeight: "100vh", position: "relative" }}
           margin="0"
           padding="0"
@@ -110,18 +121,7 @@ export default async function RootLayout({
           <SpotlightBackground />
           <Flex fillWidth minHeight="16" s={{ hide: true }} />
           <Header />
-          <Flex
-            zIndex={0}
-            fillWidth
-            padding="l"
-            horizontal="center"
-            flex={1}
-            className="main-content-wrapper"
-          >
-            <Flex horizontal="center" fillWidth minHeight="0">
-              <RouteGuard>{children}</RouteGuard>
-            </Flex>
-          </Flex>
+          <SiteMain>{children}</SiteMain>
           <Footer />
           <Analytics />
           <FaqChatbot />

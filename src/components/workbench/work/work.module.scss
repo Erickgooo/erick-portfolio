@@ -1,0 +1,235 @@
+// Workbench, Projects: the page head and the cases in a straight grid. Sober
+// (2026-10-22): every case is an unfilled card with its cover behind a
+// hairline and its figure under it (they were tilted prints on coloured
+// papers with a tag pinned to the corner). Keep this file ASCII-only.
+@use "../shared" as *;
+
+.hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+// Head -------------------------------------------------------------------
+
+.head {
+  @include wrap;
+  display: grid;
+  gap: 20px;
+  padding-top: 40px;
+  padding-bottom: 48px;
+
+  @include from-tablet {
+    padding-top: 56px;
+  }
+
+  @include from-desk {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    align-items: start;
+    column-gap: 48px;
+    padding-top: 48px;
+    padding-bottom: 72px;
+  }
+}
+
+.title {
+  @include title;
+  font-size: clamp(48px, 7vw, 88px);
+  line-height: 1;
+  letter-spacing: -0.03em;
+}
+
+.headSide {
+  display: grid;
+  justify-items: start;
+  gap: 28px;
+}
+
+.lede {
+  @include s-lede;
+  max-width: 40ch;
+}
+
+// The grid ---------------------------------------------------------------
+
+.bench {
+  @include wrap;
+  position: relative;
+  padding-bottom: 56px;
+
+  @include from-desk {
+    padding-bottom: 104px;
+  }
+}
+
+.grid {
+  display: grid;
+  gap: 48px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  @include from-tablet {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 56px 24px;
+  }
+
+  @include from-desk {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 72px 32px;
+  }
+}
+
+// Each card rises in turn, row by row.
+.slot {
+  @include reveal(40px);
+  display: flex;
+}
+
+.card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+  color: var(--wb-ink);
+  transition: translate 0.45s var(--wb-ease-soft);
+
+  @include fine-pointer {
+    &:hover {
+      translate: 0 -4px;
+    }
+  }
+
+  &:focus-within {
+    translate: 0 -4px;
+  }
+}
+
+// Every cover sits in the same box (the ratio most covers have), so a row of
+// cards lines up; a cover of another ratio is shown whole inside it, never
+// cropped.
+.print {
+  order: -1;
+  aspect-ratio: 2400 / 1357;
+  margin-bottom: 12px;
+  overflow: hidden;
+  border: 1px solid var(--wb-rule);
+  border-radius: 4px;
+  background: var(--wb-soft-2);
+
+  img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+}
+
+.cardTitle {
+  display: grid;
+  gap: 4px;
+}
+
+.stretch {
+  --link-ink: inherit;
+
+  outline: none;
+
+  // The whole card opens the case; the name stays the link's text.
+  &::after {
+    content: "";
+    position: absolute;
+    z-index: 2;
+    inset: 0;
+    border-radius: 4px;
+  }
+
+  &:focus-visible::after {
+    outline: 3px solid var(--wb-accent);
+    outline-offset: 6px;
+  }
+}
+
+.name {
+  @include s-h3;
+  display: block;
+  font-size: 21px;
+  line-height: 1.25;
+}
+
+.sub {
+  display: block;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.45;
+  color: var(--wb-ink-2);
+}
+
+// The case's figure, a plain line under the title.
+.metric {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 2px 10px;
+  margin-top: 6px;
+
+  strong {
+    @include title;
+    font-size: 32px;
+    line-height: 1;
+    letter-spacing: -0.03em;
+  }
+
+  span {
+    font-size: 16px;
+    line-height: 1.3;
+    color: var(--wb-ink-2);
+  }
+}
+
+.summary {
+  margin-top: 4px;
+  color: var(--wb-ink-2);
+  font-size: 16px;
+  line-height: 1.55;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  overflow: hidden;
+
+  @include from-tablet {
+    -webkit-line-clamp: 4;
+  }
+}
+
+.open {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: auto;
+  padding-top: 12px;
+  font-size: 16px;
+  font-weight: 500;
+
+  svg {
+    color: var(--wb-accent);
+    transition: translate 0.28s var(--wb-ease-soft);
+  }
+
+  @include fine-pointer {
+    .card:hover & svg {
+      translate: 4px 0;
+    }
+  }
+}
+
+@include reduced {
+  .card,
+  .open svg {
+    transition: none;
+  }
+}

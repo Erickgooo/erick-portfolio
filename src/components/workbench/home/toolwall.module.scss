@@ -1,0 +1,360 @@
+// Workbench: the tool wall (sober, 2026-10-22). It is no longer a dark band:
+// it lies on the page itself (the dots show through) and each tile is drawn
+// with a hairline. Unlit tiles show each logo as a quiet silhouette; a lit
+// tile shows it in its own colours on white (in dark, logos stay light
+// silhouettes, since many are black).
+// Keep this file ASCII-only.
+@use "../shared" as *;
+
+.wall {
+  @include below-fold(2600px, 300vh);
+  position: relative;
+  z-index: 1;
+  border-top: 1px solid var(--wb-line);
+  border-bottom: 1px solid var(--wb-line);
+  color: var(--wb-ink);
+}
+
+.track {
+  @include from-desk {
+    height: 300vh;
+  }
+}
+
+.sticky {
+  @include from-desk {
+    position: sticky;
+    top: 76px;
+    display: flex;
+    align-items: center;
+    height: calc(100svh - 76px);
+    overflow: hidden;
+  }
+}
+
+.inner {
+  @include wrap;
+  padding-top: 96px;
+  padding-bottom: 104px;
+
+  @include from-desk {
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    align-items: center;
+    gap: 72px;
+    padding-top: 32px;
+    padding-bottom: 32px;
+  }
+}
+
+.title {
+  @include reveal;
+  @include s-h2;
+  font-size: clamp(32px, 3.6vw, 48px);
+}
+
+.lede {
+  @include reveal;
+  @include s-lede;
+  max-width: 36ch;
+  margin-top: 14px;
+}
+
+// The tile surfaces: --tile is an unlit tile, --tile-hot a lit one.
+.wall {
+  --tile: var(--wb-page);
+  --tile-hot: var(--wb-page);
+  --tile-line: var(--wb-rule);
+}
+
+.groups {
+  display: grid;
+  gap: 56px;
+  margin-top: 48px;
+  list-style: none;
+  padding: 0;
+
+  @include from-desk {
+    gap: 0;
+    margin-top: 40px;
+  }
+}
+
+.group {
+  @include from-desk {
+    position: relative;
+    padding: 16px 0;
+    border-top: 1px solid var(--wb-rule);
+
+    // The progress underline.
+    &::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: -1px;
+      width: 100%;
+      height: 2px;
+      background: var(--wb-accent);
+      transform-origin: left center;
+      scale: 0 1;
+      transition: scale 0.6s var(--wb-ease-soft);
+    }
+  }
+}
+
+.groupTitle {
+  @include s-h3;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 22px;
+  line-height: 1.25;
+
+  @include from-desk {
+    font-size: 20px;
+    opacity: 0.5;
+    transition: opacity 0.4s var(--wb-ease-soft);
+  }
+}
+
+// A small cobalt square marks each group; the active group's grows to full
+// size (it used to turn into a diamond).
+.swatch {
+  flex: none;
+  width: 9px;
+  height: 9px;
+  border-radius: 2px;
+  background: var(--wb-accent);
+  transition:
+    scale 0.5s $ease-settle,
+    opacity 0.4s var(--wb-ease-soft);
+
+  @include from-desk {
+    scale: 0.66;
+    opacity: 0.5;
+  }
+}
+
+.line {
+  margin-top: 6px;
+  font-size: 17px;
+  line-height: 1.55;
+  color: var(--wb-ink-2);
+
+  @include from-desk {
+    font-size: 16px;
+    opacity: 0.75;
+    transition: opacity 0.4s var(--wb-ease-soft);
+  }
+}
+
+// Phones and tablets: each group has its own small wall.
+.tiles {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 20px;
+  list-style: none;
+  padding: 0;
+
+  @include from-tablet {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+
+  // On desktop the board shows the tiles; the lists stay for screen readers.
+  @include from-desk {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+}
+
+.tile {
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  gap: 8px;
+  min-height: 112px;
+  padding: 12px 6px;
+  border: 1px solid var(--tile-line);
+  border-radius: 4px;
+  background: var(--tile-hot);
+  color: var(--wb-ink);
+  text-align: center;
+
+  @media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
+    opacity: 0.12;
+    scale: 0.92;
+    transition:
+      opacity 0.6s var(--wb-ease-soft),
+      scale 0.6s $ease-settle;
+    transition-delay: calc(var(--i) * 90ms);
+
+    &[data-in] {
+      opacity: 1;
+      scale: 1;
+    }
+  }
+}
+
+.glyph {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 30px;
+  font-size: 28px;
+}
+
+.logo {
+  display: block;
+  width: auto;
+  max-width: 80%;
+  height: 26px;
+  object-fit: contain;
+
+  // In dark every logo is a light silhouette (many are black).
+  @include dark {
+    filter: brightness(0) invert(1);
+  }
+}
+
+// Unlit board cells show each logo as a flat silhouette in the ink.
+.face:not(.hot) .logo {
+  filter: brightness(0);
+  opacity: 0.4;
+
+  @include dark {
+    filter: brightness(0) invert(1);
+  }
+}
+
+.name {
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+// Desktop board: 24 tiles, groups scattered across it.
+.board {
+  display: none;
+
+  @include from-desk {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 10px;
+  }
+}
+
+.cell {
+  position: relative;
+  aspect-ratio: 1;
+  border-radius: 4px;
+
+  @media (scripting: enabled) {
+    opacity: 0.25;
+    scale: 0.94;
+    transition:
+      opacity 0.6s var(--wb-ease-soft),
+      scale 0.55s $ease-settle;
+    transition-delay: calc(var(--k) * 90ms);
+  }
+
+  .name {
+    font-size: 12px;
+
+    @include from-desk {
+      @media (min-width: $wide) {
+        font-size: 13px;
+      }
+    }
+  }
+}
+
+.face {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  gap: 8px;
+  padding: 8px;
+  border: 1px solid var(--tile-line);
+  border-radius: inherit;
+  background: var(--tile);
+  color: var(--wb-ink-2);
+  text-align: center;
+}
+
+// The lit face: the logo in its colours and a cobalt hairline.
+.hot {
+  border-color: var(--wb-accent);
+  background: var(--tile-hot);
+  color: var(--wb-ink);
+  opacity: 0;
+  transition: opacity 0.5s var(--wb-ease-soft);
+  transition-delay: calc(var(--k) * 90ms);
+}
+
+// The stepper: groups before the active one stay lit, the active one lights
+// up, the rest wait.
+@for $a from 0 through 3 {
+  .wall[data-active="#{$a}"] {
+    @for $g from 0 through 3 {
+      @if $g <= $a {
+        .cell[data-g="#{$g}"] {
+          opacity: 1;
+          scale: 1;
+        }
+      }
+
+      @if $g == $a {
+        .cell[data-g="#{$g}"] .hot {
+          opacity: 1;
+        }
+
+        .group[data-g="#{$g}"] {
+          &::after {
+            scale: 1 1;
+          }
+
+          .groupTitle,
+          .line {
+            opacity: 1;
+          }
+
+          .swatch {
+            scale: 1;
+            opacity: 1;
+          }
+        }
+      }
+    }
+  }
+}
+
+@include reduced {
+  .cell,
+  .groupTitle,
+  .line,
+  .swatch {
+    opacity: 1 !important;
+  }
+
+  .cell,
+  .swatch {
+    scale: 1 !important;
+  }
+
+  .cell,
+  .hot,
+  .group::after,
+  .groupTitle,
+  .line,
+  .swatch {
+    transition: none !important;
+  }
+}

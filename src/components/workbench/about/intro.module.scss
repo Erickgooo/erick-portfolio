@@ -1,0 +1,163 @@
+// Workbench About: the first screen. Sober (2026-10-22): the name in
+// Montserrat Black at a moderate size, the photo standing straight behind a
+// hairline.
+// Keep this file ASCII-only: a non-ASCII byte makes Sass emit a BOM.
+@use "../shared" as *;
+
+.intro {
+  position: relative;
+  z-index: 1;
+  overflow-x: clip;
+}
+
+.inner {
+  @include wrap;
+  display: grid;
+  gap: 56px;
+  padding-top: 40px;
+  padding-bottom: 40px;
+
+  @include from-tablet {
+    padding-top: 64px;
+  }
+
+  @include from-desk {
+    grid-template-columns: minmax(0, 7fr) minmax(0, 4fr);
+    align-items: center;
+    gap: 64px;
+    min-height: calc(100svh - 76px);
+    padding-top: 32px;
+    padding-bottom: 48px;
+  }
+}
+
+.text {
+  display: grid;
+  justify-items: start;
+  gap: 24px;
+}
+
+// The name on two lines. The longer word, "Mahecha", measures about 4.7 em
+// in Montserrat Black with this tracking, so the size follows the column's
+// width per layout (viewport units, no container pass in the first frame)
+// with room to spare for the fallback face, and stops at a moderate size.
+.name {
+  @include title;
+  display: grid;
+  font-size: min(84px, calc((100vw - 32px) / 5.8));
+  line-height: 1;
+  letter-spacing: -0.03em;
+
+  @include from-tablet {
+    font-size: min(96px, calc((100vw - 64px) / 5.8));
+  }
+
+  @include from-desk {
+    font-size: min(112px, calc((min(100vw, 1280px) - 160px) * 0.1));
+  }
+}
+
+.role {
+  max-width: 26ch;
+  font-size: clamp(20px, 2vw, 26px);
+  font-weight: 500;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+  color: var(--wb-ink-2);
+  text-wrap: balance;
+}
+
+.lede {
+  @include s-lede;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 28px;
+  margin-top: 8px;
+}
+
+.links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 24px;
+  list-style: none;
+  padding: 0;
+}
+
+.link {
+  --link-deco: none;
+  --link-deco-hover: underline;
+  --link-line: var(--wb-accent);
+  --link-thick: 1px;
+
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--wb-ink-2);
+
+  svg {
+    font-size: 18px;
+    color: var(--wb-ink);
+  }
+}
+
+.photoCol {
+  display: grid;
+  justify-items: center;
+
+  @include from-desk {
+    justify-items: end;
+  }
+}
+
+// The photo rises into place as the page loads (a CSS animation, so it needs
+// no script); it stays painted the whole time, only moving.
+.photo {
+  position: relative;
+  width: min(64%, 320px);
+  color: var(--wb-ink);
+
+  @include from-desk {
+    width: 100%;
+    max-width: 380px;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    animation: rise 1.1s var(--wb-ease-settle) 0.15s both;
+  }
+
+  img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border: 1px solid var(--wb-rule);
+    border-radius: 4px;
+  }
+
+  figcaption {
+    @include s-h3;
+    display: grid;
+    gap: 2px;
+    padding-top: 14px;
+    font-size: 17px;
+
+    span {
+      font-weight: 400;
+      font-size: 16px;
+      letter-spacing: 0;
+      color: var(--wb-ink-2);
+    }
+  }
+}
+
+@keyframes rise {
+  from {
+    translate: 0 64px;
+  }
+}

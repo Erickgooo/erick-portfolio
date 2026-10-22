@@ -1,0 +1,65 @@
+// Workbench: the type, link and focus rules of every Workbench area (the
+// redesigned pages and the site footer). The colour tokens are global, switched
+// on html[data-theme], in src/resources/custom.css.
+@use "./shared" as *;
+
+.scope {
+  color: var(--wb-ink);
+  font-family: var(--font-wb-text), system-ui, sans-serif;
+  font-size: 17px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+
+  @include from-tablet {
+    font-size: 18px;
+  }
+
+  // Links. Once UI styles every `a:not(.button)` globally (brand colour, an
+  // underline colour marked !important, `transition: all`). This rule mirrors
+  // that selector one class deeper, so it wins inside Workbench areas only and
+  // pages outside them look exactly as before. It reads every visual choice
+  // from custom properties: a component styles its links by setting --link-*
+  // with a plain class, on the link or an ancestor, with no specificity war;
+  // and only transform properties and opacity ever transition.
+  a:not(:global(.button)) {
+    color: var(--link-ink, inherit);
+    text-decoration-line: var(--link-deco, none);
+    text-decoration-thickness: var(--link-thick, 2px);
+    text-underline-offset: var(--link-offset, 5px);
+    // !important only because Once UI's rule marks this property !important.
+    text-decoration-color: var(--link-line, currentColor) !important;
+    transition-property: translate, rotate, scale, opacity;
+    transition-duration: var(--link-dur, 0.28s);
+    transition-timing-function: var(--link-ease, #{$ease-soft});
+
+    &:hover {
+      color: var(--link-ink, inherit);
+      text-decoration-line: var(--link-deco-hover, var(--link-deco, none));
+    }
+  }
+
+  :focus-visible {
+    outline: 3px solid var(--wb-accent);
+    outline-offset: 3px;
+  }
+
+  ::selection {
+    background: var(--wb-accent);
+    color: #ffffff;
+  }
+}
+
+// Margin reset with zero specificity, so any component class sets its own.
+:where(.scope) :where(h1, h2, h3, h4, p, ul, ol, figure, blockquote) {
+  margin: 0;
+}
+
+// The main element of a Workbench page: full width with no gutter (each
+// section sets its own), above the pointer glow, and rotated objects never
+// widen the page.
+.main {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  overflow-x: clip;
+}

@@ -1,0 +1,259 @@
+// Workbench: the hero workbench, straight and flat (sober, 2026-10-22). Sizes
+// are in container units so the whole cluster scales as one object from 360
+// to 1440. Every object is drawn with a hairline. Nothing is tilted, taped or
+// pinned.
+// From 1280 px the figures lie on the bench among the objects; below that
+// (phones, tablets and the narrow desktop, where a tag would be too narrow
+// for its caption) the objects keep the bench and the figures lie in a grid
+// of tags under it. Keep this file ASCII-only.
+@use "../shared" as *;
+
+.bench {
+  --px: 0;
+  --py: 0;
+
+  position: relative;
+  container-type: inline-size;
+  width: 100%;
+  aspect-ratio: 1 / 0.96;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+
+  @include below-wide {
+    aspect-ratio: auto;
+  }
+
+  img {
+    display: block;
+    width: 100%;
+    height: auto;
+    -webkit-user-drag: none;
+  }
+}
+
+// The media objects. On desktop the stage and the tag layer both cover the bench.
+.stage,
+.tags {
+  position: absolute;
+  inset: 0;
+}
+
+.stage {
+  @include below-wide {
+    position: relative;
+    aspect-ratio: 1 / 0.98;
+  }
+}
+
+.tags {
+  pointer-events: none;
+
+  .slot {
+    pointer-events: auto;
+  }
+
+  // Below 1280 px: the figures leave the bench and lie in a grid of tags under it.
+  @include below-wide {
+    position: static;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    margin-top: 5cqi;
+    pointer-events: auto;
+
+    .slot {
+      position: relative;
+      left: auto;
+      top: auto;
+      width: auto;
+    }
+  }
+}
+
+.slot {
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  width: var(--w);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+
+  @include below-wide {
+    left: var(--mx);
+    top: var(--my);
+    width: var(--mw);
+  }
+
+  &[data-front] {
+    z-index: 30 !important;
+  }
+}
+
+// Layer 1: the load sequence. Each object rises and settles (the overshoot
+// is gentler than before: the bounce read playful at this restraint).
+.rise {
+  animation: rise 0.8s $ease-settle both;
+  animation-delay: calc(var(--d) * 90ms + 120ms);
+}
+
+// While the site intro covers the page the objects wait in their final place
+// (see `hold` in Bench.tsx), and rise as it starts to fade.
+.bench[data-hold] .rise {
+  animation-name: none;
+}
+
+// Layer 2: pointer parallax (desktop), deeper objects travel further.
+.par {
+  translate: calc(var(--px) * var(--depth) * 10px) calc(var(--py) * var(--depth) * 8px);
+  transition: translate 0.9s var(--wb-ease-soft);
+}
+
+// Layer 3: the idle float, paused while the bench is off screen. A vertical
+// drift only (it used to sway as well). It only exists once the hold is
+// released: infinite animations present at the first frame held back its
+// presentation (see Bench.tsx).
+@media (prefers-reduced-motion: no-preference) {
+  .bench:not([data-hold]) .bob {
+    animation: bob var(--bob) ease-in-out infinite;
+    animation-delay: calc(var(--d) * -0.63s);
+    animation-play-state: paused;
+  }
+
+  .bench[data-live]:not([data-hold]) .bob {
+    animation-play-state: running;
+  }
+}
+
+// Layer 4: the object itself and its lift.
+.card {
+  position: relative;
+  transition:
+    scale 0.55s $ease-settle,
+    translate 0.45s var(--wb-ease-soft);
+
+  .slot[data-front] & {
+    scale: 1.03;
+  }
+
+  @include fine-pointer {
+    .slot:hover & {
+      translate: 0 -1cqi;
+    }
+  }
+}
+
+// The tablet: a thin hairline frame around the screen.
+.screen {
+  padding: 1.1cqi;
+  border: 1px solid var(--wb-rule);
+  border-radius: 1.6cqi;
+  background: var(--wb-page);
+}
+
+.glass {
+  overflow: hidden;
+  border-radius: 0.7cqi;
+}
+
+// A print's picture area: holds the piece's proportions until the file loads.
+.frame {
+  display: block;
+  background: var(--wb-soft-2);
+}
+
+// A print: the piece behind a hairline.
+.print {
+  overflow: hidden;
+  border: 1px solid var(--wb-rule);
+  border-radius: 3px;
+  background: var(--wb-page);
+}
+
+// Figure tags: a plain tag, page-coloured with a hairline (opaque, so a tag
+// laid over the tablet hides what is under it).
+.tagPaper {
+  display: grid;
+  gap: 0.7cqi;
+  padding: 1.8cqi 2.2cqi 2cqi;
+  border: 1px solid var(--wb-rule);
+  border-radius: 4px;
+  background: var(--wb-page);
+  color: var(--wb-ink);
+
+  @include below-wide {
+    gap: 6px;
+    padding: 16px 18px 18px;
+  }
+}
+
+.value {
+  @include title;
+  font-size: 5.6cqi;
+  line-height: 1;
+  letter-spacing: -0.03em;
+
+  @include below-wide {
+    font-size: clamp(30px, 8cqi, 40px);
+  }
+}
+
+.lead .value {
+  color: var(--wb-accent);
+
+  @include dark {
+    color: #6688ff;
+  }
+}
+
+.caption {
+  font-size: max(13px, 1.6cqi);
+  font-weight: 400;
+  line-height: 1.35;
+  color: var(--wb-ink-2);
+
+  @include below-wide {
+    font-size: 16px;
+  }
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    translate: 0 16cqi;
+    scale: 0.96;
+  }
+
+  to {
+    opacity: 1;
+    translate: 0 0;
+    scale: 1;
+  }
+}
+
+@keyframes bob {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+
+  50% {
+    transform: translate3d(0, -0.7cqi, 0);
+  }
+}
+
+@include reduced {
+  .rise,
+  .bob {
+    animation: none;
+  }
+
+  .par {
+    translate: none;
+    transition: none;
+  }
+
+  .card {
+    transition: none;
+  }
+}

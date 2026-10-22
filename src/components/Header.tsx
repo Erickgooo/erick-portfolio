@@ -78,7 +78,7 @@ export const Header = () => {
       />
       <Row
         fitHeight
-        className={styles.position}
+        className={`${styles.position} ${styles.bar}`}
         position="sticky"
         as="header"
         zIndex={9}
@@ -90,11 +90,18 @@ export const Header = () => {
           position: "fixed",
         }}
       >
-        <Row paddingLeft="12" fillWidth vertical="center" textVariant="body-default-s">
+        <Row
+          paddingLeft="12"
+          fillWidth
+          vertical="center"
+          textVariant="body-default-s"
+          className={styles.meta}
+        >
           {display.location && <Row s={{ hide: true }}>{person.location}</Row>}
         </Row>
         <Row fillWidth horizontal="center">
           <Row
+            className={styles.pill}
             background="page"
             border="neutral-alpha-weak"
             radius="m-4"
@@ -110,6 +117,7 @@ export const Header = () => {
                   href="/"
                   aria-label="Erick Mahecha — Home"
                   selected={pathname === "/"}
+                  aria-current={pathname === "/" ? "page" : undefined}
                 />
               )}
               <Line background="neutral-alpha-medium" vert maxHeight="24" />
@@ -121,6 +129,7 @@ export const Header = () => {
                       href="/about"
                       label={about.label}
                       selected={pathname === "/about"}
+                      aria-current={pathname === "/about" ? "page" : undefined}
                     />
                   </Row>
                   <Row hide s={{ hide: false }}>
@@ -129,6 +138,7 @@ export const Header = () => {
                       href="/about"
                       aria-label={about.label}
                       selected={pathname === "/about"}
+                      aria-current={pathname === "/about" ? "page" : undefined}
                     />
                   </Row>
                 </>
@@ -141,6 +151,7 @@ export const Header = () => {
                       href="/work"
                       label={work.label}
                       selected={pathname.startsWith("/work")}
+                      aria-current={pathname.startsWith("/work") ? "page" : undefined}
                     />
                   </Row>
                   <Row hide s={{ hide: false }}>
@@ -149,6 +160,7 @@ export const Header = () => {
                       href="/work"
                       aria-label={work.label}
                       selected={pathname.startsWith("/work")}
+                      aria-current={pathname.startsWith("/work") ? "page" : undefined}
                     />
                   </Row>
                 </>
@@ -161,6 +173,7 @@ export const Header = () => {
                       href="/blog"
                       label={blog.label}
                       selected={pathname.startsWith("/blog")}
+                      aria-current={pathname.startsWith("/blog") ? "page" : undefined}
                     />
                   </Row>
                   <Row hide s={{ hide: false }}>
@@ -169,6 +182,7 @@ export const Header = () => {
                       href="/blog"
                       aria-label={blog.label}
                       selected={pathname.startsWith("/blog")}
+                      aria-current={pathname.startsWith("/blog") ? "page" : undefined}
                     />
                   </Row>
                 </>
@@ -181,6 +195,7 @@ export const Header = () => {
                       href="/gallery"
                       label={gallery.label}
                       selected={pathname.startsWith("/gallery")}
+                      aria-current={pathname.startsWith("/gallery") ? "page" : undefined}
                     />
                   </Row>
                   <Row hide s={{ hide: false }}>
@@ -189,6 +204,7 @@ export const Header = () => {
                       href="/gallery"
                       aria-label={gallery.label}
                       selected={pathname.startsWith("/gallery")}
+                      aria-current={pathname.startsWith("/gallery") ? "page" : undefined}
                     />
                   </Row>
                 </>
@@ -209,6 +225,7 @@ export const Header = () => {
             vertical="center"
             textVariant="body-default-s"
             gap="20"
+            className={styles.meta}
           >
             <Flex s={{ hide: true }}>
               {display.time && <TimeDisplay timeZone={person.timeZone} />}

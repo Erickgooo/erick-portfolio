@@ -1,0 +1,588 @@
+// Workbench, case study: the header with the cover panel, the text with
+// prints in its margin, and the next case. Sober (Erick, 2026-10-22): objects
+// are drawn with hairlines, nothing tilts, nothing is taped or pinned; every
+// entrance keeps its timing, as a rise and a fade. Keep this file ASCII-only.
+@use "../shared" as *;
+
+.hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.top {
+  @include wrap;
+  padding-top: 20px;
+}
+
+.back {
+  --link-deco: none;
+  --link-deco-hover: underline;
+  --link-line: var(--wb-accent);
+
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  font-weight: 600;
+
+  svg {
+    transition: translate 0.28s var(--wb-ease-soft);
+  }
+
+  @include fine-pointer {
+    &:hover svg {
+      translate: -4px 0;
+    }
+  }
+}
+
+// Header: the case's text beside the cover panel ------------------------------
+
+.hero {
+  @include wrap;
+  display: grid;
+  gap: 56px;
+  padding-top: 20px;
+  padding-bottom: 72px;
+
+  @include from-desk {
+    grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+    align-items: center;
+    gap: 64px;
+    padding-top: 28px;
+    padding-bottom: 112px;
+  }
+}
+
+.heroText {
+  display: grid;
+  justify-items: start;
+  gap: 20px;
+  min-width: 0;
+}
+
+// The label over the title: quiet text after a short cobalt stroke.
+.fileLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--wb-ink-2);
+  font-size: 16px;
+  font-weight: 500;
+
+  &::before {
+    content: "";
+    width: 24px;
+    height: 1px;
+    background: var(--wb-accent);
+  }
+}
+
+.title {
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+}
+
+.name {
+  @include title;
+  font-size: clamp(40px, 6vw, 80px);
+  line-height: 1.02;
+  letter-spacing: -0.03em;
+  overflow-wrap: break-word;
+  text-wrap: balance;
+
+  [data-long] > & {
+    font-size: clamp(36px, 4.8vw, 64px);
+    line-height: 1.04;
+  }
+}
+
+.subtitle {
+  max-width: 26ch;
+  font-family: var(--font-wb-text), system-ui, sans-serif;
+  font-size: clamp(20px, 2vw, 26px);
+  font-weight: 500;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+  color: var(--wb-ink-2);
+  text-wrap: balance;
+}
+
+.summary {
+  @include s-lede;
+  max-width: 46ch;
+}
+
+.facts {
+  display: grid;
+  gap: 14px;
+  width: 100%;
+  margin: 4px 0 8px;
+  padding-top: 16px;
+  border-top: 1px solid var(--wb-rule);
+
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  column-gap: 24px;
+
+  @include from-tablet {
+    grid-template-columns: repeat(3, auto);
+    justify-content: start;
+    column-gap: 40px;
+  }
+
+  div {
+    display: grid;
+    gap: 2px;
+    min-width: 0;
+  }
+
+  dt {
+    @include s-label;
+  }
+
+  dd {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 1.35;
+  }
+}
+
+// The cover panel (it was a project folder): the cover behind a hairline,
+// then the case's figure under it. Its units follow its own width.
+.panel {
+  position: relative;
+  container-type: inline-size;
+  display: grid;
+  align-content: start;
+  gap: 20px;
+  width: 100%;
+  max-width: 680px;
+  justify-self: center;
+  margin-top: 16px;
+
+  @media (prefers-reduced-motion: no-preference) {
+    animation: panelIn 0.9s var(--wb-ease-soft) both;
+  }
+}
+
+.cover {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--wb-rule);
+  border-radius: 4px;
+  background: var(--wb-soft-2);
+
+  @media (prefers-reduced-motion: no-preference) {
+    animation: coverRise 1s var(--wb-ease-soft) 0.2s both;
+  }
+
+  img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+}
+
+.panelFigure {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px 18px;
+  color: var(--wb-ink);
+
+  strong {
+    @include title;
+    font-size: clamp(48px, 11cqi, 76px);
+    line-height: 1;
+    letter-spacing: -0.03em;
+    color: var(--wb-accent);
+    transform-origin: left bottom;
+
+    @include dark {
+      color: #6688ff;
+    }
+
+    @media (prefers-reduced-motion: no-preference) {
+      animation: settleIn 0.6s $ease-settle 1s both;
+    }
+  }
+
+  span {
+    font-size: 17px;
+    font-weight: 500;
+    color: var(--wb-ink-2);
+  }
+}
+
+// Body: the text in parts, prints in the margin of each part ------------------
+
+.body {
+  @include wrap;
+  display: grid;
+  gap: 72px;
+  padding-bottom: 72px;
+
+  @include from-desk {
+    gap: 96px;
+    padding-bottom: 112px;
+  }
+}
+
+// From 1024 px the margin keeps at least 320 px, so its scenes and prints
+// stay readable before the text column reaches its 700 px measure (at
+// 1024 px the margin used to be 148 px wide); from 1280 px nothing changes.
+.chapter {
+  display: grid;
+  gap: 40px;
+
+  @include from-desk {
+    grid-template-columns: minmax(0, 700px) minmax(320px, 1fr);
+    gap: 56px;
+  }
+
+  @include from-wide {
+    gap: 80px;
+  }
+}
+
+.prose {
+  display: flow-root;
+  min-width: 0;
+}
+
+.pins {
+  min-width: 0;
+
+  @include from-desk {
+    grid-column: 2;
+  }
+}
+
+.pinsInner {
+  display: grid;
+  gap: 44px;
+  max-width: 460px;
+  padding-top: 12px;
+
+  @include from-desk {
+    position: sticky;
+    top: 112px;
+    gap: 52px;
+  }
+}
+
+// A drawn scene in the margin (see caseScenes.tsx): it rises in like a print.
+.scene {
+  @include reveal(32px);
+  width: 100%;
+  max-width: 460px;
+}
+
+// A print in the margin: the piece behind a hairline, standing straight.
+.pinned {
+  position: relative;
+  margin: 0;
+
+  @media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
+    opacity: 0;
+    translate: 0 40px;
+    transition:
+      opacity 0.8s var(--wb-ease-soft),
+      translate 1s var(--wb-ease-soft);
+
+    &[data-in] {
+      opacity: 1;
+      translate: 0 0;
+    }
+  }
+}
+
+.pinnedFrame {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  border: 1px solid var(--wb-rule);
+  border-radius: 4px;
+  background: var(--wb-paper);
+
+  img,
+  video {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  video {
+    background: var(--wb-soft-2);
+  }
+}
+
+.playKey {
+  position: absolute;
+  left: 12px;
+  bottom: 12px;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  border-radius: 6px;
+  background: rgba(19, 19, 22, 0.78);
+  color: #ffffff;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+// The figure again, as a plain tag beside the results (desktop only: on one
+// column it would only repeat the header).
+.bigTag {
+  display: grid;
+  gap: 6px;
+  justify-self: start;
+  max-width: 340px;
+  padding: 24px 28px;
+  border: 1px solid var(--wb-rule);
+  border-radius: 4px;
+  color: var(--wb-ink);
+
+  @media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
+    opacity: 0;
+    scale: 0.94;
+    transition:
+      opacity 0.5s var(--wb-ease-soft),
+      scale 0.6s $ease-settle;
+
+    &[data-in] {
+      opacity: 1;
+      scale: 1;
+    }
+  }
+
+  strong {
+    @include title;
+    font-size: 56px;
+    line-height: 1;
+    letter-spacing: -0.03em;
+    color: var(--wb-accent);
+
+    @include dark {
+      color: #6688ff;
+    }
+  }
+
+  span {
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--wb-ink-2);
+  }
+}
+
+.bookNote {
+  display: grid;
+  justify-items: start;
+  gap: 16px;
+  padding: 28px;
+  border: 1px solid var(--wb-rule);
+  border-radius: 4px;
+
+  p {
+    @include s-h3;
+    font-size: 21px;
+    line-height: 1.3;
+  }
+
+  @include reveal(24px);
+}
+
+.deskOnly {
+  @include below-desk {
+    display: none !important;
+  }
+}
+
+// Next case: a straight card behind a hairline --------------------------------
+
+.next {
+  @include wrap;
+  padding-bottom: 32px;
+}
+
+.nextInner {
+  @include reveal(32px);
+  display: grid;
+  justify-items: start;
+  gap: 20px;
+}
+
+.nextCard {
+  position: relative;
+  display: grid;
+  gap: 24px;
+  width: 100%;
+  padding: 18px 18px 22px;
+  border: 1px solid var(--wb-rule);
+  border-radius: 4px;
+  color: var(--wb-ink);
+  transition: translate 0.45s var(--wb-ease-soft);
+
+  @include from-tablet {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 44%);
+    align-items: center;
+    gap: 40px;
+    padding: 32px 32px 32px 40px;
+  }
+
+  @include fine-pointer {
+    &:hover {
+      translate: 0 -4px;
+    }
+  }
+
+  &:focus-within {
+    translate: 0 -4px;
+  }
+}
+
+.nextText {
+  display: grid;
+  justify-items: start;
+  gap: 12px;
+  min-width: 0;
+}
+
+.nextLabel {
+  @include s-label;
+}
+
+.nextTitle {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+}
+
+.stretch {
+  --link-ink: inherit;
+
+  outline: none;
+
+  &::after {
+    content: "";
+    position: absolute;
+    z-index: 2;
+    inset: 0;
+    border-radius: 6px;
+  }
+
+  &:focus-visible::after {
+    outline: 3px solid var(--wb-accent);
+    outline-offset: 4px;
+  }
+}
+
+.nextName {
+  @include title;
+  display: block;
+  font-size: clamp(30px, 3.8vw, 50px);
+  line-height: 1.04;
+  letter-spacing: -0.025em;
+  overflow-wrap: break-word;
+}
+
+.nextSub {
+  display: block;
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 1.3;
+  color: var(--wb-ink-2);
+}
+
+.nextOpen {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 8px;
+  font-size: 16px;
+  font-weight: 500;
+
+  svg {
+    color: var(--wb-accent);
+  }
+}
+
+.nextPrint {
+  position: relative;
+  order: -1;
+  border-radius: 4px;
+
+  @include from-tablet {
+    order: 0;
+  }
+
+  img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border: 1px solid var(--wb-rule);
+    border-radius: 4px;
+  }
+}
+
+.nextTag {
+  position: absolute;
+  top: -14px;
+  right: -12px;
+  display: grid;
+  gap: 2px;
+  padding: 10px 14px 11px;
+  border: 1px solid var(--wb-rule);
+  border-radius: 4px;
+  background: var(--wb-page);
+  color: var(--wb-ink);
+
+  strong {
+    @include title;
+    font-size: 26px;
+    line-height: 1;
+    letter-spacing: -0.03em;
+  }
+
+  span {
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--wb-ink-2);
+  }
+}
+
+@keyframes coverRise {
+  from {
+    opacity: 0;
+    translate: 0 8cqi;
+  }
+}
+
+@keyframes settleIn {
+  from {
+    opacity: 0;
+    scale: 0.9;
+  }
+}
+
+@keyframes panelIn {
+  from {
+    translate: 0 40px;
+  }
+}
+
+@include reduced {
+  .back svg,
+  .nextCard {
+    transition: none;
+  }
+}

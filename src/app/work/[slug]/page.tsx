@@ -1,23 +1,13 @@
-import { CustomMDX, NodeDivider, ScrollToHash } from "@/components";
-import { Projects } from "@/components/work/Projects";
+import { ScrollToHash } from "@/components/ScrollToHash";
+import { Closing } from "@/components/workbench/Closing";
+import { RevealObserver } from "@/components/workbench/RevealObserver";
+import { SceneDriver } from "@/components/workbench/scenes/SceneDriver";
+import { CaseBody, CaseHeader, NextCase } from "@/components/workbench/work/CaseStudy";
+import { getCase, getNextCase } from "@/components/workbench/work/cases";
 import { about, baseURL, person, work } from "@/resources";
-import { EMIcon } from "@/resources/EMIcon";
-import { formatDate } from "@/utils/formatDate";
+import { isProtectedPath } from "@/resources/protectedRoutes";
 import { getPosts } from "@/utils/utils";
-import {
-  Avatar,
-  AvatarGroup,
-  Button,
-  Column,
-  Flex,
-  Heading,
-  Media,
-  Meta,
-  Row,
-  Schema,
-  SmartLink,
-  Text,
-} from "@once-ui-system/core";
+import { Meta, Schema } from "@once-ui-system/core";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
@@ -53,6 +43,7 @@ export async function generateMetadata({
   });
 }
 
+// A case study, in Workbench: opened like a project folder (see CaseStudy).
 export default async function Project({
   params,
 }: {
@@ -64,18 +55,17 @@ export default async function Project({
     : routeParams.slug || "";
 
   const post = getPosts(["src", "app", "work", "projects"]).find((post) => post.slug === slugPath);
+  const c = getCase(slugPath);
 
-  if (!post) {
+  if (!post || !c) {
     notFound();
   }
 
-  const avatars =
-    post.metadata.team?.map((person) => ({
-      src: person.avatar,
-    })) || [];
+  // From a public case, the next-case link skips password-protected cases.
+  const next = getNextCase(c.slug, { hideProtected: !isProtectedPath(c.href) });
 
   return (
-    <Column as="section" maxWidth="m" horizontal="center" gap="l">
+    <>
       <Schema
         as="blogPosting"
         baseURL={baseURL}
@@ -93,69 +83,15 @@ export default async function Project({
           image: `${baseURL}${person.avatar}`,
         }}
       />
-      <Column maxWidth="s" gap="16" horizontal="center" align="center">
-        <SmartLink href="/work">
-          <Text variant="label-strong-m">Projects</Text>
-        </SmartLink>
-        <Text variant="body-default-xs" onBackground="neutral-weak" marginBottom="12">
-          {post.metadata.publishedAt && formatDate(post.metadata.publishedAt)}
-        </Text>
-        <Heading variant="display-strong-m">{post.metadata.title}</Heading>
-      </Column>
-      <Row marginBottom="32" horizontal="center">
-        <Row gap="16" vertical="center">
-          {post.metadata.team && <AvatarGroup reverse avatars={avatars} size="s" />}
-          <Text variant="label-default-m" onBackground="brand-weak">
-            {post.metadata.team?.map((member, idx) => (
-              <span key={idx}>
-                {idx > 0 && (
-                  <Text as="span" onBackground="neutral-weak">
-                    ,{" "}
-                  </Text>
-                )}
-                <SmartLink href={member.linkedIn}>{member.name}</SmartLink>
-              </span>
-            ))}
-          </Text>
-        </Row>
-      </Row>
-      {post.metadata.images.length > 0 && (
-        <Row fillWidth position="relative">
-          <Media
-            priority
-            aspectRatio="16 / 9"
-            radius="m"
-            alt="image"
-            src={post.metadata.images[0]}
-          />
-          <span
-            aria-hidden="true"
-            style={{
-              position: "absolute",
-              right: "20px",
-              bottom: "20px",
-              fontSize: "24px",
-              color: "#F4F5F7",
-              opacity: 0.7,
-              filter: "drop-shadow(0 1px 3px rgba(0,0,0,0.6))",
-              lineHeight: 0,
-            }}
-          >
-            <EMIcon />
-          </span>
-        </Row>
-      )}
-      <Column style={{ margin: "auto" }} as="article" maxWidth="xs">
-        <CustomMDX source={post.content} />
-      </Column>
-      <Column fillWidth gap="40" horizontal="center" marginTop="40">
-        <NodeDivider maxWidth={40} />
-        <Heading as="h2" variant="heading-strong-xl" marginBottom="24">
-          Related projects
-        </Heading>
-        <Projects exclude={[post.slug]} range={[2]} />
-      </Column>
+      <article>
+        <CaseHeader c={c} />
+        <CaseBody c={c} />
+      </article>
+      {next ? <NextCase next={next} /> : null}
+      <Closing />
+      <RevealObserver />
+      <SceneDriver />
       <ScrollToHash />
-    </Column>
+    </>
   );
 }

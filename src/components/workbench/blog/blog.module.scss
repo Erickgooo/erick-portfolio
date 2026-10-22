@@ -1,0 +1,589 @@
+// Workbench, Blog: the posts as sheets, and the post itself. Sober
+// (2026-10-22): sheets are hairline frames, straight and unfilled (they were
+// tilted prints over a stack); the cover stands behind a hairline.
+// Keep this file ASCII-only.
+@use "../shared" as *;
+
+@mixin sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+// Index: head ---------------------------------------------------------------
+
+.head {
+  @include wrap;
+  display: grid;
+  gap: 20px;
+  padding-top: 40px;
+  padding-bottom: 48px;
+
+  @include from-tablet {
+    padding-top: 56px;
+  }
+
+  @include from-desk {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    align-items: start;
+    column-gap: 48px;
+    padding-top: 48px;
+    padding-bottom: 72px;
+  }
+}
+
+.title {
+  @include title;
+  font-size: clamp(48px, 7vw, 88px);
+  line-height: 1;
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+}
+
+.headSide {
+  display: grid;
+  justify-items: start;
+  gap: 28px;
+}
+
+.lede {
+  @include s-lede;
+  max-width: 40ch;
+}
+
+// Index: the sheets -------------------------------------------------------------
+
+.bench {
+  @include wrap;
+  padding-bottom: 64px;
+
+  @include from-desk {
+    padding-bottom: 104px;
+  }
+}
+
+.lead {
+  @include reveal(40px);
+  max-width: 1080px;
+}
+
+.sheets {
+  display: grid;
+  gap: 24px;
+  max-width: 1080px;
+  margin: 48px 0 0;
+  padding: 0;
+  list-style: none;
+
+  @include from-tablet {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  > li {
+    @include reveal(32px);
+    display: flex;
+
+    > .sheet {
+      width: 100%;
+    }
+  }
+}
+
+// One sheet ---------------------------------------------------------------------
+
+.sheet {
+  position: relative;
+  display: grid;
+  gap: 24px;
+  padding: 22px 20px 24px;
+  border: 1px solid var(--wb-rule);
+  border-radius: 4px;
+  color: var(--wb-ink);
+  transition: translate 0.45s var(--wb-ease-soft);
+
+  @include from-tablet {
+    align-items: start;
+    padding: 28px 28px 30px;
+
+    &[data-print] {
+      grid-template-columns: minmax(0, 1fr) 160px;
+    }
+  }
+
+  @include fine-pointer {
+    &:hover {
+      translate: 0 -4px;
+    }
+  }
+
+  &:focus-within {
+    translate: 0 -4px;
+  }
+
+  &:active {
+    translate: 0 -2px;
+  }
+}
+
+.sheetLead {
+  @include from-tablet {
+    align-items: center;
+    gap: 40px;
+    padding: 40px 40px 44px;
+  }
+
+  @include from-desk {
+    gap: 64px;
+    padding: 56px 64px 60px;
+  }
+
+  @include from-tablet {
+    &[data-print] {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 40%);
+    }
+  }
+
+  .sheetTitle {
+    @include title;
+    font-size: clamp(28px, 3.4vw, 46px);
+    line-height: 1.08;
+    letter-spacing: -0.025em;
+  }
+
+  .sheetSummary {
+    font-size: 17px;
+
+    @include from-desk {
+      font-size: 19px;
+    }
+  }
+}
+
+.sheetText {
+  display: grid;
+  justify-items: start;
+  gap: 16px;
+  min-width: 0;
+}
+
+// The date: quiet text after a short cobalt stroke.
+.date {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--wb-ink-2);
+  font-size: 16px;
+  font-weight: 500;
+
+  &::before {
+    content: "";
+    width: 24px;
+    height: 1px;
+    background: var(--wb-accent);
+  }
+}
+
+.sheetTitle {
+  @include s-h3;
+  font-size: 22px;
+  line-height: 1.25;
+  text-wrap: balance;
+}
+
+.stretch {
+  --link-ink: inherit;
+
+  outline: none;
+
+  &::after {
+    content: "";
+    position: absolute;
+    z-index: 2;
+    inset: 0;
+    border-radius: 4px;
+  }
+
+  &:focus-visible::after {
+    outline: 3px solid var(--wb-accent);
+    outline-offset: 4px;
+  }
+}
+
+.sheetSummary {
+  max-width: 52ch;
+  color: var(--wb-ink-2);
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+.sheetTag {
+  color: var(--wb-accent);
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.open {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+  font-size: 16px;
+  font-weight: 500;
+
+  svg {
+    color: var(--wb-accent);
+    transition: translate 0.28s var(--wb-ease-soft);
+  }
+
+  @include fine-pointer {
+    .sheet:hover & svg {
+      translate: 4px 0;
+    }
+  }
+}
+
+.sheetPrint {
+  max-width: min(78%, 360px);
+  overflow: hidden;
+  border: 1px solid var(--wb-rule);
+  border-radius: 4px;
+  background: var(--wb-soft-2);
+
+  @include from-tablet {
+    max-width: none;
+  }
+
+  img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+}
+
+// Post: head ---------------------------------------------------------------------
+
+.top {
+  @include wrap;
+  padding-top: 20px;
+}
+
+.back {
+  --link-deco: none;
+  --link-deco-hover: underline;
+  --link-line: var(--wb-accent);
+
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  font-weight: 600;
+
+  svg {
+    transition: translate 0.28s var(--wb-ease-soft);
+  }
+
+  @include fine-pointer {
+    &:hover svg {
+      translate: -4px 0;
+    }
+  }
+}
+
+.hero {
+  @include wrap;
+  display: grid;
+  gap: 48px;
+  padding-top: 20px;
+  padding-bottom: 64px;
+
+  @include from-desk {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 400px);
+    align-items: center;
+    gap: 72px;
+    padding-top: 28px;
+    padding-bottom: 96px;
+  }
+}
+
+.heroText {
+  display: grid;
+  justify-items: start;
+  gap: 22px;
+  min-width: 0;
+}
+
+.postTitle {
+  @include title;
+  font-size: clamp(36px, 5vw, 68px);
+  line-height: 1.04;
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+  overflow-wrap: break-word;
+}
+
+.summary {
+  @include s-lede;
+  max-width: 46ch;
+}
+
+.author {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 16px;
+  color: var(--wb-ink-2);
+
+  strong {
+    font-weight: 600;
+    color: var(--wb-ink);
+  }
+}
+
+.avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+}
+
+.cover {
+  position: relative;
+  width: min(78vw, 360px);
+  margin: 12px 0 0 !important;
+
+  @include from-desk {
+    width: 100%;
+    margin-top: 0 !important;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    animation: coverIn 0.9s var(--wb-ease-soft) both;
+  }
+}
+
+.coverFrame {
+  display: block;
+  overflow: hidden;
+  border: 1px solid var(--wb-rule);
+  border-radius: 4px;
+  background: var(--wb-soft-2);
+
+  img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+}
+
+// Post: body and margin index -------------------------------------------------------
+
+.body {
+  @include wrap;
+  display: grid;
+  gap: 48px;
+  padding-bottom: 72px;
+
+  @include from-desk {
+    grid-template-columns: minmax(0, 720px) minmax(200px, 260px);
+    justify-content: space-between;
+    gap: 64px;
+    padding-bottom: 104px;
+  }
+}
+
+.prose {
+  display: flow-root;
+  min-width: 0;
+}
+
+.rail {
+  display: none;
+
+  @include from-desk {
+    display: block;
+  }
+}
+
+// The margin: the drawn desk (on "My Workspace") above the index, pinned
+// together while the post scrolls.
+.railInner {
+  position: sticky;
+  top: 112px;
+  display: grid;
+  gap: 32px;
+}
+
+.index {
+  display: grid;
+  gap: 12px;
+}
+
+// On phones and tablets the desk sits under the header, in the flow.
+.deskPhone {
+  @include wrap;
+  padding-bottom: 48px;
+
+  @include from-desk {
+    display: none;
+  }
+}
+
+.indexHead {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--wb-ink-2);
+}
+
+.indexList {
+  position: relative;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  // The hairline rail and the cobalt marker that slides along it.
+  &::before,
+  &::after {
+    content: "";
+    position: absolute;
+    left: 0;
+  }
+
+  &::before {
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background: var(--wb-rule);
+  }
+
+  &::after {
+    top: 8px;
+    width: 2px;
+    height: 28px;
+    background: var(--wb-accent);
+    translate: 0 calc(var(--at, 0) * 44px);
+    transition: translate 0.3s var(--wb-ease-soft);
+  }
+
+  li {
+    height: 44px;
+  }
+}
+
+.indexLink {
+  --link-ink: var(--wb-ink-2);
+
+  display: flex;
+  align-items: center;
+  height: 44px;
+  padding-left: 18px;
+  font-size: 16px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  &[aria-current] {
+    --link-ink: var(--wb-ink);
+
+    font-weight: 500;
+  }
+
+  @include fine-pointer {
+    &:hover {
+      --link-ink: var(--wb-ink);
+    }
+  }
+}
+
+.indexSub .indexLink {
+  padding-left: 32px;
+}
+
+// Post: share keys -------------------------------------------------------------------
+
+.share {
+  display: grid;
+  gap: 12px;
+  margin-top: 40px;
+}
+
+.shareHead {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--wb-ink-2);
+}
+
+.shareKeys {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.key {
+  --link-ink: var(--wb-ink);
+
+  display: inline-grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 1px solid var(--wb-rule);
+  border-radius: 4px;
+  background: transparent;
+  color: var(--wb-ink);
+  font: inherit;
+  font-size: 18px;
+  cursor: pointer;
+  transition: translate 0.28s var(--wb-ease-soft);
+
+  &[data-copied] {
+    border-color: var(--wb-accent);
+    color: var(--wb-accent);
+  }
+
+  @include fine-pointer {
+    &:hover {
+      translate: 0 -2px;
+    }
+  }
+}
+
+.shareStatus {
+  @include sr-only;
+}
+
+// Post: recent posts ------------------------------------------------------------------
+
+.recent {
+  @include wrap;
+  padding-bottom: 32px;
+
+  h2 {
+    @include s-h2;
+    margin-bottom: 8px;
+  }
+
+  .sheets {
+    margin-top: 24px;
+  }
+}
+
+@keyframes coverIn {
+  from {
+    translate: 0 36px;
+  }
+}
+
+@include reduced {
+  .sheet,
+  .open svg,
+  .back svg,
+  .key,
+  .indexList::after {
+    transition: none;
+  }
+}

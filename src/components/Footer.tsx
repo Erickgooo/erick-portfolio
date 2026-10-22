@@ -1,66 +1,78 @@
-import { person, social } from "@/resources";
+// The site footer, in Workbench (redesign 2026), on every page: Erick's
+// monogram with his name, the pages, the social links and the copyright line.
+// Server-rendered; transparent over the page dots.
+import scope from "@/components/workbench/scope.module.scss";
+import { about, blog, gallery, person, routes, social, work } from "@/resources";
 import { EMIcon } from "@/resources/EMIcon";
-import { IconButton, Row, SmartLink, Text } from "@once-ui-system/core";
+import { iconLibrary } from "@/resources/icons";
+import Link from "next/link";
 import styles from "./Footer.module.scss";
+
+const PAGES = [
+  { path: about.path, label: about.label },
+  { path: work.path, label: work.label },
+  { path: blog.path, label: blog.label },
+  { path: gallery.path, label: gallery.label },
+].filter((page) => routes[page.path as keyof typeof routes]);
+
+const ResumeIcon = iconLibrary.document;
 
 export const Footer = () => {
   const currentYear = new Date().getFullYear();
 
   return (
-    <Row as="footer" fillWidth padding="8" horizontal="center" s={{ direction: "column" }}>
-      <Row
-        className={styles.mobile}
-        maxWidth="m"
-        paddingY="8"
-        paddingX="16"
-        gap="16"
-        horizontal="between"
-        vertical="center"
-        s={{
-          direction: "column",
-          horizontal: "center",
-        }}
-      >
-        <Text variant="body-default-s" onBackground="neutral-strong">
-          <span
-            aria-hidden="true"
-            style={{
-              display: "inline-flex",
-              fontSize: "1.1em",
-              verticalAlign: "-2px",
-              marginRight: "8px",
-              opacity: 0.7,
-            }}
-          >
-            <EMIcon />
-          </span>
-          <Text onBackground="neutral-weak">© {currentYear} /</Text>
-          <Text paddingX="4">{person.name}</Text>
-          <Text onBackground="neutral-weak">
-            &nbsp;/ Based on <SmartLink href="https://once-ui.com/">Once UI</SmartLink> (adapted).
-            Licensed under{" "}
-            <SmartLink href="https://creativecommons.org/licenses/by-nc/4.0/">
-              CC BY-NC 4.0.
-            </SmartLink>
-          </Text>
-        </Text>
-        <Row gap="16">
-          {social.map(
-            (item) =>
-              item.link && (
-                <IconButton
-                  key={item.name}
-                  href={item.link}
-                  icon={item.icon}
-                  tooltip={item.name}
-                  size="s"
-                  variant="ghost"
-                />
-              ),
-          )}
-        </Row>
-      </Row>
-      <Row height="80" hide s={{ hide: false }} />
-    </Row>
+    <footer className={`${scope.scope} ${styles.footer}`}>
+      <div className={styles.inner}>
+        <div className={styles.lead}>
+          <Link href="/" className={styles.wordmark} aria-label={`${person.name}, home`}>
+            <span className={styles.mark} aria-hidden="true">
+              <EMIcon />
+            </span>
+            <span>{person.name}</span>
+          </Link>
+          <p>
+            {person.role}, working from {person.location}.
+          </p>
+        </div>
+        <nav aria-label="Footer" className={styles.cols}>
+          <ul>
+            {PAGES.map((page) => (
+              <li key={page.path}>
+                <Link href={page.path}>{page.label}</Link>
+              </li>
+            ))}
+          </ul>
+          <ul>
+            {social.map((item) => {
+              if (!item.link) return null;
+              const Icon = iconLibrary[item.icon];
+              const external = item.link.startsWith("http");
+              return (
+                <li key={item.name}>
+                  <a
+                    href={item.link}
+                    {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+                  >
+                    {Icon && <Icon aria-hidden="true" className={styles.icon} />}
+                    {item.name}
+                  </a>
+                </li>
+              );
+            })}
+            {about.resume?.display && (
+              <li>
+                <a href={about.resume.link}>
+                  <ResumeIcon aria-hidden="true" className={styles.icon} />
+                  Resume (PDF)
+                </a>
+              </li>
+            )}
+          </ul>
+        </nav>
+      </div>
+      <div className={styles.base}>
+        &copy; {currentYear} {person.name}
+      </div>
+    </footer>
   );
 };

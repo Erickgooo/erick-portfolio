@@ -1,0 +1,133 @@
+// Scenes of the work: the margin stepper of a case (see MarginStepper.tsx).
+// The crossfade and the sheet's settle follow the stepper of the home
+// (scenes/stepper.module.scss): the leaving layer stays under the incoming
+// one, so there is no dip. Sheets are 5:4 everywhere. Keep this file
+// ASCII-only.
+@use "../../shared" as *;
+@use "../scene" as *;
+
+.stepper {
+  position: relative;
+  display: grid;
+  gap: 20px;
+
+  @include from-desk {
+    gap: 0;
+  }
+}
+
+.layer {
+  position: relative;
+  min-width: 0;
+
+  @include from-desk {
+    grid-area: 1 / 1;
+    z-index: 1;
+    opacity: 0;
+    // Leaving: stays under the incoming scene until that one has faded in.
+    transition: opacity 0.5s ease 0.6s;
+
+    &[data-on] {
+      z-index: 2;
+      opacity: 1;
+      transition: opacity 0.55s ease 0s;
+    }
+  }
+}
+
+.sheet {
+  --sc-bg: var(--sc-tone-a);
+  --sc-obj: var(--sc-bg);
+
+  position: relative;
+  width: 100%;
+  aspect-ratio: 5 / 4;
+  overflow: hidden;
+  border: 1px solid var(--sc-sheet-line);
+  border-radius: 4px;
+  container-type: inline-size;
+  background: var(--sc-bg);
+  color: var(--wb-ink);
+
+  @include from-desk {
+    translate: 0 18px;
+    scale: 0.98;
+    transition:
+      translate 0.7s cubic-bezier(0.22, 0.8, 0.24, 1) 0.6s,
+      scale 0.7s cubic-bezier(0.22, 0.8, 0.24, 1) 0.6s;
+
+    .layer[data-on] > & {
+      translate: 0 0;
+      scale: 1;
+      transition-duration: 0.8s;
+      transition-delay: 0s;
+    }
+  }
+}
+
+// WideSheet: one scene's sheet, 5:4 at every width, outside a stepper.
+.wide {
+  --sc-bg: var(--sc-tone-a);
+  --sc-obj: var(--sc-bg);
+
+  position: relative;
+  width: 100%;
+  aspect-ratio: 5 / 4;
+  overflow: hidden;
+  border: 1px solid var(--sc-sheet-line);
+  border-radius: 4px;
+  container-type: inline-size;
+  background: var(--sc-bg);
+  color: var(--wb-ink);
+}
+
+// The two surface tones alternate from step to step.
+.toneB .sheet {
+  --sc-bg: var(--sc-tone-b);
+}
+
+// The step's name, over a short tick per step (the current one in cobalt).
+.head {
+  position: absolute;
+  left: 5cqi;
+  right: 5cqi;
+  top: 4.4cqi;
+  z-index: 1;
+  display: grid;
+  gap: 1.6cqi;
+  font-size: fs(3.4);
+  line-height: 1.2;
+}
+
+.ticks {
+  display: flex;
+  gap: 1cqi;
+
+  i {
+    width: 5cqi;
+    height: 2px;
+    border-radius: 1px;
+    background: var(--sc-line);
+  }
+}
+
+.tickOn {
+  background: var(--wb-accent) !important;
+}
+
+.label {
+  font-weight: 600;
+  color: var(--wb-ink);
+}
+
+@include reduced {
+  .layer,
+  .sheet {
+    transition: none !important;
+  }
+
+  .sheet {
+    translate: none !important;
+    scale: none !important;
+  }
+}

@@ -6,7 +6,7 @@ test.describe("server-rendered content", () => {
   test.use({ javaScriptEnabled: false });
 
   const cases = [
-    { path: "/", text: /I Build Marketing Infrastructure/ },
+    { path: "/", text: /I build marketing infrastructure from zero/ },
     { path: "/about", text: /Erick Mahecha/ },
     { path: "/work", text: /Projects/ },
     { path: "/blog/my-workspace", text: /My Workspace/ },

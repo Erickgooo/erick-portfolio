@@ -1,0 +1,154 @@
+// Workbench: about (sober, 2026-10-22). The photo stands straight behind a
+// hairline. It rises and fades in with the timing it had (it used to land
+// tilted).
+// Keep this file ASCII-only.
+@use "../shared" as *;
+
+.about {
+  @include below-fold(1700px, 1100px);
+  position: relative;
+  z-index: 1;
+  overflow-x: clip;
+  border-top: 1px solid var(--wb-line);
+}
+
+.inner {
+  @include wrap;
+  display: grid;
+  gap: 56px;
+  padding-top: 112px;
+  padding-bottom: 112px;
+
+  @include from-desk {
+    grid-template-columns: minmax(0, 4fr) minmax(0, 7fr);
+    gap: 96px;
+    padding-top: 144px;
+    padding-bottom: 144px;
+  }
+}
+
+.photoCol {
+  @include from-desk {
+    position: sticky;
+    top: 120px;
+    align-self: start;
+  }
+}
+
+.photo {
+  position: relative;
+  width: min(78%, 340px);
+  margin-inline: auto;
+  color: var(--wb-ink);
+
+  @include from-desk {
+    width: 100%;
+    margin-inline: 0;
+  }
+
+  @media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
+    opacity: 0;
+    translate: 0 48px;
+    transition:
+      opacity 0.8s var(--wb-ease-soft),
+      translate 1.1s var(--wb-ease-soft);
+
+    &[data-in] {
+      opacity: 1;
+      translate: 0 0;
+    }
+  }
+
+  img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border: 1px solid var(--wb-rule);
+    border-radius: 4px;
+  }
+
+  figcaption {
+    @include s-h3;
+    display: grid;
+    gap: 2px;
+    padding-top: 14px;
+    font-size: 17px;
+
+    span {
+      font-weight: 400;
+      font-size: 16px;
+      letter-spacing: 0;
+      color: var(--wb-ink-2);
+    }
+  }
+}
+
+.text {
+  display: grid;
+  align-content: start;
+  gap: 28px;
+
+  h2 {
+    @include reveal;
+    @include s-h2;
+  }
+}
+
+.story {
+  @include reveal;
+  display: grid;
+  gap: 16px;
+  max-width: 58ch;
+  font-size: 17px;
+  line-height: 1.65;
+  color: var(--wb-ink-2);
+
+  @include from-desk {
+    font-size: 19px;
+  }
+
+  p:first-child {
+    color: var(--wb-ink);
+  }
+}
+
+.jobs {
+  list-style: none;
+  padding: 0;
+  margin-top: 16px;
+  border-top: 1px solid var(--wb-ink);
+
+  li {
+    @include reveal(18px);
+    display: grid;
+    gap: 2px 24px;
+    padding: 18px 0;
+    border-bottom: 1px solid var(--wb-line);
+
+    @include from-tablet {
+      grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.3fr) auto;
+      align-items: baseline;
+    }
+  }
+}
+
+.company {
+  @include s-h3;
+  font-size: 18px;
+}
+
+.role {
+  font-size: 16px;
+}
+
+.time {
+  font-size: 16px;
+  color: var(--wb-ink-2);
+  white-space: nowrap;
+}
+
+.links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 32px;
+}

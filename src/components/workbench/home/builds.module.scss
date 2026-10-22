@@ -1,0 +1,61 @@
+// Workbench: what I build. The head with its activity window, then the
+// stepper of the four builds (its layout is in scenes/stepper.module.scss).
+@use "../shared" as *;
+
+.builds {
+  @include below-fold(3600px, 4200px);
+  position: relative;
+  z-index: 1;
+  overflow-x: clip;
+}
+
+.inner {
+  @include wrap;
+  padding-top: 72px;
+  padding-bottom: 104px;
+
+  @include from-desk {
+    padding-top: 112px;
+    padding-bottom: 72px;
+  }
+}
+
+.head {
+  display: grid;
+  gap: 40px;
+  margin-bottom: 56px;
+
+  @include from-desk {
+    grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+    align-items: center;
+    column-gap: 64px;
+    margin-bottom: 24px;
+  }
+}
+
+.headText {
+  @include reveal;
+  display: grid;
+  gap: 14px;
+
+  h2 {
+    @include s-h2;
+  }
+
+  // The motto line, an existing phrase, in the accent face.
+  p {
+    @include accent;
+    max-width: 22ch;
+    font-size: clamp(26px, 2.6vw, 34px);
+    color: var(--wb-ink);
+  }
+}
+
+.window {
+  width: 100%;
+  max-width: 560px;
+
+  @include from-desk {
+    justify-self: end;
+  }
+}

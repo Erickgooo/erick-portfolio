@@ -1,0 +1,117 @@
+// Workbench: hero layout (sober, 2026-10-22).
+@use "../shared" as *;
+
+.hero {
+  position: relative;
+  z-index: 1;
+  overflow-x: clip;
+}
+
+// On phones the text block stays compact, so the bench's tablet (the page's
+// LCP element) is well inside the first screen and larger than the headline.
+.inner {
+  @include wrap;
+  display: grid;
+  gap: 32px;
+  padding-top: 28px;
+  padding-bottom: 72px;
+
+  @include from-tablet {
+    gap: 40px;
+    padding-top: 56px;
+  }
+
+  @include from-desk {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.22fr);
+    align-items: center;
+    gap: 48px;
+    min-height: calc(100svh - 76px);
+    padding-top: 32px;
+    padding-bottom: 48px;
+  }
+}
+
+.text {
+  display: grid;
+  justify-items: start;
+  gap: 20px;
+
+  @include from-tablet {
+    gap: 24px;
+  }
+}
+
+.who {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-size: 16px;
+  line-height: 1.35;
+
+  strong {
+    @include s-h3;
+    display: block;
+    font-size: 17px;
+  }
+}
+
+.role {
+  display: block;
+  color: var(--wb-ink-2);
+}
+
+.avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+// The headline in Montserrat Black, sized from the text column in viewport
+// units (the column's width per layout) rather than as a size container, so
+// the first frame needs no extra container pass. Its longest word,
+// "infrastructure", is 7.24 em wide; 11 % of the column keeps it on one line
+// on phones with room to spare, and keeps the headline's area under the
+// bench tablet's, so the tablet stays the LCP element. It breaks evenly on its own, so it skips text-wrap:
+// balance (several line-breaking passes in the first frame).
+.title {
+  @include title;
+  font-size: clamp(34px, calc((100vw - 32px) * 0.11), 64px);
+  line-height: 1.04;
+  letter-spacing: -0.025em;
+
+  // On tablets the column is wide enough to leave a last word alone.
+  @include from-tablet {
+    font-size: clamp(34px, calc((100vw - 64px) * 0.1), 64px);
+    text-wrap: balance;
+  }
+
+  @include from-desk {
+    font-size: clamp(34px, calc((min(100vw, 1280px) - 144px) * 0.054), 64px);
+    text-wrap: wrap;
+  }
+}
+
+.offer {
+  @include s-lede;
+  max-width: 38ch;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 28px;
+  margin-top: 8px;
+}
+
+.benchCol {
+  position: relative;
+  width: 100%;
+  max-width: 560px;
+  justify-self: center;
+
+  @include from-desk {
+    max-width: 720px;
+  }
+}

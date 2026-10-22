@@ -1,7 +1,10 @@
-import { Mailchimp } from "@/components";
-import { Posts } from "@/components/blog/Posts";
-import { baseURL, blog, newsletter, person } from "@/resources";
-import { Column, Heading, Meta, Schema } from "@once-ui-system/core";
+import { Closing } from "@/components/workbench/Closing";
+import { RevealObserver } from "@/components/workbench/RevealObserver";
+import { BlogIndex } from "@/components/workbench/blog/BlogIndex";
+import { SceneDriver } from "@/components/workbench/scenes/SceneDriver";
+import { baseURL, blog, person } from "@/resources";
+import { isProtectedPath } from "@/resources/protectedRoutes";
+import { Meta, Schema } from "@once-ui-system/core";
 
 export async function generateMetadata() {
   return Meta.generate({
@@ -13,9 +16,11 @@ export async function generateMetadata() {
   });
 }
 
+// The blog, in Workbench: the posts as printed sheets stacked on the bench. A
+// public page leaves out password-protected posts.
 export default function Blog() {
   return (
-    <Column maxWidth="m" paddingTop="24">
+    <>
       <Schema
         as="blogPosting"
         baseURL={baseURL}
@@ -29,18 +34,10 @@ export default function Blog() {
           image: `${baseURL}${person.avatar}`,
         }}
       />
-      <Heading marginBottom="l" variant="heading-strong-xl" marginLeft="24">
-        {blog.title}
-      </Heading>
-      <Column fillWidth flex={1} gap="40">
-        <Posts range={[1, 1]} thumbnail />
-        <Posts range={[2, 3]} columns="2" thumbnail direction="column" />
-        <Mailchimp marginBottom="l" />
-        <Heading as="h2" variant="heading-strong-xl" marginLeft="l">
-          Earlier posts
-        </Heading>
-        <Posts range={[4]} columns="2" />
-      </Column>
-    </Column>
+      <BlogIndex hideProtected={!isProtectedPath(blog.path)} />
+      <Closing />
+      <RevealObserver />
+      <SceneDriver />
+    </>
   );
 }

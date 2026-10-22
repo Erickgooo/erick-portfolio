@@ -1,0 +1,317 @@
+// Scene: BeatCuts (see BeatCuts.tsx). Landscape (5:4, 100 x 80 cqi), in a
+// WideSheet. Drawn with hairlines on the sheet's tokens; the cuts and the
+// beats they land on are cobalt. Keep this file ASCII-only.
+@use "../../shared" as *;
+@use "../scene" as *;
+
+// The tracks' box, and how long the playhead takes to cross it.
+$left: 5cqi;
+$span: 90cqi;
+$sweep: 3.6s;
+
+.scene {
+  position: absolute;
+  inset: 0;
+  color: var(--wb-ink);
+  font-size: fs(3.4);
+  line-height: 1.25;
+}
+
+.preview,
+.trackName,
+.track {
+  position: absolute;
+  transition:
+    opacity 0.8s $ease-soft,
+    translate 1s $ease-soft;
+
+  @include before(0) {
+    opacity: 0;
+    translate: 0 3cqi;
+  }
+}
+
+// The picture: one drawing per clip, each later one cut in over the last --------
+
+.preview {
+  left: 25cqi;
+  top: 5cqi;
+  width: 50cqi;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border: 1px solid var(--sc-line);
+  border-radius: 1cqi;
+  background: var(--sc-obj);
+}
+
+.comp {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: var(--sc-obj);
+
+  svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  polygon {
+    fill: none;
+    stroke: var(--wb-ink-2);
+    stroke-width: 1px;
+    vector-effect: non-scaling-stroke;
+  }
+
+  .accent {
+    stroke: var(--wb-accent);
+    stroke-width: 1.5px;
+  }
+
+  // A cut: no fade, the picture changes as the playhead reaches it.
+  &:not(:first-child) {
+    transition: opacity 0.05s linear;
+    transition-delay: calc(var(--at) * #{$sweep});
+
+    @include before(4) {
+      opacity: 0;
+    }
+  }
+}
+
+// A perforated panel, its holes drawn in cobalt.
+.panel i {
+  width: 56%;
+  height: 64%;
+  border: 1px solid var(--wb-accent);
+  border-radius: 0.5cqi;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='34'%3E%3Cg fill='%232d5bff'%3E%3Ccircle cx='5' cy='6' r='2.4'/%3E%3Ccircle cx='15' cy='23' r='2.4'/%3E%3C/g%3E%3C/svg%3E");
+  background-size: 2.2cqi auto;
+}
+
+// A title card: the mark and a line of type.
+.title {
+  grid-auto-flow: column;
+  gap: 2cqi;
+
+  i {
+    width: 5cqi;
+    aspect-ratio: 1;
+    border-radius: 0.5cqi;
+    background: var(--wb-accent);
+  }
+
+  b {
+    width: 22cqi;
+    height: 2.2cqi;
+    border-radius: 0.4cqi;
+    background: var(--wb-ink);
+  }
+}
+
+// The stand: its wall and its counter.
+.stand {
+  i {
+    position: absolute;
+    left: 18%;
+    top: 14%;
+    width: 64%;
+    height: 56%;
+    border: 1px solid var(--wb-ink-2);
+    border-radius: 0.4cqi;
+  }
+
+  b {
+    position: absolute;
+    left: 38%;
+    top: 58%;
+    width: 30%;
+    height: 24%;
+    border: 1px solid var(--wb-ink-2);
+    border-top: 2px solid var(--wb-accent);
+    border-radius: 0.3cqi;
+    background: var(--sc-obj);
+  }
+}
+
+// The two tracks -----------------------------------------------------------------
+
+// The names sit over the cut lines, on the sheet's own tone, so a cut that
+// crosses a name breaks behind it.
+.trackName {
+  left: $left;
+  z-index: 1;
+  padding-right: 1.2cqi;
+  background: var(--sc-bg);
+  font-weight: 600;
+  color: var(--wb-ink-2);
+}
+
+.editName {
+  top: 37cqi;
+}
+
+.songName {
+  top: 55cqi;
+  transition-delay: 0.1s;
+}
+
+.track {
+  left: $left;
+  width: $span;
+  border: 1px solid var(--sc-line);
+  border-radius: 0.8cqi;
+  background: var(--sc-obj);
+}
+
+.edit {
+  top: 42cqi;
+  height: 9cqi;
+
+  // The clips: a quiet line of footage in each, split by the cuts.
+  i {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: calc(var(--a) * 100%);
+    width: calc((var(--b) - var(--a)) * 100%);
+
+    &::after {
+      content: "";
+      position: absolute;
+      left: 14%;
+      right: 14%;
+      top: 50%;
+      height: 1cqi;
+      margin-top: -0.5cqi;
+      border-radius: 1cqi;
+      background: var(--sc-bar);
+    }
+  }
+}
+
+.song {
+  top: 60cqi;
+  height: 15cqi;
+  transition-delay: 0.1s;
+}
+
+.wave {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 1.2cqi;
+  height: 7cqi;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+
+  i {
+    width: 0.9cqi;
+    height: 100%;
+    border-radius: 0.4cqi;
+    background: var(--wb-ink-2);
+    opacity: 0.55;
+    scale: 1 var(--h);
+    transition:
+      opacity 0.3s $ease-soft,
+      scale 0.45s $ease-soft;
+    transition-delay: calc(var(--k) * 22ms);
+
+    @include before(1) {
+      opacity: 0;
+      scale: 1 0.06;
+    }
+  }
+}
+
+// The beats, and the cuts that land on them -----------------------------------------
+
+.beats i {
+  position: absolute;
+  left: calc(#{$left} + var(--p) * #{$span});
+  top: 72cqi;
+  width: 2cqi;
+  aspect-ratio: 1;
+  margin: -1cqi 0 0 -1cqi;
+  border: 1px solid var(--wb-ink-2);
+  border-radius: 50%;
+  background: var(--sc-obj);
+  transition:
+    opacity 0.3s $ease-soft,
+    scale 0.4s $ease-settle;
+  transition-delay: calc(var(--i) * 70ms);
+
+  @include before(2) {
+    opacity: 0;
+    scale: 0.4;
+  }
+}
+
+// A beat a cut lands on fills in cobalt as the cut arrives.
+.hit::after {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: 50%;
+  background: var(--wb-accent);
+  transition: opacity 0.2s $ease-soft;
+  transition-delay: calc(var(--k) * 380ms + 0.35s);
+
+  @include before(3) {
+    opacity: 0;
+  }
+}
+
+.cuts i {
+  position: absolute;
+  left: calc(#{$left} + var(--p) * #{$span});
+  top: 41cqi;
+  width: 2px;
+  height: 31cqi;
+  margin-left: -1px;
+  background: var(--wb-accent);
+  transition:
+    opacity 0.25s $ease-soft,
+    translate 0.5s $ease-settle;
+  transition-delay: calc(var(--k) * 380ms);
+
+  @include before(3) {
+    opacity: 0;
+    translate: 0 -6cqi;
+  }
+}
+
+// The playhead: a box as wide as the tracks whose right edge is the line; it
+// crosses once, then fades.
+.playhead {
+  position: absolute;
+  left: $left;
+  top: 39cqi;
+  width: $span;
+  height: 37cqi;
+  border-right: 1.5px solid var(--wb-ink);
+  opacity: 0;
+  transition:
+    translate #{$sweep} linear,
+    opacity 0.3s $ease-soft;
+
+  @include before(4) {
+    translate: -100% 0;
+  }
+
+  @include from(4) {
+    opacity: 1;
+  }
+
+  @include from(5) {
+    opacity: 0;
+  }
+}
+
+@include reduced {
+  .scene * {
+    transition: none !important;
+  }
+}

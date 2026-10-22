@@ -2,10 +2,19 @@
    brand/accent share one scale (the manual defines a single accent: Cobalto Eléctrico).
    neutral-100 = Obsidiana Profunda exactly (dark-mode page background);
    neutral-1200 = Blanco Titanio exactly; neutral-500/800 snap to Grafito/Plata Satinada. */
-:root {
-  /* Labels use the body Inter instance (one font download instead of two). */
+/* Labels use the body Inter instance (one font download instead of two).
+   Also on body, where the root layout puts the next/font variables. */
+:root,
+body {
   --font-label: var(--font-body);
+}
 
+/* Once UI sets the text face on html; body repeats it for the same reason. */
+body {
+  font-family: var(--font-body);
+}
+
+:root {
   --scheme-brand-100: #0a0e1f;
   --scheme-brand-200: #0d1431;
   --scheme-brand-300: #172b74;
@@ -103,4 +112,218 @@
   .main-content-wrapper {
     padding-bottom: 96px !important;
   }
+}
+
+/* ─── Workbench (redesign 2026) ────────────────────────────────────────────
+   Global tokens of the Workbench design, switched on html[data-theme] like
+   Once UI's, so every redesigned page reuses them. Solid fills only. The
+   sober tokens (2026-10-22) follow these, at the end of the file.
+   - Paper colours are the same sheets in both themes. Cobalto Eléctrico is
+     the accent (call-to-action key, link underlines, focus rings, active
+     states), at its exact brand hex in both themes. Papers keep to the
+     brand palette: cobalt, mist (a pale cobalt), white paper and ink.
+   - The band (the tool wall) is always the opposite of the page.
+   - The page colour also becomes Once UI's --page-background, so the body
+     (with its dots), the header pill and the header fades share it.
+   Type: --font-wb-display (Montserrat Black), --font-wb-text (Poppins) and
+   --font-wb-accent (Luxurious Roman), below. Breakpoints and mixins:
+   src/components/workbench/_shared.scss.
+──────────────────────────────────────────────────────────────────────────── */
+
+/* The three faces (Erick, 2026-10-22: sober, minimal, elegant) are
+   self-hosted in public/fonts, Google's own files from fonts.googleapis.com,
+   latin subset, with their SIL Open Font License files beside them. Only the
+   weights the site uses are shipped, since every file weighs on mobile
+   Lighthouse. They are not preloaded: the site intro covers the page while
+   they load, and the preloads cost Lighthouse points before.
+   - Montserrat, weight 900 only (Black, 18 KB): titles and figures. It
+     stands in for Gotham Black, which has no free web licence; buying that
+     licence would make this a one-line change.
+   - Poppins 400, 500 and 600 (8 KB each): text and controls.
+   - Luxurious Roman 400 (33 KB): short accent phrases only. It is fetched
+     only where a phrase uses it, never in the first screen.
+   The "Fallback" faces are Arial (Times New Roman for the accent) resized to
+   each file's own metrics, computed with next/font's method on the files
+   above, so the swap does not move the layout. Each fallback declares the
+   weight it stands in for, so the browser never thickens it on its own. */
+@font-face {
+  font-family: "Montserrat";
+  src: url("/fonts/montserrat-900-latin.woff2") format("woff2");
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Montserrat Fallback";
+  src: local("Arial");
+  font-weight: 900;
+  ascent-override: 77.39%;
+  descent-override: 20.07%;
+  line-gap-override: 0%;
+  size-adjust: 125.07%;
+}
+
+@font-face {
+  font-family: "Poppins";
+  src: url("/fonts/poppins-400-latin.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Poppins";
+  src: url("/fonts/poppins-500-latin.woff2") format("woff2");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Poppins";
+  src: url("/fonts/poppins-600-latin.woff2") format("woff2");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Poppins Fallback";
+  src: local("Arial");
+  font-weight: 400;
+  ascent-override: 92.83%;
+  descent-override: 30.94%;
+  line-gap-override: 8.84%;
+  size-adjust: 113.11%;
+}
+
+@font-face {
+  font-family: "Poppins Fallback";
+  src: local("Arial");
+  font-weight: 500;
+  ascent-override: 91.82%;
+  descent-override: 30.61%;
+  line-gap-override: 8.74%;
+  size-adjust: 114.36%;
+}
+
+@font-face {
+  font-family: "Poppins Fallback";
+  src: local("Arial");
+  font-weight: 600;
+  ascent-override: 90.85%;
+  descent-override: 30.28%;
+  line-gap-override: 8.65%;
+  size-adjust: 115.57%;
+}
+
+@font-face {
+  font-family: "Luxurious Roman";
+  src: url("/fonts/luxurious-roman-latin.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Luxurious Roman Fallback";
+  src: local("Times New Roman");
+  font-weight: 400;
+  ascent-override: 82.75%;
+  descent-override: 21.78%;
+  line-gap-override: 0%;
+  size-adjust: 114.8%;
+}
+
+:root {
+  --font-wb-display: "Montserrat", "Montserrat Fallback";
+  --font-wb-text: "Poppins", "Poppins Fallback";
+  --font-wb-accent: "Luxurious Roman", "Luxurious Roman Fallback";
+
+  --wb-accent: #2d5bff;
+  --wb-cobalt: #2d5bff;
+  --wb-mist: #e7edff;
+  --wb-paper: #ffffff;
+  --wb-ink-paper: #1d1d22;
+  --wb-tape: #a6baff;
+  --wb-charcoal: #131316;
+
+  --wb-page: #ffffff;
+  --wb-ink: #131316;
+  --wb-ink-2: #55555f;
+  --wb-line: #e6e6eb;
+  --wb-surface: #f3f3f5;
+  --wb-band: #131316;
+  --wb-band-ink: #ffffff;
+  --wb-band-ink-2: #a6a6b0;
+  --wb-band-tile: #212126;
+  --wb-shadow: 0 1px 2px rgba(19, 19, 22, 0.1), 0 14px 28px -12px rgba(19, 19, 22, 0.32);
+  --wb-shadow-lift: 0 2px 4px rgba(19, 19, 22, 0.1), 0 28px 44px -16px rgba(19, 19, 22, 0.38);
+
+  --wb-ease-soft: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --wb-ease-pop: cubic-bezier(0.3, 1.6, 0.5, 1);
+}
+
+:root[data-theme="dark"] {
+  --wb-ink-paper: #2a2a31;
+  --wb-page: #131316;
+  --wb-ink: #f5f5f7;
+  --wb-ink-2: #a6a6b0;
+  --wb-line: #2b2b31;
+  --wb-surface: #1c1c21;
+  --wb-band: #ffffff;
+  --wb-band-ink: #131316;
+  --wb-band-ink-2: #55555f;
+  --wb-band-tile: #f0f0f3;
+  --wb-shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 16px 30px -12px rgba(0, 0, 0, 0.7);
+  --wb-shadow-lift: 0 2px 4px rgba(0, 0, 0, 0.4), 0 30px 48px -16px rgba(0, 0, 0, 0.8);
+}
+
+:root[data-theme] {
+  --page-background: var(--wb-page);
+}
+
+/* ─── Sober Workbench (Erick, 2026-10-22) ─────────────────────────────────
+   White and ink as the base, mist for soft surfaces, cobalt only as an
+   accent; in dark, the soft surfaces are the palette's dark tones. Hairlines
+   instead of thick shadows, small radii, nothing tilted.
+   - --wb-rule: the hairline that draws objects.
+   - --wb-soft / --wb-soft-2: soft surfaces (mist and a paler mist).
+   - --wb-raised: an object laid on a soft surface.
+   - --wb-soft-in: a fill inside a raised object.
+   - --wb-ease-settle: the overshoot of a last pop, gentler than
+     --wb-ease-pop, which reads playful at the sober pages' scale.
+   - --wb-shadow-soft: the only shadow left, for the floating header pill.
+──────────────────────────────────────────────────────────────────────────── */
+:root {
+  --wb-rule: #d7d8df;
+  --wb-soft: #e7edff;
+  --wb-soft-2: #f3f6ff;
+  --wb-raised: #ffffff;
+  --wb-soft-in: #e7edff;
+  --wb-ease-settle: cubic-bezier(0.25, 1.22, 0.5, 1);
+  --wb-shadow-soft: 0 1px 2px rgba(19, 19, 22, 0.05), 0 12px 28px -20px rgba(19, 19, 22, 0.35);
+}
+
+:root[data-theme="dark"] {
+  --wb-rule: #3a3a42;
+  --wb-soft: #1c1c21;
+  --wb-soft-2: #18181c;
+  --wb-raised: #26262c;
+  --wb-soft-in: #34343b;
+  --wb-shadow-soft: 0 1px 2px rgba(0, 0, 0, 0.35), 0 12px 28px -20px rgba(0, 0, 0, 0.8);
+}
+
+/* The scenes (Erick chose variant A, "Line", on 2026-10-22: almost no fills,
+   hairlines draw every object). Their sheets alternate between two surface
+   tones (--sc-tone-a / --sc-tone-b); an object inside a sheet is filled with
+   its sheet's own tone, so the hairline alone draws it. */
+:root {
+  --sc-tone-a: var(--wb-page);
+  --sc-tone-b: var(--wb-soft-2);
+  --sc-sheet-line: var(--wb-rule);
+  --sc-line: var(--wb-rule);
+  --sc-soft: transparent;
+  --sc-bar: var(--wb-rule);
 }
