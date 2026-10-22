@@ -169,3 +169,56 @@ Activity window: "Activity", "Running", "Every conversation sorted. Sales-ready 
 - `/` and `/work/leadbot-ai` at 360, 390, 768, 1024 and 1440, light and dark: no horizontal scroll, no console error besides the local `/_vercel/insights` 404, no scene text under 12 px.
 - Lighthouse mobile, 5 runs, Edge, local `next start` (`.perf/escenas-step3`, then `.perf/escenas-step3-b`): Home 95, 78, 95, 95, 78 (median **95**), then 95, 95, 96, 78, 95 (median **95**); LCP is still the bench's tablet image. Projects 79 in all ten runs (median **79**, floor 80): the page has no scene and no scene script, but two shared CSS chunks it loads now carry the home's activity and stepper rules (Next's CSS chunking); LCP 4.97 to 5.04 s.
 - Evidence in `docs/design/screens/rediseno-2026-escenas/` (outside git): the two pages at 390 and 1440, light and dark (unmasked, not opened here), and `frames/` with 6 frames per scene (ambient, activity, leadsort, reel, ads, booth, leadbot-case) at 390 and 1440 in both themes. The ambient frames crop the bench, so they show its media pieces; they were reviewed here only as masked copies.
+
+
+## Sober, minimal, elegant (2026-10-22)
+
+Branch `feat/wb-sobrio`, from `feat/wb-escenas` at `9410c34` (the return point). Brief: `sobrio-encargo.md`. This step covers its points 2 and 3: the new type everywhere, and two shape treatments on the home and the LeadBot case, then stop for Erick's pick. The other pages only change typeface.
+
+### Type
+
+- **Files** (`public/fonts`, Google's own latin-subset files, OFL licences beside them): `montserrat-900-latin.woff2` (Montserrat Black, the only weight, 18 KB) for `--font-wb-display`; `poppins-400/500/600-latin.woff2` (8 KB each) for `--font-wb-text`; `luxurious-roman-latin.woff2` (33 KB, one weight) for the new `--font-wb-accent`. Bricolage Grotesque and Onest are removed. 74 KB in all (75 KB before).
+- **Fallbacks:** one `@font-face` per file on Arial (Times New Roman for the accent), with the overrides computed by next/font's own method (its bundled fontkit) on these files; each fallback declares the weight it stands for, so the browser never thickens it. No preload: the intro covers the page while they load.
+- **Use:** Montserrat Black for page titles and figures, with moderate sizes and slight negative tracking (the face is wide). Poppins for text, controls and small titles (steps, cards, groups: 600). Luxurious Roman only on existing short phrases, at 26 px or more: the home's "Systems that keep running after I hand them over.", the closing sign-off "Medellín, Colombia · works in Spanish and English" (home and LeadBot case), and the case's bold line "Result: 85% of conversations handled autonomously, 24/7, with zero additional headcount." No italics, no monospace, no gradient text.
+- **Unchanged:** `--font-heading` (Space Grotesk, the intro wordmark) and the chatbot.
+- `Book a call` is set in Poppins on every page (controls are UI).
+- **Font-induced fixes on other pages** (same layout, only sized for the wider faces): About's name (`about/intro.module.scss`, the factors scaled by 3.77/4.56 em, the measured width of "Mahecha" in each face); the protected screen's address and password field (`system/locked.module.scss`), which no longer widen the sheet past 360 px.
+
+### The two variants
+
+- **A, "Line"** (default): almost no fills; every object is drawn with a hairline (`--wb-rule`), corners of 4 px, nothing filled but small cobalt accents. The tool wall loses its dark band and sits on the page between two hairlines.
+- **B, "Surface"**: flat soft surfaces (mist `#E7EDFF` and a paler mist; in dark `#1C1C21` and its neighbours), no outlines, corners of 8 px. The tool wall is a soft band.
+- Both: white and ink as the base, cobalt only as an accent (the call to action, a figure per block, progress lines, ticks), never a full background; in dark the surfaces are the palette's dark tones. No thick shadows: the header pill keeps one soft shadow (`--wb-shadow-soft`) because it floats.
+- **Switch (TEMPORARY, never on main):** `?v=b` shows B, no parameter A. An inline script beside `theme-init` in `src/app/layout.tsx` sets `data-wb-variant` on `<html>` before first paint; B's CSS hangs off it (`vb` and `sober-b` mixins in `_shared.scss`, the B tokens in `custom.css`). The pages stay static (`/` and `/?v=b` are served from the prerender cache). The shared pieces (closing, Book a call, the case and its prose) take the sober shapes only inside `[data-sober]`, which the home and the LeadBot case put around their content, so every other page keeps its look. `grep -rn "TEMPORARY (sober variants)"` finds every piece. A temporary test in `home-workbench.spec.ts` covers the switch.
+- Tokens in `custom.css`: `--wb-rule`, `--wb-soft`, `--wb-soft-2`, `--wb-raised`, `--wb-soft-in`, `--wb-ease-settle`, `--wb-shadow-soft` (both themes), and the variant tokens `--v-fill`, `--v-line`, `--v-radius` and `--sc-*` (scene sheets and the objects drawn on them).
+
+### What changed on the two pages
+
+- **Bench:** the same composition, redrawn straight and flat: no tilt, tape, clip or pins; the figures are plain tags (the first figure in cobalt), the tablet a thin frame. From 1280 px the figures lie among the objects; below 1280 the objects keep the bench and the figures form a 2 × 2 grid under it (at 1024 a tag was too narrow for its caption). The bench tablet stays the LCP element on phones: the phone headline is 11 % of the column (it was 13.2 % in the old face) and the hero's phone spacing is tighter, measured at 360, 390 and 412 px.
+- **Ambient layer:** 22 quiet marks (rings, dots, squares, short strokes) instead of 36 cut-paper bits; outlines in A, soft flat shapes in B; they drift without turning.
+- **What I build:** the motto in the accent face; the activity window drawn in line (A) or on a soft surface (B). The stepper's sheets fade between two surface tones (white and pale mist in A, mist and pale mist in B, the dark tones in dark) instead of cobalt, ink, mist and white papers.
+- **Scenes** (`scenes/work/*`): every object reads the sheet's tokens, so A draws them with hairlines and B lays them on raised surfaces; the finished creatives and the reel are cobalt drawings, not cobalt blocks; the published pile is a straight stack; labels sit straight; coins are flat. The kiosk canvas takes the page's tone in each theme (outlined tiles in A, flat in B). The portrait chat is taller, so the lead's summary fits in Poppins.
+- **Tool wall:** no dark band (see the variants), unlit logos as quiet silhouettes, a lit tile in its own colours with a cobalt hairline (A) or raised (B); in dark every logo stays a light silhouette, since many are black.
+- **Projects:** the fanned hand became a grid (three columns on desktop, two on tablets, the snap row on phones), every cover in the same box and never cropped.
+- **About and closing:** the photo stands straight, without tape; the closing sheet is a hairline frame (A) or a soft surface (B) with ink text.
+- **LeadBot case:** the folder became a plain panel (the cover, then the figure); the prints in the margin stand straight without tape or pins; headings in Montserrat Black with a short cobalt stroke; the result line as an accent quote; stack tags, figure tags and the next case card in the variant's shape.
+- **Header and footer** (every page, the same in both variants): Poppins; the pill keeps its shape and navigation, with a soft shadow, a soft surface for the current page and a 2 px cobalt bar; the footer's monogram rises on hover instead of tilting.
+
+### Motion
+
+Timings, curves, staggers, the typed window and the stepper are kept; everything that relied on rotation is now a translate, a fade or a scale with the same timing (the bench objects, the activity window, the closing sheet, the photo, the case prints, the fan, the tool wall's swatch). Softened, because it read playful in the new restraint: the last-pop overshoot (`--wb-ease-pop`, control point 1.6) becomes `--wb-ease-settle` (1.22) on the two pages; the bench's idle float loses its 0.7° sway and drifts 0.7 cqi instead of 1.1; a tapped object scales 1.03 instead of 1.07 and no longer straightens; the ambient marks no longer turn; scaled entrances (messages, tags, tiles, cards) start closer to their final size.
+
+### Copy
+
+No new page copy. The bench phrases ("Work on the bench", "What's on the bench", "Pick one up.") still make sense, since the hero is still a composition of objects on a bench, so they stay.
+
+### Checks (step 2 and 3 of the brief)
+
+- `npx tsc --noEmit`; `node scripts/quality/biome-gate.mjs main`; `npm run build`; `npm run test:unit` (27/27); on `next start` (3351) `home-workbench`, `intro-font`, `cls`, `a11y-names`, `ssr-content` on chromium and mobile-chromium.
+- `/` and `/work/leadbot-ai`, both variants, at 360, 390, 768, 1024 and 1440, light and dark: no horizontal scroll, no console error besides the local `/_vercel/insights` 404 and its MIME line, no page text under 16 px on phones, no scene text under 12 px, no target under 44 px. Every other page at 360 and 1440: no overflow and no text running past its box.
+- Lighthouse mobile (local `next start`, Edge, 5 runs, `.perf/sobrio-*`): see the report of this step.
+- Evidence in `docs/design/screens/rediseno-2026-sobrio/` (outside git): the two pages per variant at 390 and 1440, light and dark (unmasked, for Erick; reviewed here only as masked copies), and `frames/` with 6 frames per scene (ambient, activity, leadsort, reel, ads, booth, leadbot-case) per variant at 390 and 1440 in both themes. `scripts/design/screens.mjs` and `scene-frames.mjs` take `--query v=b`; `scripts/perf/lighthouse.mjs` takes `LH_QUERY=v=b`.
+
+### Pending (step 4, after Erick's pick)
+
+Remove the variant he drops, the switch and `[data-sober]` (the scoped blocks become the base style of the shared pieces), bring the style to every page, then adjust the scene map rows that depend on what left (tape, pins, piles, drifting prints) and confirm them with Erick before building the remaining scenes. Projects' CSS gap (Next's loose CSS chunking merges home, About and gallery modules into chunks every page loads) is still open: it cannot be closed without `next.config.mjs` (`experimental.cssChunking: "strict"`), which needs Erick's OK.
