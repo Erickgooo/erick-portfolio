@@ -11,8 +11,10 @@ test.describe("mobile nav", () => {
   test.use({ ...pixel7 });
   test("icon-only nav links have accessible names", async ({ page }) => {
     await page.goto("/");
+    // Scoped to the header: the site footer lists the same pages by name.
+    const header = page.locator("header");
     for (const name of ["About", "Projects", "Blog", "Visual Work"]) {
-      await expect(page.getByRole("link", { name, exact: true })).toBeVisible();
+      await expect(header.getByRole("link", { name, exact: true })).toBeVisible();
     }
   });
 });
