@@ -168,6 +168,10 @@
 
   input {
     flex: 1;
+    // A percentage width makes the field's own width (its default size, wider
+    // in Poppins) stop counting towards the sheet's minimum, so the sheet fits
+    // a 360 px screen.
+    width: 100%;
     min-width: 0;
     height: 100%;
     padding: 0 8px 0 16px;
