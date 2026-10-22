@@ -461,6 +461,14 @@
   border-radius: 1px;
   background: var(--wb-soft-2);
 
+  // The still fills the player's box whatever the frame's shape. `.frame img`
+  // (height: auto) outranks the facade's own `.thumb`, and YouTube's still is
+  // 4:3, so in a 9:16 frame it kept its natural height and left the rest empty.
+  img {
+    height: 100%;
+    object-fit: cover;
+  }
+
   button:focus-visible {
     outline: 3px solid var(--wb-accent);
     outline-offset: -3px;
