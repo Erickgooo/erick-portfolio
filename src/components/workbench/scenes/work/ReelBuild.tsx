@@ -8,7 +8,8 @@
 // "338K+|organic views"; before/after hook, animation, script, voice, edit,
 // cross-posting; three flagship reels; zero ad spend) and the automated SEO
 // publishing of quick-metal-shop-marketing.mdx and dakoma-roofing.mdx. The
-// pipeline steps are icons only; no frame of the real videos is used.
+// pipeline steps are icons only; no frame of the real videos is used. Sober
+// (2026-10-22): drawn in line in variant A, on flat surfaces in variant B.
 import type { CSSProperties } from "react";
 import type { IconType } from "react-icons";
 import { TbMicrophone, TbPencil, TbPhoto, TbScissors, TbSend, TbWand } from "react-icons/tb";

@@ -9,6 +9,8 @@
 // (vertical touchscreen app; grid gallery and single-image modes; 285 panel
 // variants, drawn as 285 tiles) and quick-metal-shop-the-brand-comes-to-life.mdx
 // (the hexagonal pattern). Drawn in the site's palette, not the client's.
+// Sober (2026-10-22): drawn in line in variant A, on flat surfaces in
+// variant B.
 import type { CSSProperties } from "react";
 import { Scene } from "../Scene";
 import { KioskScreen } from "./KioskScreen";

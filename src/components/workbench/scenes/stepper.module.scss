@@ -1,4 +1,7 @@
-// Workbench scenes: the stepper (see SceneStepper.tsx). Keep this file ASCII-only.
+// Workbench scenes: the stepper (see SceneStepper.tsx). Sober (2026-10-22):
+// the scenes' sheets alternate between two surface tones (white and a pale
+// mist, or their dark equivalents), never cobalt; variant A outlines them
+// with a hairline, variant B leaves them flat. Keep this file ASCII-only.
 @use "../shared" as *;
 
 $max-steps: 8;
@@ -63,26 +66,25 @@ $header: 76px;
     grid-row: var(--row);
     align-self: center;
     margin-top: 0 !important;
-    padding: 16px 0 18px;
+    padding: 18px 0 20px;
     border-top: 1px solid var(--wb-line);
   }
 }
 
 .title {
-  @include display(700);
-  font-size: 26px;
-  line-height: 1.1;
-  letter-spacing: -0.02em;
+  @include s-h3;
+  font-size: 22px;
+  line-height: 1.25;
   text-wrap: balance;
 
   @include from-desk {
-    font-size: 23px;
+    font-size: 20px;
   }
 }
 
 .line {
   font-size: 17px;
-  line-height: 1.5;
+  line-height: 1.6;
   color: var(--wb-ink-2);
 
   @include from-desk {
@@ -92,7 +94,7 @@ $header: 76px;
 
 .note {
   font-size: 16px;
-  font-weight: 600;
+  font-weight: 500;
 }
 
 // Desktop: inactive steps rest dimmed; the active one lights up.
@@ -113,9 +115,9 @@ $header: 76px;
     display: block;
     position: absolute;
     left: 0;
-    top: -2px;
+    top: -1px;
     width: 100%;
-    height: 3px;
+    height: 2px;
     background: var(--wb-accent);
     transform-origin: left center;
     scale: 0 1;
@@ -174,15 +176,22 @@ $header: 76px;
   }
 }
 
-// The sheet: the scene's paper and box. Scenes draw in its container units.
+// The sheet: the scene's surface and box. Scenes draw in its container
+// units and read --sc-bg (the sheet's own tone) and --sc-obj (the fill of an
+// object laid on it: the sheet's tone in A, a raised surface in B).
 .sheet {
+  --sc-bg: var(--sc-tone-a);
+  --sc-obj: var(--sc-obj-fill, var(--sc-bg));
+
   position: relative;
   width: 100%;
   aspect-ratio: var(--sheet-ratio-phone);
   overflow: hidden;
-  border-radius: 6px;
+  border: 1px solid var(--sc-sheet-line);
+  border-radius: var(--v-radius);
   container-type: inline-size;
-  box-shadow: var(--wb-shadow);
+  background: var(--sc-bg);
+  color: var(--wb-ink);
 
   @include from-tablet {
     aspect-ratio: var(--sheet-ratio);
@@ -205,33 +214,12 @@ $header: 76px;
   }
 }
 
-.cobalt .sheet {
-  background: var(--wb-cobalt);
-  color: #ffffff;
-}
-
-.ink .sheet {
-  background: var(--wb-ink-paper);
-  color: #ffffff;
-
-  @include dark {
-    box-shadow:
-      inset 0 0 0 1px rgba(255, 255, 255, 0.08),
-      var(--wb-shadow);
-  }
-}
-
-.mist .sheet {
-  background: var(--wb-mist);
-  color: var(--wb-charcoal);
-}
-
+// The steps keep their paper names (data.ts), but cobalt is never a full
+// background any more: the four papers map to two alternating tones, so the
+// stage still changes colour as one layer fades over the other.
+.ink .sheet,
 .paper .sheet {
-  background: var(--wb-paper);
-  color: var(--wb-charcoal);
-  box-shadow:
-    inset 0 0 0 1px var(--wb-line),
-    var(--wb-shadow);
+  --sc-bg: var(--sc-tone-b);
 }
 
 @include reduced {

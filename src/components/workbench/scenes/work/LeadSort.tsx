@@ -3,7 +3,8 @@
 // location), the answers fill the lead's card and the card goes to the
 // "Sales-ready" lane, while other questions are answered and filed on their
 // own; the share of conversations automated counts up to its real value.
-// A generic chat and board, drawn: no third-party interface or logo.
+// A generic chat and board, drawn: no third-party interface or logo. Sober
+// (2026-10-22): drawn in line in variant A, on flat surfaces in variant B.
 //
 // Facts: src/app/work/projects/leadbot-ai.mdx (metric "85%|conversations
 // automated"; qualifying B2B leads with product interest, volume and
@@ -94,7 +95,6 @@ export function LeadSort({
       </div>
 
       <div className={s.tag}>
-        <span className={s.hole} />
         <CountUp value="85%" at={7} className={s.value} duration={1500} />
         <span className={s.caption}>conversations automated</span>
       </div>

@@ -7,7 +7,8 @@
 // Facts: src/app/work/projects/ai-powered-ad-creatives.mdx ("3.92x" purchase
 // ROAS on the B2C webshop ad; "$3.45" cost per lead on the B2B ad; avatar-led
 // AI creatives). The ads are generic and drawn: no platform interface, logo or
-// frame of the real creatives.
+// frame of the real creatives. Sober (2026-10-22): drawn in line in variant
+// A, on flat surfaces in variant B.
 import type { CSSProperties } from "react";
 import { CountUp, Scene } from "../Scene";
 import s from "./adreturn.module.scss";

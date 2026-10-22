@@ -1,11 +1,13 @@
-// Scene: ReelBuild (see ReelBuild.tsx), drawn for the ink sheet. Landscape
-// (5:4) from 720 px, portrait (4:5) on phones and with .portrait.
-// Keep this file ASCII-only.
+// Scene: ReelBuild (see ReelBuild.tsx). Landscape (5:4) from 720 px,
+// portrait (4:5) on phones and with .portrait. Sober (2026-10-22): drawn
+// with hairlines in variant A, on flat surfaces in variant B (the sheet's
+// tokens, see scenes/stepper.module.scss). The published pile is a straight
+// stack now (it used to lean), and the finished piece is a cobalt drawing,
+// not a cobalt block. Keep this file ASCII-only.
 @use "sass:math";
 @use "../../shared" as *;
 @use "../scene" as *;
 
-$pop: cubic-bezier(0.3, 1.6, 0.5, 1);
 $slide: cubic-bezier(0.65, 0, 0.35, 1);
 
 .scene {
@@ -13,6 +15,7 @@ $slide: cubic-bezier(0.65, 0, 0.35, 1);
 
   position: absolute;
   inset: 0;
+  color: var(--wb-ink);
   font-size: max(12px, var(--t));
   line-height: 1.25;
 }
@@ -55,22 +58,22 @@ $slide: cubic-bezier(0.65, 0, 0.35, 1);
   transition-delay: 0.2s;
 }
 
-// The phone, a paper frame around the screen.
+// The phone: a thin frame around the screen.
 .reel {
   left: 6cqi;
   top: 6cqi;
   height: 68cqi;
   aspect-ratio: 9 / 16;
-  padding: 1.3cqi;
-  border-radius: 3.2cqi;
-  background: #ffffff;
-  box-shadow: 0 1.4cqi 3cqi -1cqi rgba(0, 0, 0, 0.55);
+  padding: 1.1cqi;
+  border: 1px solid var(--sc-line);
+  border-radius: 2.6cqi;
+  background: var(--sc-obj);
 
   @include portrait(".portrait") {
     left: 5cqi;
     top: 5cqi;
     height: 72cqi;
-    padding: 1.8cqi;
+    padding: 1.6cqi;
   }
 }
 
@@ -79,14 +82,15 @@ $slide: cubic-bezier(0.65, 0, 0.35, 1);
   width: 100%;
   height: 100%;
   overflow: hidden;
-  border-radius: 2.2cqi;
+  border: 1px solid var(--sc-line);
+  border-radius: 1.8cqi;
 }
 
-// Before: a plain wall.
+// Before: a plain wall, with the line of the floor.
 .wall {
   position: absolute;
   inset: 0;
-  background: #d9d9de;
+  background: var(--sc-soft);
 
   &::after {
     content: "";
@@ -94,17 +98,23 @@ $slide: cubic-bezier(0.65, 0, 0.35, 1);
     left: 0;
     right: 0;
     top: 74%;
-    height: 0.5cqi;
-    background: #c4c4cb;
+    height: 1px;
+    background: var(--sc-bar);
   }
 }
 
-// After: the finished piece slides over it.
+// After: the finished piece slides over it, a perforated panel drawn in cobalt.
 .after {
   position: absolute;
   inset: 0;
-  background: var(--wb-cobalt);
+  border-left: 1px solid var(--wb-accent);
+  background: var(--sc-obj);
   transition: translate 1.2s $slide;
+
+  @include vb {
+    border-left-color: transparent;
+    background: rgba(45, 91, 255, 0.14);
+  }
 
   @include before(2) {
     translate: 101% 0;
@@ -115,26 +125,31 @@ $slide: cubic-bezier(0.65, 0, 0.35, 1);
 .perf {
   position: absolute;
   inset: 8% 10% 30%;
-  border-radius: 1cqi;
-  background-color: rgba(255, 255, 255, 0.12);
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='34'%3E%3Cg fill='%23ffffff'%3E%3Ccircle cx='5' cy='6' r='3'/%3E%3Ccircle cx='15' cy='23' r='3'/%3E%3C/g%3E%3C/svg%3E");
+  border: 1px solid var(--wb-accent);
+  border-radius: 0.8cqi;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='34'%3E%3Cg fill='%232d5bff'%3E%3Ccircle cx='5' cy='6' r='2.4'/%3E%3Ccircle cx='15' cy='23' r='2.4'/%3E%3C/g%3E%3C/svg%3E");
   background-size: 2.2cqi auto;
+
+  @include vb {
+    border-color: transparent;
+  }
 }
 
 .captions {
   position: absolute;
   left: 12%;
   right: 12%;
-  top: 72%;
+  top: 76%;
   display: grid;
   justify-items: center;
   gap: 1cqi;
 
   i {
     display: block;
-    height: 1.5cqi;
+    height: 1.1cqi;
     border-radius: 0.4cqi;
-    background: #ffffff;
+    background: var(--wb-ink);
+    opacity: 0.8;
     transition: scale 0.6s $ease-soft;
 
     &:first-child {
@@ -156,17 +171,17 @@ $slide: cubic-bezier(0.65, 0, 0.35, 1);
   position: absolute;
   left: 16%;
   right: 16%;
-  bottom: 5%;
-  height: 11%;
+  bottom: 4%;
+  height: 9%;
   display: flex;
   align-items: center;
   justify-content: space-between;
 
   i {
-    width: 4.4%;
+    width: 3.6%;
     height: 100%;
     border-radius: 0.5cqi;
-    background: #ffffff;
+    background: var(--wb-accent);
     scale: 1 var(--h);
     transition:
       opacity 0.4s $ease-soft,
@@ -196,16 +211,16 @@ $slide: cubic-bezier(0.65, 0, 0.35, 1);
   left: 6%;
   right: 6%;
   top: 3%;
-  height: 0.8cqi;
+  height: 0.6cqi;
   border-radius: 1cqi;
-  background: rgba(255, 255, 255, 0.35);
+  background: var(--sc-bar);
 
   &::after {
     content: "";
     position: absolute;
     inset: 0;
     border-radius: inherit;
-    background: #ffffff;
+    background: var(--wb-accent);
     transform-origin: left center;
     transition: scale 1.1s linear;
   }
@@ -238,18 +253,19 @@ $slide: cubic-bezier(0.65, 0, 0.35, 1);
   place-items: center;
   width: 6.6cqi;
   aspect-ratio: 1;
-  border-radius: 1.4cqi;
-  background: #ffffff;
-  color: var(--wb-charcoal);
-  font-size: 3.6cqi;
+  border: 1px solid var(--sc-line);
+  border-radius: 1cqi;
+  background: var(--sc-obj);
+  color: var(--wb-ink);
+  font-size: 3.4cqi;
   transition:
     opacity 0.4s $ease-soft,
-    scale 0.5s $pop;
+    scale 0.5s $ease-settle;
 
   @include portrait(".portrait") {
     width: 13cqi;
-    border-radius: 2.6cqi;
-    font-size: 6.6cqi;
+    border-radius: 2cqi;
+    font-size: 6.2cqi;
   }
 }
 
@@ -257,12 +273,12 @@ $slide: cubic-bezier(0.65, 0, 0.35, 1);
   .step:nth-child(#{$k}) {
     @include before($k) {
       opacity: 0.24;
-      scale: 0.86;
+      scale: 0.9;
     }
   }
 }
 
-// Published articles: a pile of printed sheets; a new one lands on top.
+// Published articles: a straight stack of sheets; a new one lands on top.
 .pile {
   left: 50cqi;
   top: 21cqi;
@@ -280,31 +296,41 @@ $slide: cubic-bezier(0.65, 0, 0.35, 1);
 .sheet {
   position: absolute;
   inset: 0;
-  border-radius: 0.8cqi;
-  background: #ffffff;
-  box-shadow: 0 0.8cqi 1.6cqi -0.6cqi rgba(0, 0, 0, 0.5);
+  border: 1px solid var(--sc-line);
+  border-radius: 0.6cqi;
+  background: var(--sc-obj);
 
+  // The sheets under the top one peek out below and to the right.
   &:nth-child(1) {
-    rotate: -6deg;
-    background: var(--wb-mist);
+    translate: 2.4cqi 2.4cqi;
+    background: var(--sc-soft);
+
+    // B has no outlines: the stack reads by its tones (raised, soft, deeper).
+    @include vb {
+      background: var(--sc-bar);
+    }
   }
 
   &:nth-child(2) {
-    rotate: 4deg;
+    translate: 1.2cqi 1.2cqi;
+
+    @include vb {
+      background: var(--sc-soft);
+    }
   }
 
   i {
     position: absolute;
     left: 12%;
-    height: 1.2cqi;
+    height: 0.9cqi;
     border-radius: 0.6cqi;
-    background: #d9d9de;
+    background: var(--sc-bar);
 
     &:nth-child(1) {
       top: 14%;
       width: 60%;
-      height: 2cqi;
-      background: var(--wb-charcoal);
+      height: 1.6cqi;
+      background: var(--wb-ink);
     }
 
     &:nth-child(2) {
@@ -320,10 +346,9 @@ $slide: cubic-bezier(0.65, 0, 0.35, 1);
 }
 
 .newSheet {
-  rotate: -1deg;
   transition:
     opacity 0.4s $ease-soft,
-    translate 0.8s $pop;
+    translate 0.8s $ease-settle;
   transition-delay: 0.35s;
 
   @include before(6) {
@@ -350,8 +375,14 @@ $slide: cubic-bezier(0.65, 0, 0.35, 1);
   position: relative;
   width: 6.4cqi;
   aspect-ratio: 9 / 16;
-  border-radius: 0.8cqi;
-  background: var(--wb-cobalt);
+  border: 1px solid var(--wb-accent);
+  border-radius: 0.6cqi;
+  background: var(--sc-obj);
+
+  @include vb {
+    border-color: transparent;
+    background: var(--wb-accent);
+  }
 
   &::after {
     content: "";
@@ -360,25 +391,29 @@ $slide: cubic-bezier(0.65, 0, 0.35, 1);
     top: 40%;
     width: 30%;
     height: 20%;
-    background: #ffffff;
+    background: var(--wb-accent);
     clip-path: polygon(0 0, 100% 50%, 0 100%);
+
+    @include vb {
+      background: #ffffff;
+    }
   }
 
   @include portrait(".portrait") {
     width: 12cqi;
-    border-radius: 1.4cqi;
+    border-radius: 1.2cqi;
   }
 }
 
 .newThumb {
   transition:
     opacity 0.4s $ease-soft,
-    scale 0.6s $pop;
+    scale 0.6s $ease-settle;
   transition-delay: 0.1s;
 
   @include before(6) {
     opacity: 0;
-    scale: 0.5;
+    scale: 0.6;
   }
 }
 
@@ -391,18 +426,18 @@ $slide: cubic-bezier(0.65, 0, 0.35, 1);
   align-content: center;
   gap: 0.6cqi;
   padding: 2cqi 3cqi;
+  border: 1px solid var(--sc-line);
   border-radius: 1cqi;
-  background: var(--wb-mist);
-  color: var(--wb-charcoal);
+  background: var(--sc-obj);
   transition:
     opacity 0.6s $ease-soft,
     translate 0.8s $ease-soft,
-    scale 0.6s $pop;
+    scale 0.6s $ease-settle;
 
   @include before(7) {
     opacity: 0;
     translate: 0 3cqi;
-    scale: 0.94;
+    scale: 0.96;
   }
 
   @include portrait(".portrait") {
@@ -416,19 +451,24 @@ $slide: cubic-bezier(0.65, 0, 0.35, 1);
 }
 
 .value {
-  @include display(800);
-  font-size: 9cqi;
-  line-height: 0.9;
-  letter-spacing: -0.045em;
-  color: var(--wb-cobalt);
+  @include title;
+  font-size: 8cqi;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  color: var(--wb-accent);
+
+  @include dark {
+    color: #6688ff;
+  }
 
   @include portrait(".portrait") {
-    font-size: 10.5cqi;
+    font-size: 9.4cqi;
   }
 }
 
 .caption {
-  font-weight: 600;
+  font-weight: 500;
+  color: var(--wb-ink-2);
 }
 
 @keyframes wave {

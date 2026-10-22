@@ -1,17 +1,18 @@
 // Scene: LeadSort (see LeadSort.tsx). Landscape (5:4) from 720 px, portrait
 // (4:5) on phones and with .portrait. Units are the sheet's (cqi).
+// Sober (2026-10-22): every object reads the sheet's tokens (--sc-obj,
+// --sc-line, --sc-soft, --sc-bar): drawn with hairlines in variant A, laid on
+// flat surfaces in variant B. Cobalt marks only what the bot does.
 // Keep this file ASCII-only.
 @use "../../shared" as *;
 @use "../scene" as *;
-
-$pop: cubic-bezier(0.3, 1.6, 0.5, 1);
 
 .scene {
   --t: 2.25cqi;
 
   position: absolute;
   inset: 0;
-  color: var(--wb-charcoal);
+  color: var(--wb-ink);
   font-size: max(12px, var(--t));
   line-height: 1.3;
 }
@@ -32,6 +33,8 @@ $pop: cubic-bezier(0.3, 1.6, 0.5, 1);
 .board,
 .tag {
   position: absolute;
+  border: 1px solid var(--sc-line);
+  background: var(--sc-obj);
   transition:
     opacity 0.8s $ease-soft,
     translate 1s $ease-soft;
@@ -49,15 +52,13 @@ $pop: cubic-bezier(0.3, 1.6, 0.5, 1);
   height: 70cqi;
   display: flex;
   flex-direction: column;
-  border-radius: 2.2cqi;
-  background: #ffffff;
-  box-shadow: 0 1px 2px rgba(19, 19, 22, 0.12), 0 2cqi 4cqi -1.5cqi rgba(19, 19, 22, 0.4);
+  border-radius: 1.4cqi;
   overflow: hidden;
 
   @include portrait(".portrait") {
     width: 90cqi;
     height: 66cqi;
-    border-radius: 3cqi;
+    border-radius: 2cqi;
   }
 }
 
@@ -70,8 +71,7 @@ $pop: cubic-bezier(0.3, 1.6, 0.5, 1);
   align-content: start;
   gap: 2.4cqi;
   padding: 2.6cqi;
-  border-radius: 2.2cqi;
-  background: var(--wb-mist);
+  border-radius: 1.4cqi;
   transition-delay: 0.12s;
 
   @include portrait(".portrait") {
@@ -81,10 +81,11 @@ $pop: cubic-bezier(0.3, 1.6, 0.5, 1);
     height: 45cqi;
     gap: 2.2cqi;
     padding: 2.4cqi;
-    border-radius: 3cqi;
+    border-radius: 2cqi;
   }
 }
 
+// The figure, on a plain tag.
 .tag {
   left: 60cqi;
   top: 55cqi;
@@ -93,18 +94,17 @@ $pop: cubic-bezier(0.3, 1.6, 0.5, 1);
   display: grid;
   align-content: center;
   gap: 0.8cqi;
-  padding: 0 2.4cqi 0 6cqi;
-  background: #ffffff;
-  clip-path: polygon(4cqi 0, 100% 0, 100% 100%, 4cqi 100%, 0 calc(100% - 4cqi), 0 4cqi);
+  padding: 0 2.8cqi;
+  border-radius: 1.4cqi;
   transition:
     opacity 0.6s $ease-soft,
     translate 0.8s $ease-soft,
-    scale 0.6s $pop;
+    scale 0.6s $ease-settle;
 
   @include before(7) {
     opacity: 0;
     translate: 0 3cqi;
-    scale: 0.94;
+    scale: 0.96;
   }
 
   @include portrait(".portrait") {
@@ -113,45 +113,31 @@ $pop: cubic-bezier(0.3, 1.6, 0.5, 1);
     width: 32cqi;
     height: 45cqi;
     align-content: end;
-    padding: 0 3cqi 4cqi 5cqi;
-    clip-path: polygon(0 5cqi, 5cqi 0, calc(100% - 5cqi) 0, 100% 5cqi, 100% 100%, 0 100%);
-  }
-}
-
-.hole {
-  position: absolute;
-  left: 1.5cqi;
-  top: 50%;
-  width: 2cqi;
-  height: 2cqi;
-  translate: 0 -50%;
-  border-radius: 50%;
-  box-shadow: inset 0 0 0 0.45cqi rgba(19, 19, 22, 0.22);
-
-  @include portrait(".portrait") {
-    left: 50%;
-    top: 3.4cqi;
-    width: 3cqi;
-    height: 3cqi;
-    translate: -50% 0;
+    padding: 0 3cqi 4cqi;
+    border-radius: 2cqi;
   }
 }
 
 .value {
-  @include display(800);
-  font-size: 8.4cqi;
-  line-height: 0.9;
-  letter-spacing: -0.045em;
-  color: var(--wb-cobalt);
+  @include title;
+  font-size: 7.6cqi;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  color: var(--wb-accent);
+
+  @include dark {
+    color: #6688ff;
+  }
 
   @include portrait(".portrait") {
-    font-size: 10.5cqi;
+    font-size: 9cqi;
   }
 }
 
 .caption {
-  font-weight: 600;
-  line-height: 1.2;
+  font-weight: 500;
+  line-height: 1.25;
+  color: var(--wb-ink-2);
 }
 
 // The chat ----------------------------------------------------------------------
@@ -161,7 +147,7 @@ $pop: cubic-bezier(0.3, 1.6, 0.5, 1);
   align-items: center;
   gap: 1.6cqi;
   padding: 2cqi 2.6cqi;
-  border-bottom: 1px solid #e6e6eb;
+  border-bottom: 1px solid var(--sc-line);
 
   @include portrait(".portrait") {
     gap: 2.4cqi;
@@ -169,41 +155,40 @@ $pop: cubic-bezier(0.3, 1.6, 0.5, 1);
   }
 }
 
+// The assistant: a cobalt disc with a small square, the bench's mark.
 .avatar {
   position: relative;
   flex: none;
-  width: 5.6cqi;
-  height: 5.6cqi;
+  width: 5.2cqi;
+  height: 5.2cqi;
   border-radius: 50%;
-  background: var(--wb-cobalt);
+  background: var(--wb-accent);
 
-  // A paper square, the bench's mark.
   &::after {
     content: "";
     position: absolute;
-    inset: 32%;
-    border-radius: 0.3cqi;
+    inset: 36%;
+    border-radius: 0.2cqi;
     background: #ffffff;
-    rotate: 45deg;
   }
 
   @include portrait(".portrait") {
-    width: 7.4cqi;
-    height: 7.4cqi;
+    width: 7cqi;
+    height: 7cqi;
   }
 }
 
 .who {
   display: grid;
-  line-height: 1.15;
+  line-height: 1.2;
 }
 
 .name {
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .status {
-  color: #55555f;
+  color: var(--wb-ink-2);
 }
 
 .thread {
@@ -222,32 +207,39 @@ $pop: cubic-bezier(0.3, 1.6, 0.5, 1);
 .msg {
   max-width: 80%;
   padding: 0.6em 0.85em;
-  border-radius: 1em;
+  border: 1px solid var(--sc-line);
+  border-radius: 0.9em;
   transition:
     opacity 0.45s $ease-soft,
     translate 0.6s $ease-soft,
-    scale 0.5s $pop;
+    scale 0.5s $ease-settle;
 }
 
 .in {
   align-self: flex-start;
-  border-bottom-left-radius: 0.3em;
-  background: #f0f0f3;
+  border-bottom-left-radius: 0.25em;
+  background: var(--sc-soft);
   transform-origin: left bottom;
 }
 
+// The bot's message: A, a cobalt outline; B, a cobalt bubble.
 .out {
-  border-bottom-right-radius: 0.3em;
-  background: var(--wb-cobalt);
-  color: #ffffff;
+  border-color: var(--wb-accent);
+  border-bottom-right-radius: 0.25em;
+  background: var(--sc-obj);
   transform-origin: right bottom;
+
+  @include vb {
+    background: var(--wb-accent);
+    color: #ffffff;
+  }
 }
 
 .m1 {
   @include before(1) {
     opacity: 0;
     translate: 0 1.5cqi;
-    scale: 0.94;
+    scale: 0.96;
   }
 }
 
@@ -264,7 +256,7 @@ $pop: cubic-bezier(0.3, 1.6, 0.5, 1);
   @include before(3) {
     opacity: 0;
     translate: 0 1.5cqi;
-    scale: 0.94;
+    scale: 0.96;
   }
 }
 
@@ -272,7 +264,7 @@ $pop: cubic-bezier(0.3, 1.6, 0.5, 1);
   @include before(4) {
     opacity: 0;
     translate: 0 1.5cqi;
-    scale: 0.94;
+    scale: 0.96;
   }
 }
 
@@ -282,11 +274,16 @@ $pop: cubic-bezier(0.3, 1.6, 0.5, 1);
   align-self: end;
   gap: 0.3em;
   padding: 0.75em 0.9em;
-  border-radius: 1em;
-  border-bottom-right-radius: 0.3em;
-  background: var(--wb-cobalt);
+  border: 1px solid var(--wb-accent);
+  border-radius: 0.9em;
+  border-bottom-right-radius: 0.25em;
+  background: var(--sc-obj);
   opacity: 0;
   transition: opacity 0.3s $ease-soft;
+
+  @include vb {
+    background: var(--wb-accent);
+  }
 
   @include from(2) {
     opacity: 1;
@@ -300,7 +297,11 @@ $pop: cubic-bezier(0.3, 1.6, 0.5, 1);
     width: 0.42em;
     height: 0.42em;
     border-radius: 50%;
-    background: #ffffff;
+    background: var(--wb-accent);
+
+    @include vb {
+      background: #ffffff;
+    }
 
     @include live {
       animation: dot 1s ease-in-out infinite;
@@ -326,15 +327,16 @@ $pop: cubic-bezier(0.3, 1.6, 0.5, 1);
   span {
     flex: 1;
     height: 5cqi;
+    border: 1px solid var(--sc-line);
     border-radius: 2.5cqi;
-    background: #f0f0f3;
+    background: var(--sc-soft);
   }
 
   i {
     width: 5cqi;
     height: 5cqi;
     border-radius: 50%;
-    background: var(--wb-cobalt);
+    background: var(--wb-accent);
   }
 
   // The portrait chat has no room for it.
@@ -353,8 +355,9 @@ $pop: cubic-bezier(0.3, 1.6, 0.5, 1);
   gap: 0.8cqi;
   margin-top: auto;
   padding: 1.2cqi;
-  border-radius: 1.4cqi;
-  background: var(--wb-mist);
+  border: 1px solid var(--sc-line);
+  border-radius: 1cqi;
+  background: var(--sc-soft);
   opacity: 0;
   translate: var(--fly-x) var(--fly-y);
   scale: 0.8;
@@ -381,7 +384,7 @@ $pop: cubic-bezier(0.3, 1.6, 0.5, 1);
 
     gap: 1.4cqi;
     padding: 1.6cqi;
-    border-radius: 2cqi;
+    border-radius: 1.4cqi;
   }
 }
 
@@ -390,9 +393,10 @@ $pop: cubic-bezier(0.3, 1.6, 0.5, 1);
   align-items: center;
   gap: 0.4em;
   padding: 0.3em 0.55em;
-  border-radius: 0.4em;
-  background: #ffffff;
-  font-weight: 600;
+  border: 1px solid var(--sc-line);
+  border-radius: 0.35em;
+  background: var(--sc-obj);
+  font-weight: 500;
 }
 
 .check {
@@ -400,8 +404,8 @@ $pop: cubic-bezier(0.3, 1.6, 0.5, 1);
   width: 0.95em;
   height: 0.95em;
   border-radius: 50%;
-  background: var(--wb-cobalt);
-  transition: scale 0.5s $pop;
+  background: var(--wb-accent);
+  transition: scale 0.5s $ease-settle;
   transition-delay: calc(0.25s + var(--k) * 140ms);
 
   &::after {
@@ -433,7 +437,7 @@ $pop: cubic-bezier(0.3, 1.6, 0.5, 1);
 }
 
 .laneName {
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .answered {
@@ -445,8 +449,9 @@ $pop: cubic-bezier(0.3, 1.6, 0.5, 1);
   position: relative;
   width: 5.6cqi;
   aspect-ratio: 1;
-  border-radius: 1cqi;
-  background: #ffffff;
+  border: 1px solid var(--sc-line);
+  border-radius: 0.8cqi;
+  background: var(--sc-soft);
 
   &::after {
     content: "";
@@ -455,17 +460,17 @@ $pop: cubic-bezier(0.3, 1.6, 0.5, 1);
     top: 22%;
     width: 22%;
     height: 40%;
-    border: solid var(--wb-cobalt);
-    border-width: 0 0.5cqi 0.5cqi 0;
+    border: solid var(--wb-accent);
+    border-width: 0 0.4cqi 0.4cqi 0;
     rotate: 45deg;
   }
 
   @include portrait(".portrait") {
     width: 8.6cqi;
-    border-radius: 1.4cqi;
+    border-radius: 1.2cqi;
 
     &::after {
-      border-width: 0 0.7cqi 0.7cqi 0;
+      border-width: 0 0.6cqi 0.6cqi 0;
     }
   }
 }
@@ -473,12 +478,12 @@ $pop: cubic-bezier(0.3, 1.6, 0.5, 1);
 .newTicket {
   transition:
     opacity 0.4s $ease-soft,
-    scale 0.55s $pop;
+    scale 0.55s $ease-settle;
   transition-delay: 0.5s;
 
   @include before(5) {
     opacity: 0;
-    scale: 0.4;
+    scale: 0.5;
   }
 }
 
@@ -487,17 +492,28 @@ $pop: cubic-bezier(0.3, 1.6, 0.5, 1);
   gap: 1.2cqi;
 }
 
+// A sales-ready lead: A, a cobalt outline; B, a cobalt card.
 .lead {
   display: grid;
   gap: 1cqi;
   padding: 1.4cqi;
-  border-radius: 1.2cqi;
-  background: var(--wb-cobalt);
-  color: #ffffff;
+  border: 1px solid var(--wb-accent);
+  border-radius: 1cqi;
+  background: var(--sc-obj);
+  color: var(--wb-accent);
+
+  @include vb {
+    background: var(--wb-accent);
+    color: #ffffff;
+  }
 
   @include portrait(".portrait") {
     padding: 1.8cqi;
-    border-radius: 1.6cqi;
+    border-radius: 1.4cqi;
+  }
+
+  @include dark {
+    color: #6688ff;
   }
 }
 
@@ -510,12 +526,17 @@ $pop: cubic-bezier(0.3, 1.6, 0.5, 1);
 .bars {
   display: block;
   width: 70%;
-  height: 1.1cqi;
+  height: 0.8cqi;
   border-radius: 1cqi;
-  background: rgba(255, 255, 255, 0.55);
+  background: currentColor;
+  opacity: 0.35;
+
+  @include vb {
+    opacity: 0.55;
+  }
 
   @include portrait(".portrait") {
-    height: 1.5cqi;
+    height: 1.2cqi;
   }
 }
 
@@ -523,12 +544,17 @@ $pop: cubic-bezier(0.3, 1.6, 0.5, 1);
   display: flex;
   flex-wrap: wrap;
   gap: 0.5em;
-  font-weight: 600;
+  font-weight: 500;
 
   span {
     padding: 0.15em 0.45em;
-    border-radius: 0.35em;
-    background: rgba(255, 255, 255, 0.18);
+    border: 1px solid currentColor;
+    border-radius: 0.3em;
+
+    @include vb {
+      border-color: transparent;
+      background: rgba(255, 255, 255, 0.18);
+    }
   }
 }
 
@@ -537,13 +563,13 @@ $pop: cubic-bezier(0.3, 1.6, 0.5, 1);
   transition:
     opacity 0.45s $ease-soft,
     translate 0.7s $ease-soft,
-    scale 0.6s $pop;
+    scale 0.6s $ease-settle;
   transition-delay: 0.55s;
 
   @include before(6) {
     opacity: 0;
     translate: 0 -2cqi;
-    scale: 0.9;
+    scale: 0.94;
   }
 }
 
