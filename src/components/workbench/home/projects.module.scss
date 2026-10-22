@@ -26,6 +26,7 @@
 
   @include from-desk {
     grid-template-columns: 1fr 1fr;
+    column-gap: 48px;
     align-items: end;
   }
 
