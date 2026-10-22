@@ -22,7 +22,7 @@ export async function generateMetadata() {
 /** A client with this many pieces or fewer is laid out compact. */
 const SMALL = 3;
 
-// Visual Work, in Workbench: the fullest bench. Every piece of
+// Visual Work, in sober Workbench: the fullest bench. Every piece of
 // `gallery.images`, sorted by client and format; opening one lifts it into
 // the viewer. The sections are full-bleed and set their own gutters.
 export default function Gallery() {
@@ -49,19 +49,17 @@ export default function Gallery() {
       />
       <div className={styles.page}>
         <Head bench={bench} />
-        {large.map((shelf, i) => (
-          <ClientSection key={shelf.id} shelf={shelf} index={i} />
+        {large.map((shelf) => (
+          <ClientSection key={shelf.id} shelf={shelf} />
         ))}
         {small.length > 1 ? (
           <div className={styles.pair}>
-            {small.map((shelf, i) => (
-              <ClientSection key={shelf.id} shelf={shelf} index={large.length + i} compact />
+            {small.map((shelf) => (
+              <ClientSection key={shelf.id} shelf={shelf} compact />
             ))}
           </div>
         ) : (
-          small.map((shelf, i) => (
-            <ClientSection key={shelf.id} shelf={shelf} index={large.length + i} />
-          ))
+          small.map((shelf) => <ClientSection key={shelf.id} shelf={shelf} />)
         )}
       </div>
       <Closing title="Want pieces like these for your brand?" />

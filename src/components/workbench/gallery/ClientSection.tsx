@@ -1,9 +1,9 @@
-// Workbench, Visual Work: one client's part of the bench. A coloured paper
-// divider with the client's name, then the pieces by format: videos as
-// phone-shaped prints, carousels as fanned stacks, single posts as taped
-// prints on a wall of rows that keeps every file's own proportions. Every
-// piece is a PieceButton that opens the viewer (see Viewer.tsx); nothing
-// else here needs JavaScript.
+// Workbench, Visual Work: one client's part of the bench (sober, 2026-10-22).
+// A header under a hairline with the client's name, then the pieces by
+// format: videos in thin 9:16 frames, carousels as straight stacks of hairline
+// sheets, single posts as framed prints on a wall of rows that keeps every
+// file's own proportions. Every piece is a PieceButton that opens the viewer
+// (see Viewer.tsx); nothing else here needs JavaScript.
 import { youTubeThumbnail } from "@/utils/youtube";
 import Image from "next/image";
 import Link from "next/link";
@@ -12,10 +12,6 @@ import { FiArrowRight, FiLayers, FiPlay } from "react-icons/fi";
 import { type ClientShelf, countOf, formatsLine, piecesIn } from "./data";
 import styles from "./gallery.module.scss";
 import { PieceButton } from "./PieceButton";
-
-/** Each print sits at its own small angle, the same on every visit. */
-const TILTS = [-1.4, 0.9, -0.5, 1.2, -1, 0.6, 1.5, -0.8];
-const tilt = (i: number) => `${TILTS[i % TILTS.length]}deg`;
 
 /** Row heights of the posts wall, per layout (see .wall in gallery.module.scss). */
 const ROW = { phone: 168, tablet: 220, desk: 270, wide: 300 };
@@ -58,11 +54,9 @@ function Shelf({
  */
 export function ClientSection({
   shelf,
-  index,
   compact = false,
 }: {
   shelf: ClientShelf;
-  index: number;
   compact?: boolean;
 }) {
   const total = piecesIn(shelf);
@@ -73,10 +67,9 @@ export function ClientSection({
       id={shelf.id}
       className={`${styles.client} ${compact ? styles.compact : ""}`}
       aria-labelledby={titleId}
-      style={{ "--tilt": index % 2 ? "0.6deg" : "-0.7deg" } as CSSProperties}
     >
       <div className={styles.clientInner}>
-        <header className={`${styles.divider} ${styles[shelf.paper]}`} data-reveal="">
+        <header className={styles.divider} data-reveal="">
           <span className={styles.tab}>{countOf(total, "piece", "pieces")}</span>
           <h2 id={titleId}>{shelf.name}</h2>
           <div className={styles.dividerText}>
@@ -97,7 +90,7 @@ export function ClientSection({
                   key={video.id}
                   className={styles.reelItem}
                   data-reveal=""
-                  style={{ "--i": i % 6, "--tilt": tilt(i) } as CSSProperties}
+                  style={{ "--i": i % 6 } as CSSProperties}
                 >
                   <PieceButton
                     className={styles.phone}
@@ -115,7 +108,6 @@ export function ClientSection({
                         loading="lazy"
                         decoding="async"
                       />
-                      <span className={styles.speaker} aria-hidden="true" />
                       <span className={styles.play} aria-hidden="true">
                         <FiPlay />
                       </span>
@@ -138,7 +130,7 @@ export function ClientSection({
                     key={deck.id}
                     className={styles.deckItem}
                     data-reveal=""
-                    style={{ "--i": i % 3, "--tilt": tilt(i + 3) } as CSSProperties}
+                    style={{ "--i": i % 3 } as CSSProperties}
                   >
                     <PieceButton
                       className={styles.deck}
@@ -183,9 +175,7 @@ export function ClientSection({
                 const style = {
                   "--i": i % 4,
                   "--r": (w / h).toFixed(4),
-                  "--tilt": tilt(i + 1),
                 } as CSSProperties;
-                const fix = i % 3;
                 return (
                   <li key={post.id} className={styles.wallItem} data-reveal="" style={style}>
                     <PieceButton
@@ -194,12 +184,6 @@ export function ClientSection({
                       aria-haspopup="dialog"
                       aria-label={`Open image: ${post.title}`}
                     >
-                      <span
-                        className={
-                          fix === 2 ? styles.pin : fix === 1 ? styles.tapeCorner : styles.tape
-                        }
-                        aria-hidden="true"
-                      />
                       <span className={styles.frame} style={{ aspectRatio: `${w} / ${h}` }}>
                         <Image
                           src={post.slide.src}

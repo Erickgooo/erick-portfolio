@@ -1,7 +1,7 @@
 "use client";
 
 // Workbench, Visual Work: the viewer. Opening any piece on the bench lifts it
-// to the middle of the screen over a dimmed bench, in a native modal <dialog>
+// to the middle of the screen over the veiled bench, in a native modal <dialog>
 // (focus stays inside, Escape closes, the page behind is inert). One instance
 // serves the whole page: each print is a PieceButton, which asks for its
 // piece through open.ts. A video's player is
@@ -105,7 +105,7 @@ export function Viewer({ pieces }: { pieces: Piece[] }) {
     if (current.kind === "video") iframeRef.current?.focus();
   }, [current]);
 
-  // However it closes (Escape, the close key, a click on the dimmed bench),
+  // However it closes (Escape, the close key, a click on the veiled bench),
   // the piece is unmounted (a playing video stops) and focus goes back to it.
   useEffect(() => {
     const dialog = dialogRef.current;
@@ -154,7 +154,7 @@ export function Viewer({ pieces }: { pieces: Piece[] }) {
     }
   };
 
-  // A click on the dimmed bench (not on the piece or a key) closes.
+  // A click on the veiled bench (not on the piece or a key) closes.
   const onClick = (e: React.MouseEvent) => {
     const target = e.target as HTMLElement;
     if (target === e.currentTarget || target.dataset.dismiss !== undefined) close();
@@ -225,7 +225,7 @@ export function Viewer({ pieces }: { pieces: Piece[] }) {
                   index={index}
                   onIndex={setIndex}
                   trackRef={trackRef}
-                targetRef={targetRef}
+                  targetRef={targetRef}
                 />
               )}
             </div>

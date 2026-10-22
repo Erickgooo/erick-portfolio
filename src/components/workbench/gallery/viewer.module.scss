@@ -1,5 +1,7 @@
-// Workbench, Visual Work: the viewer. The piece is lifted to the middle of the
-// screen over the dimmed bench. Only transform properties and opacity move.
+// Workbench, Visual Work: the viewer (sober, 2026-10-22). The piece rises to
+// the middle of the screen over the page, veiled in its own colour (white in
+// light, ink in dark), behind a hairline. Only transform properties and
+// opacity move. Keep this file ASCII-only.
 @use "../shared" as *;
 
 .viewer {
@@ -13,11 +15,19 @@
   padding: 0;
   border: 0;
   background: transparent;
-  color: #ffffff;
+  color: var(--wb-ink);
   overflow: hidden;
 
+  // Literal colours: older engines do not pass custom properties to
+  // ::backdrop.
   &::backdrop {
-    background: rgba(19, 19, 22, 0.86);
+    background: rgba(255, 255, 255, 0.96);
+  }
+
+  @include dark {
+    &::backdrop {
+      background: rgba(19, 19, 22, 0.95);
+    }
   }
 
   &[open]::backdrop {
@@ -56,14 +66,14 @@
   max-width: 72ch;
   padding-top: 4px;
   font-size: 16px;
-  line-height: 1.4;
-  color: rgba(255, 255, 255, 0.78);
+  line-height: 1.45;
+  color: var(--wb-ink-2);
 
   strong {
-    @include display(700);
-    font-size: 19px;
-    letter-spacing: -0.015em;
-    color: #ffffff;
+    @include s-h3;
+    font-size: 18px;
+    line-height: 1.3;
+    color: var(--wb-ink);
   }
 
   span {
@@ -75,9 +85,12 @@
   }
 }
 
+// Keys: hairline squares on the page colour. On hover the hairline turns
+// cobalt (a second outline fades in; the border never animates).
 .close,
 .key {
   appearance: none;
+  position: relative;
   display: grid;
   place-items: center;
   flex: none;
@@ -85,39 +98,47 @@
   height: 48px;
   margin: 0;
   padding: 0;
-  border: 0;
-  border-radius: 10px;
+  border: 1px solid var(--wb-rule);
+  border-radius: 4px;
+  background: var(--wb-page);
+  color: var(--wb-ink);
   font-size: 22px;
   cursor: pointer;
   transition:
-    rotate 0.3s $ease-soft,
     translate 0.3s $ease-soft,
     scale 0.2s $ease-soft;
+
+  &::after {
+    content: "";
+    position: absolute;
+    inset: -1px;
+    border: 1px solid var(--wb-accent);
+    border-radius: inherit;
+    opacity: 0;
+    transition: opacity 0.3s $ease-soft;
+    pointer-events: none;
+  }
 
   &:active {
     scale: 0.94;
   }
 
   &:focus-visible {
-    outline: 3px solid var(--wb-tape);
+    outline: 3px solid var(--wb-accent);
     outline-offset: 3px;
   }
 }
 
 .close {
-  background: #ffffff;
-  color: var(--wb-charcoal);
-
   @include fine-pointer {
-    &:hover {
-      rotate: 90deg;
+    &:hover::after {
+      opacity: 1;
     }
   }
 }
 
 .key {
-  background: rgba(255, 255, 255, 0.14);
-  color: #ffffff;
+  background: transparent;
 
   &:disabled {
     opacity: 0.35;
@@ -127,6 +148,10 @@
   @include fine-pointer {
     &:not(:disabled):hover {
       translate: 0 -2px;
+
+      &::after {
+        opacity: 1;
+      }
     }
   }
 }
@@ -138,13 +163,12 @@
   padding: 8px 16px 16px;
 }
 
-// The lifted piece lands with a small overshoot, then rests at a slight angle.
+// The piece rises, fades in and settles to its size.
 .lift {
   max-width: 100%;
-  rotate: -0.6deg;
 
   @media (prefers-reduced-motion: no-preference) {
-    animation: lift 0.55s $ease-pop both;
+    animation: lift 0.55s $ease-settle both;
   }
 }
 
@@ -152,23 +176,22 @@
   from {
     opacity: 0;
     translate: 0 32px;
-    scale: 0.94;
-    rotate: 1.5deg;
+    scale: 0.97;
   }
 
   to {
     opacity: 1;
     translate: 0 0;
     scale: 1;
-    rotate: -0.6deg;
   }
 }
 
+// A post at its own ratio, behind a hairline.
 .print {
-  padding: 8px;
-  border-radius: 3px;
-  background: #ffffff;
-  box-shadow: 0 30px 60px -20px rgba(0, 0, 0, 0.7);
+  overflow: hidden;
+  border: 1px solid var(--wb-rule);
+  border-radius: 4px;
+  background: var(--wb-soft-2);
 
   img {
     display: block;
@@ -177,7 +200,6 @@
     max-width: min(calc(100vw - 48px), 1040px);
     max-height: calc(100vh - 200px);
     max-height: calc(100svh - 200px);
-    background: #ececf0;
   }
 }
 
@@ -211,7 +233,7 @@
   aspect-ratio: 1;
   scroll-snap-align: center;
   scroll-snap-stop: always;
-  background: #ececf0;
+  background: var(--wb-soft-2);
 
   img {
     display: block;
@@ -233,7 +255,7 @@
 .count {
   min-width: 5ch;
   font-size: 17px;
-  font-weight: 650;
+  font-weight: 500;
   text-align: center;
   font-variant-numeric: tabular-nums;
 }
@@ -247,22 +269,20 @@
   white-space: nowrap;
 }
 
-// A video: the player inside a phone, sized to the screen's height.
+// A video: the player in a thin 9:16 frame, sized to the screen's height.
 .phone {
-  width: min(calc((100vh - 200px) * 9 / 16 + 18px), calc(100vw - 48px), 440px);
-  width: min(calc((100svh - 200px) * 9 / 16 + 18px), calc(100vw - 48px), 440px);
-  padding: 9px;
-  border-radius: 28px;
-  background: #1d1d22;
-  box-shadow:
-    inset 0 0 0 1px rgba(255, 255, 255, 0.12),
-    0 30px 60px -20px rgba(0, 0, 0, 0.7);
+  width: min(calc((100vh - 200px) * 9 / 16 + 14px), calc(100vw - 48px), 440px);
+  width: min(calc((100svh - 200px) * 9 / 16 + 14px), calc(100vw - 48px), 440px);
+  padding: 6px;
+  border: 1px solid var(--wb-rule);
+  border-radius: 4px;
+  background: var(--wb-page);
 }
 
 .screen {
   aspect-ratio: 9 / 16;
   overflow: hidden;
-  border-radius: 19px;
+  border-radius: 2px;
   background: #000000;
 
   iframe {
@@ -275,7 +295,9 @@
 
 @include reduced {
   .close,
-  .key {
+  .key,
+  .close::after,
+  .key::after {
     transition: none;
   }
 }
