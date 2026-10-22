@@ -1,5 +1,6 @@
 import { Closing } from "@/components/workbench/Closing";
 import { RevealObserver } from "@/components/workbench/RevealObserver";
+import { SceneDriver } from "@/components/workbench/scenes/SceneDriver";
 import { WorkIndex } from "@/components/workbench/work/WorkIndex";
 import { about, baseURL, person, work } from "@/resources";
 import { isProtectedPath } from "@/resources/protectedRoutes";
@@ -36,6 +37,7 @@ export default function Work() {
       <WorkIndex hideProtected={!isProtectedPath(work.path)} />
       <Closing />
       <RevealObserver />
+      <SceneDriver />
     </>
   );
 }

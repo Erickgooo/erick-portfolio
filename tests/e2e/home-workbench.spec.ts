@@ -139,23 +139,3 @@ test("the LeadBot case tells what the bot does in a drawn scene", async ({ page 
   // Its figure is the case's own.
   await expect(scene.locator("[data-count]")).toHaveAttribute("data-count", "85%");
 });
-
-// TEMPORARY (sober variants): the preview switch. Step 4 keeps one variant and
-// removes the switch and this test.
-test("the sober variant switch: A by default, B with ?v=b, and the page stays static", async ({
-  page,
-}) => {
-  await page.goto("/");
-  await expect(page.locator("html")).toHaveAttribute("data-wb-variant", "a");
-  await expect(page.locator("[data-sober]")).toHaveCount(1);
-  // With the parameter the server still sends the prerendered page.
-  const res = await page.goto("/?v=b");
-  expect(res?.headers()["x-nextjs-prerender"] ?? "").toContain("1");
-  await expect(page.locator("html")).toHaveAttribute("data-wb-variant", "b");
-  await page.goto("/work/leadbot-ai?v=b");
-  await expect(page.locator("html")).toHaveAttribute("data-wb-variant", "b");
-  await expect(page.locator("[data-sober]")).toHaveCount(1);
-  // Other cases keep their look until step 4.
-  await page.goto("/work/atv-riders");
-  await expect(page.locator("[data-sober]")).toHaveCount(0);
-});

@@ -5,17 +5,11 @@ import { EMIcon } from "@/resources/EMIcon";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import Image from "next/image";
 import Link from "next/link";
-import {
-  type CSSProperties,
-  Children,
-  type ComponentPropsWithoutRef,
-  type ReactNode,
-  isValidElement,
-} from "react";
+import { Children, type ComponentPropsWithoutRef, type ReactNode, isValidElement } from "react";
 import { CopyLink } from "./CopyLink";
 import { Figures } from "./Figures";
 import { VideoEmbed } from "./VideoEmbed";
-import { isImage, mediaSize, tiltFor } from "./media";
+import { isImage, mediaSize } from "./media";
 import styles from "./prose.module.scss";
 import { anchorId } from "./source";
 
@@ -116,7 +110,7 @@ function A({ href = "", children }: ComponentPropsWithoutRef<"a">) {
   );
 }
 
-/** A still image laid on the page as a print: white border, a slight tilt, a caption under it. */
+/** A still image laid on the page as a print: behind a hairline, a caption under it. */
 export function MediaPrint({
   src,
   alt = "",
@@ -133,7 +127,6 @@ export function MediaPrint({
   return (
     <figure
       className={`${styles.figure} ${portrait ? styles.portrait : ""} ${square ? styles.square : ""}`}
-      style={{ "--tilt": `${tiltFor(src, 1.2)}deg` } as CSSProperties}
       data-reveal=""
     >
       <span className={styles.frame}>
@@ -228,7 +221,7 @@ function DataTable({
   );
 }
 
-/** The tools of a case, as tags laid on the bench. */
+/** The tools of a case, as plain tags. */
 function TechStack({ data = "" }: { data?: string }) {
   const items = data
     .split(",")
@@ -236,10 +229,8 @@ function TechStack({ data = "" }: { data?: string }) {
     .filter(Boolean);
   return (
     <ul className={styles.stack} aria-label="Stack">
-      {items.map((item, i) => (
-        <li key={item} style={{ "--t": `${i % 2 ? 1 : -1}deg` } as CSSProperties}>
-          {item}
-        </li>
+      {items.map((item) => (
+        <li key={item}>{item}</li>
       ))}
     </ul>
   );

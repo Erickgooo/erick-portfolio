@@ -1,8 +1,8 @@
 // Scene: LeadSort (see LeadSort.tsx). Landscape (5:4) from 720 px, portrait
 // (4:5) on phones and with .portrait. Units are the sheet's (cqi).
 // Sober (2026-10-22): every object reads the sheet's tokens (--sc-obj,
-// --sc-line, --sc-soft, --sc-bar): drawn with hairlines in variant A, laid on
-// flat surfaces in variant B. Cobalt marks only what the bot does.
+// --sc-line, --sc-soft, --sc-bar), drawn with hairlines. Cobalt marks only
+// what the bot does.
 // Keep this file ASCII-only.
 @use "../../shared" as *;
 @use "../scene" as *;
@@ -230,11 +230,6 @@
   border-bottom-right-radius: 0.25em;
   background: var(--sc-obj);
   transform-origin: right bottom;
-
-  @include vb {
-    background: var(--wb-accent);
-    color: #ffffff;
-  }
 }
 
 .m1 {
@@ -283,10 +278,6 @@
   opacity: 0;
   transition: opacity 0.3s $ease-soft;
 
-  @include vb {
-    background: var(--wb-accent);
-  }
-
   @include from(2) {
     opacity: 1;
   }
@@ -300,10 +291,6 @@
     height: 0.42em;
     border-radius: 50%;
     background: var(--wb-accent);
-
-    @include vb {
-      background: #ffffff;
-    }
 
     @include live {
       animation: dot 1s ease-in-out infinite;
@@ -504,11 +491,6 @@
   background: var(--sc-obj);
   color: var(--wb-accent);
 
-  @include vb {
-    background: var(--wb-accent);
-    color: #ffffff;
-  }
-
   @include portrait(".portrait") {
     padding: 1.8cqi;
     border-radius: 1.4cqi;
@@ -533,10 +515,6 @@
   background: currentColor;
   opacity: 0.35;
 
-  @include vb {
-    opacity: 0.55;
-  }
-
   @include portrait(".portrait") {
     height: 1.2cqi;
   }
@@ -552,11 +530,6 @@
     padding: 0.15em 0.45em;
     border: 1px solid currentColor;
     border-radius: 0.3em;
-
-    @include vb {
-      border-color: transparent;
-      background: rgba(255, 255, 255, 0.18);
-    }
   }
 }
 

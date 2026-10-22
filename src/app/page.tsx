@@ -38,16 +38,12 @@ export default function Home() {
           image: `${baseURL}${person.avatar}`,
         }}
       />
-      {/* TEMPORARY (sober variants): the shared pieces take the sober style
-          inside [data-sober]; step 4 brings it to every page and removes this. */}
-      <div data-sober="" style={{ display: "contents" }}>
-        <Hero />
-        <Builds />
-        <ToolWall />
-        <Projects hideProtected={!isProtectedPath("/")} />
-        <About />
-        <Closing />
-      </div>
+      <Hero />
+      <Builds />
+      <ToolWall />
+      <Projects hideProtected={!isProtectedPath("/")} />
+      <About />
+      <Closing />
       <RevealObserver />
       <SceneDriver />
     </>

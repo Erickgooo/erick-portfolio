@@ -1,23 +1,23 @@
-// Workbench: the shared controls. No capsules: keys with soft corners.
+// Workbench: the shared controls. No capsules: keys with small corners.
 @use "./shared" as *;
 
-// The primary action: solid cobalt, the brand's call-to-action colour, with a
-// white paper square for the icon.
+// The primary action: a flat cobalt key, the brand's call-to-action colour,
+// with the icon in the key's own colour. Controls are set in the text face
+// (Poppins), every page.
 .book {
   --link-ink: #ffffff;
 
   position: relative;
   display: inline-flex;
   align-items: center;
-  gap: 12px;
-  min-height: 56px;
-  padding: 0 22px 0 8px;
-  border-radius: 12px;
+  gap: 10px;
+  min-height: 52px;
+  padding: 0 22px 0 18px;
+  border-radius: 6px;
   background: var(--wb-accent);
-  // Controls are set in the text face (Poppins), every page.
   font-family: var(--font-wb-text), system-ui, sans-serif;
   font-weight: 600;
-  font-size: 17px;
+  font-size: 16px;
   letter-spacing: -0.005em;
   white-space: nowrap;
 
@@ -31,8 +31,7 @@
     }
 
     &:hover .bookIcon {
-      rotate: -10deg;
-      scale: 1.06;
+      translate: 0 -1px;
     }
   }
 }
@@ -40,101 +39,36 @@
 .bookIcon {
   display: inline-grid;
   place-items: center;
-  width: 40px;
-  height: 40px;
-  border-radius: 8px;
-  background: var(--wb-paper);
-  color: var(--wb-accent);
-  font-size: 19px;
-  transition:
-    rotate 0.5s var(--wb-ease-pop),
-    scale 0.5s var(--wb-ease-pop);
+  color: #ffffff;
+  font-size: 18px;
+  transition: translate 0.45s var(--wb-ease-soft);
 }
 
 .small {
   min-height: 44px;
   gap: 10px;
-  padding: 0 16px 0 6px;
-  border-radius: 10px;
+  padding: 0 16px 0 14px;
+  border-radius: 6px;
   font-size: 16px;
 
   .bookIcon {
-    width: 32px;
-    height: 32px;
-    border-radius: 7px;
     font-size: 16px;
   }
 }
 
-// Sober (home and LeadBot case): a flat cobalt key with a small radius; the
-// icon sits in the key's own colour instead of on a white square, and no
-// longer tilts on hover.
-.book {
-  @include sober {
-    gap: 10px;
-    min-height: 52px;
-    padding: 0 22px 0 18px;
-    border-radius: 6px;
-    font-size: 16px;
-  }
-}
-
-.bookIcon {
-  @include sober {
-    width: auto;
-    height: auto;
-    border-radius: 0;
-    background: none;
-    color: #ffffff;
-    font-size: 18px;
-    transition: translate 0.45s var(--wb-ease-soft);
-  }
-}
-
-.book:hover .bookIcon {
-  @include sober {
-    @include fine-pointer {
-      rotate: none;
-      scale: none;
-      translate: 0 -1px;
-    }
-  }
-}
-
-.small {
-  @include sober {
-    min-height: 44px;
-    padding: 0 16px 0 14px;
-    border-radius: 6px;
-    font-size: 16px;
-
-    .bookIcon {
-      width: auto;
-      height: auto;
-      font-size: 16px;
-    }
-  }
-}
-
-// A plain text link: cobalt underline, and an arrow that slides on hover.
+// A plain text link: a hairline cobalt underline, and an arrow that slides on
+// hover.
 .textLink {
   --link-deco: underline;
   --link-line: var(--wb-accent);
-  --link-offset: 6px;
+  --link-offset: 7px;
+  --link-thick: 1px;
 
   display: inline-flex;
   align-items: center;
   gap: 8px;
   min-height: 44px;
-  font-weight: 600;
-
-  // Sober: a hairline underline.
-  @include sober {
-    --link-thick: 1px;
-    --link-offset: 7px;
-
-    font-weight: 500;
-  }
+  font-weight: 500;
 
   svg {
     transition: translate 0.28s var(--wb-ease-soft);

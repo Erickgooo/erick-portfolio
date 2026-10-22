@@ -98,14 +98,14 @@
 // .sheet for --sc-bg and --sc-obj).
 .sheet {
   --sc-bg: var(--sc-tone-a);
-  --sc-obj: var(--sc-obj-fill, var(--sc-bg));
+  --sc-obj: var(--sc-bg);
 
   position: relative;
   width: 100%;
   aspect-ratio: 4 / 5;
   overflow: hidden;
   border: 1px solid var(--sc-sheet-line);
-  border-radius: var(--v-radius);
+  border-radius: 4px;
   container-type: inline-size;
   background: var(--sc-bg);
   color: var(--wb-ink);

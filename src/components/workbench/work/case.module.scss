@@ -1,5 +1,7 @@
-// Workbench, case study: the open project folder, the text with prints in its
-// margin, and the next case. Keep this file ASCII-only.
+// Workbench, case study: the header with the cover panel, the text with
+// prints in its margin, and the next case. Sober (Erick, 2026-10-22): objects
+// are drawn with hairlines, nothing tilts, nothing is taped or pinned; every
+// entrance keeps its timing, as a rise and a fade. Keep this file ASCII-only.
 @use "../shared" as *;
 
 .hidden {
@@ -38,7 +40,7 @@
   }
 }
 
-// Header: the file's text beside the folder ---------------------------------
+// Header: the case's text beside the cover panel ------------------------------
 
 .hero {
   @include wrap;
@@ -63,54 +65,57 @@
   min-width: 0;
 }
 
+// The label over the title: quiet text after a short cobalt stroke.
 .fileLabel {
-  display: inline-block;
-  padding: 6px 10px;
-  border-radius: 3px;
-  background: var(--wb-cobalt);
-  color: #ffffff;
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--wb-ink-2);
   font-size: 16px;
-  font-weight: 600;
-  rotate: -2deg;
+  font-weight: 500;
+
+  &::before {
+    content: "";
+    width: 24px;
+    height: 1px;
+    background: var(--wb-accent);
+  }
 }
 
 .title {
   display: grid;
-  gap: 14px;
+  gap: 12px;
   min-width: 0;
 }
 
 .name {
-  @include display(800);
-  font-size: clamp(52px, 8.4vw, 116px);
-  line-height: 0.9;
-  letter-spacing: -0.05em;
+  @include title;
+  font-size: clamp(40px, 6vw, 80px);
+  line-height: 1.02;
+  letter-spacing: -0.03em;
   overflow-wrap: break-word;
   text-wrap: balance;
 
   [data-long] > & {
-    font-size: clamp(42px, 6vw, 84px);
-    line-height: 0.94;
+    font-size: clamp(36px, 4.8vw, 64px);
+    line-height: 1.04;
   }
 }
 
 .subtitle {
-  @include display(600);
-  max-width: 22ch;
-  font-size: clamp(22px, 2.5vw, 32px);
-  line-height: 1.12;
-  letter-spacing: -0.02em;
+  max-width: 26ch;
+  font-family: var(--font-wb-text), system-ui, sans-serif;
+  font-size: clamp(20px, 2vw, 26px);
+  font-weight: 500;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+  color: var(--wb-ink-2);
   text-wrap: balance;
 }
 
 .summary {
+  @include s-lede;
   max-width: 46ch;
-  font-size: 18px;
-  color: var(--wb-ink-2);
-
-  @include from-desk {
-    font-size: 20px;
-  }
 }
 
 .facts {
@@ -119,7 +124,7 @@
   width: 100%;
   margin: 4px 0 8px;
   padding-top: 16px;
-  border-top: 2px solid var(--wb-ink);
+  border-top: 1px solid var(--wb-rule);
 
   grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
   column-gap: 24px;
@@ -137,92 +142,44 @@
   }
 
   dt {
-    font-size: 16px;
-    color: var(--wb-ink-2);
+    @include s-label;
   }
 
   dd {
     margin: 0;
-    font-size: 17px;
-    font-weight: 600;
+    font-size: 16px;
+    font-weight: 500;
     line-height: 1.35;
   }
 }
 
-// The folder. Its units follow its own width, so it scales as one object.
-.folder {
+// The cover panel (it was a project folder): the cover behind a hairline,
+// then the case's figure under it. Its units follow its own width.
+.panel {
   position: relative;
   container-type: inline-size;
+  display: grid;
+  align-content: start;
+  gap: 20px;
   width: 100%;
   max-width: 680px;
   justify-self: center;
-  aspect-ratio: 1 / 0.68;
   margin-top: 16px;
 
-  &[data-front] {
-    aspect-ratio: 1 / 1.02;
-  }
-
   @media (prefers-reduced-motion: no-preference) {
-    animation: folderIn 0.9s var(--wb-ease-soft) both;
-  }
-}
-
-.folderBack {
-  position: absolute;
-  inset: 7cqi 0 0 0;
-  border-radius: 0 2cqi 2cqi 2cqi;
-  background: var(--wb-mist);
-}
-
-.folderTab {
-  @include display(700);
-  position: absolute;
-  bottom: 100%;
-  left: 0;
-  display: flex;
-  align-items: center;
-  max-width: 72%;
-  height: 7.4cqi;
-  padding: 0 4cqi;
-  border-radius: 2cqi 2cqi 0 0;
-  background: var(--wb-mist);
-  color: var(--wb-charcoal);
-  font-size: max(16px, 3cqi);
-  letter-spacing: -0.01em;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.folderSheet {
-  position: absolute;
-  left: 12%;
-  right: 6%;
-  top: 9cqi;
-  height: 50%;
-  border-radius: 1cqi;
-  background: var(--wb-ink-paper);
-  rotate: 4deg;
-
-  @media (prefers-reduced-motion: no-preference) {
-    animation: sheetOut 1s var(--wb-ease-pop) 0.35s both;
+    animation: panelIn 0.9s var(--wb-ease-soft) both;
   }
 }
 
 .cover {
-  position: absolute;
-  left: 8%;
-  right: 8%;
-  top: 4cqi;
-  padding: 1.4cqi;
-  border-radius: 2px;
-  background: var(--wb-paper);
-  box-shadow: var(--wb-shadow);
-  rotate: -2deg;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--wb-rule);
+  border-radius: 4px;
+  background: var(--wb-soft-2);
 
   @media (prefers-reduced-motion: no-preference) {
-    animation: coverOut 1s var(--wb-ease-pop) 0.2s both;
+    animation: coverRise 1s var(--wb-ease-soft) 0.2s both;
   }
 
   img {
@@ -232,41 +189,38 @@
   }
 }
 
-// The front pocket of the folder carries the case's figure.
-.folderFront {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 40%;
+.panelFigure {
   display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  gap: 1cqi;
-  padding: 5cqi;
-  border-radius: 2cqi;
-  background: var(--wb-cobalt);
-  color: #ffffff;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px 18px;
+  color: var(--wb-ink);
 
   strong {
-    @include display(800);
-    font-size: 19cqi;
-    line-height: 0.82;
-    letter-spacing: -0.06em;
+    @include title;
+    font-size: clamp(48px, 11cqi, 76px);
+    line-height: 1;
+    letter-spacing: -0.03em;
+    color: var(--wb-accent);
     transform-origin: left bottom;
 
+    @include dark {
+      color: #6688ff;
+    }
+
     @media (prefers-reduced-motion: no-preference) {
-      animation: pop 0.6s var(--wb-ease-pop) 1s both;
+      animation: settleIn 0.6s $ease-settle 1s both;
     }
   }
 
   span {
-    font-size: max(16px, 3.4cqi);
-    font-weight: 600;
+    font-size: 17px;
+    font-weight: 500;
+    color: var(--wb-ink-2);
   }
 }
 
-// Body: the text in parts, prints pinned in the margin of each part ----------
+// Body: the text in parts, prints in the margin of each part ------------------
 
 .body {
   @include wrap;
@@ -323,24 +277,21 @@
   max-width: 460px;
 }
 
+// A print in the margin: the piece behind a hairline, standing straight.
 .pinned {
   position: relative;
   margin: 0;
-  rotate: var(--tilt);
 
   @media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
     opacity: 0;
     translate: 0 40px;
-    rotate: 0deg;
     transition:
       opacity 0.8s var(--wb-ease-soft),
-      translate 1s var(--wb-ease-soft),
-      rotate 1s var(--wb-ease-pop);
+      translate 1s var(--wb-ease-soft);
 
     &[data-in] {
       opacity: 1;
       translate: 0 0;
-      rotate: var(--tilt);
     }
   }
 }
@@ -348,12 +299,10 @@
 .pinnedFrame {
   position: relative;
   display: block;
-  padding: 10px 10px 12px;
-  border-radius: 2px;
+  overflow: hidden;
+  border: 1px solid var(--wb-rule);
+  border-radius: 4px;
   background: var(--wb-paper);
-  box-shadow:
-    inset 0 0 0 1px var(--wb-line),
-    var(--wb-shadow);
 
   img,
   video {
@@ -363,84 +312,45 @@
   }
 
   video {
-    background: var(--wb-ink-paper);
+    background: var(--wb-soft-2);
   }
-}
-
-.tape {
-  position: absolute;
-  z-index: 2;
-  top: -12px;
-  left: 50%;
-  width: 34%;
-  height: 26px;
-  translate: -50% 0;
-  rotate: -4deg;
-  background: var(--wb-tape);
-  clip-path: polygon(
-    0 0,
-    5% 25%,
-    0 50%,
-    5% 75%,
-    0 100%,
-    100% 100%,
-    95% 75%,
-    100% 50%,
-    95% 25%,
-    100% 0
-  );
-}
-
-.pin {
-  position: absolute;
-  z-index: 2;
-  top: -8px;
-  left: 50%;
-  width: 22px;
-  height: 22px;
-  translate: -50% 0;
-  border-radius: 50%;
-  background: var(--wb-cobalt);
-  box-shadow: 0 4px 6px rgba(19, 19, 22, 0.35);
 }
 
 .playKey {
   position: absolute;
-  left: 20px;
-  bottom: 22px;
+  left: 12px;
+  bottom: 12px;
   display: grid;
   place-items: center;
   width: 44px;
   height: 44px;
   padding: 0;
   border: 0;
-  border-radius: 10px;
-  background: var(--wb-charcoal);
+  border-radius: 6px;
+  background: rgba(19, 19, 22, 0.78);
   color: #ffffff;
   font-size: 18px;
   cursor: pointer;
 }
 
-// The figure again, as a big tag beside the results (desktop only: on one
-// column it would only repeat the folder).
+// The figure again, as a plain tag beside the results (desktop only: on one
+// column it would only repeat the header).
 .bigTag {
   display: grid;
-  gap: 8px;
+  gap: 6px;
   justify-self: start;
   max-width: 340px;
-  padding: 24px 28px 24px 52px;
-  background: var(--wb-cobalt);
-  color: #ffffff;
-  clip-path: polygon(28px 0, 100% 0, 100% 100%, 28px 100%, 0 calc(100% - 22px), 0 22px);
-  rotate: -3deg;
+  padding: 24px 28px;
+  border: 1px solid var(--wb-rule);
+  border-radius: 4px;
+  color: var(--wb-ink);
 
   @media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
     opacity: 0;
-    scale: 0.7;
+    scale: 0.94;
     transition:
       opacity 0.5s var(--wb-ease-soft),
-      scale 0.6s var(--wb-ease-pop);
-    transition-delay: 0.2s;
+      scale 0.6s $ease-settle;
 
     &[data-in] {
       opacity: 1;
@@ -449,31 +359,36 @@
   }
 
   strong {
-    @include display(800);
-    font-size: 64px;
-    line-height: 0.9;
-    letter-spacing: -0.05em;
+    @include title;
+    font-size: 56px;
+    line-height: 1;
+    letter-spacing: -0.03em;
+    color: var(--wb-accent);
+
+    @include dark {
+      color: #6688ff;
+    }
   }
 
   span {
-    font-size: 17px;
-    font-weight: 600;
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--wb-ink-2);
   }
 }
 
 .bookNote {
   display: grid;
   justify-items: start;
-  gap: 18px;
+  gap: 16px;
   padding: 28px;
-  border: 2px solid var(--wb-ink);
-  border-radius: 8px;
+  border: 1px solid var(--wb-rule);
+  border-radius: 4px;
 
   p {
-    @include display(700);
-    font-size: 26px;
-    line-height: 1.1;
-    letter-spacing: -0.02em;
+    @include s-h3;
+    font-size: 21px;
+    line-height: 1.3;
   }
 
   @include reveal(24px);
@@ -485,7 +400,7 @@
   }
 }
 
-// Next case ------------------------------------------------------------------
+// Next case: a straight card behind a hairline --------------------------------
 
 .next {
   @include wrap;
@@ -505,12 +420,10 @@
   gap: 24px;
   width: 100%;
   padding: 18px 18px 22px;
-  border-radius: 6px;
-  box-shadow: var(--wb-shadow);
-  rotate: -0.8deg;
-  transition:
-    translate 0.45s var(--wb-ease-pop),
-    rotate 0.45s var(--wb-ease-pop);
+  border: 1px solid var(--wb-rule);
+  border-radius: 4px;
+  color: var(--wb-ink);
+  transition: translate 0.45s var(--wb-ease-soft);
 
   @include from-tablet {
     grid-template-columns: minmax(0, 1fr) minmax(0, 44%);
@@ -519,31 +432,14 @@
     padding: 32px 32px 32px 40px;
   }
 
-  &::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    box-shadow: var(--wb-shadow-lift);
-    opacity: 0;
-    transition: opacity 0.4s var(--wb-ease-soft);
-    pointer-events: none;
-  }
-
   @include fine-pointer {
     &:hover {
-      translate: 0 -8px;
-      rotate: 0deg;
-
-      &::after {
-        opacity: 1;
-      }
+      translate: 0 -4px;
     }
   }
 
   &:focus-within {
-    translate: 0 -8px;
-    rotate: 0deg;
+    translate: 0 -4px;
   }
 }
 
@@ -555,9 +451,7 @@
 }
 
 .nextLabel {
-  font-size: 16px;
-  font-weight: 650;
-  opacity: 0.8;
+  @include s-label;
 }
 
 .nextTitle {
@@ -586,19 +480,20 @@
 }
 
 .nextName {
-  @include display(800);
+  @include title;
   display: block;
-  font-size: clamp(34px, 4.6vw, 60px);
-  line-height: 0.95;
-  letter-spacing: -0.045em;
+  font-size: clamp(30px, 3.8vw, 50px);
+  line-height: 1.04;
+  letter-spacing: -0.025em;
   overflow-wrap: break-word;
 }
 
 .nextSub {
   display: block;
   font-size: 18px;
-  font-weight: 600;
+  font-weight: 500;
   line-height: 1.3;
+  color: var(--wb-ink-2);
 }
 
 .nextOpen {
@@ -606,19 +501,18 @@
   align-items: center;
   gap: 6px;
   margin-top: 8px;
-  padding-top: 10px;
-  border-top: 2px solid currentColor;
   font-size: 16px;
-  font-weight: 650;
+  font-weight: 500;
+
+  svg {
+    color: var(--wb-accent);
+  }
 }
 
 .nextPrint {
   position: relative;
   order: -1;
-  padding: 6px;
-  border-radius: 3px;
-  background: var(--wb-paper);
-  rotate: 1.5deg;
+  border-radius: 4px;
 
   @include from-tablet {
     order: 0;
@@ -628,500 +522,34 @@
     display: block;
     width: 100%;
     height: auto;
+    border: 1px solid var(--wb-rule);
+    border-radius: 4px;
   }
 }
 
 .nextTag {
   position: absolute;
-  top: -12px;
-  right: -10px;
+  top: -14px;
+  right: -12px;
   display: grid;
   gap: 2px;
-  padding: 9px 14px 10px 24px;
-  background: var(--wb-cobalt);
-  color: #ffffff;
-  clip-path: polygon(14px 0, 100% 0, 100% 100%, 14px 100%, 0 calc(100% - 11px), 0 11px);
-  rotate: 4deg;
+  padding: 10px 14px 11px;
+  border: 1px solid var(--wb-rule);
+  border-radius: 4px;
+  background: var(--wb-page);
+  color: var(--wb-ink);
 
   strong {
-    @include display(800);
-    font-size: 30px;
-    line-height: 0.92;
-    letter-spacing: -0.045em;
+    @include title;
+    font-size: 26px;
+    line-height: 1;
+    letter-spacing: -0.03em;
   }
 
   span {
     font-size: 16px;
-    font-weight: 600;
-  }
-}
-
-.ink {
-  background: var(--wb-ink-paper);
-  color: #ffffff;
-
-  @include dark {
-    box-shadow:
-      inset 0 0 0 1px rgba(255, 255, 255, 0.08),
-      var(--wb-shadow);
-  }
-}
-
-.mist {
-  background: var(--wb-mist);
-  color: var(--wb-charcoal);
-}
-
-.cobalt {
-  background: var(--wb-cobalt);
-  color: #ffffff;
-
-  .nextTag {
-    background: var(--wb-mist);
-    color: var(--wb-charcoal);
-  }
-}
-
-.paper {
-  background: var(--wb-paper);
-  color: var(--wb-charcoal);
-  box-shadow:
-    inset 0 0 0 1px var(--wb-line),
-    var(--wb-shadow);
-
-  .nextPrint {
-    background: var(--wb-surface);
-
-    @include dark {
-      background: #ececf0;
-    }
-  }
-}
-
-// Sober (Erick, 2026-10-22) ----------------------------------------------------
-// TEMPORARY (sober variants): scoped to [data-sober], which only the LeadBot
-// case carries for now (src/app/work/[slug]/page.tsx); step 4 makes this the
-// style of every case. Variant A draws objects with hairlines (--v-line),
-// variant B lays them on soft surfaces (--v-fill). Nothing tilts, nothing is
-// taped or pinned; every entrance keeps its timing, now as a rise and a fade.
-
-.fileLabel {
-  @include sober {
-    display: inline-flex;
-    align-items: center;
-    gap: 12px;
-    padding: 0;
-    border-radius: 0;
-    background: none;
-    color: var(--wb-ink-2);
-    font-weight: 500;
-    rotate: none;
-
-    &::before {
-      content: "";
-      width: 24px;
-      height: 1px;
-      background: var(--wb-accent);
-    }
-  }
-}
-
-.title {
-  @include sober {
-    gap: 12px;
-  }
-}
-
-.name {
-  @include sober {
-    @include title;
-    font-size: clamp(40px, 6vw, 80px);
-    line-height: 1.02;
-    letter-spacing: -0.03em;
-
-    [data-long] > & {
-      font-size: clamp(36px, 4.8vw, 64px);
-      line-height: 1.04;
-    }
-  }
-}
-
-.subtitle {
-  @include sober {
-    max-width: 26ch;
-    font-family: var(--font-wb-text), system-ui, sans-serif;
-    font-size: clamp(20px, 2vw, 26px);
-    font-weight: 500;
-    line-height: 1.3;
-    letter-spacing: -0.01em;
-    color: var(--wb-ink-2);
-  }
-}
-
-.summary {
-  @include sober {
-    @include s-lede;
-    max-width: 46ch;
-  }
-}
-
-.facts {
-  @include sober {
-    border-top: 1px solid var(--wb-rule);
-
-    dt {
-      @include s-label;
-    }
-
-    dd {
-      font-size: 16px;
-      font-weight: 500;
-    }
-  }
-}
-
-// The folder becomes a plain panel: the cover, then the figure under it.
-.folder {
-  @include sober {
-    display: grid;
-    align-content: start;
-    gap: 20px;
-    aspect-ratio: auto;
-
-    &[data-front] {
-      aspect-ratio: auto;
-    }
-  }
-
-  @include sober-b {
-    padding: 16px 16px 20px;
-    border-radius: 8px;
-    background: var(--wb-soft);
-  }
-}
-
-.folderBack,
-.folderSheet {
-  @include sober {
-    display: none;
-  }
-}
-
-.cover {
-  @include sober {
-    position: relative;
-    inset: auto;
-    padding: 0;
-    overflow: hidden;
-    border: 1px solid var(--v-line);
-    border-radius: 4px;
-    background: var(--wb-soft-2);
-    box-shadow: none;
-    rotate: none;
-
-    @media (prefers-reduced-motion: no-preference) {
-      animation: coverRise 1s var(--wb-ease-soft) 0.2s both;
-    }
-  }
-}
-
-.folderFront {
-  @include sober {
-    position: relative;
-    inset: auto;
-    height: auto;
-    flex-direction: row;
-    flex-wrap: wrap;
-    align-items: baseline;
-    justify-content: flex-start;
-    gap: 6px 18px;
-    padding: 0;
-    border-radius: 0;
-    background: none;
-    color: var(--wb-ink);
-
-    strong {
-      @include title;
-      font-size: clamp(48px, 11cqi, 76px);
-      line-height: 1;
-      letter-spacing: -0.03em;
-      color: var(--wb-accent);
-
-      @media (prefers-reduced-motion: no-preference) {
-        animation: settleIn 0.6s $ease-settle 1s both;
-      }
-    }
-
-    span {
-      font-size: 17px;
-      font-weight: 500;
-      color: var(--wb-ink-2);
-    }
-  }
-
-  @include sober-b {
-    padding: 4px 4px 0;
-  }
-}
-
-.folderFront strong {
-  @include sober {
-    @include dark {
-      color: #6688ff;
-    }
-  }
-}
-
-// The prints in the margin stand straight: A behind a hairline, B on a mat.
-.pinned {
-  @include sober {
-    rotate: none;
-
-    @media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
-      rotate: none;
-      transition:
-        opacity 0.8s var(--wb-ease-soft),
-        translate 1s var(--wb-ease-soft);
-
-      &[data-in] {
-        rotate: none;
-      }
-    }
-  }
-}
-
-.pinnedFrame {
-  @include sober {
-    padding: 0;
-    overflow: hidden;
-    border: 1px solid var(--wb-rule);
-    border-radius: 4px;
-    box-shadow: none;
-
-    video {
-      background: var(--wb-soft-2);
-    }
-  }
-
-  @include sober-b {
-    padding: 10px;
-    border-color: transparent;
-    border-radius: 8px;
-    background: var(--wb-soft);
-  }
-}
-
-.tape,
-.pin {
-  @include sober {
-    display: none;
-  }
-}
-
-.playKey {
-  @include sober {
-    left: 12px;
-    bottom: 12px;
-    border-radius: 6px;
-    background: rgba(19, 19, 22, 0.78);
-  }
-
-  @include sober-b {
-    left: 20px;
-    bottom: 20px;
-  }
-}
-
-// The figure beside the results: a plain tag.
-.bigTag {
-  @include sober {
-    gap: 6px;
-    padding: 24px 28px;
-    border: 1px solid var(--v-line);
-    border-radius: var(--v-radius);
-    background: var(--v-fill);
-    color: var(--wb-ink);
-    clip-path: none;
-    rotate: none;
-
-    @media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
-      scale: 0.94;
-      transition:
-        opacity 0.5s var(--wb-ease-soft),
-        scale 0.6s $ease-settle;
-    }
-
-    strong {
-      @include title;
-      font-size: 56px;
-      line-height: 1;
-      letter-spacing: -0.03em;
-      color: var(--wb-accent);
-
-      @include dark {
-        color: #6688ff;
-      }
-    }
-
-    span {
-      font-size: 16px;
-      font-weight: 500;
-      color: var(--wb-ink-2);
-    }
-  }
-}
-
-.bookNote {
-  @include sober {
-    gap: 16px;
-    border: 1px solid var(--v-line);
-    border-radius: var(--v-radius);
-    background: var(--v-fill);
-
-    p {
-      @include s-h3;
-      font-size: 21px;
-      line-height: 1.3;
-    }
-  }
-}
-
-// The next case: a straight card, unfilled with a hairline (A) or on a soft
-// surface (B); its cover print and figure stand straight too.
-.nextCard {
-  @include sober {
-    border: 1px solid var(--v-line);
-    border-radius: var(--v-radius);
-    background: var(--v-fill);
-    color: var(--wb-ink);
-    box-shadow: none;
-    rotate: none;
-    transition: translate 0.45s var(--wb-ease-soft);
-
-    &::after {
-      display: none;
-    }
-
-    @include fine-pointer {
-      &:hover {
-        translate: 0 -4px;
-        rotate: none;
-      }
-    }
-
-    &:focus-within {
-      translate: 0 -4px;
-      rotate: none;
-    }
-  }
-}
-
-.nextLabel {
-  @include sober {
-    @include s-label;
-    opacity: 1;
-  }
-}
-
-.nextName {
-  @include sober {
-    @include title;
-    font-size: clamp(30px, 3.8vw, 50px);
-    line-height: 1.04;
-    letter-spacing: -0.025em;
-  }
-}
-
-.nextSub {
-  @include sober {
     font-weight: 500;
     color: var(--wb-ink-2);
-  }
-}
-
-.nextOpen {
-  @include sober {
-    padding-top: 0;
-    border-top: 0;
-    font-weight: 500;
-
-    svg {
-      color: var(--wb-accent);
-    }
-  }
-}
-
-.nextPrint {
-  @include sober {
-    padding: 0;
-    border-radius: 4px;
-    background: none;
-    rotate: none;
-
-    img {
-      border: 1px solid var(--v-line);
-      border-radius: 4px;
-    }
-  }
-}
-
-.nextTag {
-  @include sober {
-    top: -14px;
-    right: -12px;
-    padding: 10px 14px 11px;
-    border: 1px solid var(--wb-rule);
-    border-radius: 4px;
-    background: var(--wb-page);
-    color: var(--wb-ink);
-    clip-path: none;
-    rotate: none;
-
-    strong {
-      @include title;
-      font-size: 26px;
-      line-height: 1;
-      letter-spacing: -0.03em;
-    }
-
-    span {
-      font-size: 16px;
-      font-weight: 500;
-      color: var(--wb-ink-2);
-    }
-  }
-
-  @include sober-b {
-    border-color: transparent;
-    border-radius: 8px;
-    background: var(--wb-raised);
-  }
-}
-
-// The papers of the next card give way to the variant's surface.
-.ink,
-.mist,
-.cobalt,
-.paper {
-  @include sober {
-    background: var(--v-fill);
-    color: var(--wb-ink);
-    box-shadow: none;
-
-    .nextPrint {
-      background: none;
-    }
-
-    .nextTag {
-      background: var(--wb-page);
-      color: var(--wb-ink);
-    }
-  }
-
-  @include sober-b {
-    .nextTag {
-      background: var(--wb-raised);
-    }
   }
 }
 
@@ -1139,37 +567,15 @@
   }
 }
 
-@keyframes folderIn {
+@keyframes panelIn {
   from {
     translate: 0 40px;
   }
 }
 
-@keyframes coverOut {
-  from {
-    translate: 0 26cqi;
-    rotate: 0deg;
-  }
-}
-
-@keyframes sheetOut {
-  from {
-    translate: 0 20cqi;
-    rotate: 0deg;
-  }
-}
-
-@keyframes pop {
-  from {
-    opacity: 0;
-    scale: 0.6;
-  }
-}
-
 @include reduced {
   .back svg,
-  .nextCard,
-  .nextCard::after {
+  .nextCard {
     transition: none;
   }
 }

@@ -1,5 +1,7 @@
-// Workbench, Projects: the page head and the prints on the bench.
-// Keep this file ASCII-only.
+// Workbench, Projects: the page head and the cases in a straight grid. Sober
+// (2026-10-22): every case is an unfilled card with its cover behind a
+// hairline and its figure under it (they were tilted prints on coloured
+// papers with a tag pinned to the corner). Keep this file ASCII-only.
 @use "../shared" as *;
 
 .hidden {
@@ -26,7 +28,7 @@
 
   @include from-desk {
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    align-items: end;
+    align-items: start;
     column-gap: 48px;
     padding-top: 48px;
     padding-bottom: 72px;
@@ -34,141 +36,102 @@
 }
 
 .title {
-  @include display(800);
-  font-size: clamp(64px, 11vw, 148px);
-  line-height: 0.9;
-  letter-spacing: -0.055em;
+  @include title;
+  font-size: clamp(48px, 7vw, 88px);
+  line-height: 1;
+  letter-spacing: -0.03em;
+}
+
+.headSide {
+  display: grid;
+  justify-items: start;
+  gap: 28px;
 }
 
 .lede {
-  @include lede;
-  max-width: 38ch;
+  @include s-lede;
+  max-width: 40ch;
 }
 
-// The bench ----------------------------------------------------------------
+// The grid ---------------------------------------------------------------
 
 .bench {
   @include wrap;
   position: relative;
   padding-bottom: 56px;
 
-  @include from-wide {
-    padding-bottom: 120px;
+  @include from-desk {
+    padding-bottom: 104px;
   }
 }
 
 .grid {
   display: grid;
-  gap: 36px;
+  gap: 48px;
   margin: 0;
   padding: 0;
   list-style: none;
 
   @include from-tablet {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 48px 32px;
+    gap: 56px 24px;
   }
 
-  @include from-wide {
+  @include from-desk {
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 72px 40px;
+    gap: 72px 32px;
   }
 }
 
+// Each card rises in turn, row by row.
 .slot {
   @include reveal(40px);
-  position: relative;
   display: flex;
-
-  // Loose rows: the middle print of each row lies a little lower.
-  @include from-wide {
-    &:nth-child(3n + 2) {
-      top: 56px;
-    }
-  }
 }
 
-// One print: the paper it is mounted on, its cover, its tag ----------------
-
 .card {
-  --card-ink-2: #3c3c46;
-
   position: relative;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
   width: 100%;
-  padding: 14px 14px 18px;
-  border-radius: 6px;
-  box-shadow: var(--wb-shadow);
-  rotate: calc(var(--t) * 0.6);
-  transition:
-    translate 0.45s var(--wb-ease-pop),
-    rotate 0.45s var(--wb-ease-pop);
-
-  @include from-tablet {
-    rotate: var(--t);
-    padding: 16px 16px 20px;
-  }
-
-  // The deeper shadow of a lifted print fades in (opacity, not box-shadow).
-  &::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    box-shadow: var(--wb-shadow-lift);
-    opacity: 0;
-    transition: opacity 0.4s var(--wb-ease-soft);
-    pointer-events: none;
-  }
+  color: var(--wb-ink);
+  transition: translate 0.45s var(--wb-ease-soft);
 
   @include fine-pointer {
     &:hover {
-      translate: 0 -10px;
-      rotate: 0deg;
-
-      &::after {
-        opacity: 1;
-      }
+      translate: 0 -4px;
     }
   }
 
   &:focus-within {
-    translate: 0 -10px;
-    rotate: 0deg;
-
-    &::after {
-      opacity: 1;
-    }
-  }
-
-  // A tap lifts it too, while the finger is down.
-  &:active {
-    translate: 0 -6px;
+    translate: 0 -4px;
   }
 }
 
+// Every cover sits in the same box (the ratio most covers have), so a row of
+// cards lines up; a cover of another ratio is shown whole inside it, never
+// cropped.
 .print {
   order: -1;
-  position: relative;
-  margin-bottom: 8px;
-  padding: 6px;
-  border-radius: 3px;
-  background: var(--wb-paper);
+  aspect-ratio: 2400 / 1357;
+  margin-bottom: 12px;
+  overflow: hidden;
+  border: 1px solid var(--wb-rule);
+  border-radius: 4px;
+  background: var(--wb-soft-2);
 
   img {
     display: block;
     width: 100%;
-    height: auto;
-    border-radius: 1px;
+    height: 100%;
+    object-fit: contain;
   }
 }
 
 .cardTitle {
   display: grid;
   gap: 4px;
-  padding-inline: 4px;
 }
 
 .stretch {
@@ -176,101 +139,63 @@
 
   outline: none;
 
-  // The whole print opens the case; the name stays the link's text.
+  // The whole card opens the case; the name stays the link's text.
   &::after {
     content: "";
     position: absolute;
     z-index: 2;
     inset: 0;
-    border-radius: 6px;
+    border-radius: 4px;
   }
 
   &:focus-visible::after {
     outline: 3px solid var(--wb-accent);
-    outline-offset: 4px;
+    outline-offset: 6px;
   }
 }
 
 .name {
-  @include display(750);
+  @include s-h3;
   display: block;
-  font-size: 26px;
-  line-height: 1.02;
-  letter-spacing: -0.03em;
-
-  @include from-desk {
-    font-size: 28px;
-  }
+  font-size: 21px;
+  line-height: 1.25;
 }
 
 .sub {
   display: block;
-  font-size: 17px;
-  font-weight: 600;
-  line-height: 1.3;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.45;
+  color: var(--wb-ink-2);
 }
 
-// The figure, pinned to the corner of the print as a paper tag.
-.tag {
-  position: absolute;
-  z-index: 1;
-  top: -10px;
-  right: -8px;
-  display: grid;
-  gap: 2px;
-  max-width: 62%;
-  padding: 10px 14px 11px 26px;
-  background: var(--wb-cobalt);
-  color: #ffffff;
-  clip-path: polygon(16px 0, 100% 0, 100% 100%, 16px 100%, 0 calc(100% - 12px), 0 12px);
-  rotate: 4deg;
-
-  &::before {
-    content: "";
-    position: absolute;
-    top: 50%;
-    left: 9px;
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
-    background: var(--wb-page);
-    translate: 0 -50%;
-  }
+// The case's figure, a plain line under the title.
+.metric {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 2px 10px;
+  margin-top: 6px;
 
   strong {
-    @include display(800);
-    font-size: 34px;
-    line-height: 0.92;
-    letter-spacing: -0.045em;
+    @include title;
+    font-size: 32px;
+    line-height: 1;
+    letter-spacing: -0.03em;
   }
 
   span {
     font-size: 16px;
-    font-weight: 600;
-    line-height: 1.2;
-  }
-
-  // The tag pops on last, when its print has landed.
-  @media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
-    scale: 0.6;
-    opacity: 0;
-    transition:
-      scale 0.6s var(--wb-ease-pop),
-      opacity 0.4s var(--wb-ease-soft);
-    transition-delay: calc(var(--i, 0) * 90ms + 450ms);
-
-    .slot[data-in] & {
-      scale: 1;
-      opacity: 1;
-    }
+    line-height: 1.3;
+    color: var(--wb-ink-2);
   }
 }
 
 .summary {
-  padding-inline: 4px;
-  color: var(--card-ink-2);
+  margin-top: 4px;
+  color: var(--wb-ink-2);
   font-size: 16px;
-  line-height: 1.5;
+  line-height: 1.55;
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 3;
@@ -286,12 +211,12 @@
   align-items: center;
   gap: 6px;
   margin-top: auto;
-  padding: 12px 4px 0;
-  border-top: 2px solid currentColor;
+  padding-top: 12px;
   font-size: 16px;
-  font-weight: 650;
+  font-weight: 500;
 
   svg {
+    color: var(--wb-accent);
     transition: translate 0.28s var(--wb-ease-soft);
   }
 
@@ -302,57 +227,8 @@
   }
 }
 
-// Papers -------------------------------------------------------------------
-
-.ink {
-  --card-ink-2: rgba(255, 255, 255, 0.78);
-
-  background: var(--wb-ink-paper);
-  color: #ffffff;
-
-  @include dark {
-    box-shadow:
-      inset 0 0 0 1px rgba(255, 255, 255, 0.08),
-      var(--wb-shadow);
-  }
-}
-
-.mist {
-  background: var(--wb-mist);
-  color: var(--wb-charcoal);
-}
-
-.cobalt {
-  --card-ink-2: rgba(255, 255, 255, 0.86);
-
-  background: var(--wb-cobalt);
-  color: #ffffff;
-
-  .tag {
-    background: var(--wb-mist);
-    color: var(--wb-charcoal);
-  }
-}
-
-.paper {
-  background: var(--wb-paper);
-  color: var(--wb-charcoal);
-  box-shadow:
-    inset 0 0 0 1px var(--wb-line),
-    var(--wb-shadow);
-
-  .print {
-    background: var(--wb-surface);
-
-    @include dark {
-      background: #ececf0;
-    }
-  }
-}
-
 @include reduced {
   .card,
-  .card::after,
   .open svg {
     transition: none;
   }

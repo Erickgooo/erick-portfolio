@@ -2,7 +2,6 @@
 // from the project MDX (frontmatter and body) or src/resources/content.tsx.
 import { isProtectedPath } from "@/resources/protectedRoutes";
 import { getPosts } from "@/utils/utils";
-import type { Paper } from "../data";
 import { type Size, isImage, isVideo, mediaSize } from "../prose/media";
 import { bodyMediaPaths } from "../prose/source";
 
@@ -24,7 +23,6 @@ export type Case = {
   cover: CaseMedia | null;
   /** Frontmatter media the body does not show itself, laid out beside the text. */
   extras: CaseMedia[];
-  paper: Paper;
   content: string;
 };
 
@@ -44,9 +42,6 @@ const CLIENT: Record<string, string> = {
   "ai-portfolio": "Personal project",
 };
 
-/** Papers dealt in turn down the list, so no two neighbours match in one, two or three columns. */
-const PAPERS: Paper[] = ["ink", "mist", "cobalt", "paper"];
-
 function media(src: string): CaseMedia {
   return { src, ...mediaSize(src), kind: isVideo(src) ? "video" : "image" };
 }
@@ -56,7 +51,7 @@ function readCases(): Case[] {
     (a, b) =>
       new Date(b.metadata.publishedAt).getTime() - new Date(a.metadata.publishedAt).getTime(),
   );
-  return posts.map((post, i) => {
+  return posts.map((post) => {
     const { metadata, content, slug } = post;
     const [name, ...rest] = metadata.title.split(":");
     const [value, label] = (metadata.metric || "").split("|").map((s) => s.trim());
@@ -76,7 +71,6 @@ function readCases(): Case[] {
       metric: value && label ? { value, label } : null,
       cover: coverSrc ? media(coverSrc) : null,
       extras: images.filter((src) => src !== coverSrc && !inBody.has(src)).map(media),
-      paper: PAPERS[i % PAPERS.length],
       content,
     };
   });

@@ -11,8 +11,8 @@ const require = createRequire(import.meta.url);
 const LH_CLI = path.join(path.dirname(require.resolve("lighthouse/package.json")), "cli", "index.js");
 
 const BASE = process.env.LH_BASE_URL ?? "http://localhost:3100";
-// LH_QUERY=v=b adds a query string to every page (e.g. the sober variant
-// switch); the reports keep their usual names, so give the batch its own LH_TAG.
+// LH_QUERY=a=1 adds a query string to every page; the reports keep their
+// usual names, so give the batch its own LH_TAG.
 const QUERY = process.env.LH_QUERY ?? "";
 const TAG = process.env.LH_TAG ?? "local";
 const RUNS = Number(process.env.LH_RUNS ?? 3);

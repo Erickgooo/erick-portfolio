@@ -1,10 +1,10 @@
 "use client";
 
-// Workbench About: the film frame. The loop that used to open the home sits on
-// the bench as a small tilted print; once half of its box is in view it lifts,
-// straightens and opens into a wide frame, and the loop starts. Triggered once,
-// then it plays on its own time: it is never scrubbed by scroll. Only transform
-// and opacity move (film.module.scss).
+// Workbench About: the film frame. The loop that used to open the home waits
+// as a small framed piece; once half of its box is in view it lifts and opens
+// into a wide frame, and the loop starts. Triggered once, then it plays on its
+// own time: it is never scrubbed by scroll. Only transform and opacity move
+// (film.module.scss).
 //
 // Behaviour carried over from src/components/home/LazyVideo.tsx:
 // - muted, looping, inline, and it plays by itself while on screen;
@@ -152,7 +152,6 @@ export function FilmFrame({
       data-testid={testId}
     >
       <div className={styles.frame}>
-        <span className={styles.tape} aria-hidden="true" />
         <Image
           src={poster}
           alt=""

@@ -1,6 +1,8 @@
-// Workbench, post: a post reads like a case. One column of Onest, the cover
-// print taped beside the title, the index in the margin on desktop, Erick's
-// monogram as the last mark, then the share keys.
+// Workbench, post: a post reads like a case. One column of text, the cover
+// behind a hairline beside the title, the index in the margin on desktop,
+// Erick's monogram as the last mark, then the share keys. "My Workspace" also
+// carries its drawn desk (a scene): in the margin above the index on desktop,
+// lit by the section being read; under the header on phones, on its own loop.
 import { person } from "@/resources";
 import { formatDate } from "@/utils/formatDate";
 import Image from "next/image";
@@ -9,6 +11,8 @@ import { FiArrowLeft } from "react-icons/fi";
 import { EndMark, Prose } from "../prose/Prose";
 import { mediaSize } from "../prose/media";
 import { outline } from "../prose/source";
+import { DeskScene } from "../scenes/post/DeskScene";
+import { DESK_POST } from "../scenes/post/parts";
 import { PostIndex } from "./PostIndex";
 import { Share } from "./Share";
 import styles from "./blog.module.scss";
@@ -20,6 +24,7 @@ export function PostArticle({
   image,
   content,
   url,
+  slug,
 }: {
   title: string;
   summary: string;
@@ -27,8 +32,10 @@ export function PostArticle({
   image?: string;
   content: string;
   url: string;
+  slug: string;
 }) {
   const items = outline(content);
+  const desk = slug === DESK_POST;
   const cover = image ? { src: image, ...mediaSize(image) } : null;
 
   return (
@@ -57,7 +64,6 @@ export function PostArticle({
         </div>
         {cover ? (
           <figure className={styles.cover}>
-            <span className={styles.tape} aria-hidden="true" />
             <span className={styles.coverFrame}>
               <Image
                 src={cover.src}
@@ -72,6 +78,12 @@ export function PostArticle({
         ) : null}
       </header>
 
+      {desk ? (
+        <div className={styles.deskPhone}>
+          <DeskScene mode="loop" />
+        </div>
+      ) : null}
+
       <div className={styles.body}>
         <div className={styles.prose}>
           <Prose source={content} />
@@ -80,7 +92,10 @@ export function PostArticle({
         </div>
         {items.length > 1 ? (
           <div className={styles.rail}>
-            <PostIndex items={items} />
+            <div className={styles.railInner}>
+              {desk ? <DeskScene mode="read" /> : null}
+              <PostIndex items={items} />
+            </div>
           </div>
         ) : null}
       </div>

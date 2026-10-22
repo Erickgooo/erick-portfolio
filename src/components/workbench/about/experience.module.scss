@@ -1,4 +1,6 @@
-// Workbench About: work experience as ticket stubs.
+// Workbench About: the work experience. Sober (2026-10-22): one list of rows
+// between hairlines (they were ticket stubs on coloured papers); each row
+// opens to what was done there.
 // Keep this file ASCII-only: a non-ASCII byte makes Sass emit a BOM.
 @use "../shared" as *;
 
@@ -35,7 +37,7 @@
   }
 
   h2 {
-    @include h2;
+    @include s-h2;
   }
 }
 
@@ -45,199 +47,167 @@
   gap: 12px;
 
   p {
-    @include lede;
+    @include s-lede;
   }
 }
 
-.stubs {
-  display: grid;
-  gap: 20px;
+.rows {
   max-width: 1080px;
   list-style: none;
   padding: 0;
-
-  @include from-desk {
-    gap: 22px;
-  }
+  border-top: 1px solid var(--wb-ink);
 }
 
-// Dealt onto the bench: each stub rises in turn. From desktops every other
-// stub sits a little further in, so the stack reads as dealt by hand.
+// Each row rises in turn.
 .item {
-  @include reveal(40px);
-
-  @include from-desk {
-    &:nth-child(even) {
-      margin-left: 48px;
-    }
-  }
+  @include reveal(24px);
+  border-bottom: 1px solid var(--wb-line);
 }
 
-// The stub. Its width of the date column is the perforation's place, which
-// the notches read too.
-.stub {
-  --cut: 108px;
-
-  position: relative;
-  border-radius: 6px;
-  box-shadow: var(--wb-shadow);
-  rotate: var(--r);
-  transition: rotate 0.6s var(--wb-ease-pop);
-
-  @include from-tablet {
-    --cut: 168px;
-  }
-
-  &[open] {
-    rotate: 0deg;
-  }
-
-  // Figures inside the copy keep the paper's own type and colour.
+.row {
+  // Figures inside the copy keep the row's own type and colour.
   :global(.metric) {
     font-family: inherit;
-    font-weight: 700;
+    font-weight: 600;
     color: inherit;
   }
 
   summary {
-    position: relative;
     display: grid;
-    grid-template-columns: var(--cut) minmax(0, 1fr) 56px;
+    grid-template-columns: minmax(0, 1fr) 44px;
     align-items: center;
-    min-height: 96px;
+    gap: 4px 16px;
+    min-height: 88px;
+    padding: 18px 0;
     cursor: pointer;
     list-style: none;
+
+    @include from-tablet {
+      grid-template-columns: 168px minmax(0, 1fr) 44px;
+      gap: 24px;
+      padding: 22px 0;
+    }
 
     &::-webkit-details-marker {
       display: none;
     }
 
-    // The notches at both ends of the perforation, cut in the page colour.
-    &::before,
-    &::after {
-      content: "";
-      position: absolute;
-      left: calc(var(--cut) - 9px);
-      width: 18px;
-      height: 18px;
-      border-radius: 50%;
-      background: var(--wb-page);
-    }
-
-    &::before {
-      top: -9px;
-    }
-
-    &::after {
-      bottom: -9px;
-    }
-
     &:focus-visible {
       outline-offset: 4px;
-      border-radius: 6px;
+      border-radius: 4px;
     }
-  }
-
-  &[open] summary::after {
-    opacity: 0;
   }
 }
 
+// Phones: the dates sit over the company, the key beside both.
 .when {
-  display: grid;
-  align-content: center;
-  align-self: stretch;
-  gap: 2px;
-  padding: 16px 8px 16px 14px;
-  border-right: 2px dashed color-mix(in srgb, currentColor 38%, transparent);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 6px;
+  grid-column: 1;
+  font-size: 16px;
+  line-height: 1.35;
+  color: var(--wb-ink-2);
 
   @include from-tablet {
-    padding: 22px 20px 22px 24px;
+    display: grid;
+    gap: 2px;
   }
 }
 
 .from {
-  @include display(700);
-  font-size: 16px;
-  line-height: 1.15;
-  letter-spacing: -0.01em;
-
-  @include from-tablet {
-    font-size: 20px;
-  }
-}
-
-.to {
-  font-size: 16px;
-  line-height: 1.25;
-  opacity: 0.78;
+  font-weight: 500;
+  color: var(--wb-ink);
 }
 
 .what {
   display: grid;
-  gap: 4px;
-  padding: 18px 8px 18px 16px;
+  gap: 2px;
+  grid-column: 1;
 
   @include from-tablet {
-    padding: 22px 12px 22px 28px;
+    grid-column: 2;
+    grid-row: 1;
   }
 
   h3 {
-    @include display(700);
-    font-size: 22px;
-    line-height: 1.05;
-    letter-spacing: -0.025em;
+    @include s-h3;
+    font-size: 20px;
+    line-height: 1.25;
 
     @include from-tablet {
-      font-size: 30px;
+      font-size: 22px;
     }
   }
 }
 
 .role {
   font-size: 16px;
-  line-height: 1.35;
-
-  @include from-tablet {
-    font-size: 17px;
-  }
+  line-height: 1.4;
+  color: var(--wb-ink-2);
 }
 
-// The plus key turns into a cross when the stub is open.
+// The plus key: a hairline square; its upright stroke folds away (a scale)
+// when the row is open, leaving a minus.
 .toggle {
-  display: grid;
-  place-items: center;
-  width: 40px;
-  height: 40px;
-  border-radius: 10px;
-  background: color-mix(in srgb, currentColor 12%, transparent);
-  font-size: 22px;
-  transition: rotate 0.4s var(--wb-ease-pop);
+  position: relative;
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--wb-rule);
+  border-radius: 4px;
 
-  .stub[open] & {
-    rotate: 45deg;
+  @include from-tablet {
+    grid-column: 3;
+    grid-row: 1;
+  }
+
+  &::before,
+  &::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    background: var(--wb-ink);
+  }
+
+  &::before {
+    width: 14px;
+    height: 1.5px;
+    margin: -0.75px 0 0 -7px;
+  }
+
+  &::after {
+    width: 1.5px;
+    height: 14px;
+    margin: -7px 0 0 -0.75px;
+    transition: scale 0.4s var(--wb-ease-soft);
+  }
+
+  .row[open] &::after {
+    scale: 1 0;
   }
 }
 
 .body {
   display: grid;
-  gap: 18px;
-  padding: 22px 20px 28px;
-  border-top: 2px dashed color-mix(in srgb, currentColor 38%, transparent);
+  gap: 16px;
+  padding: 0 0 28px;
 
   @include from-tablet {
-    padding: 28px 56px 36px calc(var(--cut) + 28px);
+    padding: 0 68px 32px 192px;
   }
 
   @media (prefers-reduced-motion: no-preference) {
-    .stub[open] & {
+    .row[open] & {
       animation: unfold 0.6s var(--wb-ease-soft) both;
     }
   }
 
   ul {
     display: grid;
-    gap: 12px;
+    gap: 10px;
     max-width: 68ch;
     list-style: none;
     padding: 0;
@@ -245,20 +215,20 @@
 
   li {
     position: relative;
-    padding-left: 22px;
+    padding-left: 20px;
     font-size: 17px;
-    line-height: 1.5;
+    line-height: 1.6;
+    color: var(--wb-ink-2);
 
     &::before {
       content: "";
       position: absolute;
-      top: 0.62em;
-      left: 0;
-      width: 8px;
-      height: 8px;
-      border-radius: 2px;
-      background: currentColor;
-      opacity: 0.55;
+      top: 0.72em;
+      left: 2px;
+      width: 6px;
+      height: 6px;
+      border-radius: 1px;
+      background: var(--wb-accent);
     }
   }
 }
@@ -266,8 +236,7 @@
 .desc {
   max-width: 68ch;
   font-size: 17px;
-  line-height: 1.5;
-  font-weight: 500;
+  line-height: 1.6;
 }
 
 @keyframes unfold {
@@ -277,38 +246,8 @@
   }
 }
 
-.cobalt {
-  background: var(--wb-cobalt);
-  color: #ffffff;
-}
-
-.mist {
-  background: var(--wb-mist);
-  color: var(--wb-charcoal);
-}
-
-.ink {
-  background: var(--wb-ink-paper);
-  color: #ffffff;
-
-  @include dark {
-    box-shadow:
-      inset 0 0 0 1px rgba(255, 255, 255, 0.08),
-      var(--wb-shadow);
-  }
-}
-
-.paper {
-  background: var(--wb-paper);
-  color: var(--wb-charcoal);
-  box-shadow:
-    inset 0 0 0 1px var(--wb-line),
-    var(--wb-shadow);
-}
-
 @include reduced {
-  .stub,
-  .toggle {
+  .toggle::after {
     transition: none;
   }
 }

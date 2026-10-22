@@ -1,7 +1,7 @@
 // Workbench: the hero workbench, straight and flat (sober, 2026-10-22). Sizes
 // are in container units so the whole cluster scales as one object from 360
-// to 1440. Variant A draws every object with a hairline; variant B lays them
-// on soft surfaces with no outline. Nothing is tilted, taped or pinned.
+// to 1440. Every object is drawn with a hairline. Nothing is tilted, taped or
+// pinned.
 // From 1280 px the figures lie on the bench among the objects; below that
 // (phones, tablets and the narrow desktop, where a tag would be too narrow
 // for its caption) the objects keep the bench and the figures lie in a grid
@@ -143,17 +143,12 @@
   }
 }
 
-// The tablet: a thin frame around the screen. A: a hairline; B: a soft surface.
+// The tablet: a thin hairline frame around the screen.
 .screen {
   padding: 1.1cqi;
   border: 1px solid var(--wb-rule);
   border-radius: 1.6cqi;
   background: var(--wb-page);
-
-  @include vb {
-    border-color: transparent;
-    background: var(--wb-soft);
-  }
 }
 
 .glass {
@@ -167,23 +162,16 @@
   background: var(--wb-soft-2);
 }
 
-// A print: A, the piece behind a hairline; B, the piece on a soft mat.
+// A print: the piece behind a hairline.
 .print {
   overflow: hidden;
   border: 1px solid var(--wb-rule);
   border-radius: 3px;
   background: var(--wb-page);
-
-  @include vb {
-    padding: 0.9cqi;
-    border-color: transparent;
-    border-radius: 6px;
-    background: var(--wb-soft);
-  }
 }
 
-// Figure tags: a plain tag. A: page-coloured with a hairline (opaque, so a
-// tag laid over the tablet hides what is under it); B: a soft surface.
+// Figure tags: a plain tag, page-coloured with a hairline (opaque, so a tag
+// laid over the tablet hides what is under it).
 .tagPaper {
   display: grid;
   gap: 0.7cqi;
@@ -192,12 +180,6 @@
   border-radius: 4px;
   background: var(--wb-page);
   color: var(--wb-ink);
-
-  @include vb {
-    border-color: transparent;
-    border-radius: 8px;
-    background: var(--wb-soft);
-  }
 
   @include below-wide {
     gap: 6px;

@@ -23,8 +23,8 @@
 //   --mask-media         images, videos and iframes become flat boxes (the
 //                        media rule: for our own checks, never the pieces)
 //   --reduced            emulate prefers-reduced-motion: reduce
-//   --query <q>          add a query string to the page (e.g. v=b, the sober
-//                        variant switch); it goes into the file names too
+//   --query <q>          add a query string to the page (e.g. a=1); it goes
+//                        into the file names too
 //   --out <dir>          default docs/design/screens/rediseno-2026-escenas/frames
 //
 // Files: <out>/<name>[-<query>]-<width>-<theme>-<n>.png (n from 1).

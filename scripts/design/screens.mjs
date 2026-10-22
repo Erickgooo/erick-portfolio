@@ -2,10 +2,10 @@
 // stitched, at 390 and 1440 px in light and dark.
 //
 //   npm run build && npx next start -p 3301
-//   node scripts/design/screens.mjs [--base http://localhost:3301] [--out docs/design/screens/rediseno-2026] [--pages home,about] [--mask-media] [--query v=b]
+//   node scripts/design/screens.mjs [--base http://localhost:3301] [--out docs/design/screens/rediseno-2026] [--pages home,about] [--mask-media] [--query a=1]
 //
-// --query adds a query string to every page (for example v=b, the sober
-// variant switch) and puts it in the file names: home-v-b-390-light.png.
+// --query adds a query string to every page and puts it in the file names
+// (a=1 gives home-a-1-390-light.png).
 //
 // --mask-media turns every image, video and iframe into a flat translucent box,
 // so a layout check never shows the media pieces themselves (Erick's rule: they

@@ -315,46 +315,15 @@ body {
   --wb-shadow-soft: 0 1px 2px rgba(0, 0, 0, 0.35), 0 12px 28px -20px rgba(0, 0, 0, 0.8);
 }
 
-/* The two shape treatments, read by the home and the LeadBot case.
-   - A (default): almost no fills; hairlines draw every object.
-   - B: flat soft surfaces, no borders.
-   --v-fill / --v-line / --v-radius: a drawn object's fill, outline and
-   corner. --sc-*: the same inside the scenes, whose sheets alternate between
-   two surface tones (--sc-tone-a / --sc-tone-b); an object inside a sheet
-   is filled with --sc-obj-fill, or with its sheet's own tone where that is
-   unset (variant A, where the hairline alone draws it). */
+/* The scenes (Erick chose variant A, "Line", on 2026-10-22: almost no fills,
+   hairlines draw every object). Their sheets alternate between two surface
+   tones (--sc-tone-a / --sc-tone-b); an object inside a sheet is filled with
+   its sheet's own tone, so the hairline alone draws it. */
 :root {
-  --v-fill: transparent;
-  --v-line: var(--wb-rule);
-  --v-radius: 4px;
-
   --sc-tone-a: var(--wb-page);
   --sc-tone-b: var(--wb-soft-2);
   --sc-sheet-line: var(--wb-rule);
   --sc-line: var(--wb-rule);
   --sc-soft: transparent;
   --sc-bar: var(--wb-rule);
-}
-
-/* TEMPORARY (sober variants): variant B, switched on by ?v=b through the
-   wb-variant script in src/app/layout.tsx. Step 4 keeps one variant and
-   removes this switch; it never reaches main. */
-:root[data-wb-variant="b"] {
-  --v-fill: var(--wb-soft);
-  --v-line: transparent;
-  --v-radius: 8px;
-
-  --sc-tone-a: var(--wb-soft);
-  --sc-tone-b: var(--wb-soft-2);
-  --sc-sheet-line: transparent;
-  --sc-line: transparent;
-  --sc-soft: var(--wb-soft-in);
-  --sc-obj-fill: var(--wb-raised);
-  --sc-bar: #d3d6e2;
-}
-
-/* TEMPORARY (sober variants) */
-:root[data-wb-variant="b"][data-theme="dark"] {
-  --sc-tone-b: #202026;
-  --sc-bar: #44444c;
 }

@@ -1,4 +1,6 @@
-// Workbench, Blog: the stack of printed sheets, and the post itself.
+// Workbench, Blog: the posts as sheets, and the post itself. Sober
+// (2026-10-22): sheets are hairline frames, straight and unfilled (they were
+// tilted prints over a stack); the cover stands behind a hairline.
 // Keep this file ASCII-only.
 @use "../shared" as *;
 
@@ -26,7 +28,7 @@
 
   @include from-desk {
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    align-items: end;
+    align-items: start;
     column-gap: 48px;
     padding-top: 48px;
     padding-bottom: 72px;
@@ -34,19 +36,25 @@
 }
 
 .title {
-  @include display(800);
-  font-size: clamp(56px, 9vw, 128px);
-  line-height: 0.92;
-  letter-spacing: -0.05em;
+  @include title;
+  font-size: clamp(48px, 7vw, 88px);
+  line-height: 1;
+  letter-spacing: -0.03em;
   text-wrap: balance;
 }
 
-.lede {
-  @include lede;
-  max-width: 38ch;
+.headSide {
+  display: grid;
+  justify-items: start;
+  gap: 28px;
 }
 
-// Index: the stack -------------------------------------------------------------
+.lede {
+  @include s-lede;
+  max-width: 40ch;
+}
+
+// Index: the sheets -------------------------------------------------------------
 
 .bench {
   @include wrap;
@@ -57,39 +65,16 @@
   }
 }
 
-.stack {
+.lead {
   @include reveal(40px);
-  position: relative;
   max-width: 1080px;
-
-  // The sheets under the newest one.
-  .under {
-    position: absolute;
-    inset: 0;
-    border-radius: 4px;
-    background: var(--wb-paper);
-    box-shadow:
-      inset 0 0 0 1px var(--wb-line),
-      var(--wb-shadow);
-    rotate: 2.4deg;
-
-    & + .under {
-      rotate: -1.6deg;
-      translate: 6px 8px;
-      background: var(--wb-mist);
-    }
-  }
-
-  > .sheet {
-    --tilt: -0.6deg;
-  }
 }
 
 .sheets {
   display: grid;
-  gap: 32px;
+  gap: 24px;
   max-width: 1080px;
-  margin: 64px 0 0;
+  margin: 48px 0 0;
   padding: 0;
   list-style: none;
 
@@ -102,8 +87,6 @@
     display: flex;
 
     > .sheet {
-      --tilt: var(--t);
-
       width: 100%;
     }
   }
@@ -116,16 +99,10 @@
   display: grid;
   gap: 24px;
   padding: 22px 20px 24px;
+  border: 1px solid var(--wb-rule);
   border-radius: 4px;
-  background: var(--wb-paper);
-  color: var(--wb-charcoal);
-  box-shadow:
-    inset 0 0 0 1px var(--wb-line),
-    var(--wb-shadow);
-  rotate: var(--tilt, 0deg);
-  transition:
-    translate 0.45s var(--wb-ease-pop),
-    rotate 0.45s var(--wb-ease-pop);
+  color: var(--wb-ink);
+  transition: translate 0.45s var(--wb-ease-soft);
 
   @include from-tablet {
     align-items: start;
@@ -136,39 +113,18 @@
     }
   }
 
-  &::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    box-shadow: var(--wb-shadow-lift);
-    opacity: 0;
-    transition: opacity 0.4s var(--wb-ease-soft);
-    pointer-events: none;
-  }
-
   @include fine-pointer {
     &:hover {
-      translate: 0 -8px;
-      rotate: 0deg;
-
-      &::after {
-        opacity: 1;
-      }
+      translate: 0 -4px;
     }
   }
 
   &:focus-within {
-    translate: 0 -8px;
-    rotate: 0deg;
-
-    &::after {
-      opacity: 1;
-    }
+    translate: 0 -4px;
   }
 
   &:active {
-    translate: 0 -6px;
+    translate: 0 -2px;
   }
 }
 
@@ -191,7 +147,10 @@
   }
 
   .sheetTitle {
-    font-size: clamp(32px, 4.4vw, 60px);
+    @include title;
+    font-size: clamp(28px, 3.4vw, 46px);
+    line-height: 1.08;
+    letter-spacing: -0.025em;
   }
 
   .sheetSummary {
@@ -210,23 +169,27 @@
   min-width: 0;
 }
 
-// The date on a small rotated label.
+// The date: quiet text after a short cobalt stroke.
 .date {
-  display: inline-block;
-  padding: 5px 10px;
-  border-radius: 3px;
-  background: var(--wb-mist);
-  color: var(--wb-charcoal);
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--wb-ink-2);
   font-size: 16px;
-  font-weight: 600;
-  rotate: -3deg;
+  font-weight: 500;
+
+  &::before {
+    content: "";
+    width: 24px;
+    height: 1px;
+    background: var(--wb-accent);
+  }
 }
 
 .sheetTitle {
-  @include display(750);
-  font-size: 26px;
-  line-height: 1.02;
-  letter-spacing: -0.035em;
+  @include s-h3;
+  font-size: 22px;
+  line-height: 1.25;
   text-wrap: balance;
 }
 
@@ -251,15 +214,15 @@
 
 .sheetSummary {
   max-width: 52ch;
-  color: #3c3c46;
+  color: var(--wb-ink-2);
   font-size: 16px;
-  line-height: 1.55;
+  line-height: 1.6;
 }
 
 .sheetTag {
-  color: var(--wb-cobalt);
+  color: var(--wb-accent);
   font-size: 16px;
-  font-weight: 650;
+  font-weight: 500;
 }
 
 .open {
@@ -267,12 +230,11 @@
   align-items: center;
   gap: 6px;
   margin-top: 4px;
-  padding-top: 10px;
-  border-top: 2px solid currentColor;
   font-size: 16px;
-  font-weight: 650;
+  font-weight: 500;
 
   svg {
+    color: var(--wb-accent);
     transition: translate 0.28s var(--wb-ease-soft);
   }
 
@@ -285,11 +247,10 @@
 
 .sheetPrint {
   max-width: min(78%, 360px);
-  padding: 7px;
-  border-radius: 3px;
-  background: #f3f3f5;
-  box-shadow: 0 1px 2px rgba(19, 19, 22, 0.12);
-  rotate: 2deg;
+  overflow: hidden;
+  border: 1px solid var(--wb-rule);
+  border-radius: 4px;
+  background: var(--wb-soft-2);
 
   @include from-tablet {
     max-width: none;
@@ -355,22 +316,17 @@
 }
 
 .postTitle {
-  @include display(800);
-  font-size: clamp(42px, 6.2vw, 92px);
-  line-height: 0.95;
-  letter-spacing: -0.045em;
+  @include title;
+  font-size: clamp(36px, 5vw, 68px);
+  line-height: 1.04;
+  letter-spacing: -0.03em;
   text-wrap: balance;
   overflow-wrap: break-word;
 }
 
 .summary {
+  @include s-lede;
   max-width: 46ch;
-  font-size: 18px;
-  color: var(--wb-ink-2);
-
-  @include from-desk {
-    font-size: 20px;
-  }
 }
 
 .author {
@@ -378,9 +334,11 @@
   align-items: center;
   gap: 12px;
   font-size: 16px;
+  color: var(--wb-ink-2);
 
   strong {
-    font-weight: 650;
+    font-weight: 600;
+    color: var(--wb-ink);
   }
 }
 
@@ -394,7 +352,6 @@
   position: relative;
   width: min(78vw, 360px);
   margin: 12px 0 0 !important;
-  rotate: 2deg;
 
   @include from-desk {
     width: 100%;
@@ -408,42 +365,16 @@
 
 .coverFrame {
   display: block;
-  padding: 10px 10px 12px;
-  border-radius: 2px;
-  background: var(--wb-paper);
-  box-shadow:
-    inset 0 0 0 1px var(--wb-line),
-    var(--wb-shadow);
+  overflow: hidden;
+  border: 1px solid var(--wb-rule);
+  border-radius: 4px;
+  background: var(--wb-soft-2);
 
   img {
     display: block;
     width: 100%;
     height: auto;
   }
-}
-
-.tape {
-  position: absolute;
-  z-index: 2;
-  top: -12px;
-  left: 50%;
-  width: 34%;
-  height: 26px;
-  translate: -50% 0;
-  rotate: -4deg;
-  background: var(--wb-tape);
-  clip-path: polygon(
-    0 0,
-    5% 25%,
-    0 50%,
-    5% 75%,
-    0 100%,
-    100% 100%,
-    95% 75%,
-    100% 50%,
-    95% 25%,
-    100% 0
-  );
 }
 
 // Post: body and margin index -------------------------------------------------------
@@ -475,16 +406,33 @@
   }
 }
 
-.index {
+// The margin: the drawn desk (on "My Workspace") above the index, pinned
+// together while the post scrolls.
+.railInner {
   position: sticky;
   top: 112px;
+  display: grid;
+  gap: 32px;
+}
+
+.index {
   display: grid;
   gap: 12px;
 }
 
+// On phones and tablets the desk sits under the header, in the flow.
+.deskPhone {
+  @include wrap;
+  padding-bottom: 48px;
+
+  @include from-desk {
+    display: none;
+  }
+}
+
 .indexHead {
   font-size: 16px;
-  font-weight: 650;
+  font-weight: 500;
   color: var(--wb-ink-2);
 }
 
@@ -494,24 +442,24 @@
   padding: 0;
   list-style: none;
 
-  // The rail and the cobalt marker that slides along it.
+  // The hairline rail and the cobalt marker that slides along it.
   &::before,
   &::after {
     content: "";
     position: absolute;
     left: 0;
-    width: 2px;
-    border-radius: 1px;
   }
 
   &::before {
     top: 0;
     bottom: 0;
-    background: var(--wb-line);
+    width: 1px;
+    background: var(--wb-rule);
   }
 
   &::after {
     top: 8px;
+    width: 2px;
     height: 28px;
     background: var(--wb-accent);
     translate: 0 calc(var(--at, 0) * 44px);
@@ -538,7 +486,7 @@
   &[aria-current] {
     --link-ink: var(--wb-ink);
 
-    font-weight: 600;
+    font-weight: 500;
   }
 
   @include fine-pointer {
@@ -562,7 +510,8 @@
 
 .shareHead {
   font-size: 16px;
-  font-weight: 650;
+  font-weight: 500;
+  color: var(--wb-ink-2);
 }
 
 .shareKeys {
@@ -582,8 +531,8 @@
   width: 44px;
   height: 44px;
   padding: 0;
-  border: 2px solid var(--wb-ink);
-  border-radius: 10px;
+  border: 1px solid var(--wb-rule);
+  border-radius: 4px;
   background: transparent;
   color: var(--wb-ink);
   font: inherit;
@@ -593,8 +542,7 @@
 
   &[data-copied] {
     border-color: var(--wb-accent);
-    background: var(--wb-accent);
-    color: #ffffff;
+    color: var(--wb-accent);
   }
 
   @include fine-pointer {
@@ -615,10 +563,8 @@
   padding-bottom: 32px;
 
   h2 {
-    @include display(750);
+    @include s-h2;
     margin-bottom: 8px;
-    font-size: clamp(32px, 4vw, 52px);
-    letter-spacing: -0.04em;
   }
 
   .sheets {
@@ -629,13 +575,11 @@
 @keyframes coverIn {
   from {
     translate: 0 36px;
-    rotate: 0deg;
   }
 }
 
 @include reduced {
   .sheet,
-  .sheet::after,
   .open svg,
   .back svg,
   .key,

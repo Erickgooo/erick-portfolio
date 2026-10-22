@@ -1,9 +1,8 @@
 // Workbench: the tool wall (sober, 2026-10-22). It is no longer a dark band:
-// variant A lays it on the page itself (the dots show through) and draws
-// each tile with a hairline; variant B gives it a soft band, mist in light
-// and the palette's dark surface in dark, with flat tiles. Unlit tiles show
-// each logo as a quiet silhouette; a lit tile shows it in its own colours on
-// white (in dark, logos stay light silhouettes, since many are black).
+// it lies on the page itself (the dots show through) and each tile is drawn
+// with a hairline. Unlit tiles show each logo as a quiet silhouette; a lit
+// tile shows it in its own colours on white (in dark, logos stay light
+// silhouettes, since many are black).
 // Keep this file ASCII-only.
 @use "../shared" as *;
 
@@ -14,11 +13,6 @@
   border-top: 1px solid var(--wb-line);
   border-bottom: 1px solid var(--wb-line);
   color: var(--wb-ink);
-
-  @include vb {
-    border-color: transparent;
-    background: var(--wb-soft);
-  }
 }
 
 .track {
@@ -71,13 +65,6 @@
   --tile: var(--wb-page);
   --tile-hot: var(--wb-page);
   --tile-line: var(--wb-rule);
-
-  @include vb {
-    --tile: var(--wb-soft-2);
-    --tile-hot: var(--wb-raised);
-    --tile-line: transparent;
-  }
-
 }
 
 .groups {
@@ -98,10 +85,6 @@
     position: relative;
     padding: 16px 0;
     border-top: 1px solid var(--wb-rule);
-
-    @include vb {
-      border-top-color: color-mix(in srgb, var(--wb-ink) 12%, transparent);
-    }
 
     // The progress underline.
     &::after {
@@ -198,7 +181,7 @@
   min-height: 112px;
   padding: 12px 6px;
   border: 1px solid var(--tile-line);
-  border-radius: var(--v-radius);
+  border-radius: 4px;
   background: var(--tile-hot);
   color: var(--wb-ink);
   text-align: center;
@@ -269,7 +252,7 @@
 .cell {
   position: relative;
   aspect-ratio: 1;
-  border-radius: var(--v-radius);
+  border-radius: 4px;
 
   @media (scripting: enabled) {
     opacity: 0.25;
@@ -306,8 +289,7 @@
   text-align: center;
 }
 
-// The lit face: the logo in its colours and a cobalt hairline (A), or a
-// raised tile (B).
+// The lit face: the logo in its colours and a cobalt hairline.
 .hot {
   border-color: var(--wb-accent);
   background: var(--tile-hot);
@@ -315,10 +297,6 @@
   opacity: 0;
   transition: opacity 0.5s var(--wb-ease-soft);
   transition-delay: calc(var(--k) * 90ms);
-
-  @include vb {
-    border-color: transparent;
-  }
 }
 
 // The stepper: groups before the active one stay lit, the active one lights

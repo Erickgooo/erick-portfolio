@@ -5,8 +5,8 @@
 // set up), and from step 4 it plays the app on its own clock: header, the
 // grid filling in, a tap, one panel full screen, a swipe, back to the grid.
 // With reduced motion it shows the full grid. Sober (2026-10-22): the app
-// takes the page's tone in either theme; its tiles are outlined in variant A
-// (cobalt ones filled) and flat in variant B.
+// takes the page's tone in either theme; its tiles are outlined (cobalt ones
+// filled).
 import { useRef } from "react";
 import { CanvasLoop, type Frame } from "../CanvasLoop";
 
@@ -32,39 +32,17 @@ type Palette = {
   off: string;
   /** The app's background. */
   paper: string;
-  /** Outlined tiles (variant A) or filled ones (B). */
-  outline: boolean;
   tone: Record<Tone, string>;
   /** The holes of a perforated panel, on a strong and on a light tone. */
   holesOnStrong: string;
   holesOnLight: string;
 };
 
-function palette(dark: boolean, b: boolean): Palette {
-  if (b) {
-    return dark
-      ? {
-          off: "#26262c",
-          paper: "#131316",
-          outline: false,
-          tone: { cobalt: COBALT, ink: "#f5f5f7", steel: "#3a3a42", mist: "#26262c" },
-          holesOnStrong: "rgba(19, 19, 22, 0.75)",
-          holesOnLight: "rgba(245, 245, 247, 0.45)",
-        }
-      : {
-          off: "#e7edff",
-          paper: "#ffffff",
-          outline: false,
-          tone: { cobalt: COBALT, ink: "#1d1d22", steel: "#d3d3da", mist: "#e7edff" },
-          holesOnStrong: "rgba(255, 255, 255, 0.85)",
-          holesOnLight: "rgba(29, 29, 34, 0.5)",
-        };
-  }
+function palette(dark: boolean): Palette {
   return dark
     ? {
         off: "#1c1c21",
         paper: "#131316",
-        outline: true,
         tone: { cobalt: COBALT, ink: "#f5f5f7", steel: "#55555f", mist: "#3a4670" },
         holesOnStrong: "rgba(19, 19, 22, 0.75)",
         holesOnLight: "rgba(245, 245, 247, 0.5)",
@@ -72,16 +50,10 @@ function palette(dark: boolean, b: boolean): Palette {
     : {
         off: "#f3f6ff",
         paper: "#ffffff",
-        outline: true,
         tone: { cobalt: COBALT, ink: "#1d1d22", steel: "#b9bbc6", mist: "#b4c3f5" },
         holesOnStrong: "rgba(255, 255, 255, 0.85)",
         holesOnLight: "rgba(29, 29, 34, 0.45)",
       };
-}
-
-// TEMPORARY (sober variants): which of the two treatments is on.
-function variantB() {
-  return document.documentElement.getAttribute("data-wb-variant") === "b";
 }
 
 const clamp = (v: number) => Math.min(1, Math.max(0, v));
@@ -133,7 +105,7 @@ export function KioskScreen({ className }: { className?: string }) {
   const draw = (ctx: CanvasRenderingContext2D, f: Frame) => {
     const { w, h } = f;
     ctx.clearRect(0, 0, w, h);
-    const pal = palette(f.dark, variantB());
+    const pal = palette(f.dark);
     const scene = f.el.closest("[data-scene]");
     const on = f.still || scene?.hasAttribute("data-s3");
     if (!on) {
@@ -202,7 +174,7 @@ export function KioskScreen({ className }: { className?: string }) {
         const tone = tileTone(c, r);
         const x = b.x + (b.w * (1 - s)) / 2;
         const y = b.y + (b.h * (1 - s)) / 2;
-        if (pal.outline && tone !== "cobalt") {
+        if (tone !== "cobalt") {
           const lw = ctx.lineWidth;
           ctx.strokeStyle = pal.tone[tone];
           ctx.strokeRect(x + lw / 2, y + lw / 2, b.w * s - lw, b.h * s - lw);

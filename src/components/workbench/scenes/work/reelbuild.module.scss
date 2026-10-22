@@ -1,9 +1,9 @@
 // Scene: ReelBuild (see ReelBuild.tsx). Landscape (5:4) from 720 px,
 // portrait (4:5) on phones and with .portrait. Sober (2026-10-22): drawn
-// with hairlines in variant A, on flat surfaces in variant B (the sheet's
-// tokens, see scenes/stepper.module.scss). The published pile is a straight
-// stack now (it used to lean), and the finished piece is a cobalt drawing,
-// not a cobalt block. Keep this file ASCII-only.
+// with hairlines (the sheet's tokens, see scenes/stepper.module.scss). The
+// published pile is a straight stack now (it used to lean), and the
+// finished piece is a cobalt drawing, not a cobalt block. Keep this file
+// ASCII-only.
 @use "sass:math";
 @use "../../shared" as *;
 @use "../scene" as *;
@@ -111,11 +111,6 @@ $slide: cubic-bezier(0.65, 0, 0.35, 1);
   background: var(--sc-obj);
   transition: translate 1.2s $slide;
 
-  @include vb {
-    border-left-color: transparent;
-    background: rgba(45, 91, 255, 0.14);
-  }
-
   @include before(2) {
     translate: 101% 0;
   }
@@ -129,10 +124,6 @@ $slide: cubic-bezier(0.65, 0, 0.35, 1);
   border-radius: 0.8cqi;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='34'%3E%3Cg fill='%232d5bff'%3E%3Ccircle cx='5' cy='6' r='2.4'/%3E%3Ccircle cx='15' cy='23' r='2.4'/%3E%3C/g%3E%3C/svg%3E");
   background-size: 2.2cqi auto;
-
-  @include vb {
-    border-color: transparent;
-  }
 }
 
 .captions {
@@ -304,19 +295,10 @@ $slide: cubic-bezier(0.65, 0, 0.35, 1);
   &:nth-child(1) {
     translate: 2.4cqi 2.4cqi;
     background: var(--sc-soft);
-
-    // B has no outlines: the stack reads by its tones (raised, soft, deeper).
-    @include vb {
-      background: var(--sc-bar);
-    }
   }
 
   &:nth-child(2) {
     translate: 1.2cqi 1.2cqi;
-
-    @include vb {
-      background: var(--sc-soft);
-    }
   }
 
   i {
@@ -379,11 +361,6 @@ $slide: cubic-bezier(0.65, 0, 0.35, 1);
   border-radius: 0.6cqi;
   background: var(--sc-obj);
 
-  @include vb {
-    border-color: transparent;
-    background: var(--wb-accent);
-  }
-
   &::after {
     content: "";
     position: absolute;
@@ -393,10 +370,6 @@ $slide: cubic-bezier(0.65, 0, 0.35, 1);
     height: 20%;
     background: var(--wb-accent);
     clip-path: polygon(0 0, 100% 50%, 0 100%);
-
-    @include vb {
-      background: #ffffff;
-    }
   }
 
   @include portrait(".portrait") {
