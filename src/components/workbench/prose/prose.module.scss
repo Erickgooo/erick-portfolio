@@ -1,0 +1,762 @@
+// Workbench prose: the text of case studies and posts. Every rule hangs from a
+// class the MDX component map (Prose.tsx) puts on its own elements, so nothing
+// outside that MDX changes. Keep this file ASCII-only.
+@use "../shared" as *;
+
+// Reading sizes: 17 px on phones, 18 on tablets, 19 on desktops.
+@mixin reading {
+  font-size: 17px;
+  line-height: 1.65;
+
+  @include from-tablet {
+    font-size: 18px;
+  }
+
+  @include from-desk {
+    font-size: 19px;
+  }
+}
+
+// A piece that rises into place and settles at its tilt when it enters.
+@mixin pin-in {
+  @media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
+    opacity: 0;
+    translate: 0 40px;
+    rotate: 0deg;
+    transition:
+      opacity 0.8s var(--wb-ease-soft),
+      translate 1s var(--wb-ease-soft),
+      rotate 1s var(--wb-ease-pop);
+
+    &[data-in] {
+      opacity: 1;
+      translate: 0 0;
+      rotate: var(--tilt);
+    }
+  }
+}
+
+// Headings ---------------------------------------------------------------
+
+.headRow {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  &:first-child {
+    margin-top: 0 !important;
+  }
+}
+
+.row2 {
+  margin: 72px 0 22px;
+  padding-top: 34px;
+
+  // The small cobalt square every part of the text starts from.
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 2px;
+    width: 16px;
+    height: 16px;
+    border-radius: 3px;
+    background: var(--wb-cobalt);
+    rotate: 12deg;
+  }
+
+  @include from-desk {
+    margin-top: 96px;
+  }
+}
+
+.row3 {
+  margin: 44px 0 12px;
+}
+
+.row4 {
+  margin: 32px 0 10px;
+}
+
+.h2,
+.h3,
+.h4 {
+  min-width: 0;
+  scroll-margin-top: 104px;
+  text-wrap: balance;
+  overflow-wrap: break-word;
+}
+
+.h2 {
+  @include display(750);
+  max-width: 20ch;
+  font-size: clamp(32px, 4.4vw, 58px);
+  line-height: 1.02;
+  letter-spacing: -0.04em;
+}
+
+.h3 {
+  @include display(700);
+  max-width: 34ch;
+  font-size: 23px;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+
+  @include from-desk {
+    font-size: 27px;
+  }
+}
+
+.h4 {
+  @include display(700);
+  font-size: 20px;
+  line-height: 1.2;
+  letter-spacing: -0.015em;
+}
+
+// The copy key: on hover and focus, always on touch screens.
+.copy {
+  position: relative;
+  flex: none;
+  display: inline-grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--wb-ink-2);
+  font-size: 18px;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.2s var(--wb-ease-soft);
+
+  .headRow:hover &,
+  .headRow:focus-within & {
+    opacity: 1;
+  }
+
+  &[data-copied] {
+    opacity: 1;
+    color: var(--wb-accent);
+  }
+
+  @media (hover: none) {
+    opacity: 1;
+  }
+
+  @include fine-pointer {
+    &:hover {
+      color: var(--wb-ink);
+    }
+  }
+}
+
+.copyStatus {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+// Text -------------------------------------------------------------------
+
+.p {
+  @include reading;
+  max-width: 66ch;
+  margin-bottom: 20px !important;
+  overflow-wrap: break-word;
+}
+
+.strong {
+  font-weight: 700;
+}
+
+.em {
+  font-style: normal;
+  font-weight: 600;
+}
+
+.a {
+  --link-deco: underline;
+  --link-line: var(--wb-accent);
+  --link-offset: 4px;
+  --link-thick: 2px;
+
+  font-weight: 550;
+  overflow-wrap: anywhere;
+}
+
+// A line in bold on its own: a note stuck to the bench.
+.note {
+  @include display(650);
+  position: relative;
+  max-width: 34ch;
+  margin: 36px 0 40px !important;
+  padding: 26px 26px 24px;
+  border-radius: 4px;
+  background: var(--wb-mist);
+  color: var(--wb-charcoal);
+  font-size: 21px;
+  line-height: 1.22;
+  letter-spacing: -0.015em;
+  box-shadow: var(--wb-shadow);
+  rotate: -0.8deg;
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: -11px;
+    left: 28px;
+    width: 84px;
+    height: 22px;
+    background: var(--wb-tape);
+    rotate: -3deg;
+  }
+
+  @include from-desk {
+    font-size: 24px;
+  }
+}
+
+// "**Stack:**" and friends: the label of what follows.
+.label {
+  @include display(700);
+  margin: 36px 0 12px !important;
+  font-size: 21px;
+  line-height: 1.2;
+  letter-spacing: -0.015em;
+}
+
+// An italic line alone (a kicker, a source line under figures): no italics
+// in Workbench, so it reads as a quiet line in weight instead.
+.kicker {
+  max-width: 60ch;
+  margin: 0 0 24px !important;
+  color: var(--wb-ink-2);
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.45;
+  letter-spacing: 0.01em;
+}
+
+// Lists ------------------------------------------------------------------
+
+.ul,
+.ol {
+  display: grid;
+  gap: 12px;
+  max-width: 66ch;
+  margin: 8px 0 28px !important;
+  padding: 0;
+  list-style: none;
+}
+
+.ol {
+  counter-reset: wb-step;
+}
+
+.li {
+  @include reading;
+  position: relative;
+  overflow-wrap: break-word;
+
+  // Nested lists sit a little tighter.
+  .ul,
+  .ol {
+    margin: 10px 0 4px !important;
+  }
+
+  .p {
+    margin-bottom: 8px !important;
+  }
+}
+
+.ul > .li {
+  padding-left: 30px;
+
+  &::before {
+    content: "";
+    position: absolute;
+    left: 4px;
+    top: 0.62em;
+    width: 10px;
+    height: 10px;
+    border-radius: 2px;
+    background: var(--wb-cobalt);
+    rotate: 45deg;
+  }
+}
+
+.ol > .li {
+  counter-increment: wb-step;
+  padding-left: 46px;
+
+  &::before {
+    @include display(750);
+    content: counter(wb-step);
+    position: absolute;
+    left: 0;
+    top: 0.05em;
+    display: grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    background: var(--wb-mist);
+    color: var(--wb-cobalt);
+    font-size: 17px;
+    line-height: 1;
+  }
+}
+
+// Quotes, rules, code, tables -------------------------------------------
+
+.quote {
+  @include display(600);
+  max-width: 40ch;
+  margin: 36px 0 !important;
+  padding: 24px 26px;
+  border-radius: 4px;
+  background: var(--wb-mist);
+  color: var(--wb-charcoal);
+  font-size: 21px;
+  line-height: 1.3;
+  box-shadow: var(--wb-shadow);
+  rotate: -0.6deg;
+
+  .p {
+    max-width: none;
+    margin: 0 !important;
+    font: inherit;
+  }
+}
+
+.hr {
+  width: 72px;
+  height: 4px;
+  margin: 56px 0;
+  border: 0;
+  border-radius: 2px;
+  background: var(--wb-cobalt);
+  rotate: -2deg;
+}
+
+.code {
+  padding: 0.1em 0.35em;
+  border-radius: 4px;
+  background: var(--wb-surface);
+  font-family: var(--font-code), ui-monospace, monospace;
+  font-size: 0.88em;
+}
+
+.pre {
+  max-width: 100%;
+  margin: 24px 0 32px;
+  padding: 20px 22px;
+  border-radius: 6px;
+  background: var(--wb-ink-paper);
+  color: #ffffff;
+  font-family: var(--font-wb-text), system-ui, sans-serif;
+  font-size: 16px;
+  font-weight: 550;
+  line-height: 1.7;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  box-shadow: var(--wb-shadow);
+
+  @include dark {
+    box-shadow:
+      inset 0 0 0 1px rgba(255, 255, 255, 0.08),
+      var(--wb-shadow);
+  }
+
+  code {
+    font: inherit;
+  }
+}
+
+.preCode {
+  font-family: var(--font-code), ui-monospace, monospace;
+  font-weight: 400;
+  white-space: pre;
+  overflow-x: auto;
+  overflow-wrap: normal;
+}
+
+.tableWrap {
+  max-width: 100%;
+  margin: 24px 0 32px;
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 16px;
+  line-height: 1.5;
+
+  th {
+    @include display(700);
+    padding: 10px 14px 10px 0;
+    border-bottom: 2px solid var(--wb-ink);
+    text-align: left;
+  }
+
+  td {
+    padding: 10px 14px 10px 0;
+    border-bottom: 1px solid var(--wb-line);
+    vertical-align: top;
+  }
+}
+
+// Media ------------------------------------------------------------------
+
+// The white border of a print; the piece inside keeps its own proportions.
+.frame {
+  display: block;
+  padding: 10px;
+  border-radius: 3px;
+  background: var(--wb-paper);
+  box-shadow:
+    inset 0 0 0 1px var(--wb-line),
+    var(--wb-shadow);
+
+  img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 1px;
+  }
+
+  @include from-desk {
+    padding: 12px;
+  }
+}
+
+.figure {
+  @include pin-in;
+  max-width: 700px;
+  margin: 44px 0 !important;
+  rotate: var(--tilt);
+}
+
+.portrait {
+  max-width: min(420px, 88%);
+}
+
+.square {
+  max-width: min(560px, 100%);
+}
+
+.caption {
+  max-width: 60ch;
+  margin-top: 14px;
+  padding-inline: 4px;
+  font-size: 16px;
+  line-height: 1.45;
+  color: var(--wb-ink-2);
+}
+
+.video {
+  @include pin-in;
+  position: relative;
+  margin: 48px 0 !important;
+  rotate: var(--tilt);
+}
+
+.videoTall {
+  max-width: 320px;
+
+  // On desktop a tall video lies to the left and what follows it (its
+  // figures, the next lines) sits beside it; the next heading starts below.
+  @include from-desk {
+    float: left;
+    width: 300px;
+    margin: 8px 44px 28px 0 !important;
+  }
+}
+
+.headRow,
+.hr,
+.end,
+.videoWide,
+.figure {
+  clear: both;
+}
+
+.videoWide {
+  max-width: 700px;
+}
+
+// The shared YouTube facade, restyled only inside these prints.
+.frame .player {
+  border-radius: 1px;
+  background: var(--wb-ink-paper);
+
+  button:focus-visible {
+    outline: 3px solid var(--wb-accent);
+    outline-offset: -3px;
+  }
+
+  // The play key: a cobalt key instead of a grey disc.
+  button > span {
+    width: 64px;
+    height: 64px;
+    border-radius: 14px;
+    background: var(--wb-cobalt);
+    box-shadow: var(--wb-shadow);
+    transition: scale 0.45s var(--wb-ease-pop);
+  }
+
+  @include fine-pointer {
+    button:hover > span {
+      scale: 1.08;
+    }
+  }
+}
+
+.tape {
+  position: absolute;
+  z-index: 2;
+  top: -12px;
+  left: 50%;
+  width: 96px;
+  height: 26px;
+  translate: -50% 0;
+  rotate: -4deg;
+  background: var(--wb-tape);
+  clip-path: polygon(
+    0 0,
+    5% 25%,
+    0 50%,
+    5% 75%,
+    0 100%,
+    100% 100%,
+    95% 75%,
+    100% 50%,
+    95% 25%,
+    100% 0
+  );
+}
+
+.videoCaption {
+  margin-top: 10px;
+  padding-inline: 4px;
+}
+
+.videoLink {
+  --link-deco: underline;
+  --link-line: var(--wb-accent);
+  --link-offset: 5px;
+
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+// Figures: the numbers of a case as paper tags ----------------------------
+
+.figures {
+  margin: 28px 0 40px;
+}
+
+.figureList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  li {
+    position: relative;
+    display: grid;
+    gap: 4px;
+    min-width: 128px;
+    padding: 14px 18px 15px 32px;
+    background: var(--wb-mist);
+    color: var(--wb-charcoal);
+    clip-path: polygon(18px 0, 100% 0, 100% 100%, 18px 100%, 0 calc(100% - 14px), 0 14px);
+    rotate: var(--t);
+
+    // The punched hole of the tag.
+    &::before {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 11px;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--wb-page);
+      translate: 0 -50%;
+    }
+  }
+
+  strong {
+    @include display(800);
+    font-size: 30px;
+    line-height: 0.95;
+    letter-spacing: -0.04em;
+
+    @include from-desk {
+      font-size: 36px;
+    }
+  }
+
+  span {
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1.25;
+  }
+
+  @media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
+    li {
+      opacity: 0;
+      scale: 0.7;
+      transition:
+        opacity 0.5s var(--wb-ease-soft),
+        scale 0.6s var(--wb-ease-pop);
+      transition-delay: calc(var(--i, 0) * 90ms + 150ms);
+    }
+
+    &[data-in] li {
+      opacity: 1;
+      scale: 1;
+    }
+  }
+}
+
+.figureList .figureLead {
+  background: var(--wb-cobalt);
+  color: #ffffff;
+}
+
+// Stack: the tools as tags ------------------------------------------------
+
+.stack {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  max-width: 66ch;
+  margin: 14px 0 28px !important;
+  padding: 0;
+  list-style: none;
+
+  li {
+    padding: 8px 12px;
+    border: 2px solid var(--wb-ink);
+    border-radius: 4px;
+    background: var(--wb-page);
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1.3;
+    rotate: var(--t);
+  }
+}
+
+// Index cards (the Once UI Grid and Card some cases use) ------------------
+
+.cards {
+  display: grid;
+  gap: 18px;
+  max-width: 760px;
+  margin: 28px 0 36px;
+
+  @include from-tablet {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  > :nth-child(odd) {
+    rotate: -0.6deg;
+  }
+
+  > :nth-child(even) {
+    rotate: 0.5deg;
+  }
+}
+
+.card {
+  padding: 16px 20px 20px;
+  border-top: 6px solid var(--wb-cobalt);
+  border-radius: 4px;
+  background: var(--wb-paper);
+  color: var(--wb-charcoal);
+  box-shadow:
+    inset 0 0 0 1px rgba(19, 19, 22, 0.08),
+    var(--wb-shadow);
+}
+
+.col {
+  display: grid;
+  gap: 6px;
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.cardLabel {
+  display: block;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.3;
+  color: #55555f;
+}
+
+.cardTitle {
+  @include display(700);
+  display: block;
+  font-size: 22px;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+}
+
+.cardText {
+  display: block;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+// The end of an article: Erick's monogram between two hairlines.
+.end {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  max-width: 66ch;
+  margin: 64px 0 8px;
+  color: var(--wb-ink);
+
+  &::before,
+  &::after {
+    content: "";
+    flex: 1;
+    height: 2px;
+    border-radius: 1px;
+    background: var(--wb-line);
+  }
+}
+
+.endMark {
+  display: inline-flex;
+  font-size: 44px;
+  line-height: 0;
+}
+
+@include reduced {
+  .copy,
+  .figureList li,
+  .frame .player button > span {
+    transition: none;
+  }
+}
