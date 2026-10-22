@@ -2,12 +2,11 @@
 // pins and scrolling advances through four groups; the tiles of each group
 // light up one by one (an icon grid, after foundable's). On phones nothing
 // pins: each group stacks with its own tiles, which light up as they enter.
-// Each tool appears three times in the markup (its list tile and the two
-// faces of its board cell), so every logo is drawn once, as a symbol that the
-// tiles reuse with <use>; the symbols load when the wall nears (ToolLogos).
+// Each tool shows its official logo (public/images/tools), lazy-loaded since
+// the wall sits below the fold; its three appearances in the markup (the list
+// tile and the two faces of its board cell) share one file.
 import type { CSSProperties } from "react";
 import { TOOL_GROUPS, type Tool, WALL_ORDER } from "../data";
-import { ToolLogos } from "./ToolLogos";
 import { WallController } from "./WallController";
 import styles from "./toolwall.module.scss";
 
@@ -15,13 +14,14 @@ function TileFace({ tool }: { tool: Tool }) {
   return (
     <>
       <span className={styles.glyph} aria-hidden="true">
-        {tool.icon ? (
-          <svg className={styles.logo} viewBox="0 0 24 24" focusable="false" aria-hidden="true">
-            <use href={`#tool-${tool.icon}`} />
-          </svg>
-        ) : (
-          <span className={styles.mono}>{tool.mono}</span>
-        )}
+        <img
+          className={styles.logo}
+          src={`/images/tools/${tool.logo}`}
+          alt=""
+          height={28}
+          loading="lazy"
+          decoding="async"
+        />
       </span>
       <span className={styles.name}>{tool.name}</span>
     </>
@@ -31,7 +31,6 @@ function TileFace({ tool }: { tool: Tool }) {
 export function ToolWall() {
   return (
     <section className={styles.wall} aria-labelledby="tools-title" data-active="-1">
-      <ToolLogos />
       <WallController />
       <div className={styles.track} data-track="">
         <div className={styles.sticky}>

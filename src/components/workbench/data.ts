@@ -87,24 +87,8 @@ export function countProjects(): number {
   return getProjects().length;
 }
 
-/** Tools drawn with their logo (the symbols live in home/ToolSprite.tsx); the rest get a monogram. */
-export type ToolIcon =
-  | "whatsapp"
-  | "openai"
-  | "gemini"
-  | "claude"
-  | "elevenlabs"
-  | "meta"
-  | "instagram"
-  | "facebook"
-  | "analytics"
-  | "searchconsole"
-  | "shopify"
-  | "davinci"
-  | "nextjs"
-  | "netlify";
-
-export type Tool = { name: string; icon?: ToolIcon; mono?: string };
+/** Each tool's official logo, a file in public/images/tools (sources: docs/design/rediseno-2026/tool-logos.md). */
+export type Tool = { name: string; logo: string };
 export type ToolGroup = {
   id: string;
   title: string;
@@ -119,12 +103,12 @@ export const TOOL_GROUPS: ToolGroup[] = [
     title: "Conversations and CRM",
     line: "Every lead lands, gets sorted and reaches the right stage on its own.",
     tools: [
-      { name: "WhatsApp Business API", icon: "whatsapp" },
-      { name: "Bitrix24", mono: "24" },
-      { name: "Kommo CRM", mono: "Ko" },
-      { name: "BotSL IA", mono: "Bs" },
-      { name: "Zapier", mono: "Za" },
-      { name: "Odoo", mono: "Od" },
+      { name: "WhatsApp Business API", logo: "whatsapp.svg" },
+      { name: "Bitrix24", logo: "bitrix24.svg" },
+      { name: "Kommo CRM", logo: "kommo.png" },
+      { name: "BotSL IA", logo: "botsl.png" },
+      { name: "Zapier", logo: "zapier.svg" },
+      { name: "Odoo", logo: "odoo.svg" },
     ],
   },
   {
@@ -132,12 +116,12 @@ export const TOOL_GROUPS: ToolGroup[] = [
     title: "AI models",
     line: "Picked per job: precision for sales, range for content.",
     tools: [
-      { name: "GPT-4o mini", icon: "openai" },
-      { name: "Gemini", icon: "gemini" },
-      { name: "Claude", icon: "claude" },
-      { name: "ElevenLabs", icon: "elevenlabs" },
-      { name: "Soro AI", mono: "So" },
-      { name: "Holo AI", mono: "Ho" },
+      { name: "GPT-4o mini", logo: "openai.svg" },
+      { name: "Gemini", logo: "gemini.svg" },
+      { name: "Claude", logo: "claude.svg" },
+      { name: "ElevenLabs", logo: "elevenlabs.svg" },
+      { name: "Soro AI", logo: "soro.svg" },
+      { name: "Holo AI", logo: "holo.png" },
     ],
   },
   {
@@ -145,12 +129,12 @@ export const TOOL_GROUPS: ToolGroup[] = [
     title: "Paid media and analytics",
     line: "Campaigns built from creative to audience, measured end to end.",
     tools: [
-      { name: "Meta Ads", icon: "meta" },
-      { name: "Instagram", icon: "instagram" },
-      { name: "Facebook", icon: "facebook" },
-      { name: "Google Analytics", icon: "analytics" },
-      { name: "Search Console", icon: "searchconsole" },
-      { name: "Shopify", icon: "shopify" },
+      { name: "Meta Ads", logo: "meta.svg" },
+      { name: "Instagram", logo: "instagram.png" },
+      { name: "Facebook", logo: "facebook.png" },
+      { name: "Google Analytics", logo: "google-analytics.svg" },
+      { name: "Search Console", logo: "search-console.svg" },
+      { name: "Shopify", logo: "shopify.svg" },
     ],
   },
   {
@@ -158,12 +142,12 @@ export const TOOL_GROUPS: ToolGroup[] = [
     title: "Studio and software",
     line: "Video, voice and the app itself when nothing exists yet.",
     tools: [
-      { name: "Higgsfield", mono: "Hf" },
-      { name: "Kling 3.0", mono: "Kl" },
-      { name: "DaVinci Resolve", icon: "davinci" },
-      { name: "CapCut", mono: "Cc" },
-      { name: "Next.js", icon: "nextjs" },
-      { name: "Netlify", icon: "netlify" },
+      { name: "Higgsfield", logo: "higgsfield.svg" },
+      { name: "Kling 3.0", logo: "kling.svg" },
+      { name: "DaVinci Resolve", logo: "davinci-resolve.png" },
+      { name: "CapCut", logo: "capcut.svg" },
+      { name: "Next.js", logo: "nextjs.svg" },
+      { name: "Netlify", logo: "netlify.svg" },
     ],
   },
 ];
