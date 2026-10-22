@@ -207,7 +207,7 @@ export function Bench() {
         <Slot
           index={0}
           kind="screen"
-          place={{ x: 3, y: 17, w: 61, mx: 0, my: 16, mw: 80, depth: 0.5, bob: 5 }}
+          place={{ x: 3, y: 17, w: 61, mx: 0, my: 16, mw: 84, depth: 0.5, bob: 5 }}
         >
           <div className={styles.glass}>
             <Image
@@ -215,7 +215,7 @@ export function Bench() {
               width={MEDIA.whatsapp.w}
               height={MEDIA.whatsapp.h}
               alt="LeadBot AI on WhatsApp, built for Artesa Panadería"
-              sizes="(min-width: 720px) 420px, 84vw"
+              sizes="(min-width: 1280px) 440px, (min-width: 720px) 470px, 84vw"
               priority
               fetchPriority="high"
             />
@@ -225,7 +225,7 @@ export function Bench() {
         <Slot
           index={1}
           kind="print"
-          place={{ x: 68, y: 2, w: 28, mx: 63, my: 0, mw: 35, depth: 1.1, bob: 4.4 }}
+          place={{ x: 68, y: 2, w: 28, mx: 65, my: 0, mw: 34, depth: 1.1, bob: 4.4 }}
         >
           <PrintImage piece={MEDIA.coqui} sizes="(min-width: 720px) 232px, 36vw" ready={ready} />
         </Slot>

@@ -7,14 +7,17 @@
   overflow-x: clip;
 }
 
+// On phones the text block stays compact, so the bench's tablet (the page's
+// LCP element) is well inside the first screen and larger than the headline.
 .inner {
   @include wrap;
   display: grid;
-  gap: 40px;
-  padding-top: 40px;
+  gap: 32px;
+  padding-top: 28px;
   padding-bottom: 72px;
 
   @include from-tablet {
+    gap: 40px;
     padding-top: 56px;
   }
 
@@ -31,7 +34,11 @@
 .text {
   display: grid;
   justify-items: start;
-  gap: 24px;
+  gap: 20px;
+
+  @include from-tablet {
+    gap: 24px;
+  }
 }
 
 .who {
@@ -63,12 +70,13 @@
 // The headline in Montserrat Black, sized from the text column in viewport
 // units (the column's width per layout) rather than as a size container, so
 // the first frame needs no extra container pass. Its longest word,
-// "infrastructure", is 7.24 em wide, so 13 % of the column keeps it on one
-// line on phones with a little to spare. It breaks evenly on its own, so it skips text-wrap:
+// "infrastructure", is 7.24 em wide; 11 % of the column keeps it on one line
+// on phones with room to spare, and keeps the headline's area under the
+// bench tablet's, so the tablet stays the LCP element. It breaks evenly on its own, so it skips text-wrap:
 // balance (several line-breaking passes in the first frame).
 .title {
   @include title;
-  font-size: clamp(34px, calc((100vw - 32px) * 0.13), 64px);
+  font-size: clamp(34px, calc((100vw - 32px) * 0.11), 64px);
   line-height: 1.04;
   letter-spacing: -0.025em;
 
