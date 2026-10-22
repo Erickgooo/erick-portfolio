@@ -1,0 +1,256 @@
+// Scene: PromptDeploy (see PromptDeploy.tsx). Portrait (4:5, 100 x 125 cqi).
+// Drawn with hairlines on the sheet's tokens; cobalt marks the prompts, the
+// ticks and the deploy. Keep this file ASCII-only.
+@use "../../shared" as *;
+@use "../scene" as *;
+
+.scene {
+  position: absolute;
+  inset: 0;
+  color: var(--wb-ink);
+  font-size: fs(3.4);
+  line-height: 1.25;
+}
+
+.window,
+.deploy {
+  position: absolute;
+  left: 5cqi;
+  width: 90cqi;
+  border: 1px solid var(--sc-line);
+  border-radius: 1.6cqi;
+  background: var(--sc-obj);
+  transition:
+    opacity 0.8s $ease-soft,
+    translate 1s $ease-soft;
+
+  @include before(0) {
+    opacity: 0;
+    translate: 0 5cqi;
+  }
+}
+
+// The prompt window --------------------------------------------------------------------
+
+.window {
+  top: 5cqi;
+  height: 72cqi;
+  overflow: hidden;
+}
+
+.bar {
+  display: flex;
+  align-items: center;
+  height: 7cqi;
+  padding: 0 2.6cqi;
+  border-bottom: 1px solid var(--sc-line);
+}
+
+.dots {
+  display: flex;
+  gap: 1cqi;
+
+  i {
+    width: 1.8cqi;
+    aspect-ratio: 1;
+    border: 1px solid var(--sc-line);
+    border-radius: 50%;
+  }
+}
+
+.lines {
+  display: grid;
+  gap: 4cqi;
+  margin: 0;
+  padding: 3.4cqi 3cqi;
+  list-style: none;
+}
+
+.line {
+  display: grid;
+  grid-template-columns: 2.6cqi minmax(0, 1fr) 4cqi;
+  align-items: start;
+  gap: 2cqi;
+  font-size: fs(4.1);
+  font-weight: 500;
+  line-height: 1.3;
+}
+
+// The prompt mark: a small cobalt chevron.
+.mark {
+  width: 2.6cqi;
+  height: 2.8cqi;
+  // Centred on the first line of the prompt (line-height 1.3).
+  margin-top: calc(0.65em - 1.4cqi);
+  background: var(--wb-accent);
+  clip-path: polygon(0 0, 100% 50%, 0 100%, 34% 50%);
+}
+
+.text {
+  display: grid;
+  gap: 1.4cqi;
+}
+
+// The agent's answer: two quiet lines under the prompt.
+.reply {
+  display: grid;
+  gap: 1cqi;
+
+  i {
+    height: 0.9cqi;
+    border-radius: 1cqi;
+    background: var(--sc-bar);
+    transform-origin: left center;
+    transition: scale 0.5s $ease-soft;
+
+    &:first-child {
+      width: 72%;
+    }
+
+    &:last-child {
+      width: 46%;
+      transition-delay: 0.15s;
+    }
+  }
+}
+
+// A tick, once the line is answered.
+.check,
+.done {
+  position: relative;
+  width: 4cqi;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: var(--wb-accent);
+  transition:
+    opacity 0.3s $ease-soft,
+    scale 0.5s $ease-settle;
+
+  &::after {
+    content: "";
+    position: absolute;
+    left: 36%;
+    top: 22%;
+    width: 26%;
+    height: 44%;
+    border: solid #ffffff;
+    border-width: 0 0.45cqi 0.45cqi 0;
+    rotate: 45deg;
+  }
+}
+
+.check {
+  transition-delay: 0.3s;
+}
+
+// Line k is typed at step k + 1; its answer and tick come at step k + 2.
+@for $k from 1 through 4 {
+  .line:nth-child(#{$k}) {
+    .reply i {
+      @include before($k + 1) {
+        scale: 0 1;
+      }
+    }
+
+    .check {
+      @include before($k + 1) {
+        opacity: 0;
+        scale: 0.4;
+      }
+    }
+  }
+}
+
+// The deploy ---------------------------------------------------------------------------
+
+.deploy {
+  top: 82cqi;
+  height: 34cqi;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-content: center;
+  align-items: center;
+  gap: 2.4cqi 5cqi;
+  padding: 0 3.4cqi;
+  transition-delay: 0.12s;
+}
+
+.deployHead {
+  display: flex;
+  align-items: center;
+  gap: 1.6cqi;
+}
+
+.deployName {
+  font-weight: 600;
+}
+
+.done {
+  width: 3.6cqi;
+
+  @include before(6) {
+    opacity: 0;
+    scale: 0.4;
+  }
+}
+
+.track {
+  grid-row: 2;
+  position: relative;
+  height: 1.2cqi;
+  overflow: hidden;
+  border-radius: 1cqi;
+  background: var(--sc-line);
+
+  i {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: var(--wb-accent);
+    transform-origin: left center;
+    transition: scale 1.6s cubic-bezier(0.5, 0, 0.3, 1);
+
+    @include before(5) {
+      scale: 0 1;
+    }
+  }
+}
+
+.time {
+  grid-column: 2;
+  grid-row: 1 / 3;
+  display: grid;
+  gap: 0.8cqi;
+  transform-origin: left center;
+  transition:
+    opacity 0.4s $ease-soft,
+    scale 0.6s $ease-settle;
+
+  @include before(6) {
+    opacity: 0;
+    scale: 0.86;
+  }
+}
+
+.value {
+  @include title;
+  font-size: 9cqi;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  color: var(--wb-accent);
+
+  @include dark {
+    color: #6688ff;
+  }
+}
+
+.caption {
+  font-weight: 500;
+  color: var(--wb-ink-2);
+}
+
+@include reduced {
+  .scene * {
+    transition: none !important;
+  }
+}

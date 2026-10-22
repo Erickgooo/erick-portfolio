@@ -1,0 +1,462 @@
+// Scene: ArticleEngine (see ArticleEngine.tsx). Portrait (4:5, 100 x 125
+// cqi). Drawn with hairlines on the sheet's tokens; cobalt marks what the
+// engine publishes. Keep this file ASCII-only.
+@use "../../shared" as *;
+@use "../scene" as *;
+
+.scene {
+  position: absolute;
+  inset: 0;
+  color: var(--wb-ink);
+  font-size: fs(3.4);
+  line-height: 1.25;
+}
+
+.window,
+.manualName {
+  position: absolute;
+  transition:
+    opacity 0.8s $ease-soft,
+    translate 1s $ease-soft;
+
+  @include before(0) {
+    opacity: 0;
+    translate: 0 5cqi;
+  }
+}
+
+// The window -------------------------------------------------------------------------
+
+.window {
+  left: 5cqi;
+  top: 5cqi;
+  width: 90cqi;
+  height: 74cqi;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid var(--sc-line);
+  border-radius: 1.6cqi;
+  background: var(--sc-obj);
+}
+
+.bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2cqi;
+  padding: 2cqi 2.6cqi;
+  border-bottom: 1px solid var(--sc-line);
+}
+
+.name {
+  font-weight: 600;
+}
+
+// Draft or published: both words in one cell, sized by the longer.
+.status {
+  display: inline-grid;
+  font-weight: 500;
+  color: var(--wb-ink-2);
+
+  > * {
+    grid-area: 1 / 1;
+    text-align: right;
+  }
+}
+
+.sizer {
+  visibility: hidden;
+}
+
+.draft,
+.published {
+  transition: opacity 0.35s $ease-soft;
+}
+
+.published {
+  color: var(--wb-accent);
+
+  @include dark {
+    color: #6688ff;
+  }
+
+  @include before(3) {
+    opacity: 0;
+  }
+
+  @include from(4) {
+    opacity: 0;
+  }
+
+  @include from(7) {
+    opacity: 1;
+  }
+}
+
+.draft {
+  opacity: 0;
+
+  @include before(3) {
+    opacity: 1;
+  }
+
+  @include from(4) {
+    opacity: 1;
+  }
+
+  @include from(7) {
+    opacity: 0;
+  }
+}
+
+.stage {
+  position: relative;
+  flex: none;
+  height: 46cqi;
+}
+
+// One article: its title types, its lines fill in, then it is published.
+.article {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  align-content: start;
+  gap: 2.6cqi;
+  padding: 3cqi 3cqi 0;
+}
+
+.first {
+  opacity: 0;
+  translate: 0 -5cqi;
+  transition:
+    opacity 0.5s $ease-soft,
+    translate 0.8s $ease-soft;
+
+  @include before(4) {
+    opacity: 1;
+    translate: 0 0;
+  }
+}
+
+.next {
+  transition:
+    opacity 0.5s $ease-soft 0.35s,
+    translate 0.8s $ease-soft 0.35s;
+
+  @include before(4) {
+    opacity: 0;
+    translate: 0 5cqi;
+  }
+}
+
+.title {
+  font-size: fs(4.2);
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+}
+
+.body {
+  display: grid;
+  gap: 1.8cqi;
+
+  i {
+    height: 1cqi;
+    border-radius: 1cqi;
+    background: var(--sc-bar);
+    transform-origin: left center;
+    transition: scale 0.45s $ease-soft;
+    transition-delay: calc(var(--k) * 200ms);
+
+    &:nth-child(2) {
+      width: 94%;
+    }
+
+    &:nth-child(4) {
+      width: 86%;
+    }
+
+    &:nth-child(5) {
+      width: 58%;
+    }
+  }
+
+  .first & i {
+    @include before(2) {
+      scale: 0 1;
+    }
+  }
+
+  .next & i {
+    @include before(6) {
+      scale: 0 1;
+    }
+  }
+}
+
+.publish {
+  position: absolute;
+  right: 3cqi;
+  bottom: 2.6cqi;
+  padding: 0.4em 0.9em;
+  border: 1px solid var(--sc-line);
+  border-radius: 0.5em;
+  font-weight: 500;
+}
+
+// The press: a cobalt outline settles on the key, with one ripple.
+.press {
+  position: absolute;
+  inset: -1px;
+  border: 1.5px solid var(--wb-accent);
+  border-radius: inherit;
+  transition: opacity 0.3s $ease-soft;
+
+  &::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 10cqi;
+    aspect-ratio: 1;
+    margin: -5cqi 0 0 -5cqi;
+    border: 1.5px solid var(--wb-accent);
+    border-radius: 50%;
+    opacity: 0;
+  }
+
+  .first & {
+    @include before(3) {
+      opacity: 0;
+    }
+
+    &::after {
+      @include from(3) {
+        animation: press 0.8s $ease-soft both;
+      }
+    }
+  }
+
+  .next & {
+    @include before(7) {
+      opacity: 0;
+    }
+
+    &::after {
+      @include from(7) {
+        animation: press 0.8s $ease-soft both;
+      }
+    }
+  }
+}
+
+// What has been published, filed at the foot of the window.
+.filed {
+  display: flex;
+  gap: 2cqi;
+  margin-top: auto;
+  padding: 2.4cqi 3cqi;
+  border-top: 1px solid var(--sc-line);
+}
+
+.post {
+  position: relative;
+  width: 17cqi;
+  height: 9cqi;
+  border: 1px solid var(--sc-line);
+  border-radius: 0.6cqi;
+
+  &::before,
+  &::after {
+    content: "";
+    position: absolute;
+    left: 14%;
+    height: 0.8cqi;
+    border-radius: 1cqi;
+    background: var(--sc-bar);
+  }
+
+  &::before {
+    top: 30%;
+    width: 66%;
+  }
+
+  &::after {
+    top: 56%;
+    width: 46%;
+  }
+}
+
+.postFirst,
+.postNext {
+  border-color: var(--wb-accent);
+  transition:
+    opacity 0.4s $ease-soft,
+    translate 0.6s $ease-settle;
+
+  &::before,
+  &::after {
+    background: var(--wb-accent);
+    opacity: 0.45;
+  }
+}
+
+.postFirst {
+  transition-delay: 0.3s;
+
+  @include before(4) {
+    opacity: 0;
+    translate: 0 -3cqi;
+  }
+}
+
+.postNext {
+  transition-delay: 0.6s;
+
+  @include before(7) {
+    opacity: 0;
+    translate: 0 -3cqi;
+  }
+}
+
+// The brand manual's pages, sliding in one after another ----------------------------
+
+.manualName {
+  left: 5cqi;
+  top: 83cqi;
+  font-weight: 600;
+  color: var(--wb-ink-2);
+  transition-delay: 0.1s;
+}
+
+.pages {
+  position: absolute;
+  left: 5cqi;
+  top: 88.5cqi;
+  width: 90cqi;
+  height: 32cqi;
+  display: flex;
+  gap: 3cqi;
+}
+
+.page {
+  flex: 1;
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  gap: 2.6cqi;
+  border: 1px solid var(--sc-line);
+  border-radius: 0.8cqi;
+  background: var(--sc-obj);
+  transition:
+    opacity 0.5s $ease-soft,
+    translate 0.8s $ease-soft;
+}
+
+.pagePalette {
+  @include before(1) {
+    opacity: 0;
+    translate: 6cqi 0;
+  }
+}
+
+.pageType {
+  @include before(3) {
+    opacity: 0;
+    translate: 6cqi 0;
+  }
+}
+
+.pageLogo {
+  @include before(6) {
+    opacity: 0;
+    translate: 6cqi 0;
+  }
+}
+
+.swatches {
+  display: flex;
+  gap: 1.2cqi;
+
+  i {
+    width: 5cqi;
+    aspect-ratio: 1;
+    border-radius: 0.5cqi;
+  }
+}
+
+.cobalt {
+  background: var(--wb-cobalt);
+}
+
+.ink {
+  background: #1d1d22;
+
+  @include dark {
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.22);
+  }
+}
+
+.mist {
+  background: var(--wb-mist);
+  box-shadow: inset 0 0 0 1px rgba(19, 19, 22, 0.1);
+}
+
+.specimen {
+  @include title;
+  font-size: 7cqi;
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+
+// The logo's clear space: a dashed box around a cobalt mark.
+.space {
+  display: grid;
+  place-items: center;
+  width: 11cqi;
+  aspect-ratio: 1;
+  border: 1px dashed var(--wb-ink-2);
+  border-radius: 0.4cqi;
+
+  i {
+    width: 50%;
+    aspect-ratio: 1;
+    border: 1.5px solid var(--wb-accent);
+    border-radius: 0.3cqi;
+  }
+}
+
+.lines {
+  display: grid;
+  gap: 1cqi;
+  width: 62%;
+
+  i {
+    height: 0.8cqi;
+    border-radius: 1cqi;
+    background: var(--sc-bar);
+
+    &:last-child {
+      width: 70%;
+    }
+  }
+}
+
+@keyframes press {
+  from {
+    opacity: 0.6;
+    scale: 0.2;
+  }
+
+  to {
+    opacity: 0;
+    scale: 1.6;
+  }
+}
+
+@include reduced {
+  .scene * {
+    transition: none !important;
+  }
+}
