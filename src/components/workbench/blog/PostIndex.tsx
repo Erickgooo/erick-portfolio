@@ -7,8 +7,9 @@
 // section is current once its heading crosses a line 150 px below the top,
 // and once the page is scrolled to the bottom the last section is current,
 // because a short last section can never reach that line.
-import { type CSSProperties, useEffect, useState } from "react";
+import { type CSSProperties, useEffect, useRef, useState } from "react";
 import type { OutlineItem } from "../prose/source";
+import { deskPartOf } from "../scenes/post/parts";
 import styles from "./blog.module.scss";
 
 const ACTIVE_OFFSET = 150;
@@ -16,6 +17,7 @@ const BOTTOM_EPSILON = 2;
 
 export function PostIndex({ items }: { items: OutlineItem[] }) {
   const [active, setActive] = useState(0);
+  const nav = useRef<HTMLElement>(null);
 
   useEffect(() => {
     let anchors: number[] = [];
@@ -59,8 +61,16 @@ export function PostIndex({ items }: { items: OutlineItem[] }) {
     };
   }, [items]);
 
+  // The drawn desk beside the index (DeskScene, read mode) lights the part
+  // the current section is about.
+  useEffect(() => {
+    const desk = nav.current?.parentElement?.querySelector<HTMLElement>("[data-desk]");
+    const item = items[active];
+    if (desk && item) desk.dataset.part = deskPartOf(item.text);
+  }, [active, items]);
+
   return (
-    <nav className={styles.index} aria-label="On this page">
+    <nav ref={nav} className={styles.index} aria-label="On this page">
       <p className={styles.indexHead}>On this page</p>
       <ol className={styles.indexList} style={{ "--at": active } as CSSProperties}>
         {items.map((item, i) => (

@@ -4,6 +4,7 @@ import { RevealObserver } from "@/components/workbench/RevealObserver";
 import { PostArticle } from "@/components/workbench/blog/PostArticle";
 import { RecentPosts } from "@/components/workbench/blog/RecentPosts";
 import { getPostCards } from "@/components/workbench/blog/posts";
+import { SceneDriver } from "@/components/workbench/scenes/SceneDriver";
 import { about, baseURL, blog, person } from "@/resources";
 import { isProtectedPath } from "@/resources/protectedRoutes";
 import { getPosts } from "@/utils/utils";
@@ -87,10 +88,12 @@ export default async function Blog({ params }: { params: Promise<{ slug: string 
         image={post.metadata.image}
         content={post.content}
         url={`${baseURL}${blog.path}/${post.slug}`}
+        slug={post.slug}
       />
       <RecentPosts posts={recent} />
       <Closing />
       <RevealObserver />
+      <SceneDriver />
       <ScrollToHash />
     </>
   );

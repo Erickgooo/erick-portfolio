@@ -43,6 +43,12 @@
   text-wrap: balance;
 }
 
+.headSide {
+  display: grid;
+  justify-items: start;
+  gap: 28px;
+}
+
 .lede {
   @include s-lede;
   max-width: 40ch;
@@ -400,11 +406,28 @@
   }
 }
 
-.index {
+// The margin: the drawn desk (on "My Workspace") above the index, pinned
+// together while the post scrolls.
+.railInner {
   position: sticky;
   top: 112px;
   display: grid;
+  gap: 32px;
+}
+
+.index {
+  display: grid;
   gap: 12px;
+}
+
+// On phones and tablets the desk sits under the header, in the flow.
+.deskPhone {
+  @include wrap;
+  padding-bottom: 48px;
+
+  @include from-desk {
+    display: none;
+  }
 }
 
 .indexHead {
