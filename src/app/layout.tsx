@@ -5,7 +5,8 @@ import "@/resources/custom.css";
 import classNames from "classnames";
 
 import { body, code, heading } from "@/app/fonts";
-import { FaqChatbot, Footer, Header, IntroLoader, Providers, RouteGuard } from "@/components";
+import { FaqChatbot, Footer, Header, IntroLoader, Providers } from "@/components";
+import { SiteMain } from "@/components/SiteMain";
 import { SpotlightBackground } from "@/components/SpotlightBackground";
 import spotlightStyles from "@/components/SpotlightBackground.module.scss";
 import { baseURL, dataStyle, home, style } from "@/resources";
@@ -36,6 +37,23 @@ export default async function RootLayout({
       className={classNames(heading.variable, body.variable, code.variable)}
     >
       <head>
+        {/* The two Workbench faces (declared in custom.css), fetched in
+            parallel with the stylesheets so the first frames already use
+            them. */}
+        <link
+          rel="preload"
+          href="/fonts/bricolage-grotesque-opsz96-latin.woff2"
+          as="font"
+          type="font/woff2"
+          crossOrigin="anonymous"
+        />
+        <link
+          rel="preload"
+          href="/fonts/onest-latin.woff2"
+          as="font"
+          type="font/woff2"
+          crossOrigin="anonymous"
+        />
         <script
           id="theme-init"
           // biome-ignore lint/security/noDangerouslySetInnerHtml: the theme must be applied before first paint to avoid a light/dark flash; the script body is a static string built from our own config, with no user input
@@ -110,18 +128,7 @@ export default async function RootLayout({
           <SpotlightBackground />
           <Flex fillWidth minHeight="16" s={{ hide: true }} />
           <Header />
-          <Flex
-            zIndex={0}
-            fillWidth
-            padding="l"
-            horizontal="center"
-            flex={1}
-            className="main-content-wrapper"
-          >
-            <Flex horizontal="center" fillWidth minHeight="0">
-              <RouteGuard>{children}</RouteGuard>
-            </Flex>
-          </Flex>
+          <SiteMain>{children}</SiteMain>
           <Footer />
           <Analytics />
           <FaqChatbot />
