@@ -28,7 +28,7 @@
 
   @include from-desk {
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    align-items: end;
+    align-items: start;
     column-gap: 48px;
     padding-top: 48px;
     padding-bottom: 72px;
