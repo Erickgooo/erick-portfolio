@@ -1,0 +1,250 @@
+// Workbench scenes: the stepper (see SceneStepper.tsx). Keep this file ASCII-only.
+@use "../shared" as *;
+
+$max-steps: 8;
+// The site header's band at the top of the screen on desktop.
+$header: 76px;
+
+.stepper {
+  --sheet-ratio: 5 / 4;
+  --sheet-ratio-phone: 4 / 5;
+
+  position: relative;
+}
+
+.track {
+  @include from-desk {
+    height: calc(var(--n) * 62vh + 100vh);
+  }
+}
+
+.sticky {
+  @include from-desk {
+    position: sticky;
+    top: $header;
+    display: flex;
+    align-items: center;
+    height: calc(100svh - #{$header});
+  }
+}
+
+.inner {
+  width: 100%;
+}
+
+// Phones and tablets: text, scene, text, scene. Desktop: the texts in the left
+// column, every scene layer stacked over the stage in the right one.
+.grid {
+  display: grid;
+  gap: 28px;
+
+  @include from-desk {
+    position: relative;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    grid-template-rows: repeat(var(--n), auto);
+    align-content: center;
+    column-gap: 64px;
+    row-gap: 0;
+  }
+}
+
+.text {
+  display: grid;
+  gap: 8px;
+
+  // On phones a scene sits between two texts.
+  &:not(:first-child) {
+    margin-top: 36px;
+  }
+
+  @include from-desk {
+    position: relative;
+    grid-column: 1;
+    grid-row: var(--row);
+    align-self: center;
+    margin-top: 0 !important;
+    padding: 16px 0 18px;
+    border-top: 1px solid var(--wb-line);
+  }
+}
+
+.title {
+  @include display(700);
+  font-size: 26px;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+
+  @include from-desk {
+    font-size: 23px;
+  }
+}
+
+.line {
+  font-size: 17px;
+  line-height: 1.5;
+  color: var(--wb-ink-2);
+
+  @include from-desk {
+    font-size: 16px;
+  }
+}
+
+.note {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+// Desktop: inactive steps rest dimmed; the active one lights up.
+.title,
+.line,
+.note {
+  @include from-desk {
+    opacity: 0.42;
+    transition: opacity 0.45s $ease-soft;
+  }
+}
+
+// The progress line of the active step, scaled by --p (the scroll inside the step).
+.bar {
+  display: none;
+
+  @include from-desk {
+    display: block;
+    position: absolute;
+    left: 0;
+    top: -2px;
+    width: 100%;
+    height: 3px;
+    background: var(--wb-accent);
+    transform-origin: left center;
+    scale: 0 1;
+  }
+}
+
+@for $k from 0 through $max-steps - 1 {
+  .stepper[data-active="#{$k}"] .text[data-step="#{$k}"] {
+    .title,
+    .line,
+    .note {
+      opacity: 1;
+    }
+
+    .bar {
+      scale: var(--p, 0) 1;
+    }
+  }
+}
+
+// The stage only reserves the right column's box on desktop.
+.stage {
+  display: none;
+
+  @include from-desk {
+    display: block;
+    grid-column: 2;
+    grid-row: 1 / -1;
+    align-self: center;
+    justify-self: center;
+    width: min(100%, calc((100svh - #{$header} - 88px) * 5 / 4));
+    aspect-ratio: var(--sheet-ratio);
+  }
+}
+
+.layer {
+  position: relative;
+
+  @include from-desk {
+    position: absolute;
+    grid-column: 2;
+    grid-row: 1 / -1;
+    inset: 0;
+    z-index: 1;
+    display: grid;
+    place-items: center;
+    opacity: 0;
+    // Leaving: stays under the incoming scene until that one has faded in.
+    transition: opacity 0.5s ease 0.6s;
+
+    &[data-on] {
+      z-index: 2;
+      opacity: 1;
+      transition: opacity 0.55s ease 0s;
+    }
+  }
+}
+
+// The sheet: the scene's paper and box. Scenes draw in its container units.
+.sheet {
+  position: relative;
+  width: 100%;
+  aspect-ratio: var(--sheet-ratio-phone);
+  overflow: hidden;
+  border-radius: 6px;
+  container-type: inline-size;
+  box-shadow: var(--wb-shadow);
+
+  @include from-tablet {
+    aspect-ratio: var(--sheet-ratio);
+  }
+
+  @include from-desk {
+    width: min(100%, calc((100svh - #{$header} - 88px) * 5 / 4));
+    translate: 0 26px;
+    scale: 0.98;
+    transition:
+      translate 0.7s cubic-bezier(0.22, 0.8, 0.24, 1) 0.6s,
+      scale 0.7s cubic-bezier(0.22, 0.8, 0.24, 1) 0.6s;
+
+    .layer[data-on] > & {
+      translate: 0 0;
+      scale: 1;
+      transition-duration: 0.8s;
+      transition-delay: 0s;
+    }
+  }
+}
+
+.cobalt .sheet {
+  background: var(--wb-cobalt);
+  color: #ffffff;
+}
+
+.ink .sheet {
+  background: var(--wb-ink-paper);
+  color: #ffffff;
+
+  @include dark {
+    box-shadow:
+      inset 0 0 0 1px rgba(255, 255, 255, 0.08),
+      var(--wb-shadow);
+  }
+}
+
+.mist .sheet {
+  background: var(--wb-mist);
+  color: var(--wb-charcoal);
+}
+
+.paper .sheet {
+  background: var(--wb-paper);
+  color: var(--wb-charcoal);
+  box-shadow:
+    inset 0 0 0 1px var(--wb-line),
+    var(--wb-shadow);
+}
+
+@include reduced {
+  .layer,
+  .sheet,
+  .title,
+  .line,
+  .note {
+    transition: none !important;
+  }
+
+  .sheet {
+    translate: none !important;
+    scale: none !important;
+  }
+}

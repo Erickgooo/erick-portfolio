@@ -1,0 +1,60 @@
+// Workbench scenes: helpers for scene stylesheets. Keep this file ASCII-only.
+//
+// A scene's elements are written in their FINAL state (what reduced motion,
+// no-JS and the last step show). `before($n)` adds the state an element has
+// until the scene reaches step $n; the driver then sets [data-s$n] on the
+// scene and the element transitions to its final state. Step 0 is set when
+// the scene starts, so `before(0)` is the entrance.
+//
+//   .bubble {
+//     transition: opacity 0.6s $ease-soft, translate 0.8s $ease-soft;
+//     @include before(2) { opacity: 0; translate: 0 12px; }
+//   }
+//
+// Only transform properties and opacity may change. Keyframe loops go inside
+// `live` so they exist only while the scene runs on screen.
+@use "../shared" as *;
+
+@mixin before($n) {
+  @media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
+    :where([data-scene]:not([data-s#{$n}])) & {
+      @content;
+    }
+  }
+}
+
+// From step $n on (for a state that changes again later, such as a card that
+// arrives at step 2 and leaves at step 5: `before(2) { ... }` + `from(5) { ... }`).
+@mixin from($n) {
+  @media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
+    :where([data-scene][data-s#{$n}]) & {
+      @content;
+    }
+  }
+}
+
+// While the scene runs on screen (for infinite keyframe loops).
+@mixin live {
+  @media (prefers-reduced-motion: no-preference) {
+    :where([data-scene][data-live]) & {
+      @content;
+    }
+  }
+}
+
+// Text inside a scene: container units with a floor (12 px on phones, by the brief).
+@function fs($cqi, $min: 12px) {
+  @return max(#{$min}, #{$cqi}cqi);
+}
+
+// The portrait layout of a scene: on phones, and anywhere the scene is given
+// the `portrait` class of its own module.
+@mixin portrait($portrait-class) {
+  @include phone {
+    @content;
+  }
+
+  :where(#{$portrait-class}) & {
+    @content;
+  }
+}

@@ -1,0 +1,94 @@
+// Workbench scenes: the scene root, typed text and counting figures.
+// Keep this file ASCII-only.
+@use "../shared" as *;
+
+.scene {
+  position: relative;
+  user-select: none;
+  -webkit-user-select: none;
+  pointer-events: none;
+}
+
+// The loop's clearing fade: the driver fades the content out, resets every
+// step with transitions off, then fades it back in at step 0.
+.content {
+  position: relative;
+  height: 100%;
+  transition: opacity 0.45s $ease-soft;
+
+  [data-clearing] > & {
+    opacity: 0;
+  }
+}
+
+.scene[data-resetting] *,
+.scene[data-resetting] *::before,
+.scene[data-resetting] *::after {
+  transition: none !important;
+}
+
+// Typed text and counting figures: every phrase (and the final figure) is laid
+// out invisibly in the same grid cell, so the box keeps the size of the
+// largest one while its visible copy changes. Without scripting the first
+// phrase (or the final figure) shows through.
+.typed,
+.count {
+  display: inline-grid;
+  vertical-align: top;
+}
+
+.typed {
+  display: grid;
+}
+
+.sizer,
+.live {
+  grid-area: 1 / 1;
+  min-width: 0;
+}
+
+.sizer {
+  visibility: hidden;
+
+  @media (scripting: none) {
+    .typed > &:first-child,
+    .count > & {
+      visibility: visible;
+    }
+  }
+}
+
+.live {
+  @media (scripting: none) {
+    visibility: hidden;
+  }
+}
+
+.count {
+  font-variant-numeric: tabular-nums;
+}
+
+// The caret: a zero-width box at the end of the typed text, so it never
+// changes where the text wraps.
+.caret {
+  position: relative;
+  display: inline-block;
+  width: 0;
+  height: 1em;
+  vertical-align: -0.12em;
+
+  &::after {
+    content: "";
+    position: absolute;
+    left: 0.06em;
+    top: 0;
+    width: max(2px, 0.08em);
+    height: 1.1em;
+    background: currentColor;
+    opacity: 0;
+  }
+
+  [data-typing] > .live > &::after {
+    opacity: 0.85;
+  }
+}
