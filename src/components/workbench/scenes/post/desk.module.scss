@@ -1,6 +1,7 @@
 // Scene: DeskScene (see DeskScene.tsx). The workspace drawn in line; a lit
 // copy of each part, in cobalt, fades in over its quiet drawing. Only opacity
 // and transforms change. Keep this file ASCII-only.
+@use "sass:list";
 @use "../../shared" as *;
 @use "../scene" as *;
 
@@ -91,7 +92,7 @@
 $order: machine, av, room, notion;
 
 @each $key in $order {
-  $n: index($order, $key);
+  $n: list.index($order, $key);
 
   .lit[data-lit="#{$key}"] {
     @include before($n) {
