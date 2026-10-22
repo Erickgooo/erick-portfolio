@@ -5,21 +5,28 @@ import scope from "@/components/workbench/scope.module.scss";
 import { Flex } from "@once-ui-system/core";
 import { usePathname } from "next/navigation";
 
-// Transitional, for the 2026 redesign. Pages already rebuilt in Workbench draw
+// Transitional, for the 2026 redesign. Pages rebuilt in Workbench draw
 // full-bleed bands and set their own gutters, so they get a bare <main> with
-// Workbench's type and link rules. Every other page keeps the padded, centred
-// Once UI wrapper exactly as before, so its spacing does not change. Each page
-// joins WORKBENCH_ROUTES as it is redesigned; when all have, the legacy branch
-// (and this switch) goes away. The decision is a pure function of the pathname,
-// so the server HTML and the hydrated markup match.
+// Workbench's type and link rules. Pages not rebuilt yet keep the padded,
+// centred Once UI wrapper exactly as before, so their spacing does not change.
+// Each page leaves LEGACY_ROUTES as it is redesigned; when the list is empty,
+// the legacy branch (and this switch) goes away. Unknown paths (the 404) are
+// Workbench. The decision is a pure function of the pathname, so the server
+// HTML and the hydrated markup match.
 
-/** Routes already redesigned in Workbench, matched exactly. */
-const WORKBENCH_ROUTES = new Set(["/"]);
+/** Routes not redesigned yet. An entry ending in "/" matches every page below it. */
+const LEGACY_ROUTES = ["/about", "/work", "/work/", "/blog", "/blog/", "/gallery", "/unauthorized"];
+
+function isLegacy(pathname: string) {
+  return LEGACY_ROUTES.some((route) =>
+    route.endsWith("/") ? pathname.startsWith(route) : pathname === route,
+  );
+}
 
 export function SiteMain({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
 
-  if (pathname && WORKBENCH_ROUTES.has(pathname)) {
+  if (!pathname || !isLegacy(pathname)) {
     return (
       <main id="main" className={`${scope.scope} ${scope.main}`}>
         <RouteGuard>{children}</RouteGuard>

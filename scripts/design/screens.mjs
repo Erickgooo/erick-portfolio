@@ -2,7 +2,11 @@
 // stitched, at 390 and 1440 px in light and dark.
 //
 //   npm run build && npx next start -p 3301
-//   node scripts/design/screens.mjs [--base http://localhost:3301] [--out docs/design/screens/rediseno-2026] [--pages home,about]
+//   node scripts/design/screens.mjs [--base http://localhost:3301] [--out docs/design/screens/rediseno-2026] [--pages home,about] [--mask-media]
+//
+// --mask-media turns every image, video and iframe into a flat translucent box,
+// so a layout check never shows the media pieces themselves (Erick's rule: they
+// are not opened, watched, described or evaluated). Captures for Erick omit it.
 //
 // Files: <out>/<page>-<390|1440>-<light|dark>.png
 import { mkdir } from "node:fs/promises";
@@ -28,6 +32,9 @@ const ALL = {
   unauthorized: "/unauthorized",
 };
 const only = arg("pages", Object.keys(ALL).join(",")).split(",");
+const maskMedia = args.includes("--mask-media");
+const MASK_CSS =
+  "img, video, iframe, picture, svg image { filter: brightness(0) !important; opacity: 0.14 !important; }";
 const VIEWPORTS = {
   390: { ...devices["iPhone 13"], viewport: { width: 390, height: 844 }, deviceScaleFactor: 2 },
   1440: { viewport: { width: 1440, height: 900 }, deviceScaleFactor: 1 },
@@ -101,6 +108,7 @@ for (const name of only) {
     for (const theme of ["light", "dark"]) {
       const { ctx, page } = await newPage(browser, width, theme);
       await page.goto(`${base}${ALL[name]}`, { waitUntil: "networkidle" });
+      if (maskMedia) await page.addStyleTag({ content: MASK_CSS });
       // The intro plays for five seconds on every document load.
       await page.waitForTimeout(6500);
       await stitchedShot(browser, page, path.join(out, `${name}-${width}-${theme}.png`));
