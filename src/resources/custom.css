@@ -104,3 +104,110 @@
     padding-bottom: 96px !important;
   }
 }
+
+/* ─── Workbench (redesign 2026) ────────────────────────────────────────────
+   Global tokens of the Workbench design, switched on html[data-theme] like
+   Once UI's, so every redesigned page reuses them. Solid fills only.
+   - Paper colours are the same sheets in both themes. Cobalto Eléctrico is
+     the accent (call-to-action key, link underlines, focus rings, active
+     states), at its exact brand hex in both themes; sun, tomato, mint, paper
+     and charcoal are paper colours only.
+   - The band (the tool wall) is always the opposite of the page.
+   - The page colour also becomes Once UI's --page-background, so the body
+     (with its dots), the header pill and the header fades share it.
+   Type: --font-wb-display (Bricolage Grotesque) and --font-wb-text (Onest),
+   below. Breakpoints and mixins: src/components/workbench/_shared.scss.
+──────────────────────────────────────────────────────────────────────────── */
+
+/* The two faces are self-hosted in public/fonts (SIL Open Font License, the
+   licence files sit next to them) and preloaded from src/app/layout.tsx.
+   next/font cannot emit its preload links on Windows builds (see
+   src/app/fonts.ts), and the home's Lighthouse score, measured locally,
+   depends on that preload.
+   - Bricolage Grotesque: Google's own instance with the optical-size axis
+     pinned at 96, its display cut, which is what keeps the big headlines
+     tight (latin subset, weights 200 to 800, 41 KB; the file with the whole
+     axis weighs 77 KB). From fonts.googleapis.com, family
+     Bricolage+Grotesque:opsz,wght@96,200..800.
+   - Onest: Google's variable file, latin subset, weights 100 to 900.
+   The "Fallback" faces are Arial resized to each face's metrics (the values
+   next/font computes), so the swap does not move the layout. */
+@font-face {
+  font-family: "Bricolage Grotesque";
+  src: url("/fonts/bricolage-grotesque-opsz96-latin.woff2") format("woff2");
+  font-weight: 200 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Bricolage Grotesque Fallback";
+  src: local("Arial");
+  ascent-override: 91.48%;
+  descent-override: 26.56%;
+  line-gap-override: 0%;
+  size-adjust: 101.66%;
+}
+
+@font-face {
+  font-family: "Onest";
+  src: url("/fonts/onest-latin.woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Onest Fallback";
+  src: local("Arial");
+  ascent-override: 92.2%;
+  descent-override: 28.99%;
+  line-gap-override: 0%;
+  size-adjust: 105.2%;
+}
+
+:root {
+  --font-wb-display: "Bricolage Grotesque", "Bricolage Grotesque Fallback";
+  --font-wb-text: "Onest", "Onest Fallback";
+
+  --wb-accent: #2d5bff;
+  --wb-sun: #ffc531;
+  --wb-tomato: #ff5b3a;
+  --wb-cobalt: #2d5bff;
+  --wb-mint: #2fd3a0;
+  --wb-paper: #ffffff;
+  --wb-charcoal: #131316;
+
+  --wb-page: #ffffff;
+  --wb-ink: #131316;
+  --wb-ink-2: #55555f;
+  --wb-line: #e6e6eb;
+  --wb-surface: #f3f3f5;
+  --wb-band: #131316;
+  --wb-band-ink: #ffffff;
+  --wb-band-ink-2: #a6a6b0;
+  --wb-band-tile: #212126;
+  --wb-shadow: 0 1px 2px rgba(19, 19, 22, 0.1), 0 14px 28px -12px rgba(19, 19, 22, 0.32);
+  --wb-shadow-lift: 0 2px 4px rgba(19, 19, 22, 0.1), 0 28px 44px -16px rgba(19, 19, 22, 0.38);
+
+  --wb-ease-soft: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --wb-ease-pop: cubic-bezier(0.3, 1.6, 0.5, 1);
+}
+
+:root[data-theme="dark"] {
+  --wb-page: #131316;
+  --wb-ink: #f5f5f7;
+  --wb-ink-2: #a6a6b0;
+  --wb-line: #2b2b31;
+  --wb-surface: #1c1c21;
+  --wb-band: #ffffff;
+  --wb-band-ink: #131316;
+  --wb-band-ink-2: #55555f;
+  --wb-band-tile: #f0f0f3;
+  --wb-shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 16px 30px -12px rgba(0, 0, 0, 0.7);
+  --wb-shadow-lift: 0 2px 4px rgba(0, 0, 0, 0.4), 0 30px 48px -16px rgba(0, 0, 0, 0.8);
+}
+
+:root[data-theme] {
+  --page-background: var(--wb-page);
+}

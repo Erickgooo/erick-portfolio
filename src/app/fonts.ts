@@ -41,3 +41,9 @@ export const code = JetBrains_Mono({
   subsets: ["latin"],
   display: "swap",
 });
+
+// The Workbench faces (redesign 2026), Bricolage Grotesque and Onest, are not
+// declared here: they are self-hosted in public/fonts, declared in
+// src/resources/custom.css (--font-wb-display, --font-wb-text) and preloaded
+// from src/app/layout.tsx, because the preload has to work on every build
+// host (see the note above) and the home measures it.
