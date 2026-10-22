@@ -83,12 +83,16 @@ export default async function Project({
           image: `${baseURL}${person.avatar}`,
         }}
       />
-      <article>
-        <CaseHeader c={c} />
-        <CaseBody c={c} />
-      </article>
-      {next ? <NextCase next={next} /> : null}
-      <Closing />
+      {/* TEMPORARY (sober variants): only the LeadBot case previews the sober
+          style; step 4 brings it to every case and removes this. */}
+      <div data-sober={c.slug === "leadbot-ai" ? "" : undefined} style={{ display: "contents" }}>
+        <article>
+          <CaseHeader c={c} />
+          <CaseBody c={c} />
+        </article>
+        {next ? <NextCase next={next} /> : null}
+        <Closing />
+      </div>
       <RevealObserver />
       <SceneDriver />
       <ScrollToHash />

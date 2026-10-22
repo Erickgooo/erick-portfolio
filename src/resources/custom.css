@@ -116,7 +116,8 @@ body {
 
 /* ─── Workbench (redesign 2026) ────────────────────────────────────────────
    Global tokens of the Workbench design, switched on html[data-theme] like
-   Once UI's, so every redesigned page reuses them. Solid fills only.
+   Once UI's, so every redesigned page reuses them. Solid fills only. The
+   sober tokens (2026-10-22) follow these, at the end of the file.
    - Paper colours are the same sheets in both themes. Cobalto Eléctrico is
      the accent (call-to-action key, link underlines, focus rings, active
      states), at its exact brand hex in both themes. Papers keep to the
@@ -124,60 +125,121 @@ body {
    - The band (the tool wall) is always the opposite of the page.
    - The page colour also becomes Once UI's --page-background, so the body
      (with its dots), the header pill and the header fades share it.
-   Type: --font-wb-display (Bricolage Grotesque) and --font-wb-text (Onest),
-   below. Breakpoints and mixins: src/components/workbench/_shared.scss.
+   Type: --font-wb-display (Montserrat Black), --font-wb-text (Poppins) and
+   --font-wb-accent (Luxurious Roman), below. Breakpoints and mixins:
+   src/components/workbench/_shared.scss.
 ──────────────────────────────────────────────────────────────────────────── */
 
-/* The two faces are self-hosted in public/fonts (SIL Open Font License, the
-   licence files sit next to them) and preloaded from src/app/layout.tsx.
-   next/font cannot emit its preload links on Windows builds (see
-   src/app/fonts.ts), and the home's Lighthouse score, measured locally,
-   depends on that preload.
-   - Bricolage Grotesque: Google's own instance with the optical-size axis
-     pinned at 96, its display cut, which is what keeps the big headlines
-     tight (latin subset, weights 200 to 800, 41 KB; the file with the whole
-     axis weighs 77 KB). From fonts.googleapis.com, family
-     Bricolage+Grotesque:opsz,wght@96,200..800.
-   - Onest: Google's variable file, latin subset, weights 100 to 900.
-   The "Fallback" faces are Arial resized to each face's metrics (the values
-   next/font computes), so the swap does not move the layout. */
+/* The three faces (Erick, 2026-10-22: sober, minimal, elegant) are
+   self-hosted in public/fonts, Google's own files from fonts.googleapis.com,
+   latin subset, with their SIL Open Font License files beside them. Only the
+   weights the site uses are shipped, since every file weighs on mobile
+   Lighthouse. They are not preloaded: the site intro covers the page while
+   they load, and the preloads cost Lighthouse points before.
+   - Montserrat, weight 900 only (Black, 18 KB): titles and figures. It
+     stands in for Gotham Black, which has no free web licence; buying that
+     licence would make this a one-line change.
+   - Poppins 400, 500 and 600 (8 KB each): text and controls.
+   - Luxurious Roman 400 (33 KB): short accent phrases only. It is fetched
+     only where a phrase uses it, never in the first screen.
+   The "Fallback" faces are Arial (Times New Roman for the accent) resized to
+   each file's own metrics, computed with next/font's method on the files
+   above, so the swap does not move the layout. Each fallback declares the
+   weight it stands in for, so the browser never thickens it on its own. */
 @font-face {
-  font-family: "Bricolage Grotesque";
-  src: url("/fonts/bricolage-grotesque-opsz96-latin.woff2") format("woff2");
-  font-weight: 200 800;
+  font-family: "Montserrat";
+  src: url("/fonts/montserrat-900-latin.woff2") format("woff2");
+  font-weight: 900;
   font-style: normal;
   font-display: swap;
 }
 
 @font-face {
-  font-family: "Bricolage Grotesque Fallback";
+  font-family: "Montserrat Fallback";
   src: local("Arial");
-  ascent-override: 91.48%;
-  descent-override: 26.56%;
+  font-weight: 900;
+  ascent-override: 77.39%;
+  descent-override: 20.07%;
   line-gap-override: 0%;
-  size-adjust: 101.66%;
+  size-adjust: 125.07%;
 }
 
 @font-face {
-  font-family: "Onest";
-  src: url("/fonts/onest-latin.woff2") format("woff2");
-  font-weight: 100 900;
+  font-family: "Poppins";
+  src: url("/fonts/poppins-400-latin.woff2") format("woff2");
+  font-weight: 400;
   font-style: normal;
   font-display: swap;
 }
 
 @font-face {
-  font-family: "Onest Fallback";
+  font-family: "Poppins";
+  src: url("/fonts/poppins-500-latin.woff2") format("woff2");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Poppins";
+  src: url("/fonts/poppins-600-latin.woff2") format("woff2");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Poppins Fallback";
   src: local("Arial");
-  ascent-override: 92.2%;
-  descent-override: 28.99%;
+  font-weight: 400;
+  ascent-override: 92.83%;
+  descent-override: 30.94%;
+  line-gap-override: 8.84%;
+  size-adjust: 113.11%;
+}
+
+@font-face {
+  font-family: "Poppins Fallback";
+  src: local("Arial");
+  font-weight: 500;
+  ascent-override: 91.82%;
+  descent-override: 30.61%;
+  line-gap-override: 8.74%;
+  size-adjust: 114.36%;
+}
+
+@font-face {
+  font-family: "Poppins Fallback";
+  src: local("Arial");
+  font-weight: 600;
+  ascent-override: 90.85%;
+  descent-override: 30.28%;
+  line-gap-override: 8.65%;
+  size-adjust: 115.57%;
+}
+
+@font-face {
+  font-family: "Luxurious Roman";
+  src: url("/fonts/luxurious-roman-latin.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Luxurious Roman Fallback";
+  src: local("Times New Roman");
+  font-weight: 400;
+  ascent-override: 82.75%;
+  descent-override: 21.78%;
   line-gap-override: 0%;
-  size-adjust: 105.2%;
+  size-adjust: 114.8%;
 }
 
 :root {
-  --font-wb-display: "Bricolage Grotesque", "Bricolage Grotesque Fallback";
-  --font-wb-text: "Onest", "Onest Fallback";
+  --font-wb-display: "Montserrat", "Montserrat Fallback";
+  --font-wb-text: "Poppins", "Poppins Fallback";
+  --font-wb-accent: "Luxurious Roman", "Luxurious Roman Fallback";
 
   --wb-accent: #2d5bff;
   --wb-cobalt: #2d5bff;
@@ -220,4 +282,79 @@ body {
 
 :root[data-theme] {
   --page-background: var(--wb-page);
+}
+
+/* ─── Sober Workbench (Erick, 2026-10-22) ─────────────────────────────────
+   White and ink as the base, mist for soft surfaces, cobalt only as an
+   accent; in dark, the soft surfaces are the palette's dark tones. Hairlines
+   instead of thick shadows, small radii, nothing tilted.
+   - --wb-rule: the hairline that draws objects.
+   - --wb-soft / --wb-soft-2: soft surfaces (mist and a paler mist).
+   - --wb-raised: an object laid on a soft surface.
+   - --wb-soft-in: a fill inside a raised object.
+   - --wb-ease-settle: the overshoot of a last pop, gentler than
+     --wb-ease-pop, which reads playful at the sober pages' scale.
+   - --wb-shadow-soft: the only shadow left, for the floating header pill.
+──────────────────────────────────────────────────────────────────────────── */
+:root {
+  --wb-rule: #d7d8df;
+  --wb-soft: #e7edff;
+  --wb-soft-2: #f3f6ff;
+  --wb-raised: #ffffff;
+  --wb-soft-in: #e7edff;
+  --wb-ease-settle: cubic-bezier(0.25, 1.22, 0.5, 1);
+  --wb-shadow-soft: 0 1px 2px rgba(19, 19, 22, 0.05), 0 12px 28px -20px rgba(19, 19, 22, 0.35);
+}
+
+:root[data-theme="dark"] {
+  --wb-rule: #3a3a42;
+  --wb-soft: #1c1c21;
+  --wb-soft-2: #18181c;
+  --wb-raised: #26262c;
+  --wb-soft-in: #34343b;
+  --wb-shadow-soft: 0 1px 2px rgba(0, 0, 0, 0.35), 0 12px 28px -20px rgba(0, 0, 0, 0.8);
+}
+
+/* The two shape treatments, read by the home and the LeadBot case.
+   - A (default): almost no fills; hairlines draw every object.
+   - B: flat soft surfaces, no borders.
+   --v-fill / --v-line / --v-radius: a drawn object's fill, outline and
+   corner. --sc-*: the same inside the scenes, whose sheets alternate between
+   two surface tones (--sc-tone-a / --sc-tone-b); an object inside a sheet
+   is filled with --sc-obj-fill, or with its sheet's own tone where that is
+   unset (variant A, where the hairline alone draws it). */
+:root {
+  --v-fill: transparent;
+  --v-line: var(--wb-rule);
+  --v-radius: 4px;
+
+  --sc-tone-a: var(--wb-page);
+  --sc-tone-b: var(--wb-soft-2);
+  --sc-sheet-line: var(--wb-rule);
+  --sc-line: var(--wb-rule);
+  --sc-soft: transparent;
+  --sc-bar: var(--wb-rule);
+}
+
+/* TEMPORARY (sober variants): variant B, switched on by ?v=b through the
+   wb-variant script in src/app/layout.tsx. Step 4 keeps one variant and
+   removes this switch; it never reaches main. */
+:root[data-wb-variant="b"] {
+  --v-fill: var(--wb-soft);
+  --v-line: transparent;
+  --v-radius: 8px;
+
+  --sc-tone-a: var(--wb-soft);
+  --sc-tone-b: var(--wb-soft-2);
+  --sc-sheet-line: transparent;
+  --sc-line: transparent;
+  --sc-soft: var(--wb-soft-in);
+  --sc-obj-fill: var(--wb-raised);
+  --sc-bar: #d3d6e2;
+}
+
+/* TEMPORARY (sober variants) */
+:root[data-wb-variant="b"][data-theme="dark"] {
+  --sc-tone-b: #202026;
+  --sc-bar: #44444c;
 }

@@ -146,3 +146,86 @@ $ease-pop: cubic-bezier(0.3, 1.6, 0.5, 1);
     font-size: 20px;
   }
 }
+
+// Sober Workbench (Erick, 2026-10-22) ----------------------------------------
+// Used by the home and the LeadBot case; the other pages keep the mixins
+// above until the style reaches them (step 4).
+
+$ease-settle: cubic-bezier(0.25, 1.22, 0.5, 1);
+
+// Titles: Montserrat Black. The face is wide and heavy, so sizes stay
+// moderate and the tracking only slightly tight.
+@mixin title {
+  font-family: var(--font-wb-display), system-ui, sans-serif;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+}
+
+@mixin s-h2 {
+  @include title;
+  font-size: clamp(32px, 4.1vw, 54px);
+  line-height: 1.06;
+  text-wrap: balance;
+}
+
+// A small title (a step, a card, a group): Poppins in its heaviest weight.
+@mixin s-h3 {
+  font-family: var(--font-wb-text), system-ui, sans-serif;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+@mixin s-lede {
+  max-width: 44ch;
+  font-size: 17px;
+  line-height: 1.6;
+  color: var(--wb-ink-2);
+
+  @include from-desk {
+    font-size: 19px;
+  }
+}
+
+// Luxurious Roman: a short phrase only (a motto line, a short quote, one
+// word), never a paragraph or a control, and large enough for its fine
+// strokes. The face has one weight.
+@mixin accent {
+  font-family: var(--font-wb-accent), Georgia, serif;
+  font-weight: 400;
+  letter-spacing: 0;
+  line-height: 1.2;
+}
+
+// A label over a value (Client, Role, a lane): quiet secondary text.
+@mixin s-label {
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1.3;
+  color: var(--wb-ink-2);
+}
+
+// TEMPORARY (sober variants): variant B hangs off html[data-wb-variant="b"],
+// set by the wb-variant script in src/app/layout.tsx (?v=b). Step 4 keeps
+// one variant and removes these mixins; they never reach main.
+@mixin vb {
+  :global(html[data-wb-variant="b"]) & {
+    @content;
+  }
+}
+
+// TEMPORARY (sober variants): the shared pieces (closing, buttons, the case
+// and its prose) take the sober style only inside [data-sober], which the
+// home and the LeadBot case put around their content, so every other page
+// keeps its look until step 4.
+@mixin sober {
+  :global([data-sober]) & {
+    @content;
+  }
+}
+
+// TEMPORARY (sober variants): variant B inside [data-sober].
+@mixin sober-b {
+  :global(html[data-wb-variant="b"] [data-sober]) & {
+    @content;
+  }
+}
