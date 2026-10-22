@@ -1,6 +1,13 @@
-import GalleryView from "@/components/gallery/GalleryView";
+import { Closing } from "@/components/workbench/Closing";
+import { RevealObserver } from "@/components/workbench/RevealObserver";
+import { ClientSection } from "@/components/workbench/gallery/ClientSection";
+import { Head } from "@/components/workbench/gallery/Head";
+import { Viewer } from "@/components/workbench/gallery/Viewer";
+import { getGalleryBench, piecesIn } from "@/components/workbench/gallery/data";
+import styles from "@/components/workbench/gallery/gallery.module.scss";
 import { baseURL, gallery, person } from "@/resources";
-import { Column, Heading, Meta, Schema, Text } from "@once-ui-system/core";
+import { isProtectedPath } from "@/resources/protectedRoutes";
+import { Meta, Schema } from "@once-ui-system/core";
 
 export async function generateMetadata() {
   return Meta.generate({
@@ -12,9 +19,21 @@ export async function generateMetadata() {
   });
 }
 
+/** A client with this many pieces or fewer is laid out compact. */
+const SMALL = 3;
+
+// Visual Work, in Workbench: the fullest bench. Every piece of
+// `gallery.images`, sorted by client and format; opening one lifts it into
+// the viewer. The sections are full-bleed and set their own gutters.
 export default function Gallery() {
+  const bench = getGalleryBench({ hideProtected: !isProtectedPath(gallery.path) });
+  // Clients come largest first; the ones with a few pieces share a row on
+  // wide screens instead of each leaving most of the bench empty.
+  const large = bench.clients.filter((c) => piecesIn(c) > SMALL);
+  const small = bench.clients.filter((c) => piecesIn(c) <= SMALL);
+
   return (
-    <Column maxWidth="l" fillWidth gap="xl">
+    <>
       <Schema
         as="webPage"
         baseURL={baseURL}
@@ -28,31 +47,26 @@ export default function Gallery() {
           image: `${baseURL}${person.avatar}`,
         }}
       />
-
-      {/* Sección de Texto Introductorio */}
-      <Column fillWidth gap="m" paddingX="l">
-        <Heading variant="display-strong-s" marginBottom="m">
-          {gallery.title}
-        </Heading>
-
-        <Text variant="body-default-l" onBackground="neutral-weak">
-          Cinematic video production used to require a crew, a budget, and days of shooting. These
-          assets were built by one person, usually in hours.
-        </Text>
-
-        <Text variant="body-default-l" onBackground="neutral-weak">
-          This section collects paid ad creatives, short-form video, and AI-generated content
-          produced for real campaigns. Each piece was built around a specific platform context and
-          commercial objective.
-        </Text>
-
-        <Text variant="body-default-l" onBackground="neutral-weak">
-          <strong>Stack:</strong> Higgsfield · Kling 3.0 · Google Veo 3 · DaVinci Resolve · CapCut ·
-          ElevenLabs · Affinity.
-        </Text>
-      </Column>
-
-      <GalleryView />
-    </Column>
+      <div className={styles.page}>
+        <Head bench={bench} />
+        {large.map((shelf, i) => (
+          <ClientSection key={shelf.id} shelf={shelf} index={i} />
+        ))}
+        {small.length > 1 ? (
+          <div className={styles.pair}>
+            {small.map((shelf, i) => (
+              <ClientSection key={shelf.id} shelf={shelf} index={large.length + i} compact />
+            ))}
+          </div>
+        ) : (
+          small.map((shelf, i) => (
+            <ClientSection key={shelf.id} shelf={shelf} index={large.length + i} />
+          ))
+        )}
+      </div>
+      <Closing title="Want pieces like these for your brand?" />
+      <Viewer pieces={bench.pieces} />
+      <RevealObserver />
+    </>
   );
 }
