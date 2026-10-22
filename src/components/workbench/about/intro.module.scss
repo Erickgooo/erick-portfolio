@@ -36,22 +36,24 @@
 }
 
 // The name on two lines, as large as the text column allows: the longer word
-// measures 3.77 em, so the size follows the column's width per layout
-// (viewport units, no container pass in the first frame), with a few per cent
-// to spare for the fallback face.
+// measures 4.56 em in Montserrat Black (3.77 in the previous face; the
+// factors below were scaled by the ratio when the type changed, 2026-10-22,
+// so the layout is the one it had), so the size follows the column's width
+// per layout (viewport units, no container pass in the first frame), with a
+// few per cent to spare for the fallback face.
 .name {
   @include display(800);
   display: grid;
-  font-size: calc((100vw - 32px) / 4);
+  font-size: calc((100vw - 32px) / 4.85);
   line-height: 0.9;
   letter-spacing: -0.05em;
 
   @include from-tablet {
-    font-size: min(150px, calc((100vw - 64px) / 4));
+    font-size: min(124px, calc((100vw - 64px) / 4.85));
   }
 
   @include from-desk {
-    font-size: min(176px, calc((min(100vw, 1280px) - 160px) * 0.158));
+    font-size: min(145px, calc((min(100vw, 1280px) - 160px) * 0.13));
   }
 }
 

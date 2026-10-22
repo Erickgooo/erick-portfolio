@@ -293,9 +293,12 @@
   --link-line: var(--wb-accent);
   --link-offset: 5px;
 
-  display: inline-flex;
-  align-items: center;
+  // An inline block, so the address can wrap: in Poppins (2026-10-22) it is
+  // wider than a 360 px column.
+  display: inline-block;
+  max-width: 100%;
   min-height: 44px;
+  padding-block: 10px;
   font-weight: 600;
   overflow-wrap: anywhere;
 }
