@@ -1,6 +1,7 @@
-// Workbench: the protected-content screen. A locked drawer: an ink sheet with
-// the password slot cut into it and a cobalt key. A wrong password nudges the
-// sheet sideways. Only transform properties and opacity move.
+// Workbench: the protected-content screen (sober, 2026-10-22). A locked
+// drawer: a hairline sheet on the page with the password field and a cobalt
+// Submit, the only filled object. A wrong password nudges the sheet sideways.
+// Only transform properties and opacity move. Keep this file ASCII-only.
 @use "../shared" as *;
 
 .locked {
@@ -23,13 +24,25 @@
   }
 }
 
-// The drawer opens: the sheet slides down into place once, on load.
+// The drawing of the locked drawer, above the sheet and as wide as it.
+.drawing {
+  width: 100%;
+  max-width: 560px;
+  margin-bottom: 20px;
+
+  @include from-tablet {
+    margin-bottom: 28px;
+  }
+}
+
+// The drawer opens: the sheet slides down into place once, on load, and
+// settles.
 .drawer {
   width: 100%;
   max-width: 560px;
 
   @media (prefers-reduced-motion: no-preference) {
-    animation: drawer 0.9s $ease-pop 0.1s both;
+    animation: drawer 0.9s $ease-settle 0.1s both;
   }
 }
 
@@ -48,20 +61,12 @@
 .sheet {
   position: relative;
   padding: 36px 24px 28px;
-  border-radius: 6px;
-  background: var(--wb-ink-paper);
-  color: #ffffff;
-  box-shadow: var(--wb-shadow);
-  rotate: -1deg;
-
-  @include dark {
-    box-shadow:
-      inset 0 0 0 1px rgba(255, 255, 255, 0.08),
-      var(--wb-shadow);
-  }
+  border: 1px solid var(--wb-rule);
+  border-radius: 4px;
+  color: var(--wb-ink);
 
   @include from-tablet {
-    padding: 52px 48px 40px;
+    padding: 52px 48px 44px;
   }
 
   // A wrong password: the sheet is nudged sideways. The attribute comes and
@@ -96,30 +101,36 @@
   }
 }
 
+// The lock: a hairline square with the icon in cobalt.
 .lock {
   display: grid;
   place-items: center;
   width: 48px;
   height: 48px;
-  margin-bottom: 24px;
-  border-radius: 10px;
-  background: var(--wb-accent);
-  color: #ffffff;
-  font-size: 22px;
+  margin-bottom: 28px;
+  border: 1px solid var(--wb-rule);
+  border-radius: 4px;
+  color: var(--wb-accent);
+  font-size: 20px;
+
+  @include dark {
+    color: #6688ff;
+  }
 }
 
 .title {
-  @include display(750);
-  font-size: clamp(32px, 5vw, 46px);
-  line-height: 1;
-  letter-spacing: -0.035em;
+  @include title;
+  font-size: clamp(30px, 4.4vw, 44px);
+  line-height: 1.08;
+  letter-spacing: -0.025em;
   text-wrap: balance;
 }
 
 .note {
   margin-top: 14px;
   font-size: 17px;
-  color: rgba(255, 255, 255, 0.78);
+  line-height: 1.6;
+  color: var(--wb-ink-2);
 
   @include from-tablet {
     font-size: 18px;
@@ -130,9 +141,12 @@
   display: grid;
   gap: 16px;
   margin-top: 28px;
+  padding-top: 28px;
+  border-top: 1px solid var(--wb-rule);
 
   @include from-tablet {
     margin-top: 36px;
+    padding-top: 32px;
   }
 }
 
@@ -143,27 +157,25 @@
 
 .label {
   font-size: 16px;
-  font-weight: 650;
+  font-weight: 500;
 }
 
-// The slot: square corners, sunk into the sheet.
+// The field: a hairline box with 4 px corners.
 .input {
   display: flex;
   align-items: center;
   height: 56px;
+  border: 1px solid var(--wb-rule);
   border-radius: 4px;
-  background: #131316;
-  box-shadow:
-    inset 0 2px 0 rgba(0, 0, 0, 0.5),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.14);
-
-  @include dark {
-    background: #0d0d10;
-  }
+  background: var(--wb-page);
 
   &:focus-within {
-    outline: 3px solid var(--wb-tape);
+    outline: 3px solid var(--wb-accent);
     outline-offset: 3px;
+  }
+
+  &:has(input[aria-invalid="true"]) {
+    border-color: var(--wb-accent);
   }
 
   input {
@@ -177,7 +189,7 @@
     padding: 0 8px 0 16px;
     border: 0;
     background: transparent;
-    color: #ffffff;
+    color: var(--wb-ink);
     font: inherit;
     font-size: 18px;
     letter-spacing: 0.02em;
@@ -196,22 +208,23 @@
   flex: none;
   width: 44px;
   height: 44px;
-  margin: 0 6px 0 0;
+  margin: 0 5px 0 0;
   padding: 0;
   border: 0;
-  border-radius: 8px;
+  border-radius: 4px;
   background: transparent;
-  color: rgba(255, 255, 255, 0.82);
+  color: var(--wb-ink-2);
   font-size: 20px;
   cursor: pointer;
 
   &:hover,
   &[aria-pressed="true"] {
-    background: rgba(255, 255, 255, 0.1);
+    background: var(--wb-soft-2);
+    color: var(--wb-ink);
   }
 
   &:focus-visible {
-    outline: 3px solid var(--wb-tape);
+    outline: 3px solid var(--wb-accent);
     outline-offset: 0;
   }
 }
@@ -221,20 +234,22 @@
   align-items: center;
   gap: 8px;
   font-size: 16px;
-  font-weight: 600;
-  color: #ffffff;
+  font-weight: 500;
+  color: var(--wb-ink);
 
   &:not(:empty) {
     padding: 4px 0 4px 12px;
-    border-left: 3px solid var(--wb-tape);
+    border-left: 2px solid var(--wb-accent);
   }
 
   svg {
     flex: none;
     font-size: 18px;
+    color: var(--wb-accent);
   }
 }
 
+// Submit: the call to action, a flat cobalt key in the text face.
 .submit {
   appearance: none;
   display: inline-flex;
@@ -242,17 +257,17 @@
   justify-content: center;
   justify-self: start;
   min-width: 160px;
-  min-height: 56px;
+  min-height: 52px;
   margin: 4px 0 0;
   padding: 0 28px;
   border: 0;
-  border-radius: 12px;
+  border-radius: 6px;
   background: var(--wb-accent);
   color: #ffffff;
-  font-family: var(--font-wb-display), system-ui, sans-serif;
-  font-size: 18px;
-  font-weight: 650;
-  letter-spacing: -0.01em;
+  font-family: var(--font-wb-text), system-ui, sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: -0.005em;
   cursor: pointer;
   transition: translate 0.28s $ease-soft;
 
@@ -272,7 +287,7 @@
   }
 
   &:focus-visible {
-    outline: 3px solid var(--wb-tape);
+    outline: 3px solid var(--wb-accent);
     outline-offset: 3px;
   }
 }
@@ -294,8 +309,9 @@
 .mail {
   --link-ink: var(--wb-ink);
   --link-deco: underline;
+  --link-thick: 1px;
   --link-line: var(--wb-accent);
-  --link-offset: 5px;
+  --link-offset: 6px;
 
   // An inline block, so the address can wrap: in Poppins (2026-10-22) it is
   // wider than a 360 px column.
@@ -303,7 +319,7 @@
   max-width: 100%;
   min-height: 44px;
   padding-block: 10px;
-  font-weight: 600;
+  font-weight: 500;
   overflow-wrap: anywhere;
 }
 

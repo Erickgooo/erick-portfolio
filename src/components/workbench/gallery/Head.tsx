@@ -1,6 +1,6 @@
-// Workbench, Visual Work: the head of the page. The words of the previous
-// page beside an index card that counts what is on the bench and jumps to
-// each client's section.
+// Workbench, Visual Work: the head of the page (sober, 2026-10-22). The words
+// of the previous page beside an index in a hairline frame that counts what
+// is on the bench and jumps to each client's section.
 import type { CSSProperties } from "react";
 import { FiArrowDown } from "react-icons/fi";
 import { type GalleryBench, countOf, piecesIn } from "./data";
@@ -44,7 +44,6 @@ export function Head({ bench }: { bench: GalleryBench }) {
         </p>
       </div>
       <div className={styles.card}>
-        <span className={styles.cardTape} aria-hidden="true" />
         <h2 className={styles.cardTitle}>On the bench</h2>
         <dl className={styles.figures}>
           {figures.map((f) => (
