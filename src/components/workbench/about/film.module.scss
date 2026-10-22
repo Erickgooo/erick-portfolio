@@ -29,8 +29,8 @@
 // The closed print's place: scale, tilt and how far above the centre it sits
 // (a share of the frame's height).
 .stage {
-  --s0: 0.84;
-  --r0: -2.5deg;
+  --s0: 0.74;
+  --r0: -3deg;
   --y0: 0%;
 
   position: relative;
@@ -187,8 +187,9 @@
 }
 
 .toggle {
+  // Top corner on phones: the bottom-right corner of the screen is the chatbot's.
+  top: 12px;
   right: 12px;
-  bottom: 12px;
   width: 44px;
   height: 44px;
   border-radius: 10px;
@@ -198,6 +199,7 @@
   box-shadow: var(--wb-shadow);
 
   @include from-tablet {
+    top: auto;
     right: 20px;
     bottom: 20px;
     width: 52px;

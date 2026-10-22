@@ -61,15 +61,22 @@
   }
 }
 
-// Dealt onto the bench: each stub rises in turn.
+// Dealt onto the bench: each stub rises in turn. From desktops every other
+// stub sits a little further in, so the stack reads as dealt by hand.
 .item {
   @include reveal(40px);
+
+  @include from-desk {
+    &:nth-child(even) {
+      margin-left: 48px;
+    }
+  }
 }
 
 // The stub. Its width of the date column is the perforation's place, which
 // the notches read too.
 .stub {
-  --cut: 104px;
+  --cut: 108px;
 
   position: relative;
   border-radius: 6px;
@@ -141,7 +148,7 @@
   align-content: center;
   align-self: stretch;
   gap: 2px;
-  padding: 18px 12px 18px 16px;
+  padding: 16px 8px 16px 14px;
   border-right: 2px dashed color-mix(in srgb, currentColor 38%, transparent);
 
   @include from-tablet {

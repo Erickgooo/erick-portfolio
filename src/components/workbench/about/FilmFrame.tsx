@@ -29,9 +29,16 @@ function canAutoplay(): boolean {
   return !connection?.saveData;
 }
 
-/** Share of the stage that must be on screen to open the frame, and to keep it playing. */
-const OPEN_AT = 0.5;
+/** Share of the stage that must be on screen to keep the loop playing. */
 const PLAY_AT = 0.25;
+/**
+ * The frame opens once half of the stage is inside the trigger zone: the whole
+ * screen from tablets up; on phones, where the frame is short and full width,
+ * only the top 70 % of it, so the print is seen on the bench before it opens.
+ */
+const OPEN_AT = 0.5;
+const PHONE = "(max-width: 719px)";
+const PHONE_ZONE = "0px 0px -30% 0px";
 
 export function FilmFrame({
   src,
@@ -78,21 +85,42 @@ export function FilmFrame({
     setNeedsKey(!auto);
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) stage.dataset.open = "";
 
-    const io = new IntersectionObserver(
+    // Plays while open and on screen, pauses when it leaves.
+    let visible = 0;
+    const sync = () => {
+      if ("open" in stage.dataset && visible >= PLAY_AT - 0.01) {
+        if (wanted.current && video.paused) play(video).catch(() => setNeedsKey(true));
+      } else if (!video.paused) {
+        video.pause();
+      }
+    };
+
+    const watch = new IntersectionObserver(
       ([entry]) => {
-        const ratio = entry.isIntersecting ? entry.intersectionRatio : 0;
-        if (ratio > 0) stage.dataset.in = "";
-        if (ratio >= OPEN_AT - 0.01) stage.dataset.open = "";
-        if ("open" in stage.dataset && ratio >= PLAY_AT - 0.01) {
-          if (wanted.current && video.paused) play(video).catch(() => setNeedsKey(true));
-        } else if (!video.paused) {
-          video.pause();
-        }
+        visible = entry.isIntersecting ? entry.intersectionRatio : 0;
+        if (visible > 0) stage.dataset.in = "";
+        sync();
       },
-      { threshold: [0, PLAY_AT, OPEN_AT] },
+      { threshold: [0, PLAY_AT] },
     );
-    io.observe(stage);
-    return () => io.disconnect();
+    const opener = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting || entry.intersectionRatio < OPEN_AT - 0.01) return;
+        stage.dataset.open = "";
+        opener.disconnect();
+        sync();
+      },
+      {
+        threshold: OPEN_AT,
+        rootMargin: window.matchMedia(PHONE).matches ? PHONE_ZONE : "0px",
+      },
+    );
+    watch.observe(stage);
+    opener.observe(stage);
+    return () => {
+      watch.disconnect();
+      opener.disconnect();
+    };
   }, [play]);
 
   const start = () => {
