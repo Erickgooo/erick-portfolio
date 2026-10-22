@@ -4,16 +4,6 @@
 @use "../../shared" as *;
 @use "../scene" as *;
 
-// The entrance of the scene root itself: before() matches descendants of a
-// scene only, so the root reads its own step attribute.
-@mixin root-before($n) {
-  @media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
-    &:not([data-s#{$n}]) {
-      @content;
-    }
-  }
-}
-
 .sheet {
   width: 100%;
   max-width: 460px;
@@ -26,7 +16,7 @@
     opacity 0.8s $ease-soft,
     translate 1s $ease-soft;
 
-  @include root-before(0) {
+  @include root-enter {
     opacity: 0;
     translate: 0 24px;
   }

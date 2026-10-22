@@ -23,6 +23,17 @@
   }
 }
 
+// The entrance of the scene root itself. before() matches descendants only;
+// the root keys off [data-started], which the driver sets once and keeps, so
+// a loop's replay does not play the entrance again.
+@mixin root-enter {
+  @media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
+    &:not([data-started]) {
+      @content;
+    }
+  }
+}
+
 // From step $n on (for a state that changes again later, such as a card that
 // arrives at step 2 and leaves at step 5: `before(2) { ... }` + `from(5) { ... }`).
 @mixin from($n) {
