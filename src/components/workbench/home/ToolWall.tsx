@@ -47,7 +47,7 @@ export function ToolWall() {
                 {TOOL_GROUPS.map((group, g) => (
                   <li
                     key={group.id}
-                    className={`${styles.group} ${styles[group.paper]}`}
+                    className={styles.group}
                     data-g={g}
                   >
                     <h3 className={styles.groupTitle}>
@@ -78,7 +78,7 @@ export function ToolWall() {
                 return (
                   <span
                     key={tool.name}
-                    className={`${styles.cell} ${styles[group.paper]}`}
+                    className={styles.cell}
                     data-g={g}
                     style={{ "--k": k } as CSSProperties}
                   >

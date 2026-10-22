@@ -120,8 +120,8 @@ body {
    Once UI's, so every redesigned page reuses them. Solid fills only.
    - Paper colours are the same sheets in both themes. Cobalto Eléctrico is
      the accent (call-to-action key, link underlines, focus rings, active
-     states), at its exact brand hex in both themes; sun, tomato, mint, paper
-     and charcoal are paper colours only.
+     states), at its exact brand hex in both themes. Papers keep to the
+     brand palette: cobalt, mist (a pale cobalt), white paper and ink.
    - The band (the tool wall) is always the opposite of the page.
    - The page colour also becomes Once UI's --page-background, so the body
      (with its dots), the header pill and the header fades share it.
@@ -181,11 +181,11 @@ body {
   --font-wb-text: "Onest", "Onest Fallback";
 
   --wb-accent: #2d5bff;
-  --wb-sun: #ffc531;
-  --wb-tomato: #ff5b3a;
   --wb-cobalt: #2d5bff;
-  --wb-mint: #2fd3a0;
+  --wb-mist: #e7edff;
   --wb-paper: #ffffff;
+  --wb-ink-paper: #1d1d22;
+  --wb-tape: #a6baff;
   --wb-charcoal: #131316;
 
   --wb-page: #ffffff;
@@ -205,6 +205,7 @@ body {
 }
 
 :root[data-theme="dark"] {
+  --wb-ink-paper: #2a2a31;
   --wb-page: #131316;
   --wb-ink: #f5f5f7;
   --wb-ink-2: #a6a6b0;

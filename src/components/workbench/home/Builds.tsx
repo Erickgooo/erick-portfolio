@@ -9,7 +9,7 @@ const BUILDS: {
   text: string;
   where: string;
   icon: IconType;
-  paper: "cobalt" | "tomato" | "sun" | "mint";
+  paper: "cobalt" | "ink" | "mist" | "paper";
   r: number;
 }[] = [
   {
@@ -25,7 +25,7 @@ const BUILDS: {
     text: "AI video pipelines and automated SEO publishing that keep shipping without a production crew.",
     where: "Quick Metal Shop, Dakoma Roofing",
     icon: TbMovie,
-    paper: "tomato",
+    paper: "ink",
     r: 1.6,
   },
   {
@@ -33,7 +33,7 @@ const BUILDS: {
     text: "Meta Ads for B2B and B2C, from the creative concept to the audience and the budget.",
     where: "Quick Metal Shop, Dakoma Roofing",
     icon: TbTargetArrow,
-    paper: "sun",
+    paper: "mist",
     r: -1.2,
   },
   {
@@ -41,7 +41,7 @@ const BUILDS: {
     text: "Brand manuals that become the company standard, and apps built when nothing exists yet.",
     where: "Quick Metal Shop, ArquiExpo 2026",
     icon: TbTools,
-    paper: "mint",
+    paper: "paper",
     r: 2.4,
   },
 ];

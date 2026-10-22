@@ -156,17 +156,30 @@
   color: #ffffff;
 }
 
-.tomato {
-  background: var(--wb-tomato);
+.mist {
+  background: var(--wb-mist);
   color: var(--wb-charcoal);
 }
 
-.sun {
-  background: var(--wb-sun);
-  color: var(--wb-charcoal);
+.ink {
+  background: var(--wb-ink-paper);
+  color: #ffffff;
+
+  @include dark {
+    box-shadow:
+      inset 0 0 0 1px rgba(255, 255, 255, 0.08),
+      var(--wb-shadow);
+  }
 }
 
-.mint {
-  background: var(--wb-mint);
+.paper {
+  background: var(--wb-paper);
   color: var(--wb-charcoal);
+  box-shadow:
+    inset 0 0 0 1px var(--wb-line),
+    var(--wb-shadow);
+
+  .icon {
+    background: var(--wb-mist);
+  }
 }

@@ -236,8 +236,8 @@
   );
 }
 
-.tapeSun {
-  background: var(--wb-sun);
+.tapeCobalt {
+  background: var(--wb-tape);
 }
 
 .clip {
@@ -350,24 +350,33 @@
   }
 }
 
-.sun {
-  background: var(--wb-sun);
-  color: var(--wb-charcoal);
-}
-
-.tomato {
-  background: var(--wb-tomato);
-  color: var(--wb-charcoal);
-}
-
 .cobalt {
   background: var(--wb-cobalt);
   color: #ffffff;
 }
 
-.mint {
-  background: var(--wb-mint);
+.mist {
+  background: var(--wb-mist);
   color: var(--wb-charcoal);
+}
+
+.ink {
+  background: var(--wb-ink-paper);
+  color: #ffffff;
+
+  @include dark {
+    box-shadow:
+      inset 0 0 0 1px rgba(255, 255, 255, 0.08),
+      var(--wb-shadow);
+  }
+}
+
+.paper {
+  background: var(--wb-paper);
+  color: var(--wb-charcoal);
+  box-shadow:
+    inset 0 0 0 1px var(--wb-line),
+    var(--wb-shadow);
 }
 
 @keyframes rise {

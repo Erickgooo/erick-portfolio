@@ -3,7 +3,7 @@
 import { isProtectedPath } from "@/resources/protectedRoutes";
 import { getPosts } from "@/utils/utils";
 
-export type Paper = "sun" | "tomato" | "cobalt" | "mint" | "paper" | "charcoal";
+export type Paper = "cobalt" | "ink" | "mist" | "paper";
 
 /** Pixel sizes of the cover images, read from the files' headers. */
 const COVER_SIZE: Record<string, { w: number; h: number }> = {
@@ -18,12 +18,12 @@ const DEFAULT_COVER = { w: 2400, h: 1357 };
 
 /** The order of the fan on the home (the six cases with a metric), and the paper each card is printed on. */
 const FAN: { slug: string; paper: Paper }[] = [
-  { slug: "quick-metal-shop-viral-videos", paper: "tomato" },
-  { slug: "ai-powered-ad-creatives", paper: "sun" },
+  { slug: "quick-metal-shop-viral-videos", paper: "ink" },
+  { slug: "ai-powered-ad-creatives", paper: "mist" },
   { slug: "leadbot-ai", paper: "cobalt" },
-  { slug: "atv-riders", paper: "mint" },
-  { slug: "quick-metal-shop-arquiexpo", paper: "paper" },
-  { slug: "ai-portfolio", paper: "charcoal" },
+  { slug: "atv-riders", paper: "paper" },
+  { slug: "quick-metal-shop-arquiexpo", paper: "mist" },
+  { slug: "ai-portfolio", paper: "ink" },
 ];
 
 export type FanCard = {
@@ -109,7 +109,6 @@ export type ToolGroup = {
   id: string;
   title: string;
   line: string;
-  paper: "sun" | "tomato" | "cobalt" | "mint";
   tools: Tool[];
 };
 
@@ -119,7 +118,6 @@ export const TOOL_GROUPS: ToolGroup[] = [
     id: "conversations",
     title: "Conversations and CRM",
     line: "Every lead lands, gets sorted and reaches the right stage on its own.",
-    paper: "mint",
     tools: [
       { name: "WhatsApp Business API", icon: "whatsapp" },
       { name: "Bitrix24", mono: "24" },
@@ -133,7 +131,6 @@ export const TOOL_GROUPS: ToolGroup[] = [
     id: "models",
     title: "AI models",
     line: "Picked per job: precision for sales, range for content.",
-    paper: "cobalt",
     tools: [
       { name: "GPT-4o mini", icon: "openai" },
       { name: "Gemini", icon: "gemini" },
@@ -147,7 +144,6 @@ export const TOOL_GROUPS: ToolGroup[] = [
     id: "media",
     title: "Paid media and analytics",
     line: "Campaigns built from creative to audience, measured end to end.",
-    paper: "tomato",
     tools: [
       { name: "Meta Ads", icon: "meta" },
       { name: "Instagram", icon: "instagram" },
@@ -161,7 +157,6 @@ export const TOOL_GROUPS: ToolGroup[] = [
     id: "studio",
     title: "Studio and software",
     line: "Video, voice and the app itself when nothing exists yet.",
-    paper: "sun",
     tools: [
       { name: "Higgsfield", mono: "Hf" },
       { name: "Kling 3.0", mono: "Kl" },

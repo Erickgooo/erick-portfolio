@@ -75,7 +75,7 @@ function Tag({
 }: {
   value: string;
   caption: string;
-  paper: "sun" | "tomato" | "cobalt" | "mint";
+  paper: "cobalt" | "ink" | "mist" | "paper";
 }) {
   return (
     <div className={`${styles.tagPaper} ${styles[paper]}`}>
@@ -236,7 +236,7 @@ export function Bench() {
           kind="print"
           place={{ x: 63, y: 3, w: 32, r: 7, mx: 62, my: 0, mw: 35, mr: 7, depth: 1.1, bob: 4.4 }}
         >
-          <span className={`${styles.tape} ${styles.tapeSun}`} aria-hidden="true" />
+          <span className={`${styles.tape} ${styles.tapeCobalt}`} aria-hidden="true" />
           <PrintImage piece={MEDIA.coqui} sizes="(min-width: 720px) 232px, 36vw" ready={ready} />
         </Slot>
         {/* 2: a campaign creative */}
@@ -276,7 +276,7 @@ export function Bench() {
           kind="tag"
           place={{ x: 29, y: 2, w: 30, r: -5, mx: 0, my: 0, mw: 100, mr: 2, depth: 1.5, bob: 5.2 }}
         >
-          <Tag value="338K+" caption="organic views at $0 ad spend" paper="sun" />
+          <Tag value="338K+" caption="organic views at $0 ad spend" paper="mist" />
         </Slot>
         <Slot
           index={6}
@@ -294,7 +294,7 @@ export function Bench() {
             bob: 4.3,
           }}
         >
-          <Tag value="3.92x" caption="ROAS on AI ad creatives" paper="tomato" />
+          <Tag value="3.92x" caption="ROAS on AI ad creatives" paper="ink" />
         </Slot>
         <Slot
           index={7}
@@ -312,7 +312,7 @@ export function Bench() {
             bob: 4.9,
           }}
         >
-          <Tag value="$3.45" caption="cost per lead in technical B2B" paper="mint" />
+          <Tag value="$3.45" caption="cost per lead in technical B2B" paper="paper" />
         </Slot>
       </div>
     </div>

@@ -59,23 +59,11 @@
   color: var(--wb-band-ink-2);
 }
 
-.sun {
-  --paper: var(--wb-sun);
-  --paper-ink: var(--wb-charcoal);
-}
-
-.tomato {
-  --paper: var(--wb-tomato);
-  --paper-ink: var(--wb-charcoal);
-}
-
-.cobalt {
-  --paper: var(--wb-cobalt);
-  --paper-ink: #ffffff;
-}
-
-.mint {
-  --paper: var(--wb-mint);
+// A lit tile is white paper, so each logo shows in its own colours; cobalt
+// marks the active group.
+.group,
+.cell {
+  --paper: var(--wb-paper);
   --paper-ink: var(--wb-charcoal);
 }
 
@@ -98,7 +86,7 @@
     padding: 14px 0 14px;
     border-top: 1px solid color-mix(in srgb, var(--wb-band-ink) 16%, transparent);
 
-    // The progress underline, in the group's own colour.
+    // The progress underline.
     &::after {
       content: "";
       position: absolute;
@@ -106,7 +94,7 @@
       top: -2px;
       width: 100%;
       height: 3px;
-      background: var(--paper);
+      background: var(--wb-accent);
       transform-origin: left center;
       scale: 0 1;
       transition: scale 0.6s var(--wb-ease-soft);
@@ -135,7 +123,7 @@
   width: 14px;
   height: 14px;
   border-radius: 3px;
-  background: var(--paper);
+  background: var(--wb-accent);
   rotate: -8deg;
   transition: rotate 0.5s var(--wb-ease-pop);
 }
@@ -187,6 +175,7 @@
   border-radius: 12px;
   background: var(--paper);
   color: var(--paper-ink);
+  box-shadow: inset 0 0 0 1px rgba(19, 19, 22, 0.08);
   text-align: center;
 
   @media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
@@ -282,13 +271,14 @@
 .hot {
   background: var(--paper);
   color: var(--paper-ink);
+  box-shadow: inset 0 0 0 2px var(--wb-accent);
   opacity: 0;
   transition: opacity 0.5s var(--wb-ease-soft);
   transition-delay: calc(var(--k) * 90ms);
 }
 
-// The stepper: groups before the active one stay lit, the active one glows in
-// its colour, the rest wait in the dark.
+// The stepper: groups before the active one stay lit, the active one lights
+// up, the rest wait in the dark.
 @for $a from 0 through 3 {
   .wall[data-active="#{$a}"] {
     @for $g from 0 through 3 {

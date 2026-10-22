@@ -216,24 +216,14 @@
   font-weight: 650;
 }
 
-.sun {
+.mist {
   --link-ink: var(--wb-charcoal);
-  background: var(--wb-sun);
-}
-
-.tomato {
-  --link-ink: var(--wb-charcoal);
-  background: var(--wb-tomato);
+  background: var(--wb-mist);
 }
 
 .cobalt {
   --link-ink: #ffffff;
   background: var(--wb-cobalt);
-}
-
-.mint {
-  --link-ink: var(--wb-charcoal);
-  background: var(--wb-mint);
 }
 
 .paper {
@@ -252,12 +242,11 @@
   }
 }
 
-.charcoal {
+.ink {
   --link-ink: #ffffff;
-  background: #1d1d22;
+  background: var(--wb-ink-paper);
 
   @include dark {
-    background: #2a2a31;
     box-shadow:
       inset 0 0 0 1px rgba(255, 255, 255, 0.08),
       var(--wb-shadow);
