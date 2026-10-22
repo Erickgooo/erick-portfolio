@@ -1,7 +1,9 @@
 "use client";
 
-import { Button, Column, Heading, PasswordInput, Text } from "@once-ui-system/core";
+import { PasswordField } from "@/components/workbench/system/PasswordField";
+import styles from "@/components/workbench/system/locked.module.scss";
 import { useState } from "react";
+import { FiLock } from "react-icons/fi";
 
 /**
  * Password form for routes gated by middleware.ts. On success the page is
@@ -43,12 +45,14 @@ const PasswordPrompt: React.FC = () => {
   };
 
   return (
-    <Column paddingY="128" maxWidth={24} gap="24" center>
-      <Heading align="center" wrap="balance">
-        This page is password protected
-      </Heading>
-      <Column fillWidth gap="8" horizontal="center">
-        <PasswordInput
+    <div className={styles.sheet} data-error={error ? "" : undefined}>
+      <span className={styles.lock} aria-hidden="true">
+        <FiLock />
+      </span>
+      <h1 className={styles.title}>This page is password protected</h1>
+      <p className={styles.note}>Enter the password you were given to open it.</p>
+      <div className={styles.slot}>
+        <PasswordField
           id="password"
           label="Password"
           value={password}
@@ -58,11 +62,16 @@ const PasswordPrompt: React.FC = () => {
           }}
           errorMessage={error}
         />
-        <Button onClick={handleSubmit} disabled={submitting}>
+        <button
+          type="button"
+          className={styles.submit}
+          onClick={handleSubmit}
+          disabled={submitting}
+        >
           {submitting ? "Checking..." : "Submit"}
-        </Button>
-      </Column>
-    </Column>
+        </button>
+      </div>
+    </div>
   );
 };
 
