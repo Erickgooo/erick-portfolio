@@ -20,11 +20,12 @@
     }
 }
 
-// Workbench typography and colours (redesign 2026). Shape, layout and
-// navigation are unchanged: only type, colours and the active state move.
-// Colour tokens: src/resources/custom.css. Keep this file ASCII-only.
+// Workbench typography and colours (redesign 2026; sober, 2026-10-22).
+// Shape, layout and navigation are unchanged: only type, colours and the
+// active state move. The same in both sober variants. Colour tokens:
+// src/resources/custom.css. Keep this file ASCII-only.
 
-// Location and local time: Onest, secondary ink, figures that do not jiggle.
+// Location and local time: Poppins, secondary ink, figures that do not jiggle.
 .bar .meta {
     font-family: var(--font-wb-text), system-ui, sans-serif;
     font-size: 15px;
@@ -34,10 +35,11 @@
     font-variant-numeric: tabular-nums;
 }
 
-// The pill: Workbench page, hairline and paper shadow.
+// The pill: Workbench page, a hairline and a soft shadow (the only shadow
+// the sober pages keep: the pill floats over the page).
 .bar .pill {
     border-color: var(--wb-line);
-    box-shadow: var(--wb-shadow);
+    box-shadow: var(--wb-shadow-soft);
 }
 
 .pill :global(.button) {
@@ -48,7 +50,7 @@
 
     @media (hover: hover) and (pointer: fine) {
         &:hover:not([data-disabled]) {
-            background: var(--wb-surface);
+            background: var(--wb-soft-2);
             border-color: transparent;
         }
     }
@@ -74,9 +76,9 @@
     letter-spacing: -0.005em;
 }
 
-// The current page: a paper surface and a cobalt bar under the label or icon.
+// The current page: a soft surface and a thin cobalt bar under the label or icon.
 .pill a[aria-current="page"] {
-    background: var(--wb-surface);
+    background: var(--wb-soft);
     border-color: transparent;
 
     &::after {
@@ -84,9 +86,9 @@
         position: absolute;
         left: 8px;
         right: 8px;
-        bottom: 2px;
-        height: 3px;
-        border-radius: 2px;
+        bottom: 3px;
+        height: 2px;
+        border-radius: 1px;
         background: var(--wb-accent);
         transform-origin: left center;
         animation: currentBar 0.45s cubic-bezier(0.2, 0.7, 0.2, 1) both;
