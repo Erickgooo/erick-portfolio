@@ -1,4 +1,4 @@
-// Workbench About: the technical skills, as one spec sheet clipped to the bench.
+// Workbench About: the technical skills, on one sheet behind a hairline.
 import { about } from "@/resources/content";
 import { inWords } from "../data";
 import styles from "./skills.module.scss";
@@ -14,7 +14,6 @@ export function Skills() {
           <p>The stack behind the systems, in {inWords(skills.length)} groups.</p>
         </div>
         <div className={styles.sheet} data-reveal="">
-          <span className={styles.clip} aria-hidden="true" />
           <dl>
             {skills.map((skill) => (
               <div key={skill.title} className={styles.row}>

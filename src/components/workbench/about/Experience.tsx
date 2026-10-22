@@ -1,18 +1,13 @@
-// Workbench About: the work experience as ticket stubs dealt onto the bench.
-// Each stub shows the dates, the company and the role; it opens (a native
-// <details>, so it needs no script and works from the keyboard) to what was
-// done there. The current role starts open, so the first stub shows the way.
+// Workbench About: the work experience as rows between hairlines. Each row
+// shows the dates, the company and the role; it opens (a native <details>, so
+// it needs no script and works from the keyboard) to what was done there. The
+// current role starts open, so the first row shows the way.
 import { about } from "@/resources/content";
 import type { CSSProperties } from "react";
-import { FiDownload, FiPlus } from "react-icons/fi";
+import { FiDownload } from "react-icons/fi";
 import { inWords } from "../data";
 import ui from "../ui.module.scss";
 import styles from "./experience.module.scss";
-
-type Paper = "cobalt" | "ink" | "mist" | "paper";
-
-const PAPERS: Paper[] = ["cobalt", "paper", "mist", "ink", "paper", "mist", "ink"];
-const TILTS = [-0.8, 0.6, -0.5, 0.9, -0.7, 0.5, -0.6];
 
 /** "July 2026 - Present" becomes ["July 2026", "Present"]; "May 2026" stays alone. */
 function splitTime(timeframe: string): [string, string | undefined] {
@@ -42,18 +37,17 @@ export function Experience() {
             </a>
           </div>
         </div>
-        <ol className={styles.stubs}>
+        <ol className={styles.rows}>
           {jobs.map((job, i) => {
             const [from, to] = splitTime(job.timeframe);
-            const paper = PAPERS[i % PAPERS.length];
             return (
               <li
                 key={`${job.company}-${job.role}`}
                 className={styles.item}
                 data-reveal=""
-                style={{ "--i": i, "--r": `${TILTS[i % TILTS.length]}deg` } as CSSProperties}
+                style={{ "--i": i } as CSSProperties}
               >
-                <details className={`${styles.stub} ${styles[paper]}`} open={i === 0}>
+                <details className={styles.row} open={i === 0}>
                   <summary>
                     <span className={styles.when}>
                       <span className={styles.from}>{from}</span>
@@ -63,9 +57,7 @@ export function Experience() {
                       <h3>{job.company}</h3>
                       <span className={styles.role}>{job.role}</span>
                     </span>
-                    <span className={styles.toggle} aria-hidden="true">
-                      <FiPlus />
-                    </span>
+                    <span className={styles.toggle} aria-hidden="true" />
                   </summary>
                   <div className={styles.body}>
                     {job.description && <p className={styles.desc}>{job.description}</p>}

@@ -14,35 +14,22 @@ const FILM = {
   h: 720,
 };
 
-const TAGS: {
-  value: string;
-  caption: string;
-  paper: "cobalt" | "ink" | "mist" | "paper";
-  r: number;
-}[] = [
+const TAGS: { value: string; caption: string }[] = [
   {
     value: "338K+",
     caption: "organic video views at $0 ad spend, Quick Metal Shop",
-    paper: "cobalt",
-    r: -2.4,
   },
   {
     value: "85%",
     caption: "of conversations handled by the bot, Artesa Panadería",
-    paper: "mist",
-    r: 1.8,
   },
   {
     value: "48 h",
     caption: "to design, build and deploy the ArquiExpo 2026 gallery app",
-    paper: "ink",
-    r: -1.4,
   },
   {
     value: "2023",
     caption: "Top Performer on the Concentrix support team",
-    paper: "paper",
-    r: 2.2,
   },
 ];
 
@@ -95,13 +82,10 @@ export function Film() {
               key={tag.value}
               className={styles.tag}
               data-reveal=""
-              style={{ "--i": i, "--r": `${tag.r}deg` } as CSSProperties}
+              style={{ "--i": i } as CSSProperties}
             >
-              <div className={`${styles.tagPaper} ${styles[tag.paper]}`}>
-                <span className={styles.hole} aria-hidden="true" />
-                <strong className={styles.value}>{tag.value}</strong>
-                <span className={styles.caption}>{tag.caption}</span>
-              </div>
+              <strong className={styles.value}>{tag.value}</strong>
+              <span className={styles.caption}>{tag.caption}</span>
             </li>
           ))}
         </ul>

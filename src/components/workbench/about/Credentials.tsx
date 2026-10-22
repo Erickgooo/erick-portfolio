@@ -1,4 +1,4 @@
-// Workbench About: studies and certifications as index cards. The two degrees
+// Workbench About: studies and certifications as hairline cards. The two degrees
 // are the large cards; the certifications are grouped by issuer, one card
 // each, and every name links to its credential.
 import { about } from "@/resources/content";
@@ -21,10 +21,6 @@ function byIssuer(items: Cert[]) {
     .sort((a, b) => b.certs.length - a.certs.length || a.order - b.order);
 }
 
-const STUDY_PAPERS = ["cobalt", "ink"] as const;
-const CARD_PAPERS = ["paper", "mist"] as const;
-const TILTS = [-1.2, 0.9, -0.6, 1.1, -0.9, 0.7, -1];
-
 export function Credentials() {
   const studies = about.studies.institutions;
   const certs = about.certifications.items;
@@ -45,11 +41,10 @@ export function Credentials() {
             {studies.map((study, i) => (
               <li
                 key={study.name}
-                className={`${styles.study} ${styles[STUDY_PAPERS[i % STUDY_PAPERS.length]]}`}
+                className={styles.study}
                 data-reveal=""
-                style={{ "--i": i, "--r": `${i % 2 ? 1.2 : -1.6}deg` } as CSSProperties}
+                style={{ "--i": i } as CSSProperties}
               >
-                <span className={styles.clip} aria-hidden="true" />
                 <h3>{study.name}</h3>
                 <p>{study.description}</p>
               </li>
@@ -59,9 +54,9 @@ export function Credentials() {
             {issuers.map((group, i) => (
               <li
                 key={group.issuer}
-                className={`${styles.card} ${styles[CARD_PAPERS[i % CARD_PAPERS.length]]}`}
+                className={styles.card}
                 data-reveal=""
-                style={{ "--i": i % 3, "--r": `${TILTS[i % TILTS.length]}deg` } as CSSProperties}
+                style={{ "--i": i % 3 } as CSSProperties}
               >
                 <h3>{group.issuer}</h3>
                 <ul>

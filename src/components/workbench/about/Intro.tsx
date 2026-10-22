@@ -1,5 +1,5 @@
 // Workbench About: the first screen. The name, the role and the offer are
-// readable from the first frame; the photo is pinned to the bench beside them.
+// readable from the first frame; the photo stands beside them.
 // Book a call and the resume stay on this screen.
 import { about, person, social } from "@/resources/content";
 import Image from "next/image";
@@ -60,7 +60,6 @@ export function Intro() {
         </div>
         <div className={styles.photoCol}>
           <figure className={styles.photo}>
-            <span className={styles.tape} aria-hidden="true" />
             <Image
               src={MEDIA.avatar.src}
               width={MEDIA.avatar.w}
