@@ -826,6 +826,49 @@
   }
 }
 
+// ------------------------------------------- how the pieces are made
+
+// The stepper's own layout is in scenes/stepper.module.scss. Nothing here
+// clips or scrolls, so the stepper can pin.
+.making {
+  position: relative;
+  z-index: 1;
+}
+
+.makingInner {
+  @include wrap;
+  padding-top: 96px;
+  padding-bottom: 32px;
+
+  @include from-desk {
+    padding-top: 136px;
+    padding-bottom: 0;
+  }
+}
+
+.makingHead {
+  @include reveal;
+  display: grid;
+  gap: 14px;
+  margin-bottom: 48px;
+
+  @include from-desk {
+    margin-bottom: 8px;
+  }
+
+  h2 {
+    @include s-h2;
+  }
+
+  // An existing phrase (ai-powered-ad-creatives.mdx) in the accent face.
+  p {
+    @include accent;
+    max-width: 26ch;
+    font-size: clamp(26px, 2.6vw, 34px);
+    color: var(--wb-ink);
+  }
+}
+
 @include reduced {
   .phone,
   .deckTop,
