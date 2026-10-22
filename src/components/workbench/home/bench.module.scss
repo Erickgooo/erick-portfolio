@@ -110,14 +110,14 @@
 // exists once the hold is released: eight infinite animations present at the
 // first frame (even paused) held back its presentation, measured at about
 // 150 ms on a desktop CPU, which pushed the first paint behind hydration.
-.bob {
-  .bench:not([data-hold]) & {
+@media (prefers-reduced-motion: no-preference) {
+  .bench:not([data-hold]) .bob {
     animation: bob var(--bob) ease-in-out infinite;
     animation-delay: calc(var(--d) * -0.63s);
     animation-play-state: paused;
   }
 
-  .bench[data-live]:not([data-hold]) & {
+  .bench[data-live]:not([data-hold]) .bob {
     animation-play-state: running;
   }
 }
