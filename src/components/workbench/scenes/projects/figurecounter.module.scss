@@ -65,6 +65,14 @@
 .captions {
   display: grid;
   margin-top: 12px;
+  // On phones the longest caption takes one or two lines depending on whether
+  // Poppins or its fallback is showing; two lines are kept, so the font swap
+  // does not move the grid below.
+  min-height: 42px;
+
+  @include from-tablet {
+    min-height: 0;
+  }
 }
 
 .caption {
