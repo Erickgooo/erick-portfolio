@@ -34,10 +34,17 @@ test("with reduced motion the page scenes show their final text", async ({ page 
 
   await page.goto("/work");
   await expect(page.locator(INTRO)).toHaveCount(0, { timeout: 9000 });
-  // The counter's first figure is the LeadBot case's own.
-  await expect(page.locator('main [class*="figurecounter_counter"] [data-typed-text]')).toHaveText(
-    "85%",
-  );
+  // The counter's first figure is the LeadBot case's own, shown with what it
+  // measures and the case's name; the link points at that case.
+  const counter = page.locator('main [class*="figurecounter_counter"]');
+  await expect(counter.locator("[data-typed-text]")).toHaveText("85%");
+  const caption = counter.locator("[data-phrase][data-shown]");
+  await expect(caption).toHaveCount(1);
+  await expect(caption).toContainText("conversations automated");
+  await expect(caption).toContainText("LeadBot AI");
+  await expect(caption).toHaveCSS("opacity", "1");
+  await expect(counter.locator("a")).toHaveAttribute("href", "/work/leadbot-ai");
+  await expect(counter.locator("a")).toHaveAttribute("tabindex", "-1");
 
   await page.goto("/blog");
   await expect(page.locator(INTRO)).toHaveCount(0, { timeout: 9000 });

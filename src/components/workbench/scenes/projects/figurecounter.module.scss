@@ -1,6 +1,7 @@
 // Scene: FigureCounter (see FigureCounter.tsx). A hairline box with the figure
-// in Montserrat Black above a thin cobalt rule. Its size is fixed by the
-// widest figure (the Typed sizer), so typing never moves the head.
+// in Montserrat Black above a thin cobalt rule, and under it what the figure
+// measures with the case's name. Its size is fixed by the widest figure (the
+// Typed sizer) and the longest caption, so cycling never moves the head.
 // Keep this file ASCII-only.
 @use "../../shared" as *;
 @use "../scene" as *;
@@ -10,6 +11,7 @@
 .counter {
   width: fit-content;
   min-width: 220px;
+  max-width: 100%;
   padding: 18px 22px 20px;
   border: 1px solid var(--wb-rule);
   border-radius: 4px;
@@ -50,9 +52,45 @@
   }
 }
 
+// The whole counter is the pointer shortcut to the showing case (scenes take
+// no pointer events; this link does).
+.link {
+  display: block;
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+// Every caption sits in the same grid cell, so the box keeps the size of the
+// longest one (two lines at 360 px) while they fade in and out.
+.captions {
+  display: grid;
+  margin-top: 12px;
+}
+
+.caption {
+  grid-area: 1 / 1;
+  font-size: 15px;
+  line-height: 1.4;
+  color: var(--wb-ink-2);
+  opacity: 0;
+  transition: opacity 0.45s $ease-soft;
+
+  &[data-shown] {
+    opacity: 1;
+  }
+
+  // Without scripting the first figure shows, so its caption does too.
+  @media (scripting: none) {
+    &:first-child {
+      opacity: 1;
+    }
+  }
+}
+
 @include reduced {
   .counter,
-  .rule {
+  .rule,
+  .caption {
     transition: none !important;
   }
 }

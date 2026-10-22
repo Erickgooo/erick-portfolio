@@ -42,6 +42,53 @@ function typer(el: HTMLElement): Part | null {
   let phase: "idle" | "type" | "hold" | "delete" | "gap" | "done" = "idle";
   let timer = 0;
   let live = false;
+  let hover = false;
+
+  // Elements of the same scene that follow the phrase: [data-phrase="k"] gets
+  // data-shown while phrase k rests fully typed; [data-phrase-href] (a JSON
+  // list) points its href at the current phrase's entry; a mouse over
+  // [data-pause-hover] holds the cycle where it is.
+  const root = el.closest<HTMLElement>("[data-scene]") ?? el;
+  const captions = Array.from(root.querySelectorAll<HTMLElement>("[data-phrase]"));
+  const links = Array.from(root.querySelectorAll<HTMLElement>("[data-phrase-href]"), (a) => {
+    let hrefs: string[] = [];
+    try {
+      hrefs = JSON.parse(a.dataset.phraseHref ?? "[]");
+    } catch {
+      hrefs = [];
+    }
+    return { a, hrefs };
+  });
+  const pauser = root.querySelector<HTMLElement>("[data-pause-hover]");
+  const mark = (k: number | null) => {
+    for (const c of captions) c.toggleAttribute("data-shown", c.dataset.phrase === String(k));
+  };
+  const point = (k: number) => {
+    for (const { a, hrefs } of links) if (hrefs[k]) a.setAttribute("href", hrefs[k]);
+  };
+  const onEnter = (e: PointerEvent) => {
+    if (e.pointerType === "touch") return;
+    hover = true;
+    stop();
+  };
+  const onLeave = () => {
+    if (!hover) return;
+    hover = false;
+    if (live && !timer && phase !== "idle" && phase !== "done") later(speed);
+  };
+  let listening = false;
+  const listen = (on: boolean) => {
+    if (!pauser || on === listening) return;
+    listening = on;
+    if (on) {
+      pauser.addEventListener("pointerenter", onEnter);
+      pauser.addEventListener("pointerleave", onLeave);
+    } else {
+      pauser.removeEventListener("pointerenter", onEnter);
+      pauser.removeEventListener("pointerleave", onLeave);
+      hover = false;
+    }
+  };
 
   const show = () => {
     out.textContent = phrases[i].slice(0, n);
@@ -54,7 +101,7 @@ function typer(el: HTMLElement): Part | null {
 
   function tick() {
     timer = 0;
-    if (!live) return;
+    if (!live || hover) return;
     if (phase === "type") {
       if (n < phrases[i].length) {
         n += 1;
@@ -62,14 +109,17 @@ function typer(el: HTMLElement): Part | null {
         later(pace());
       } else if (cycle) {
         phase = "hold";
+        mark(i);
         later(HOLD_MS);
       } else {
         phase = "done";
+        mark(i);
         el.removeAttribute("data-typing");
         el.dataset.typed = "";
       }
     } else if (phase === "hold") {
       phase = "delete";
+      mark(null);
       later(DELETE_MS);
     } else if (phase === "delete") {
       if (n > 0) {
@@ -82,6 +132,7 @@ function typer(el: HTMLElement): Part | null {
       }
     } else if (phase === "gap") {
       i = (i + 1) % phrases.length;
+      point(i);
       phase = "type";
       later(pace());
     }
@@ -100,16 +151,22 @@ function typer(el: HTMLElement): Part | null {
       n = 0;
       phase = "type";
       show();
+      mark(null);
+      point(0);
+      listen(true);
       el.dataset.typing = "";
       el.removeAttribute("data-typed");
-      if (live) later(speed);
+      if (live && !hover) later(speed);
     },
     reset() {
       stop();
+      listen(false);
       phase = "idle";
       i = 0;
       n = 0;
       out.textContent = "";
+      mark(null);
+      point(0);
       el.removeAttribute("data-typing");
       el.removeAttribute("data-typed");
     },
@@ -117,13 +174,15 @@ function typer(el: HTMLElement): Part | null {
       stop();
       phase = "done";
       out.textContent = phrases[0];
+      mark(0);
+      point(0);
       el.removeAttribute("data-typing");
       el.dataset.typed = "";
     },
     setLive(next) {
       live = next;
       if (!live) stop();
-      else if (!timer && phase !== "idle" && phase !== "done") later(speed);
+      else if (!timer && !hover && phase !== "idle" && phase !== "done") later(speed);
     },
   };
 }

@@ -30,7 +30,12 @@ function counterFigures(cases: Case[]) {
   return cases
     .filter((c) => c.metric)
     .sort((a, b) => ranked(a.slug) - ranked(b.slug))
-    .map((c) => c.metric?.value ?? "");
+    .map((c) => ({
+      value: c.metric?.value ?? "",
+      label: c.metric?.label ?? "",
+      name: c.name,
+      href: c.href,
+    }));
 }
 
 export function WorkIndex({ hideProtected }: { hideProtected: boolean }) {
