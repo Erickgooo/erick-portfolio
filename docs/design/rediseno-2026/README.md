@@ -216,7 +216,10 @@ No new page copy. The bench phrases ("Work on the bench", "What's on the bench",
 
 - `npx tsc --noEmit`; `node scripts/quality/biome-gate.mjs main`; `npm run build`; `npm run test:unit` (27/27); on `next start` (3351) `home-workbench`, `intro-font`, `cls`, `a11y-names`, `ssr-content` on chromium and mobile-chromium.
 - `/` and `/work/leadbot-ai`, both variants, at 360, 390, 768, 1024 and 1440, light and dark: no horizontal scroll, no console error besides the local `/_vercel/insights` 404 and its MIME line, no page text under 16 px on phones, no scene text under 12 px, no target under 44 px. Every other page at 360 and 1440: no overflow and no text running past its box.
-- Lighthouse mobile (local `next start`, Edge, 5 runs, `.perf/sobrio-*`): see the report of this step.
+- Lighthouse mobile (local `next start` on 3351, Edge, 5 runs, nothing else running, `.perf/sobrio-*`), variant A unless noted:
+  - Final build (HEAD): Home 81, 95, 95, 77, 95 (median **95**, floor 90; LCP the bench tablet image); Projects 80, 79, 79, 80, 79 (median **79**), repeated 80, 79, 79, 79, 79 (**79**, floor 80). Home in variant B (`LH_QUERY=v=b`): 77, 77, 77, 82, 95 (**77**, the slow mode four times).
+  - Builds just before the last small CSS fixes: Home 78, 77, 95, 78, 78 (78), repeated 95 ×5 (95); Projects 80 and 80; Home in variant B 77, 95, 77, 95, 95 (95). The home stays bimodal as noted in step 3 (about 95 when the first frame is presented before hydration, about 78 after). On an earlier build the phone headline had become the LCP element (the wider face makes it larger); fixed, see the bench note.
+  - Projects' gap is Next's loose CSS chunking: the two chunks that merge home, About, gallery and scene modules are its costliest render-blocking files (about 750 and 600 ms of Lighthouse's estimated savings).
 - Evidence in `docs/design/screens/rediseno-2026-sobrio/` (outside git): the two pages per variant at 390 and 1440, light and dark (unmasked, for Erick; reviewed here only as masked copies), and `frames/` with 6 frames per scene (ambient, activity, leadsort, reel, ads, booth, leadbot-case) per variant at 390 and 1440 in both themes. `scripts/design/screens.mjs` and `scene-frames.mjs` take `--query v=b`; `scripts/perf/lighthouse.mjs` takes `LH_QUERY=v=b`.
 
 ### Pending (step 4, after Erick's pick)
