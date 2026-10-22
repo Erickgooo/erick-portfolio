@@ -1,0 +1,89 @@
+// Workbench: the shared controls. No capsules: keys with soft corners.
+@use "./shared" as *;
+
+// The primary action: solid cobalt, the brand's call-to-action colour, with a
+// white paper square for the icon.
+.book {
+  --link-ink: #ffffff;
+
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 56px;
+  padding: 0 22px 0 8px;
+  border-radius: 12px;
+  background: var(--wb-accent);
+  font-family: var(--font-wb-display), system-ui, sans-serif;
+  font-weight: 650;
+  font-size: 18px;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+
+  &:active {
+    translate: 0 2px;
+  }
+
+  @include fine-pointer {
+    &:hover {
+      translate: 0 -2px;
+    }
+
+    &:hover .bookIcon {
+      rotate: -10deg;
+      scale: 1.06;
+    }
+  }
+}
+
+.bookIcon {
+  display: inline-grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  background: var(--wb-paper);
+  color: var(--wb-accent);
+  font-size: 19px;
+  transition:
+    rotate 0.5s var(--wb-ease-pop),
+    scale 0.5s var(--wb-ease-pop);
+}
+
+.small {
+  min-height: 44px;
+  gap: 10px;
+  padding: 0 16px 0 6px;
+  border-radius: 10px;
+  font-size: 16px;
+
+  .bookIcon {
+    width: 32px;
+    height: 32px;
+    border-radius: 7px;
+    font-size: 16px;
+  }
+}
+
+// A plain text link: cobalt underline, and an arrow that slides on hover.
+.textLink {
+  --link-deco: underline;
+  --link-line: var(--wb-accent);
+  --link-offset: 6px;
+
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  font-weight: 600;
+
+  svg {
+    transition: translate 0.28s var(--wb-ease-soft);
+  }
+
+  @include fine-pointer {
+    &:hover svg {
+      translate: 4px 0;
+    }
+  }
+}

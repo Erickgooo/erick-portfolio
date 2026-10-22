@@ -1,0 +1,109 @@
+// Workbench: hero layout.
+@use "../shared" as *;
+
+.hero {
+  position: relative;
+  z-index: 1;
+  overflow-x: clip;
+}
+
+.inner {
+  @include wrap;
+  display: grid;
+  gap: 40px;
+  padding-top: 40px;
+  padding-bottom: 72px;
+
+  @include from-tablet {
+    padding-top: 56px;
+  }
+
+  @include from-desk {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.22fr);
+    align-items: center;
+    gap: 48px;
+    min-height: calc(100svh - 76px);
+    padding-top: 32px;
+    padding-bottom: 48px;
+  }
+}
+
+.text {
+  display: grid;
+  justify-items: start;
+  gap: 24px;
+}
+
+.who {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-size: 16px;
+  line-height: 1.35;
+
+  strong {
+    @include display(700);
+    display: block;
+    font-size: 19px;
+    letter-spacing: -0.015em;
+  }
+}
+
+.role {
+  display: block;
+  color: var(--wb-ink-2);
+}
+
+.avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+// The headline is 13.2 % of the text column, written in viewport units (the
+// column's width per layout) rather than as a size container, so the first
+// frame needs no extra container pass. It breaks evenly on its own, so it
+// skips text-wrap: balance (several line-breaking passes in the first frame).
+.title {
+  @include display(750);
+  font-size: clamp(40px, calc(13.2vw - 4.2px), 92px);
+  line-height: 0.96;
+  letter-spacing: -0.04em;
+
+  @include from-tablet {
+    font-size: clamp(40px, calc(13.2vw - 8.4px), 92px);
+  }
+
+  @include from-desk {
+    font-size: clamp(40px, calc((min(100vw, 1280px) - 144px) * 0.0595), 92px);
+  }
+}
+
+.offer {
+  max-width: 36ch;
+  font-size: 18px;
+  color: var(--wb-ink-2);
+
+  @include from-desk {
+    font-size: 20px;
+  }
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 28px;
+  margin-top: 8px;
+}
+
+.benchCol {
+  width: 100%;
+  max-width: 560px;
+  justify-self: center;
+
+  @include from-desk {
+    max-width: 720px;
+  }
+}

@@ -1,0 +1,203 @@
+// Workbench: the curated content of the home. Every figure, name and path
+// below comes from src/resources/content.tsx or the project MDX.
+import { isProtectedPath } from "@/resources/protectedRoutes";
+import { getPosts } from "@/utils/utils";
+
+export type Paper = "sun" | "tomato" | "cobalt" | "mint" | "paper" | "charcoal";
+
+/** Pixel sizes of the cover images, read from the files' headers. */
+const COVER_SIZE: Record<string, { w: number; h: number }> = {
+  "/images/projects/quick-metal-shop-viral-videos/social-media1.webp": { w: 2400, h: 1357 },
+  "/images/projects/qms-dakoma-ai-creative/creatives1.webp": { w: 2400, h: 1357 },
+  "/images/projects/project-01/whatsapp.webp": { w: 1466, h: 986 },
+  "/images/projects/cuatrimotos-project/portada-chatbot.webp": { w: 2400, h: 1357 },
+  "/images/projects/app-quick-metal-shop/qmsapp.webp": { w: 2400, h: 1357 },
+  "/images/og/home.jpg": { w: 1200, h: 750 },
+};
+const DEFAULT_COVER = { w: 2400, h: 1357 };
+
+/** The order of the fan on the home (the six cases with a metric), and the paper each card is printed on. */
+const FAN: { slug: string; paper: Paper }[] = [
+  { slug: "quick-metal-shop-viral-videos", paper: "tomato" },
+  { slug: "ai-powered-ad-creatives", paper: "sun" },
+  { slug: "leadbot-ai", paper: "cobalt" },
+  { slug: "atv-riders", paper: "mint" },
+  { slug: "quick-metal-shop-arquiexpo", paper: "paper" },
+  { slug: "ai-portfolio", paper: "charcoal" },
+];
+
+export type FanCard = {
+  slug: string;
+  client: string;
+  title: string;
+  value: string;
+  label: string;
+  cover: { src: string; w: number; h: number };
+  href: string;
+  paper: Paper;
+};
+
+function isImage(path: string) {
+  return /\.(webp|jpe?g|png|avif)$/i.test(path);
+}
+
+function getProjects() {
+  return getPosts(["src", "app", "work", "projects"]);
+}
+
+/**
+ * The cards of the fan. With `hideProtected` (set when the page listing them is
+ * public), a case whose own page is password-protected is left out, as the
+ * project list on the previous home did.
+ */
+export function getFanCards({ hideProtected }: { hideProtected: boolean }): FanCard[] {
+  const posts = getProjects();
+  const cards: FanCard[] = [];
+  for (const { slug, paper } of FAN) {
+    const href = `/work/${slug}`;
+    if (hideProtected && isProtectedPath(href)) continue;
+    const post = posts.find((p) => p.slug === slug);
+    if (!post) continue;
+    const [client, ...rest] = post.metadata.title.split(":");
+    const [value, label] = (post.metadata.metric || "").split("|");
+    const coverSrc = post.metadata.images.find(isImage) ?? post.metadata.images[0];
+    cards.push({
+      slug,
+      client: client.trim(),
+      title: rest.join(":").trim() || post.metadata.title,
+      value: value ?? "",
+      label: label ?? "",
+      cover: { src: coverSrc, ...(COVER_SIZE[coverSrc] ?? DEFAULT_COVER) },
+      href,
+      paper,
+    });
+  }
+  return cards;
+}
+
+const WORDS = ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"];
+
+/** A count in words when it is short ("nine"), in digits otherwise. */
+export function inWords(count: number): string {
+  return WORDS[count] ?? String(count);
+}
+
+/** How many projects the Projects page lists. */
+export function countProjects(): number {
+  return getProjects().length;
+}
+
+/** Tools drawn with their logo (the symbols live in home/ToolSprite.tsx); the rest get a monogram. */
+export type ToolIcon =
+  | "whatsapp"
+  | "openai"
+  | "gemini"
+  | "claude"
+  | "elevenlabs"
+  | "meta"
+  | "instagram"
+  | "facebook"
+  | "analytics"
+  | "searchconsole"
+  | "shopify"
+  | "davinci"
+  | "nextjs"
+  | "netlify";
+
+export type Tool = { name: string; icon?: ToolIcon; mono?: string };
+export type ToolGroup = {
+  id: string;
+  title: string;
+  line: string;
+  paper: "sun" | "tomato" | "cobalt" | "mint";
+  tools: Tool[];
+};
+
+/** Only tools named in content.tsx or the project MDX. */
+export const TOOL_GROUPS: ToolGroup[] = [
+  {
+    id: "conversations",
+    title: "Conversations and CRM",
+    line: "Every lead lands, gets sorted and reaches the right stage on its own.",
+    paper: "mint",
+    tools: [
+      { name: "WhatsApp Business API", icon: "whatsapp" },
+      { name: "Bitrix24", mono: "24" },
+      { name: "Kommo CRM", mono: "Ko" },
+      { name: "BotSL IA", mono: "Bs" },
+      { name: "Zapier", mono: "Za" },
+      { name: "Odoo", mono: "Od" },
+    ],
+  },
+  {
+    id: "models",
+    title: "AI models",
+    line: "Picked per job: precision for sales, range for content.",
+    paper: "cobalt",
+    tools: [
+      { name: "GPT-4o mini", icon: "openai" },
+      { name: "Gemini", icon: "gemini" },
+      { name: "Claude", icon: "claude" },
+      { name: "ElevenLabs", icon: "elevenlabs" },
+      { name: "Soro AI", mono: "So" },
+      { name: "Holo AI", mono: "Ho" },
+    ],
+  },
+  {
+    id: "media",
+    title: "Paid media and analytics",
+    line: "Campaigns built from creative to audience, measured end to end.",
+    paper: "tomato",
+    tools: [
+      { name: "Meta Ads", icon: "meta" },
+      { name: "Instagram", icon: "instagram" },
+      { name: "Facebook", icon: "facebook" },
+      { name: "Google Analytics", icon: "analytics" },
+      { name: "Search Console", icon: "searchconsole" },
+      { name: "Shopify", icon: "shopify" },
+    ],
+  },
+  {
+    id: "studio",
+    title: "Studio and software",
+    line: "Video, voice and the app itself when nothing exists yet.",
+    paper: "sun",
+    tools: [
+      { name: "Higgsfield", mono: "Hf" },
+      { name: "Kling 3.0", mono: "Kl" },
+      { name: "DaVinci Resolve", icon: "davinci" },
+      { name: "CapCut", mono: "Cc" },
+      { name: "Next.js", icon: "nextjs" },
+      { name: "Netlify", icon: "netlify" },
+    ],
+  },
+];
+
+/** Where the tiles of each group sit on the 6-column wall, scattered across it. */
+export const WALL_ORDER: [number, number][] = [
+  // [group, tool] for each of the 24 cells, row by row
+  [1, 0],
+  [0, 0],
+  [2, 3],
+  [3, 2],
+  [0, 4],
+  [2, 0],
+  [3, 0],
+  [2, 1],
+  [1, 2],
+  [0, 1],
+  [3, 4],
+  [1, 4],
+  [0, 3],
+  [1, 1],
+  [3, 1],
+  [2, 4],
+  [0, 2],
+  [3, 3],
+  [2, 2],
+  [3, 5],
+  [1, 3],
+  [2, 5],
+  [1, 5],
+  [0, 5],
+];

@@ -1,0 +1,345 @@
+// Workbench: the tool wall band. Always the opposite of the page:
+// charcoal on the light bench, white on the dark one.
+@use "../shared" as *;
+
+.wall {
+  @include below-fold(2600px, 300vh);
+  position: relative;
+  z-index: 1;
+  background: var(--wb-band);
+  color: var(--wb-band-ink);
+}
+
+.track {
+  @include from-desk {
+    height: 300vh;
+  }
+}
+
+.sticky {
+  @include from-desk {
+    position: sticky;
+    top: 76px;
+    display: flex;
+    align-items: center;
+    height: calc(100svh - 76px);
+    overflow: hidden;
+  }
+}
+
+.inner {
+  @include wrap;
+  padding-top: 88px;
+  padding-bottom: 96px;
+
+  @include from-desk {
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    align-items: center;
+    gap: 64px;
+    padding-top: 32px;
+    padding-bottom: 32px;
+  }
+}
+
+.title {
+  @include reveal;
+  @include display(750);
+  font-size: clamp(38px, 4.4vw, 64px);
+  line-height: 0.98;
+  letter-spacing: -0.04em;
+  text-wrap: balance;
+}
+
+.lede {
+  @include reveal;
+  max-width: 34ch;
+  margin-top: 16px;
+  font-size: 18px;
+  color: var(--wb-band-ink-2);
+}
+
+.sun {
+  --paper: var(--wb-sun);
+  --paper-ink: var(--wb-charcoal);
+}
+
+.tomato {
+  --paper: var(--wb-tomato);
+  --paper-ink: var(--wb-charcoal);
+}
+
+.cobalt {
+  --paper: var(--wb-cobalt);
+  --paper-ink: #ffffff;
+}
+
+.mint {
+  --paper: var(--wb-mint);
+  --paper-ink: var(--wb-charcoal);
+}
+
+.groups {
+  display: grid;
+  gap: 56px;
+  margin-top: 48px;
+  list-style: none;
+  padding: 0;
+
+  @include from-desk {
+    gap: 0;
+    margin-top: 36px;
+  }
+}
+
+.group {
+  @include from-desk {
+    position: relative;
+    padding: 14px 0 14px;
+    border-top: 1px solid color-mix(in srgb, var(--wb-band-ink) 16%, transparent);
+
+    // The progress underline, in the group's own colour.
+    &::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: -2px;
+      width: 100%;
+      height: 3px;
+      background: var(--paper);
+      transform-origin: left center;
+      scale: 0 1;
+      transition: scale 0.6s var(--wb-ease-soft);
+    }
+  }
+}
+
+.groupTitle {
+  @include display(700);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 26px;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+
+  @include from-desk {
+    font-size: 22px;
+    opacity: 0.55;
+    transition: opacity 0.4s var(--wb-ease-soft);
+  }
+}
+
+.swatch {
+  flex: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
+  background: var(--paper);
+  rotate: -8deg;
+  transition: rotate 0.5s var(--wb-ease-pop);
+}
+
+.line {
+  margin-top: 8px;
+  font-size: 17px;
+  color: var(--wb-band-ink-2);
+
+  @include from-desk {
+    font-size: 16px;
+    opacity: 0.75;
+    transition: opacity 0.4s var(--wb-ease-soft);
+  }
+}
+
+// Phones and tablets: each group has its own small wall.
+.tiles {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 20px;
+  list-style: none;
+  padding: 0;
+
+  @include from-tablet {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+
+  // On desktop the board shows the tiles; the lists stay for screen readers.
+  @include from-desk {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+}
+
+.tile {
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  gap: 8px;
+  min-height: 116px;
+  padding: 12px 6px;
+  border-radius: 12px;
+  background: var(--paper);
+  color: var(--paper-ink);
+  text-align: center;
+
+  @media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
+    opacity: 0.12;
+    scale: 0.86;
+    transition:
+      opacity 0.6s var(--wb-ease-soft),
+      scale 0.6s var(--wb-ease-pop);
+    transition-delay: calc(var(--i) * 90ms);
+
+    &[data-in] {
+      opacity: 1;
+      scale: 1;
+    }
+  }
+}
+
+.glyph {
+  display: grid;
+  place-items: center;
+  height: 30px;
+  font-size: 28px;
+}
+
+.logo {
+  display: block;
+  width: 1em;
+  height: 1em;
+}
+
+.mono {
+  @include display(800);
+  font-size: 25px;
+  letter-spacing: -0.04em;
+}
+
+.name {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.15;
+}
+
+// Desktop board: 24 tiles, groups scattered across it.
+.board {
+  display: none;
+
+  @include from-desk {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 12px;
+  }
+}
+
+.cell {
+  position: relative;
+  aspect-ratio: 1;
+  border-radius: 14px;
+
+  @media (scripting: enabled) {
+    opacity: 0.2;
+    scale: 0.9;
+    transition:
+      opacity 0.6s var(--wb-ease-soft),
+      scale 0.55s var(--wb-ease-pop);
+    transition-delay: calc(var(--k) * 90ms);
+  }
+
+  .name {
+    font-size: 12px;
+
+    @include from-desk {
+      @media (min-width: $wide) {
+        font-size: 13px;
+      }
+    }
+  }
+}
+
+.face {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  gap: 8px;
+  padding: 8px;
+  border-radius: inherit;
+  background: var(--wb-band-tile);
+  color: var(--wb-band-ink);
+  text-align: center;
+}
+
+.hot {
+  background: var(--paper);
+  color: var(--paper-ink);
+  opacity: 0;
+  transition: opacity 0.5s var(--wb-ease-soft);
+  transition-delay: calc(var(--k) * 90ms);
+}
+
+// The stepper: groups before the active one stay lit, the active one glows in
+// its colour, the rest wait in the dark.
+@for $a from 0 through 3 {
+  .wall[data-active="#{$a}"] {
+    @for $g from 0 through 3 {
+      @if $g <= $a {
+        .cell[data-g="#{$g}"] {
+          opacity: 1;
+          scale: 1;
+        }
+      }
+
+      @if $g == $a {
+        .cell[data-g="#{$g}"] .hot {
+          opacity: 1;
+        }
+
+        .group[data-g="#{$g}"] {
+          &::after {
+            scale: 1 1;
+          }
+
+          .groupTitle,
+          .line {
+            opacity: 1;
+          }
+
+          .swatch {
+            rotate: 45deg;
+          }
+        }
+      }
+    }
+  }
+}
+
+@include reduced {
+  .cell,
+  .groupTitle,
+  .line {
+    opacity: 1 !important;
+  }
+
+  .cell {
+    scale: 1 !important;
+  }
+
+  .cell,
+  .hot,
+  .group::after,
+  .groupTitle,
+  .line,
+  .swatch {
+    transition: none !important;
+  }
+}

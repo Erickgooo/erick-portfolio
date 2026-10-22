@@ -1,0 +1,103 @@
+// Workbench: closing sheet.
+@use "./shared" as *;
+
+.closing {
+  @include below-fold(820px, 820px);
+  position: relative;
+  z-index: 1;
+  overflow-x: clip;
+}
+
+.inner {
+  @include wrap;
+  position: relative;
+  padding-top: 40px;
+  padding-bottom: 88px;
+
+  @include from-desk {
+    padding-top: 56px;
+    padding-bottom: 112px;
+  }
+}
+
+.sheet {
+  position: relative;
+  display: grid;
+  justify-items: start;
+  gap: 24px;
+  padding: 40px 24px 32px;
+  border-radius: 6px;
+  background: var(--wb-sun);
+  color: var(--wb-charcoal);
+  box-shadow: var(--wb-shadow);
+  rotate: -1deg;
+
+  @include from-tablet {
+    padding: 64px 56px 56px;
+  }
+
+  @include from-desk {
+    padding: 88px 96px 80px;
+  }
+
+  @media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
+    opacity: 0;
+    translate: 0 72px;
+    rotate: 2deg;
+    transition:
+      opacity 0.8s var(--wb-ease-soft),
+      translate 1.1s var(--wb-ease-soft),
+      rotate 1.1s var(--wb-ease-pop);
+
+    &[data-in] {
+      opacity: 1;
+      translate: 0 0;
+      rotate: -1deg;
+    }
+  }
+
+  h2 {
+    @include display(800);
+    max-width: 14ch;
+    font-size: clamp(40px, 7vw, 104px);
+    line-height: 0.95;
+    letter-spacing: -0.045em;
+    text-wrap: balance;
+  }
+
+  p {
+    max-width: 46ch;
+    font-size: 18px;
+
+    @include from-desk {
+      font-size: 21px;
+    }
+  }
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 28px;
+  margin-top: 8px;
+}
+
+.mail {
+  --link-deco: underline;
+  --link-line: var(--wb-accent);
+  --link-offset: 6px;
+
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.note {
+  @include reveal(16px);
+  margin-top: 28px;
+  font-size: 16px;
+  color: var(--wb-ink-2);
+}

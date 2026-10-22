@@ -1,0 +1,272 @@
+// Workbench: the fanned stack of project cards.
+@use "../shared" as *;
+
+.work {
+  @include below-fold(980px, 1000px);
+  position: relative;
+  z-index: 1;
+  overflow-x: clip;
+  padding-top: 104px;
+  padding-bottom: 104px;
+
+  @include from-desk {
+    padding-top: 144px;
+    padding-bottom: 120px;
+  }
+}
+
+.inner {
+  @include wrap;
+}
+
+.head {
+  @include reveal;
+  display: grid;
+  gap: 16px;
+
+  @include from-desk {
+    grid-template-columns: 1fr 1fr;
+    align-items: end;
+  }
+
+  h2 {
+    @include h2;
+  }
+
+  p {
+    @include lede;
+  }
+}
+
+.fan {
+  position: relative;
+  list-style: none;
+  margin: 0;
+
+  // Phones and tablets: a row that scrolls and snaps.
+  display: flex;
+  gap: 16px;
+  padding: 40px 16px 48px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-padding-inline: 16px;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  @include from-tablet {
+    padding-inline: 32px;
+    scroll-padding-inline: 32px;
+  }
+
+  @include below-wide {
+    @include reveal(40px);
+  }
+
+  // Wide screens: a hand of cards dealt left to right around a common pivot.
+  @include from-wide {
+    container-type: inline-size;
+    display: block;
+    width: calc(100% - 96px);
+    max-width: 1184px;
+    height: 600px;
+    margin: 32px auto 24px;
+    padding: 0;
+    overflow: visible;
+  }
+}
+
+.slot {
+  flex: none;
+  width: min(78vw, 320px);
+  scroll-snap-align: center;
+  rotate: calc(var(--o) * 0.5deg);
+
+  @include from-wide {
+    --step: min(190px, calc((100cqi - 400px) / 5));
+
+    position: absolute;
+    top: 48px;
+    left: 50%;
+    width: 264px;
+    margin-left: -132px;
+    transform-origin: 50% 120%;
+    translate: calc(var(--o) * var(--step)) calc(var(--o) * var(--o) * 8px);
+    rotate: calc(var(--o) * 3deg);
+    transition:
+      translate 1.1s var(--wb-ease-soft),
+      rotate 1.1s var(--wb-ease-soft);
+    transition-delay: calc(var(--i) * 90ms);
+
+    &:hover,
+    &:focus-within {
+      z-index: 20 !important;
+    }
+  }
+}
+
+// Stacked until the fan enters the viewport (desktop, motion allowed, JS on).
+@media (min-width: $wide) and (scripting: enabled) and (prefers-reduced-motion: no-preference) {
+  .fan:not([data-in]) .slot {
+    translate: calc(var(--o) * 10px) 56px;
+    rotate: calc(var(--o) * 1.5deg - 2deg);
+  }
+}
+
+.card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  height: 100%;
+  min-height: 430px;
+  padding: 12px 12px 18px;
+  border-radius: 6px;
+  box-shadow: var(--wb-shadow);
+  --link-dur: 0.45s;
+  --link-ease: var(--wb-ease-pop);
+
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    box-shadow: var(--wb-shadow-lift);
+    opacity: 0;
+    transition: opacity 0.4s var(--wb-ease-soft);
+    pointer-events: none;
+  }
+
+  @include from-wide {
+    height: 450px;
+
+    .slot:hover &,
+    &:focus-visible {
+      translate: 0 -32px;
+      rotate: calc(var(--o) * -3deg);
+
+      &::after {
+        opacity: 1;
+      }
+    }
+  }
+}
+
+.print {
+  display: block;
+  margin-bottom: 12px;
+  padding: 5px;
+  border-radius: 3px;
+  background: var(--wb-paper);
+
+  img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 1px;
+  }
+}
+
+.metric {
+  display: grid;
+  gap: 2px;
+  padding-inline: 6px;
+
+  strong {
+    @include display(800);
+    font-size: 52px;
+    line-height: 0.92;
+    letter-spacing: -0.05em;
+  }
+
+  span {
+    font-size: 16px;
+    font-weight: 600;
+  }
+}
+
+.client {
+  @include display(700);
+  margin-top: auto;
+  padding-inline: 6px;
+  font-size: 22px;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+.title {
+  padding-inline: 6px;
+  font-size: 16px;
+  line-height: 1.35;
+  font-weight: 500;
+}
+
+.open {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 10px;
+  padding: 10px 6px 0;
+  border-top: 2px solid currentColor;
+  font-size: 16px;
+  font-weight: 650;
+}
+
+.sun {
+  --link-ink: var(--wb-charcoal);
+  background: var(--wb-sun);
+}
+
+.tomato {
+  --link-ink: var(--wb-charcoal);
+  background: var(--wb-tomato);
+}
+
+.cobalt {
+  --link-ink: #ffffff;
+  background: var(--wb-cobalt);
+}
+
+.mint {
+  --link-ink: var(--wb-charcoal);
+  background: var(--wb-mint);
+}
+
+.paper {
+  --link-ink: var(--wb-charcoal);
+  background: var(--wb-paper);
+  box-shadow:
+    inset 0 0 0 1px var(--wb-line),
+    var(--wb-shadow);
+
+  .print {
+    background: var(--wb-surface);
+
+    @include dark {
+      background: #ececf0;
+    }
+  }
+}
+
+.charcoal {
+  --link-ink: #ffffff;
+  background: #1d1d22;
+
+  @include dark {
+    background: #2a2a31;
+    box-shadow:
+      inset 0 0 0 1px rgba(255, 255, 255, 0.08),
+      var(--wb-shadow);
+  }
+}
+
+@include reduced {
+  .slot,
+  .card,
+  .card::after {
+    transition: none;
+  }
+}
