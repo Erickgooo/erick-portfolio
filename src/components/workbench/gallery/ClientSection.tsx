@@ -9,9 +9,9 @@ import Image from "next/image";
 import Link from "next/link";
 import type { CSSProperties } from "react";
 import { FiArrowRight, FiLayers, FiPlay } from "react-icons/fi";
+import { PieceButton } from "./PieceButton";
 import { type ClientShelf, countOf, formatsLine, piecesIn } from "./data";
 import styles from "./gallery.module.scss";
-import { PieceButton } from "./PieceButton";
 
 /** Row heights of the posts wall, per layout (see .wall in gallery.module.scss). */
 const ROW = { phone: 168, tablet: 220, desk: 270, wide: 300 };
