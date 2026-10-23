@@ -29,17 +29,26 @@ const ALL = {
   work: "/work",
   caso: "/work/leadbot-ai",
   viral: "/work/quick-metal-shop-viral-videos",
+  // The other seven case studies, named by their slug.
+  "ai-powered-ad-creatives": "/work/ai-powered-ad-creatives",
+  "atv-riders": "/work/atv-riders",
+  "quick-metal-shop-arquiexpo": "/work/quick-metal-shop-arquiexpo",
+  "ai-portfolio": "/work/ai-portfolio",
+  "dakoma-roofing": "/work/dakoma-roofing",
+  "quick-metal-shop-marketing": "/work/quick-metal-shop-marketing",
+  "quick-metal-shop-the-brand-comes-to-life": "/work/quick-metal-shop-the-brand-comes-to-life",
   blog: "/blog",
   "blog-post": "/blog/my-workspace",
   gallery: "/gallery",
-  "404": "/this-page-does-not-exist",
+  404: "/this-page-does-not-exist",
   unauthorized: "/unauthorized",
 };
 const only = arg("pages", Object.keys(ALL).join(",")).split(",");
 const maskMedia = args.includes("--mask-media");
 const query = arg("query", "");
 const suffix = query ? `-${query.replace(/[^a-z0-9]+/gi, "-")}` : "";
-const withQuery = (pagePath) => (query ? `${pagePath}${pagePath.includes("?") ? "&" : "?"}${query}` : pagePath);
+const withQuery = (pagePath) =>
+  query ? `${pagePath}${pagePath.includes("?") ? "&" : "?"}${query}` : pagePath;
 const MASK_CSS =
   "img, video, iframe, picture, svg image { filter: brightness(0) !important; opacity: 0.14 !important; }";
 const VIEWPORTS = {
