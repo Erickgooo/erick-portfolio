@@ -1,6 +1,6 @@
 # Tool logos for the "tools I've shipped real work with" wall
 
-Files in `public/images/tools/`, one per brand, collected on 2026-10-22. All 24 are official (none uses the Simple Icons fallback), and none is missing.
+Files in `src/components/workbench/home/tools/` (in `public/images/tools/` until 2026-10-22; moved so the build serves them with a content hash and a long cache), one per brand, collected on 2026-10-22. All 24 are official (none uses the Simple Icons fallback), and none is missing.
 
 How they were prepared:
 

@@ -87,7 +87,7 @@ export function countProjects(): number {
   return getProjects().length;
 }
 
-/** Each tool's official logo, a file in public/images/tools (sources: docs/design/rediseno-2026/tool-logos.md). */
+/** Each tool's official logo, a file in ./home/tools, imported by ToolWall (sources: docs/design/rediseno-2026/tool-logos.md). */
 export type Tool = { name: string; logo: string };
 export type ToolGroup = {
   id: string;
