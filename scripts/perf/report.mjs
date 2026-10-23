@@ -1,6 +1,6 @@
 // Usage: node scripts/perf/report.mjs <tag> [compareTag]
 // Prints a markdown table with the median of each metric per page/form factor.
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync } from "node:fs";
 import path from "node:path";
 
 const [tag, compareTag] = process.argv.slice(2);
@@ -57,11 +57,24 @@ console.log(
     : "| Página | FF | Perf / A11y / LCP / CLS / TBT / JS / Total |",
 );
 console.log(compareTag ? "|---|---|---|---|" : "|---|---|---|");
-for (const page of ["home", "about", "work", "blog", "gallery"]) {
+// The usual five first, then whatever else either batch measured (the blog
+// index, the case studies), in name order. Rows with no report on either
+// side are left out.
+const USUAL = ["home", "about", "work", "blog", "gallery"];
+const measured = new Set(
+  [tag, compareTag]
+    .filter(Boolean)
+    .flatMap((t) => (existsSync(path.join(".perf", t)) ? readdirSync(path.join(".perf", t)) : []))
+    .map((f) => f.match(/^(.+)-(mobile|desktop)-\d+\.json$/)?.[1])
+    .filter(Boolean),
+);
+const pages = [...USUAL, ...[...measured].filter((p) => !USUAL.includes(p)).sort()];
+for (const page of pages) {
   for (const ff of ["mobile", "desktop"]) {
     const a = metrics(load(tag, page, ff));
+    const b = compareTag ? metrics(load(compareTag, page, ff)) : null;
+    if (!a && !b) continue;
     if (compareTag) {
-      const b = metrics(load(compareTag, page, ff));
       console.log(`| ${page} | ${ff} | ${fmt(b)} | ${fmt(a)} |`);
     } else {
       console.log(`| ${page} | ${ff} | ${fmt(a)} |`);

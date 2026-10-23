@@ -3,12 +3,16 @@
 // Lighthouse's Windows temp-dir cleanup can exit non-zero (EPERM) after a
 // successful run, so success is judged by the report file existing.
 import { spawnSync } from "node:child_process";
-import { existsSync, mkdirSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { createRequire } from "node:module";
 import path from "node:path";
 
 const require = createRequire(import.meta.url);
-const LH_CLI = path.join(path.dirname(require.resolve("lighthouse/package.json")), "cli", "index.js");
+const LH_CLI = path.join(
+  path.dirname(require.resolve("lighthouse/package.json")),
+  "cli",
+  "index.js",
+);
 
 const BASE = process.env.LH_BASE_URL ?? "http://localhost:3100";
 // LH_QUERY=a=1 adds a query string to every page; the reports keep their
@@ -16,31 +20,53 @@ const BASE = process.env.LH_BASE_URL ?? "http://localhost:3100";
 const QUERY = process.env.LH_QUERY ?? "";
 const TAG = process.env.LH_TAG ?? "local";
 const RUNS = Number(process.env.LH_RUNS ?? 3);
-const ALL_PAGES = {
+// "blog" is the post, as in every report so far; the index is "blog-index".
+const DEFAULT_PAGES = {
   home: "/",
   about: "/about",
   work: "/work",
   blog: "/blog/my-workspace",
   gallery: "/gallery",
 };
+// The nine case studies, "case-<slug>". They run only when named, or all of
+// them through LH_PAGES=cases.
+const CASES = [
+  "leadbot-ai",
+  "ai-powered-ad-creatives",
+  "atv-riders",
+  "quick-metal-shop-viral-videos",
+  "quick-metal-shop-arquiexpo",
+  "ai-portfolio",
+  "dakoma-roofing",
+  "quick-metal-shop-marketing",
+  "quick-metal-shop-the-brand-comes-to-life",
+];
+const ALL_PAGES = {
+  ...DEFAULT_PAGES,
+  "blog-index": "/blog",
+  ...Object.fromEntries(CASES.map((slug) => [`case-${slug}`, `/work/${slug}`])),
+};
 const ALL_FORMS = ["mobile", "desktop"];
 
 // LH_PAGES=about,gallery,home / LH_FORMS=mobile narrow which pages and form
-// factors run, e.g. for a targeted re-check after a fix. Unset -> unchanged
-// (every page, both form factors), same as before these were supported.
+// factors run, e.g. for a targeted re-check after a fix ("cases" stands for
+// the nine case studies). Unset -> the five default pages, both form factors.
 const PAGES = process.env.LH_PAGES
   ? Object.fromEntries(
       process.env.LH_PAGES.split(",")
         .map((name) => name.trim())
         .filter(Boolean)
+        .flatMap((name) => (name === "cases" ? CASES.map((slug) => `case-${slug}`) : [name]))
         .map((name) => {
           if (!(name in ALL_PAGES)) {
-            throw new Error(`LH_PAGES: unknown page "${name}" (known: ${Object.keys(ALL_PAGES).join(", ")})`);
+            throw new Error(
+              `LH_PAGES: unknown page "${name}" (known: ${Object.keys(ALL_PAGES).join(", ")}, cases)`,
+            );
           }
           return [name, ALL_PAGES[name]];
         }),
     )
-  : ALL_PAGES;
+  : DEFAULT_PAGES;
 const FORMS = process.env.LH_FORMS
   ? process.env.LH_FORMS.split(",")
       .map((f) => f.trim())
@@ -89,6 +115,8 @@ for (const [name, pagePath] of Object.entries(PAGES)) {
     }
   }
 }
+// The headers file holds the bypass secret; it is not left on disk.
+if (headersFile) rmSync(headersFile, { force: true });
 if (failures.length) {
   console.error(`Missing reports: ${failures.join(", ")}`);
   process.exit(1);

@@ -2,7 +2,10 @@
 
 // Workbench, case study: a video beside the text as a print. It plays
 // muted only while on screen, never on its own under reduced motion, and
-// always has a play and pause key.
+// always has a play and pause key. Its first frame (preload="metadata") is
+// fetched once it is two screens away rather than with the page, where on a
+// phone network it took bandwidth from the first screen (LeadBot's two
+// videos pulled about 345 KB before the first paint).
 import { useEffect, useRef, useState } from "react";
 import { FiPause, FiPlay } from "react-icons/fi";
 import styles from "./case.module.scss";
@@ -21,6 +24,22 @@ export function VideoPrint({
   const ref = useRef<HTMLVideoElement>(null);
   const wanted = useRef(true);
   const [playing, setPlaying] = useState(false);
+  const [near, setNear] = useState(false);
+
+  useEffect(() => {
+    const video = ref.current;
+    if (!video) return;
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) return;
+        setNear(true);
+        io.disconnect();
+      },
+      { rootMargin: "200% 0px" },
+    );
+    io.observe(video);
+    return () => io.disconnect();
+  }, []);
 
   useEffect(() => {
     const video = ref.current;
@@ -69,7 +88,7 @@ export function VideoPrint({
           muted
           loop
           playsInline
-          preload="metadata"
+          preload={near ? "metadata" : "none"}
           aria-label={label}
         />
         <button

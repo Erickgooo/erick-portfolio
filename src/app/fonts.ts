@@ -31,20 +31,22 @@ export const body = Inter({
   display: "swap",
 });
 
-// Measured with `preload: false` first (JetBrains Mono isn't visually used
-// above the fold on Home/Gallery), but Lighthouse's layout-shifts audit then
-// attributed a residual 0.033 About-mobile CLS to this exact font file
-// swapping in late on the sticky meta panel. Preloading it removes that
-// shift; see docs/perf-report.md, Follow-up 11b, for the measurements.
+// Not preloaded (2026-10-22): no public page of the Workbench site renders
+// text in JetBrains Mono (checked page by page with scripts/design/fonts.mjs),
+// yet its 40 KB preload went out at high priority on every page, ahead of
+// the first paint. The old About's sticky meta panel, whose CLS once needed
+// the preload (docs/perf-report.md, Follow-up 11b), is gone. Should code text
+// appear, the face still loads on demand.
 export const code = JetBrains_Mono({
   variable: "--font-code",
   subsets: ["latin"],
   display: "swap",
+  preload: false,
 });
 
 // The Workbench faces (redesign 2026), Montserrat Black, Poppins and
 // Luxurious Roman, are not declared here: they are self-hosted in
-// public/fonts and declared in src/resources/custom.css (--font-wb-display,
+// src/resources/fonts and declared in src/resources/custom.css (--font-wb-display,
 // --font-wb-text, --font-wb-accent), so they behave the same on every build
 // host (see the note above). They are not preloaded: the intro covers the
 // page while they load.
