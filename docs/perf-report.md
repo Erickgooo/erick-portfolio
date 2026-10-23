@@ -305,3 +305,90 @@ Headers are identical to `main` except one directive: `media-src 'self'` became 
 - A real iPhone or Mac Safari. Playwright's WebKit refuses the Blob URL and plays the film through the plain-URL fallback; whether real Safari takes the Blob or the fallback is unknown.
 - The Vercel Preview (Deployment Protection): no Lighthouse and no CSP check over https there.
 - Real mobile networks. The 10 to 12 MB film is the one number here that a local run cannot judge.
+
+## Carga 2026 (`perf/carga-2026`, 2026-10-22)
+
+Erick's brief: parts of the live site appear late, the tool wall's logos ("What's on the bench") first among them. Only loading and measuring change; shapes, colours, type, animations and their timing, and `IntroLoader` stay as they are. Production at the start: `main` `6d2d162`.
+
+### Method
+
+- **Lighthouse 13.5.0, mobile,** headless Edge, default simulated throttling: 5 runs on Home, About, Projects (`work`), the Blog index (`blog-index`), the post (`blog`) and Visual Work (`gallery`), 3 runs on each of the nine cases (`LH_PAGES=cases`). Medians. Production first (`prod-carga`); the Preview is measured the same way, against a fresh production run taken just before it.
+- **Logos** (`scripts/perf/tool-logos.mjs`): Playwright's Chromium with Lighthouse's mobile profile applied through CDP (RTT 150 ms, 1.6 Mbps down, 750 Kbps up, CPU 4x). Load the Home, wait for the intro, scroll at 300 px/s (reading pace) to the wall and through it, and compare, tile by tile, the moment its top edge enters the viewport with the `responseEnd` of its logo. Phones count each of the 24 stacked tiles, desktop the 24 board cells. Then two repeat visits in the same context: a plain navigation in the same tab, and a new tab once the first is closed (the renderer's memory cache is gone, as for a visitor who comes back later). Each counts the logo and font requests that did not come out of the cache; a 304 counts.
+- **Fonts** (`scripts/design/fonts.mjs`): on all 16 public pages at 390 and 1440 px, the computed family and the face Chromium actually drew (CDP `CSS.getPlatformFontsForNode`) for headings, text, nav, footer, the intro wordmark and the chatbot's greeting bubble, plus one probe per distinct computed font and the `document.fonts` list.
+- **Captures** (`scripts/design/screens.mjs`): the 16 public pages at 390 and 1440 px, light and dark, from local `next start` builds of `main` and of the branch, unmasked (for Erick) and with `--mask-media` (for the comparison), in `docs/design/screens/carga-2026/` (not versioned).
+
+### Baseline (production, `6d2d162`)
+
+| Page | Perf (median) | LCP (median) | LCP element |
+|---|---|---|---|
+| home | 90 | 3.53 s | LeadBot cover in the hero card (640w AVIF, `fetchpriority=high`) |
+| about | 89 | 3.68 s | intro paragraph |
+| work | 92 | 3.31 s | header paragraph |
+| blog-index | 90 | 3.52 s | `h1` |
+| blog (post) | 95 | 2.85 s | cover image |
+| gallery | 98 | 2.33 s | header paragraph |
+| case-ai-portfolio | 95 | 2.93 s | summary paragraph |
+| case-ai-powered-ad-creatives | 87 | 3.90 s | summary paragraph |
+| case-atv-riders | 88 | 3.83 s | summary paragraph |
+| case-dakoma-roofing | 92 | 3.31 s | summary paragraph |
+| case-leadbot-ai | 93 | 3.15 s | summary paragraph |
+| case-quick-metal-shop-arquiexpo | 93 | 3.15 s | summary paragraph |
+| case-quick-metal-shop-marketing | 95 | 2.78 s | summary paragraph |
+| case-quick-metal-shop-the-brand-comes-to-life | 95 | 2.86 s | summary paragraph |
+| case-quick-metal-shop-viral-videos | 89 | 3.75 s | summary paragraph |
+
+CLS is 0.000–0.022 and TBT 9–70 ms everywhere. The first paint is observed at 560–770 ms, and by then every page has already requested about 330 KB of JavaScript, 150–185 KB of fonts and 16 stylesheets (the strict CSS chunking). Lantern's pessimistic LCP counts all of it, which is why a text LCP lands about 2 s after FCP. Three of those requests were waste or could wait:
+
+- **JetBrains Mono, 40 KB, high priority, on every page.** `fonts.mjs` finds no text drawn in it on any of the 16 pages.
+- **The case videos.** `VideoPrint` used `preload="metadata"`: LeadBot's two videos pulled about 345 KB before the first paint, ATV Riders' 39 KB.
+- **The logos and the five Workbench fonts** came from `public/`, served with `max-age=0, must-revalidate`.
+
+**Logos, production** (3 runs per form factor at 300 px/s, 2 at 1500 px/s):
+
+| | Phone | Desktop |
+|---|---|---|
+| First visit, 300 px/s: logos ready before their tile enters | 24/24, lead 3.83–3.90 s | 24/24, lead 3.79–3.87 s |
+| First visit, 1500 px/s (skimming) | 24/24, lead 0.56–0.63 s | 24/24, lead 0.43–0.58 s |
+| Repeat visit, same tab: logo + font requests | 24 + 0 (24 × 304) | 24 + 0 |
+| Repeat visit, new tab: logo + font requests | 24 + 5 (all revalidated, ~300 B each) | 24 + 5 |
+
+In Chromium the lazy logos are requested about 1,250 px ahead of the viewport, so the lab profile still leaves a margin. WebKit (Playwright's iPhone 13) requests them only 355–680 px ahead: on an iPhone, a quick scroll on a phone network reaches the tiles before the logos arrive. That, plus a 304 round trip per logo on every return visit, is the "they come in late" Erick sees. (In the same tab, Chrome reuses the previous document's fonts without asking the network, so only the new tab shows the font revalidations.)
+
+### Changes
+
+| Commit | What | Why |
+|---|---|---|
+| `39bb12c` | The 24 logos move (git mv) from `public/images/tools` to `src/components/workbench/home/tools` and are imported in `src/components/workbench/home/ToolWall.tsx`, which maps `Tool.logo` to the import. | Served from `/_next/static/media` with a content hash and `max-age=31536000, immutable`: a repeat visit makes no request. Byte-identical files. The imports sit in `ToolWall.tsx`, not `data.ts`: Next treats an image imported by a server component as a client entry and ships its details to every route importing that module (About and Projects too). Cost: +2.5 KB gzip in the Home's page chunk (the six PNGs carry a build-time blur placeholder), +2 kB First Load JS on `/` only. |
+| `b866217` | `src/components/workbench/home/WallController.tsx` fetches every logo of the wall after the `load` event, in an idle callback (a 200 ms timeout where `requestIdleCallback` is missing, as in Safari); skipped under Save-Data. | The logos no longer depend on the browser's lazy-load margin. Nothing is requested before load, so the first screen and LCP are untouched; the markup keeps `loading="lazy"`, so without JavaScript nothing changes. |
+| `d30f59f` | Montserrat, Poppins and Luxurious Roman move (git mv, OFL licences beside them) to `src/resources/fonts`; the five `url()`s in `src/resources/custom.css` become relative. | Same hash and year-long cache. Families, weights, `font-display`, fallbacks and CSS order unchanged; still not preloaded. |
+| `ab3f997` | `preload: false` on JetBrains Mono (`src/app/fonts.ts`). | 40 KB less at high priority before the first paint on every page. The face stays declared and would load on demand. Space Grotesk keeps its preload (the Home intro). |
+| `cfe73f6` | `src/components/workbench/work/VideoPrint.tsx` starts at `preload="none"` and switches to `"metadata"` when the video is two screens away. | LeadBot and ATV Riders load no video bytes with the page; the first frame is there before the video scrolls in. Without JavaScript the box stays empty instead of showing the first frame (those visitors could not play it before either). |
+
+No SVG is inlined (0 bytes added to any page). The Home HTML grows by 2.2 KB uncompressed, since the 72 logo `<img>` URLs are longer with the hash.
+
+### Results, local (`next start`, this machine)
+
+- **Logos** (`local-branch`): 24/24 ready 16.3–20.4 s before their tile enters (phone and desktop); repeat visits make **0 logo and 0 font requests** in the same tab and in a new tab. WebKit requests them 5,900–7,200 px ahead (right after load) instead of 355–680 px.
+- **Videos:** 0 media requests by load + 2.5 s on LeadBot and ATV Riders; each video switches to `metadata` on approach and has `readyState` 4 when it enters, with and without reduced motion.
+- **Fonts:** `fonts.mjs` finds no difference between local `main` and the branch on any of the 16 pages, at either width.
+- **First Load JS:** `/` 287 → 289 kB; every other route equal to `main`.
+- **Captures:** 64 pairs, same dimensions. The masked pairs differ by at most 0.40 % of pixels, all of it animation states (the header clock, typers, scene steps, a card mid-reveal); the same bands differ between two runs of `main`.
+
+### Tests
+
+`tsc` clean; `biome-gate` against `main` OK (5 source files); `npm run build` passes with the same two notices as `main` built in a sibling worktree (the workspace-root and ESLint-plugin notices come from the worktree sitting inside the main checkout); `npm run test:unit` 27/27; `npm run test:e2e` on chromium, mobile-chromium, firefox and webkit against `next start` on port 3100, `--workers=2`: 247 passed, 33 skipped, 0 failed. A first run was cut short when the machine ran low on memory; on the server that survived it, `/gallery` stopped reaching `load` (mobile-chromium, two tests), and on a freshly started server both pass alone and in the full run. The full run also logs one error outside any test on WebKit: the `tests/e2e/fixtures.ts` route was still fetching the YouTube iframe when its test ended (fixture and test unchanged by this branch).
+
+### Preview
+
+Not measured yet: the Preview is behind Vercel's Deployment Protection and the "Protection Bypass for Automation" token has not arrived. When it does: production again with the same method (`LH_TAG=prod-carga-2`), then the Preview (`LH_BASE_URL=<preview> LH_BYPASS=<token> LH_TAG=preview-carga`), `tool-logos.mjs` and `fonts.mjs --compare .perf/fonts/prod.json` on the Preview.
+
+### Left for later
+
+| What | Estimated gain | Why not here |
+|---|---|---|
+| The Once UI core chunk (150 KB gzip) is requested before the first paint on every page, and Lantern's pessimistic LCP counts it. | The largest lever left: several hundred ms of simulated LCP on every page. | Replacing the Once UI components is a refactor. |
+| 16 render-blocking stylesheets from `experimental.cssChunking: "strict"`. | Lighthouse's render-blocking insight: about 260 ms on the Home. | Needs `next.config.mjs`. |
+| Space Grotesk (22 KB) is preloaded at high priority on every page; only the Home intro uses it. | About 110 ms of transfer at 1.6 Mbps on the 15 other pages; under 100 ms of LCP. | A per-route preload would change how the intro gets its font, and the intro stays as it is. |
+| Luxurious Roman (33 KB, high priority) is fetched before the first paint on Home, Blog index, LeadBot, Viral videos and Visual Work, although its phrases are below the fold. | Under 150 ms of LCP on those pages. | Deferring it risks a visible swap when a visitor reaches the phrase quickly. |
+| The chatbot's code (in the 20 KB gzip layout chunk) loads with every page. | Small. | Mounting it later would move its greeting's timing; the chatbot is not touched. |
+| The +2.5 KB gzip on the Home from the logos' image details (Next generates a blur placeholder for each PNG). | About 13 ms at 1.6 Mbps. | Avoiding it needs `images.disableStaticImages` in `next.config.mjs` or relying on Next internals. |
