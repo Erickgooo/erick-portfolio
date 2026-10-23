@@ -378,9 +378,50 @@ No SVG is inlined (0 bytes added to any page). The Home HTML grows by 2.2 KB unc
 
 `tsc` clean; `biome-gate` against `main` OK (5 source files); `npm run build` passes with the same two notices as `main` built in a sibling worktree (the workspace-root and ESLint-plugin notices come from the worktree sitting inside the main checkout); `npm run test:unit` 27/27; `npm run test:e2e` on chromium, mobile-chromium, firefox and webkit against `next start` on port 3100, `--workers=2`: 247 passed, 33 skipped, 0 failed. A first run was cut short when the machine ran low on memory; on the server that survived it, `/gallery` stopped reaching `load` (mobile-chromium, two tests), and on a freshly started server both pass alone and in the full run. The full run also logs one error outside any test on WebKit: the `tests/e2e/fixtures.ts` route was still fetching the YouTube iframe when its test ended (fixture and test unchanged by this branch).
 
-### Preview
+### Production after the deploy (2026-10-23)
 
-Not measured yet: the Preview is behind Vercel's Deployment Protection and the "Protection Bypass for Automation" token has not arrived. When it does: production again with the same method (`LH_TAG=prod-carga-2`), then the Preview (`LH_BASE_URL=<preview> LH_BYPASS=<token> LH_TAG=preview-carga`), `tool-logos.mjs` and `fonts.mjs --compare .perf/fonts/prod.json` on the Preview.
+The Preview was never measured: it sits behind Vercel's Deployment Protection and the bypass token did not arrive. On the user's instruction the branch went to production (merge `98ed753`, rollback `6d2d162`), and production was measured again with the same method (`prod-post`, then `prod-post2` on the pages that moved).
+
+- **Live checks:** the 15 pages answer 200 and the 404 page 404; `/sitemap.xml`, `/api/rss` and `/api/og/generate` 200; `/api/chatbot` and `/api/authenticate` 405 on GET (POST only, as before); CSP present. Logos and fonts are served from `/_next/static/media` with `public,max-age=31536000,immutable`; the HTML has no `/images/tools` reference left; the font preloads are Space Grotesk and Inter only.
+- **Logos:** 24/24 ready 18.3–20.9 s (phone) and 16.8–17.7 s (desktop) before their tile enters; repeat visits make **0 logo and 0 font requests**, in the same tab and in a new tab (3 runs each). Before: 3.8–3.9 s, and 24 + 0 / 24 + 5.
+- **Fonts:** every computed family and drawn face is the same as before the deploy on the 16 pages at both widths. (The only differences `fonts.mjs` reports are probes that read empty in the baseline, taken before the probe learnt to wait for `content-visibility` sections.)
+
+| Page | Before (median, LCP) | After (median, LCP) |
+|---|---|---|
+| home | 90 · 3.53 s | 98 · 2.18 s |
+| about | 89 · 3.68 s | 90 · 3.53 s |
+| work | 92 · 3.31 s | 93 · 3.16 s |
+| blog-index | 90 · 3.52 s | 90 · 3.60 s |
+| blog (post) | 95 · 2.85 s | 95 · 2.85 s |
+| gallery | 98 · 2.33 s | 88 · 3.68 s (again: 89 · 3.68 s) |
+| case-ai-portfolio | 95 · 2.93 s | 88 · 3.75 s (again: 88 · 3.75 s) |
+| case-ai-powered-ad-creatives | 87 · 3.90 s | 88 · 3.76 s |
+| case-atv-riders | 88 · 3.83 s | 88 · 3.68 s |
+| case-dakoma-roofing | 92 · 3.31 s | 89 · 3.68 s (again: 90 · 3.38 s) |
+| case-leadbot-ai | 93 · 3.15 s | 87 · 3.83 s (again: 87 · 3.90 s) |
+| case-quick-metal-shop-arquiexpo | 93 · 3.15 s | 93 · 3.08 s |
+| case-quick-metal-shop-marketing | 95 · 2.78 s | 89 · 3.68 s (again: 89 · 3.68 s) |
+| case-quick-metal-shop-the-brand-comes-to-life | 95 · 2.86 s | 89 · 3.75 s (again: 94 · 3.00 s) |
+| case-quick-metal-shop-viral-videos | 89 · 3.75 s | 87 · 3.90 s (again: 86 · 3.90 s) |
+
+**Why seven pages read worse, and why it is not the change.** On these pages Lighthouse's simulated LCP is bimodal: a run lands near 2.3–2.9 s or near 3.6–4.0 s, with the same requests before the first paint at the same moments (Visual Work: 52–53 requests, 320 KB of script, in fast and slow runs alike; after the deploy, 40 KB fewer fonts). Before the deploy 15 of 23 runs on these seven pages fell on the fast side; after it 11 of 46. The Home went the other way. Both measurements were taken on production about 14 hours apart, so the old build could not be measured again in the same conditions.
+
+To separate the code from the conditions, `main` and the branch were built locally with the font preloads that the Linux builds emit (a temporary, never-committed one-line patch of `next-font-manifest-plugin.js`, as in Follow-up 11b, undone afterwards) and measured interleaved, run by run, 5 runs each:
+
+| Page | `main` (median, LCP) | Branch (median, LCP) |
+|---|---|---|
+| home | 78 · 5.53 s | 89 · 3.54 s |
+| gallery | 76 · 5.89 s | 77 · 5.74 s |
+| case-ai-portfolio | 78 · 5.31 s | 80 · 5.00 s |
+| case-leadbot-ai | 77 · 5.39 s | 77 · 5.30 s |
+| case-quick-metal-shop-marketing | 78 · 5.37 s | 79 · 5.08 s |
+| case-quick-metal-shop-the-brand-comes-to-life | 78 · 5.45 s | 79 · 5.15 s |
+| case-dakoma-roofing | 78 · 5.31 s | 79 · 5.08 s |
+| case-quick-metal-shop-viral-videos | 77 · 5.52 s | 78 · 5.29 s |
+
+In the same conditions the branch is better on every page: 0.09–0.31 s less LCP on the cases and Visual Work (the 40 KB JetBrains Mono preload) and a much better Home. The local values are slower than production's (no CDN, this machine), so only the comparison counts. Without preloads (`ab-main` / `ab-branch`, 5 interleaved runs) the cases and Visual Work were equal within 0.15 s.
+
+One edge case showed up locally: in one Home run the LCP was painted 16 ms after `load`, and the logo fetch, which starts right after `load`, fell inside the LCP window (6.18 s against 5.34 s for `main`'s matching run). In the 5 production runs the logos always started 100–280 ms after the LCP. Waiting for the LCP entry before fetching would close that gap; it is not done here.
 
 ### Left for later
 
