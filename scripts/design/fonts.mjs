@@ -108,7 +108,18 @@ async function probe(page, cdp, selector, id) {
   );
   await page.evaluate(() => document.fonts.ready);
   await page.waitForTimeout(150);
-  return { ...computed, rendered: await platformFonts(cdp, `[data-fontprobe="${id}"]`) };
+  return { ...computed, rendered: await renderedFont(page, cdp, id) };
+}
+
+// A section with content-visibility: auto can take a few frames to render
+// after it scrolls in; until then CDP reports no glyphs, so retry a little.
+async function renderedFont(page, cdp, id) {
+  let rendered = await platformFonts(cdp, `[data-fontprobe="${id}"]`);
+  for (let tries = 0; rendered === "" && tries < 5; tries++) {
+    await page.waitForTimeout(300);
+    rendered = await platformFonts(cdp, `[data-fontprobe="${id}"]`);
+  }
+  return rendered;
 }
 
 async function measurePage(browser, name, width) {
@@ -191,7 +202,7 @@ async function measurePage(browser, name, width) {
       id,
     );
     await page.evaluate(() => document.fonts.ready);
-    result.faces[key] = await platformFonts(cdp, `[data-fontprobe="${id}"]`);
+    result.faces[key] = await renderedFont(page, cdp, id);
   }
 
   result.documentFonts = await page.evaluate(() =>
