@@ -131,11 +131,14 @@ body {
 ──────────────────────────────────────────────────────────────────────────── */
 
 /* The three faces (Erick, 2026-10-22: sober, minimal, elegant) are
-   self-hosted in public/fonts, Google's own files from fonts.googleapis.com,
-   latin subset, with their SIL Open Font License files beside them. Only the
-   weights the site uses are shipped, since every file weighs on mobile
-   Lighthouse. They are not preloaded: the site intro covers the page while
-   they load, and the preloads cost Lighthouse points before.
+   self-hosted in src/resources/fonts, Google's own files from
+   fonts.googleapis.com, latin subset, with their SIL Open Font License files
+   beside them. The url()s are relative, so the build serves each file from
+   /_next/static/media with a content hash and a year-long cache (public/
+   files are revalidated on every visit). Only the weights the site uses are
+   shipped, since every file weighs on mobile Lighthouse. They are not
+   preloaded: the site intro covers the page while they load, and the
+   preloads cost Lighthouse points before.
    - Montserrat, weight 900 only (Black, 18 KB): titles and figures. It
      stands in for Gotham Black, which has no free web licence; buying that
      licence would make this a one-line change.
@@ -148,7 +151,7 @@ body {
    weight it stands in for, so the browser never thickens it on its own. */
 @font-face {
   font-family: "Montserrat";
-  src: url("/fonts/montserrat-900-latin.woff2") format("woff2");
+  src: url("./fonts/montserrat-900-latin.woff2") format("woff2");
   font-weight: 900;
   font-style: normal;
   font-display: swap;
@@ -166,7 +169,7 @@ body {
 
 @font-face {
   font-family: "Poppins";
-  src: url("/fonts/poppins-400-latin.woff2") format("woff2");
+  src: url("./fonts/poppins-400-latin.woff2") format("woff2");
   font-weight: 400;
   font-style: normal;
   font-display: swap;
@@ -174,7 +177,7 @@ body {
 
 @font-face {
   font-family: "Poppins";
-  src: url("/fonts/poppins-500-latin.woff2") format("woff2");
+  src: url("./fonts/poppins-500-latin.woff2") format("woff2");
   font-weight: 500;
   font-style: normal;
   font-display: swap;
@@ -182,7 +185,7 @@ body {
 
 @font-face {
   font-family: "Poppins";
-  src: url("/fonts/poppins-600-latin.woff2") format("woff2");
+  src: url("./fonts/poppins-600-latin.woff2") format("woff2");
   font-weight: 600;
   font-style: normal;
   font-display: swap;
@@ -220,7 +223,7 @@ body {
 
 @font-face {
   font-family: "Luxurious Roman";
-  src: url("/fonts/luxurious-roman-latin.woff2") format("woff2");
+  src: url("./fonts/luxurious-roman-latin.woff2") format("woff2");
   font-weight: 400;
   font-style: normal;
   font-display: swap;

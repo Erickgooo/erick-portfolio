@@ -44,7 +44,7 @@ export const code = JetBrains_Mono({
 
 // The Workbench faces (redesign 2026), Montserrat Black, Poppins and
 // Luxurious Roman, are not declared here: they are self-hosted in
-// public/fonts and declared in src/resources/custom.css (--font-wb-display,
+// src/resources/fonts and declared in src/resources/custom.css (--font-wb-display,
 // --font-wb-text, --font-wb-accent), so they behave the same on every build
 // host (see the note above). They are not preloaded: the intro covers the
 // page while they load.
