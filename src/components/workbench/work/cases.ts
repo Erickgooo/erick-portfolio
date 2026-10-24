@@ -1,7 +1,7 @@
 // Workbench, Projects: every case study as the pages need it. Every value comes
 // from the project MDX (frontmatter and body) or src/resources/content.tsx.
 import { isProtectedPath } from "@/resources/protectedRoutes";
-import { getPosts } from "@/utils/utils";
+import { getPosts } from "@/utils/posts";
 import { type Size, isImage, isVideo, mediaSize } from "../prose/media";
 import { bodyMediaPaths } from "../prose/source";
 

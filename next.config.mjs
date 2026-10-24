@@ -1,9 +1,8 @@
-import mdx from "@next/mdx";
+import createMDX from "@next/mdx";
 
-const withMDX = mdx({
-  extension: /\.mdx?$/,
-  options: {},
-});
+// .md and .mdx files can be pages too; the posts and case studies themselves
+// are read at build time and rendered with next-mdx-remote.
+const withMDX = createMDX({ extension: /\.mdx?$/ });
 
 const isDev = process.env.NODE_ENV === "development";
 

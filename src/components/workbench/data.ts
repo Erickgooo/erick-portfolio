@@ -1,7 +1,7 @@
 // Workbench: the curated content of the home. Every figure, name and path
 // below comes from src/resources/content.tsx or the project MDX.
 import { isProtectedPath } from "@/resources/protectedRoutes";
-import { getPosts } from "@/utils/utils";
+import { getPosts } from "@/utils/posts";
 
 export type Paper = "cobalt" | "ink" | "mist" | "paper";
 

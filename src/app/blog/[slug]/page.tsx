@@ -7,8 +7,8 @@ import { getPostCards } from "@/components/workbench/blog/posts";
 import { SceneDriver } from "@/components/workbench/scenes/SceneDriver";
 import { pages, profile, protectedRoutes, siteUrl } from "@/resources";
 import { isProtectedPath } from "@/resources/protectedRoutes";
+import { getPosts } from "@/utils/posts";
 import { StructuredData, pageMetadata } from "@/utils/seo";
-import { getPosts } from "@/utils/utils";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 

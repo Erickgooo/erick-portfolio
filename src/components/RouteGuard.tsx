@@ -1,33 +1,17 @@
 "use client";
 
+// Shows the 404 in place of a page that is switched off in enabledRoutes. It
+// is decided during render (a pure function of the path), so the right page is
+// already in the server HTML: no spinner, no swap after hydration.
+// Password protection is not handled here: middleware.ts enforces it on the
+// server before the page is rendered.
 import NotFound from "@/app/not-found";
 import { enabledRoutes } from "@/resources";
 import { isRouteEnabled } from "@/utils/routeEnabled";
 import { usePathname } from "next/navigation";
+import type { ReactNode } from "react";
 
-interface RouteGuardProps {
-  children: React.ReactNode;
-}
-
-/**
- * Hides enabledRoutes disabled in the `enabledRoutes` config.
- *
- * Decided during render (pure function of the pathname), so the page is part
- * of the server HTML — the previous effect-based version rendered a spinner on
- * the server and only swapped the page in after hydration, which delayed LCP
- * and shifted the footer on every route.
- *
- * Password protection is NOT handled here — middleware.ts enforces it on the
- * server before the page is ever rendered.
- */
-const RouteGuard: React.FC<RouteGuardProps> = ({ children }) => {
+export function RouteGuard({ children }: { children: ReactNode }) {
   const pathname = usePathname();
-
-  if (!isRouteEnabled(pathname, enabledRoutes)) {
-    return <NotFound />;
-  }
-
-  return <>{children}</>;
-};
-
-export { RouteGuard };
+  return isRouteEnabled(pathname, enabledRoutes) ? children : <NotFound />;
+}

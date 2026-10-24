@@ -1,6 +1,6 @@
 // Workbench, Blog: the posts as the pages list them, from the MDX frontmatter.
 import { isProtectedPath } from "@/resources/protectedRoutes";
-import { getPosts } from "@/utils/utils";
+import { getPosts } from "@/utils/posts";
 import { type Size, mediaSize } from "../prose/media";
 
 export type PostCard = {

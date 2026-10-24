@@ -1,7 +1,7 @@
-import { pages, profile, protectedRoutes, siteUrl } from "@/resources";
+import { pages, profile, siteUrl } from "@/resources";
 import { isProtectedPath } from "@/resources/protectedRoutes";
+import { getPosts } from "@/utils/posts";
 import { RateLimiter, getClientIp } from "@/utils/rateLimit";
-import { getPosts } from "@/utils/utils";
 import { ImageResponse } from "next/og";
 import { EM_MARK_DATA_URI } from "./mark";
 
@@ -57,6 +57,93 @@ function getAllowedTitles(): Set<string> {
   return allowedTitles;
 }
 
+// The card drawn for a shared link, 1280 x 720: the page's title, Erick's
+// monogram in the corner, and his portrait, name and role underneath, white
+// on the darkest brand ink.
+const CARD = { width: 1280, height: 720 };
+
+function Card({ title }: { title: string }) {
+  return (
+    <div
+      style={{
+        display: "flex",
+        width: "100%",
+        height: "100%",
+        padding: 96,
+        background: "#0B0B0F",
+        color: "#ffffff",
+      }}
+    >
+      <img
+        src={EM_MARK_DATA_URI}
+        alt=""
+        width={96}
+        height={96}
+        style={{ position: "absolute", top: 80, right: 80 }}
+      />
+      <div style={{ display: "flex", flexDirection: "column", justifyContent: "center", gap: 64 }}>
+        <span
+          style={{
+            padding: 16,
+            fontSize: 96,
+            lineHeight: "128px",
+            letterSpacing: "-0.05em",
+            textWrap: "balance",
+            overflow: "hidden",
+          }}
+        >
+          {title}
+        </span>
+        <Byline />
+      </div>
+    </div>
+  );
+}
+
+function Byline() {
+  return (
+    <div style={{ display: "flex", alignItems: "center", gap: 80 }}>
+      <img
+        src={siteUrl + profile.avatar}
+        alt={profile.name}
+        width={192}
+        height={192}
+        style={{ objectFit: "cover", borderRadius: "50%" }}
+      />
+      <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+        <span style={{ fontSize: 72, lineHeight: "72px", textWrap: "balance" }}>
+          {profile.name}
+        </span>
+        <span style={{ fontSize: 40, lineHeight: "40px", textWrap: "balance", opacity: 0.6 }}>
+          {profile.role}
+        </span>
+      </div>
+    </div>
+  );
+}
+
+// Geist Regular, fetched from Google Fonts once per server instance (a failed
+// fetch is retried on the next request). Without a browser user agent, the
+// stylesheet points at a TrueType file, which the renderer can read.
+let geist: Promise<ArrayBuffer> | null = null;
+
+function loadGeist(): Promise<ArrayBuffer> {
+  geist ??= (async () => {
+    const css = await (
+      await fetch("https://fonts.googleapis.com/css2?family=Geist:wght@400")
+    ).text();
+    const file = css.match(/src: url\(([^)]+)\) format\('(?:opentype|truetype)'\)/)?.[1];
+    if (!file) throw new Error("[og] no Geist font file in the Google Fonts stylesheet");
+    const response = await fetch(file);
+    if (!response.ok) throw new Error(`[og] Geist font answered ${response.status}`);
+    return response.arrayBuffer();
+  })().catch((error) => {
+    geist = null;
+    throw error;
+  });
+  return geist;
+}
+
 export async function GET(request: Request) {
   const rate = ogLimiter.consume(getClientIp(request));
 
@@ -71,124 +158,8 @@ export async function GET(request: Request) {
   const requested = normalizeTitle((url.searchParams.get("title") || "").slice(0, TITLE_MAX_CHARS));
   const title = getAllowedTitles().has(requested) ? requested : normalizeTitle(pages.home.title);
 
-  async function loadGoogleFont(font: string) {
-    const url = `https://fonts.googleapis.com/css2?family=${font}`;
-    const css = await (await fetch(url)).text();
-    const resource = css.match(/src: url\((.+)\) format\('(opentype|truetype)'\)/);
-
-    if (resource) {
-      const response = await fetch(resource[1]);
-      if (response.status === 200) {
-        return await response.arrayBuffer();
-      }
-    }
-
-    throw new Error("failed to load font data");
-  }
-
-  return new ImageResponse(
-    <div
-      style={{
-        display: "flex",
-        width: "100%",
-        height: "100%",
-        padding: "6rem",
-        background: "#0B0B0F",
-      }}
-    >
-      <img
-        src={EM_MARK_DATA_URI}
-        alt=""
-        style={{
-          position: "absolute",
-          top: "5rem",
-          right: "5rem",
-          width: "6rem",
-          height: "6rem",
-        }}
-      />
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-          gap: "4rem",
-          fontStyle: "normal",
-          color: "white",
-        }}
-      >
-        <span
-          style={{
-            padding: "1rem",
-            fontSize: "6rem",
-            lineHeight: "8rem",
-            letterSpacing: "-0.05em",
-            whiteSpace: "wrap",
-            textWrap: "balance",
-            overflow: "hidden",
-          }}
-        >
-          {title}
-        </span>
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "5rem",
-          }}
-        >
-          <img
-            src={siteUrl + profile.avatar}
-            alt={profile.name}
-            style={{
-              width: "12rem",
-              height: "12rem",
-              objectFit: "cover",
-              borderRadius: "100%",
-            }}
-          />
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              gap: "0.75rem",
-            }}
-          >
-            <span
-              style={{
-                fontSize: "4.5rem",
-                lineHeight: "4.5rem",
-                whiteSpace: "pre-wrap",
-                textWrap: "balance",
-              }}
-            >
-              {profile.name}
-            </span>
-            <span
-              style={{
-                fontSize: "2.5rem",
-                lineHeight: "2.5rem",
-                whiteSpace: "pre-wrap",
-                textWrap: "balance",
-                opacity: "0.6",
-              }}
-            >
-              {profile.role}
-            </span>
-          </div>
-        </div>
-      </div>
-    </div>,
-    {
-      width: 1280,
-      height: 720,
-      fonts: [
-        {
-          name: "Geist",
-          data: await loadGoogleFont("Geist:wght@400"),
-          style: "normal",
-        },
-      ],
-    },
-  );
+  return new ImageResponse(<Card title={title} />, {
+    ...CARD,
+    fonts: [{ name: "Geist", data: await loadGeist(), style: "normal", weight: 400 }],
+  });
 }

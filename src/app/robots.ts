@@ -1,18 +1,17 @@
 import { siteUrl } from "@/resources";
+import type { MetadataRoute } from "next";
 
-export default function robots() {
+// What crawlers may fetch. Share cards and the feed are meant to be fetched;
+// the rest of /api is not. Password-protected routes are deliberately left
+// out: a Disallow line would advertise them, so middleware.ts answers them
+// with `X-Robots-Tag: noindex` instead.
+export default function robots(): MetadataRoute.Robots {
   return {
-    rules: [
-      {
-        userAgent: "*",
-        // Social cards and the feed are meant to be fetched; the rest of /api is not.
-        allow: ["/", "/api/og/", "/api/rss"],
-        // Password-protected routes are deliberately NOT listed here: a Disallow
-        // line would advertise them. They answer with `X-Robots-Tag: noindex`
-        // from middleware.ts instead.
-        disallow: ["/api/", "/unauthorized"],
-      },
-    ],
+    rules: {
+      userAgent: "*",
+      allow: ["/", "/api/og/", "/api/rss"],
+      disallow: ["/api/", "/unauthorized"],
+    },
     sitemap: `${siteUrl}/sitemap.xml`,
   };
 }

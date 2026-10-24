@@ -6,7 +6,7 @@ import { galleryPieces, protectedRoutes } from "@/resources";
 // The client of a piece is the name its alt text opens with. Server-only (it
 // reads the project MDX for the related cases).
 import { isProtectedPath } from "@/resources/protectedRoutes";
-import { getPosts } from "@/utils/utils";
+import { getPosts } from "@/utils/posts";
 import { extractYouTubeId } from "@/utils/youtube";
 import type { Paper } from "../data";
 
