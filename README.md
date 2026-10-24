@@ -1,91 +1,59 @@
-# Magic Portfolio
+# Erick's Portfolio
 
-Magic Portfolio is a simple, clean, beginner-friendly portfolio template. It supports an MDX-based content system for projects and blog posts, an about / CV page and a gallery.
+The website of Erick Mahecha, Growth Marketing & AI Automation Specialist: [erickmahecha.com](https://www.erickmahecha.com).
 
-View the demo [here](https://demo.magic-portfolio.com).
+It shows his work as a bench of real artifacts: case studies with drawn, animated scenes, a blog, the Visual Work gallery, an About page with his experience, and ErickBot, an assistant that answers questions about him.
 
-![Magic Portfolio](public/images/og/home.jpg)
+## Stack
 
-## Getting started
+- [Next.js 15](https://nextjs.org) (App Router) and React 19, written in TypeScript.
+- Styles in CSS Modules with Sass; the design tokens live in `src/resources/custom.css` and the document's base rules in `src/resources/base.css`.
+- Case studies and posts in MDX, rendered with `next-mdx-remote`.
+- ErickBot runs on Google Gemini (`/api/chatbot`).
+- Hosted on [Vercel](https://vercel.com).
 
-**1. Clone the repository**
-```
-git clone https://github.com/once-ui-system/magic-portfolio.git
-```
+## Where things are
 
-**2. Install dependencies**
-```
+| Path | What it holds |
+|---|---|
+| `src/resources/` | The site's data: `profile.ts` (who it is about), `site.ts` (pages, settings), `about.tsx`, `gallery.ts`, `home.tsx`, `protectedRoutes.ts` |
+| `src/app/work/projects/*.mdx` | The case studies, one file each |
+| `src/app/blog/posts/*.mdx` | The blog posts |
+| `src/components/workbench/` | The pages' sections, the scenes and their styles |
+| `src/components/` | The header, footer, chatbot, intro and theme key |
+| `src/utils/` | Reading posts, dates, SEO metadata, auth and rate limits |
+| `public/` | Images, videos and the resume |
+
+## Run it
+
+Requires Node.js 18.18 or later (the minimum for Next.js 15).
+
+```bash
 npm install
+cp .env.example .env.local   # then fill in the values
+npm run dev                  # http://localhost:3000
 ```
 
-**3. Run dev server**
-```
-npm run dev
-```
+Environment variables (see `.env.example`):
 
-**4. Edit config**
-```
-src/resources/once-ui.config.js
-```
+- `PAGE_ACCESS_PASSWORD`: the password for routes listed in `src/resources/protectedRoutes.ts`.
+- `AUTH_SECRET`: the key that signs the access cookie.
+- `GEMINI_API_KEY`: turns ErickBot on (without it the chatbot route answers 503).
 
-**5. Edit content**
-```
-src/resources/content.js
-```
+## Checks
 
-**6. Create blog posts / projects**
-```
-Add a new .mdx file to src/app/blog/posts or src/app/work/projects
+```bash
+npm run build       # production build
+npm run lint        # Next.js lint rules
+npm run test:unit   # unit tests
+npm run test:e2e    # end-to-end tests on Chromium, a phone, Firefox and WebKit (needs a build)
+npm run perf:lh     # Lighthouse on mobile and desktop, results in .perf/
 ```
 
-Magic Portfolio was built with [Once UI](https://once-ui.com) for [Next.js](https://nextjs.org). It requires Node.js v18.17+.
+## Deploys
 
-## Documentation
-
-Docs available at: [docs.once-ui.com](https://docs.once-ui.com/docs/magic-portfolio/quick-start)
-
-## Features
-
-### Once UI
-- All tokens, components & features of [Once UI](https://once-ui.com)
-
-### SEO
-- Automatic open-graph and X image generation with next/og
-- Automatic schema and metadata generation based on the content file
-
-### Design
-- Responsive layout optimized for all screen sizes
-- Timeless design without heavy animations and motion
-- Endless customization options through [data attributes](https://once-ui.com/docs/theming)
-
-### Content
-- Render sections conditionally based on the content file
-- Enable or disable pages for blog, work, gallery and about / CV
-- Generate and display social links automatically
-- Set up password protection for URLs
-
-### Localization
-- A localized, earlier version of Magic Portfolio is available with the next-intl library
-- To use localization, switch to the 'i18n' branch
-
-## Creators
-
-Lorant One: [Threads](https://www.threads.net/@lorant.one) / [LinkedIn](https://www.linkedin.com/in/lorant-one/)
-
-## Get involved
-
-- Join the Design Engineers Club on [Discord](https://discord.com/invite/5EyAQ4eNdS) and share your project with us!
-- Deployed your docs? Share it on the [Once UI Hub](https://once-ui.com/hub) too! We feature our favorite apps on our landing page.
+Every push to `main` deploys to production on Vercel; every other branch gets a preview deployment.
 
 ## License
 
-Distributed under the CC BY-NC 4.0 License.
-- Attribution is required.
-- Commercial usage is not allowed.
-- You can extend the license to [Dopler CC](https://dopler.app/license) by purchasing a [Once UI Pro](https://once-ui.com/pricing) license.
-
-See `LICENSE.txt` for more information.
-
-## Deploy with Vercel
-
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fonce-ui-system%2Fmagic-portfolio&project-name=portfolio&repository-name=portfolio&redirect-url=https%3A%2F%2Fgithub.com%2Fonce-ui-system%2Fmagic-portfolio&demo-title=Magic%20Portfolio&demo-description=Showcase%20your%20designers%20or%20developer%20portfolio&demo-url=https%3A%2F%2Fdemo.magic-portfolio.com&demo-image=%2F%2Fraw.githubusercontent.com%2Fonce-ui-system%2Fmagic-portfolio%2Fmain%2Fpublic%2Fimages%2Fog%2Fhome.jpg)
+Copyright © 2025–2026 Erick Santiago Mahecha Tafur. All rights reserved; see [LICENSE](LICENSE).

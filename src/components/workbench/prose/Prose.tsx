@@ -182,7 +182,7 @@ function Pre({ children }: Props) {
   );
 }
 
-// Tables: native ones (from Markdown) and Once UI's <Table data={...}>.
+// Tables: native ones (from Markdown) and the <Table data={...}> some cases use.
 function TableWrap({ children }: Props) {
   return (
     <div className={styles.tableWrap}>
@@ -236,8 +236,8 @@ function TechStack({ data = "" }: { data?: string }) {
   );
 }
 
-// The Once UI layout pieces some cases use for a grid of figures: a grid of
-// index cards here. Their spacing props are ignored; the cards set their own.
+// The <Grid> and <Card> some cases use for a grid of figures: index cards
+// here. Their spacing props are ignored; the cards set their own.
 function Grid({ children }: Props) {
   return <div className={styles.cards}>{children}</div>;
 }

@@ -7,7 +7,7 @@ $tablet: 720px;
 $desk: 1024px;
 $wide: 1280px;
 // Up to this width the site header is the floating pill at the bottom of the
-// screen (Once UI's "s" breakpoint, see src/components/Header.module.scss).
+// screen and the root type size is 15px (see src/resources/base.css).
 $bottom-nav: 768px;
 
 // Motion: aliases of the global tokens in src/resources/custom.css (one

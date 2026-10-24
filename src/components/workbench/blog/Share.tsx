@@ -1,5 +1,5 @@
 // Workbench, post: share keys under the article. Links for the platforms
-// switched on in socialSharing (once-ui.config.ts), and a key that copies the
+// switched on in `sharing` (src/resources/site.ts), and a key that copies the
 // post's address. Square keys, 44 px, named for screen readers.
 import { sharing } from "@/resources";
 import type { ReactNode } from "react";

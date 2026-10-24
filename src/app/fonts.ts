@@ -1,10 +1,8 @@
 // Font declarations — Manual de Marca, Sección 04:
 // Space Grotesk (titulares), Inter (cuerpo/label), JetBrains Mono (datos).
 //
-// The three font instances live here as a single, obvious source of truth.
-// `@/resources/once-ui.config.ts` re-exports them (Task 11b), and that
-// barrel is imported by several client components (e.g. Header.tsx), so
-// this module is NOT server-only — treat it as shared code.
+// The three font instances live here as a single, obvious source of truth;
+// the root layout puts their CSS variables on <html>.
 //
 // next/font emits `<link rel="preload" as="font">` tags for these
 // declarations on Linux builds (verified in production/Vercel). Local

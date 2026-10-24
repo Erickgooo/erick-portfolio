@@ -1,17 +1,14 @@
-Creative Commons Attribution-NonCommercial 4.0 International  
-CC BY-NC 4.0
+Copyright (c) 2025-2026 Erick Santiago Mahecha Tafur. All rights reserved.
 
-By using this work, you agree to the following terms:  
+This repository and everything in it (source code, design, texts, images,
+video, case studies and brand marks) are the property of Erick Santiago
+Mahecha Tafur. No part may be copied, modified, distributed, published or
+used to build other works without his prior written permission. Being able to
+view this repository on GitHub does not grant any license beyond what GitHub's
+Terms of Service allow.
 
-You are free to:  
-- **Share** — copy and redistribute the material in any medium or format  
-- **Adapt** — remix, transform, and build upon the material  
+Third-party material keeps its own license: the fonts in src/resources/fonts
+are under the SIL Open Font License (the license files sit beside them), and
+the packages listed in package.json are under their respective licenses.
 
-Under the following conditions:  
-- **Attribution** — You must give appropriate credit, provide a link to the license, and indicate if changes were made.  
-- **NonCommercial** — You may not use the material for **commercial purposes**.  
-
-No additional restrictions — You may not apply legal terms or technological measures that legally restrict others from doing anything the license permits.  
-
-Full license text available at:  
-[https://creativecommons.org/licenses/by-nc/4.0/legalcode](https://creativecommons.org/licenses/by-nc/4.0/legalcode)  
+For permission requests: santiagomahecha2328@gmail.com
