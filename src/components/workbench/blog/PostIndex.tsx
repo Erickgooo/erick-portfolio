@@ -48,15 +48,37 @@ export function PostIndex({ items }: { items: OutlineItem[] }) {
       update();
     };
 
+    // Scroll and resize events can fire several times a frame: the work waits
+    // for the next frame, one frame at a time.
+    let frame = 0;
+    let stale = false;
+    const flush = () => {
+      frame = 0;
+      if (stale) {
+        stale = false;
+        measure();
+      }
+      update();
+    };
+    const onScroll = () => {
+      if (!frame) frame = requestAnimationFrame(flush);
+    };
+    const onResize = () => {
+      stale = true;
+      onScroll();
+    };
+
     remeasure();
-    window.addEventListener("scroll", update, { passive: true });
-    window.addEventListener("resize", remeasure);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onResize, { passive: true });
     // Images, embeds and webfonts land after mount and move every heading.
+    // (A ResizeObserver already reports once a frame.)
     const ro = new ResizeObserver(remeasure);
     ro.observe(document.body);
     return () => {
-      window.removeEventListener("scroll", update);
-      window.removeEventListener("resize", remeasure);
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onResize);
+      if (frame) cancelAnimationFrame(frame);
       ro.disconnect();
     };
   }, [items]);
