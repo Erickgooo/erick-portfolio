@@ -70,7 +70,7 @@ export function PostArticle({
                 width={cover.w}
                 height={cover.h}
                 alt={title}
-                sizes="(min-width: 1024px) 400px, (min-width: 720px) 360px, 78vw"
+                sizes="(min-width: 1024px) 400px, (min-width: 720px) 360px, calc(100vw - 32px)"
                 priority
               />
             </span>

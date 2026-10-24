@@ -348,10 +348,16 @@
   border-radius: 50%;
 }
 
+// On phones the cover takes the whole column; a 3:4 photo at that width still
+// fits the screen whole. From tablets up it is the print beside the title.
 .cover {
   position: relative;
-  width: min(78vw, 360px);
+  width: 100%;
   margin: 12px 0 0 !important;
+
+  @include from-tablet {
+    width: min(78vw, 360px);
+  }
 
   @include from-desk {
     width: 100%;
