@@ -1,10 +1,11 @@
 "use client";
 
 import { chatbotTitle, faqData, initialGreeting } from "@/resources/faqChatbot";
-import { Column, Flex, Heading, Icon, IconButton, Row, Text } from "@once-ui-system/core";
 import Image from "next/image";
 import type React from "react";
 import { useEffect, useRef, useState } from "react";
+import { FaX } from "react-icons/fa6";
+import { HiArrowRight, HiChevronDown, HiChevronUp } from "react-icons/hi2";
 import styles from "./FaqChatbot.module.scss";
 
 // ── Constants ────────────────────────────────────────────────────────────────
@@ -61,11 +62,11 @@ const SuggestedQuestions: React.FC<SuggestedQuestionsProps> = ({
         aria-expanded={!collapsed}
       >
         <span>Suggested questions</span>
-        <Icon name={collapsed ? "chevronDown" : "chevronUp"} size="xs" />
+        <span className={styles.iconXs}>{collapsed ? <HiChevronDown /> : <HiChevronUp />}</span>
       </button>
 
       {!collapsed && (
-        <Column fillWidth gap="8" className={styles.questionsList}>
+        <div className={styles.questionsList}>
           {questions.map((faq) => (
             <button
               key={faq.id}
@@ -77,7 +78,7 @@ const SuggestedQuestions: React.FC<SuggestedQuestionsProps> = ({
               {faq.question}
             </button>
           ))}
-        </Column>
+        </div>
       )}
     </div>
   );
@@ -105,19 +106,14 @@ const InputArea: React.FC<InputAreaProps> = ({
   return (
     <div className={styles.inputArea}>
       {isLimited ? (
-        <Text variant="body-default-s" onBackground="neutral-weak" style={{ textAlign: "center" }}>
+        <span className={`${styles.textS} ${styles.weak} ${styles.limitNote}`}>
           You&apos;ve reached the message limit for this session.{" "}
-          <a
-            href={LINKEDIN_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{ textDecoration: "underline", color: "var(--brand-on-background-weak)" }}
-          >
+          <a href={LINKEDIN_URL} target="_blank" rel="noopener noreferrer" className={styles.link}>
             reach out directly!
           </a>
-        </Text>
+        </span>
       ) : (
-        <Row gap="8" fillWidth vertical="center">
+        <div className={styles.inputRow}>
           <input
             className={styles.textInput}
             type="text"
@@ -136,9 +132,11 @@ const InputArea: React.FC<InputAreaProps> = ({
             disabled={disabled || !value.trim()}
             aria-label="Send message"
           >
-            <Icon name="arrowRight" size="s" />
+            <span className={styles.iconS}>
+              <HiArrowRight />
+            </span>
           </button>
-        </Row>
+        </div>
       )}
     </div>
   );
@@ -196,7 +194,7 @@ function parseAnswerText(text: string): React.ReactNode[] {
               href={href}
               target="_blank"
               rel="noopener noreferrer"
-              style={{ textDecoration: "underline", color: "var(--brand-on-background-weak)" }}
+              className={styles.link}
             >
               {label}
             </a>
@@ -221,26 +219,6 @@ function parseAnswerText(text: string): React.ReactNode[] {
     );
   });
 }
-
-// ── Bubble styles ─────────────────────────────────────────────────────────────
-
-const userBubbleStyle: React.CSSProperties = {
-  // Same Cobalto fill as the resting primary CTA, so the one solid brand color
-  // in the UI stays consistent (Manual §3.1).
-  background: "var(--brand-solid-medium)",
-  maxWidth: "85%",
-  borderBottomRightRadius: "var(--radius-xs)",
-  whiteSpace: "normal",
-  wordBreak: "break-word",
-};
-
-const botBubbleStyle: React.CSSProperties = {
-  background: "var(--neutral-alpha-weak)",
-  maxWidth: "85%",
-  borderBottomLeftRadius: "var(--radius-xs)",
-  whiteSpace: "normal",
-  wordBreak: "break-word",
-};
 
 // ── Main component ────────────────────────────────────────────────────────────
 
@@ -388,16 +366,10 @@ export const FaqChatbot: React.FC = () => {
     <div ref={wrapperRef} className={styles.chatbotWrapper}>
       {/* Chatbot Panel */}
       {isOpen && (
-        <Column
-          ref={containerRef}
-          className={styles.chatbotContainer}
-          padding="16"
-          radius="l"
-          gap="16"
-        >
+        <div ref={containerRef} className={styles.chatbotContainer}>
           {/* Header */}
-          <Row fillWidth vertical="center" horizontal="between" className={styles.header}>
-            <Row gap="8" vertical="center">
+          <div className={styles.header}>
+            <div className={styles.brand}>
               <Image
                 src="/images/chatbot/chatbot-icon.webp"
                 alt="ErickBot"
@@ -405,36 +377,33 @@ export const FaqChatbot: React.FC = () => {
                 height={32}
                 className={styles.headerIcon}
               />
-              <Column vertical="start">
-                <Heading as="h4" variant="heading-strong-s">
-                  {chatbotTitle}
-                </Heading>
-                <Text variant="body-default-xs" onBackground="neutral-weak">
-                  Powered by AI
-                </Text>
-              </Column>
-            </Row>
-            <IconButton
-              icon="x"
-              variant="tertiary"
-              size="s"
+              <div className={styles.brandText}>
+                <h4 className={styles.title}>{chatbotTitle}</h4>
+                <span className={`${styles.textXs} ${styles.weak}`}>Powered by AI</span>
+              </div>
+            </div>
+            <button
+              type="button"
+              className={styles.closeButton}
               onClick={() => setIsOpen(false)}
               aria-label="Close Chatbot"
-            />
-          </Row>
+            >
+              <span className={styles.iconS}>
+                <FaX />
+              </span>
+            </button>
+          </div>
 
           {/* Content Area */}
           <div ref={messagesContainerRef} className={styles.messagesContainer}>
             {activeView === null ? (
               /* ── Home screen ── */
-              <Column gap="12" fillWidth>
-                <Flex fillWidth horizontal="start">
-                  <Flex paddingY="s" paddingX="m" radius="m" style={botBubbleStyle}>
-                    <Text variant="body-default-m" onBackground="neutral-strong">
-                      {initialGreeting}
-                    </Text>
-                  </Flex>
-                </Flex>
+              <div className={styles.thread}>
+                <div className={styles.lineStart}>
+                  <div className={`${styles.bubble} ${styles.botBubble}`}>
+                    <span className={`${styles.textM} ${styles.strong}`}>{initialGreeting}</span>
+                  </div>
+                </div>
 
                 <SuggestedQuestions
                   collapsed={suggestionsCollapsed}
@@ -442,40 +411,35 @@ export const FaqChatbot: React.FC = () => {
                   onSelect={(q) => askGemini(q)}
                   disabled={isLimited || isLoading}
                 />
-              </Column>
+              </div>
             ) : (
               /* ── Active Q&A screen ── */
-              <Column gap="12" fillWidth>
+              <div className={styles.thread}>
                 {/* User question */}
-                <Flex fillWidth horizontal="end">
-                  <Flex paddingY="s" paddingX="m" radius="m" style={userBubbleStyle}>
-                    {/* onSolid, not onBackground: the bubble is a solid Cobalto
-                        fill, so the label needs Blanco Titanio rather than the
+                <div className={styles.lineEnd}>
+                  <div className={`${styles.bubble} ${styles.userBubble}`}>
+                    {/* Blanco Titanio on the solid Cobalto fill, not the
                         Cobalto used for brand text on the page background. */}
-                    <Text variant="body-default-m" onSolid="brand-strong">
+                    <span className={`${styles.textM} ${styles.onSolid}`}>
                       {activeView.question}
-                    </Text>
-                  </Flex>
-                </Flex>
+                    </span>
+                  </div>
+                </div>
 
                 {/* Bot answer / loading */}
-                <Flex fillWidth horizontal="start">
-                  <Flex paddingY="s" paddingX="m" radius="m" style={botBubbleStyle}>
+                <div className={styles.lineStart}>
+                  <div className={`${styles.bubble} ${styles.botBubble}`}>
                     {isLoading ? (
-                      <Text
-                        variant="body-default-m"
-                        onBackground="neutral-weak"
-                        style={{ fontStyle: "italic" }}
-                      >
+                      <span className={`${styles.textM} ${styles.weak} ${styles.typing}`}>
                         ErickBot is typing…
-                      </Text>
+                      </span>
                     ) : (
-                      <Text variant="body-default-m" onBackground="neutral-strong">
+                      <span className={`${styles.textM} ${styles.strong}`}>
                         {parseAnswerText(activeView.answer)}
-                      </Text>
+                      </span>
                     )}
-                  </Flex>
-                </Flex>
+                  </div>
+                </div>
 
                 {/* Suggested questions (collapsed by default after answering) */}
                 {!isLoading && (
@@ -487,7 +451,7 @@ export const FaqChatbot: React.FC = () => {
                     disabled={isLimited || isLoading}
                   />
                 )}
-              </Column>
+              </div>
             )}
           </div>
 
@@ -499,7 +463,7 @@ export const FaqChatbot: React.FC = () => {
             disabled={isLoading}
             isLimited={isLimited}
           />
-        </Column>
+        </div>
       )}
 
       {/* Proactive Greeting Bubble */}
@@ -513,9 +477,9 @@ export const FaqChatbot: React.FC = () => {
           }}
         >
           <div className={styles.greetingContent}>
-            <Text variant="body-default-s" onBackground="neutral-strong">
+            <span className={`${styles.textS} ${styles.strong}`}>
               👋 Curious about my work? Ask ErickBot!
-            </Text>
+            </span>
           </div>
           <button
             type="button"
@@ -526,7 +490,9 @@ export const FaqChatbot: React.FC = () => {
             }}
             aria-label="Close greeting"
           >
-            <Icon name="x" size="xs" />
+            <span className={styles.iconXs}>
+              <FaX />
+            </span>
           </button>
           <div className={styles.bubbleTip} />
         </div>
@@ -541,7 +507,9 @@ export const FaqChatbot: React.FC = () => {
           aria-label="Toggle ErickBot"
         >
           {isOpen ? (
-            <Icon name="x" size="m" />
+            <span className={styles.iconM}>
+              <FaX />
+            </span>
           ) : (
             <Image
               src="/images/chatbot/chatbot-icon.webp"

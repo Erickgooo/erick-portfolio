@@ -1,108 +1,245 @@
-@use "./breakpoints.scss" as breakpoints;
+// The site header: Erick's location on the left, the pill of page keys in the
+// middle, his local time on the right. On desktop it sticks to the top under
+// a fade; up to 768px it floats at the bottom of the screen, keys only, over
+// a fade of its own. Sizes are in rem so they follow the root size (15px on
+// phones, 16px above). Colours: the --wb-* tokens in src/resources/custom.css.
+// Keep this file ASCII-only.
+@use "./workbench/shared" as *;
 
-.mask {
-    pointer-events: none;
-    backdrop-filter: blur(0.5rem);
-    background: linear-gradient(to bottom, var(--page-background), var(--static-transparent));
-    mask-image: linear-gradient(rgba(0,0,0) 25%, rgba(0, 0, 0, 0) 100%);
-    mask-size: 100% 100%;
+// The 16px of page above the sticky bar on desktop.
+.gap {
+  width: 100%;
+  height: 1rem;
+
+  @include bottom-nav {
+    display: none;
+  }
 }
 
-@media (max-width: breakpoints.$s) {
-    .position {
-        top: auto !important;
-        bottom: var(--static-space-24) !important;
-    }
-
-    .mask {
-        transform: rotate(180deg);
-        bottom: 0;
-    }
+// The page fading under the bar (blurred, so text never reads through it).
+.fade {
+  position: fixed;
+  left: 0;
+  right: 0;
+  z-index: 9;
+  height: 5rem;
+  pointer-events: none;
+  backdrop-filter: blur(0.5rem);
+  mask-image: linear-gradient(#000 20%, transparent 100%);
 }
 
-// Workbench typography and colours (redesign 2026; sober, 2026-10-22).
-// Shape, layout and navigation are unchanged: only type, colours and the
-// active state move. Colour tokens: src/resources/custom.css. Keep this file
-// ASCII-only.
+.fadeTop {
+  top: 0;
+  background-image: linear-gradient(var(--wb-page), transparent);
+
+  @include bottom-nav {
+    display: none;
+  }
+}
+
+.fadeBottom {
+  bottom: 0;
+  display: none;
+  background-image: linear-gradient(0deg, var(--wb-page), transparent);
+  mask-image: linear-gradient(0deg, #000 20%, transparent 100%);
+
+  @include bottom-nav {
+    display: block;
+  }
+}
+
+.bar {
+  position: sticky;
+  top: 0;
+  z-index: 9;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  padding: 0.5rem;
+
+  @include bottom-nav {
+    position: fixed;
+    top: auto;
+    left: 0;
+    right: 0;
+    bottom: 1.5rem;
+  }
+}
+
+// The three columns share the bar's width the same way, so the pill sits in
+// the middle whatever the side texts measure.
+.side,
+.middle {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-width: 0;
+}
+
+.middle {
+  justify-content: center;
+}
+
+.end {
+  justify-content: flex-end;
+}
 
 // Location and local time: Poppins, secondary ink, figures that do not jiggle.
-.bar .meta {
-    font-family: var(--font-wb-text), system-ui, sans-serif;
-    font-size: 15px;
-    font-weight: 500;
-    line-height: 1.3;
-    color: var(--wb-ink-2);
-    font-variant-numeric: tabular-nums;
+.meta {
+  font-family: var(--font-wb-text), system-ui, sans-serif;
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.3;
+  color: var(--wb-ink-2);
+  font-variant-numeric: tabular-nums;
 }
 
-// The pill: Workbench page, a hairline and a soft shadow (the only shadow
-// the sober pages keep: the pill floats over the page).
-.bar .pill {
-    border-color: var(--wb-line);
-    box-shadow: var(--wb-shadow-soft);
+.start {
+  padding-left: 0.75rem;
 }
 
-.pill :global(.button) {
-    position: relative;
+.end .meta {
+  padding-right: 0.75rem;
+}
+
+.desk {
+  @include bottom-nav {
+    display: none;
+  }
+}
+
+// The pill: the page colour, a hairline and a soft shadow (the only shadow the
+// sober pages keep: the pill floats over the page).
+.pill {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem;
+  border: 1px solid var(--wb-line);
+  border-radius: 1.5rem;
+  background: var(--wb-page);
+  box-shadow: var(--wb-shadow-soft);
+  font-size: 0.875rem;
+  font-weight: 300;
+  line-height: 1.125rem;
+}
+
+.rule {
+  flex-shrink: 0;
+  width: 1px;
+  height: 1.5rem;
+  background: rgba(147, 147, 150, 0.3);
+}
+
+// A key: an icon, and on desktop its label. Only transform and opacity move.
+.pill .key {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  height: 2rem;
+  padding: 0.25rem 0.5rem;
+  border: 1px solid transparent;
+  border-radius: 1.25rem;
+  background: transparent;
+  color: var(--wb-ink);
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
+  transition-property: opacity, translate, scale;
+  transition-duration: 0.2s;
+  transition-timing-function: ease-in-out;
+
+  &:hover {
     color: var(--wb-ink);
-    // Once UI animates every property; here only transform and opacity move.
-    transition-property: opacity, translate, scale;
+  }
 
-    @media (hover: hover) and (pointer: fine) {
-        &:hover:not([data-disabled]) {
-            background: var(--wb-soft-2);
-            border-color: transparent;
-        }
-    }
-
-    &:focus-visible {
-        outline: 3px solid var(--wb-accent);
-        outline-offset: 2px;
-    }
+  &:focus-visible {
+    background: rgba(147, 147, 150, 0.15);
+    border-color: rgba(147, 147, 150, 0.15);
+    outline: 3px solid var(--wb-accent);
+    outline-offset: 2px;
+  }
 }
 
 // Touch screens: every key is at least 44 x 44 px.
 @media (pointer: coarse) {
-    .pill :global(.button) {
-        min-width: 44px;
-        min-height: 44px;
-    }
+  .pill .key {
+    min-width: 44px;
+    min-height: 44px;
+  }
 }
 
-.pill :global(.font-label) {
-    font-family: var(--font-wb-text), system-ui, sans-serif;
-    font-size: 15px;
-    font-weight: 500;
-    letter-spacing: -0.005em;
+.icon {
+  display: flex;
+  font-size: 1rem;
+
+  svg {
+    display: block;
+    width: 1em;
+    height: 1em;
+  }
+}
+
+.label {
+  padding: 0 2px;
+  font-family: var(--font-wb-text), system-ui, sans-serif;
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1rem;
+  letter-spacing: -0.005em;
+
+  // On the bottom bar the keys show their icons only; the label stays the
+  // key's name for screen readers.
+  @include bottom-nav {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
 }
 
 // The current page: a soft surface and a thin cobalt bar under the label or icon.
-.pill a[aria-current="page"] {
-    background: var(--wb-soft);
-    border-color: transparent;
+.pill .key[aria-current="page"] {
+  background: var(--wb-soft);
+  border-color: transparent;
 
-    &::after {
-        content: "";
-        position: absolute;
-        left: 8px;
-        right: 8px;
-        bottom: 3px;
-        height: 2px;
-        border-radius: 1px;
-        background: var(--wb-accent);
-        transform-origin: left center;
-        animation: currentBar var(--wb-dur-state) var(--wb-ease-soft) both;
-    }
+  &::after {
+    content: "";
+    position: absolute;
+    left: 8px;
+    right: 8px;
+    bottom: 3px;
+    height: 2px;
+    border-radius: 1px;
+    background: var(--wb-accent);
+    transform-origin: left center;
+    animation: currentBar var(--wb-dur-state) var(--wb-ease-soft) both;
+  }
+}
+
+// Hovering lightens any key, the current one too.
+@include fine-pointer {
+  .pill .key:hover {
+    background: var(--wb-soft-2);
+    border-color: transparent;
+  }
 }
 
 @keyframes currentBar {
-    from {
-        scale: 0 1;
-    }
+  from {
+    scale: 0 1;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-    .pill a[aria-current="page"]::after {
-        animation: none;
-    }
-}
+  .pill .key[aria-current="page"]::after {
+    animation: none;
+  }
+}

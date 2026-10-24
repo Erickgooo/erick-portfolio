@@ -1,0 +1,21 @@
+// The document: a full-width flex root, and a body that stacks the site's
+// pieces in a centred column at least one screen tall, on the page colour.
+.root {
+  position: relative;
+  display: flex;
+  width: 100%;
+  min-width: 0;
+  font-family: var(--font-body);
+}
+
+.body {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+  background: var(--wb-page);
+}

@@ -1,4 +1,4 @@
-@use "./breakpoints.scss" as breakpoints;
+@use "./workbench/shared" as *;
 
 .chatbotWrapper {
   position: fixed;
@@ -81,9 +81,15 @@
   border-radius: var(--radius-l) !important;
   box-sizing: border-box !important;
   margin: 0 !important;
+  padding: 1rem;
+  gap: 1rem;
 }
 
 .header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
   border-bottom: 1px solid var(--neutral-alpha-weak);
   padding-bottom: var(--static-space-12);
   box-sizing: border-box;
@@ -146,7 +152,9 @@
 }
 
 .questionsList {
+  position: relative;
   display: flex;
+  width: 100%;
   flex-direction: column;
   gap: var(--static-space-8);
   padding: var(--static-space-12) 0;
@@ -245,7 +253,7 @@
   }
 }
 
-@media (max-width: breakpoints.$s) {
+@include bottom-nav {
   .chatbotWrapper {
     bottom: 5.5rem;
     right: 1.5rem;
@@ -330,4 +338,163 @@
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+// The pieces of the panel: the brand row, the thread of bubbles and the input
+// row. Sizes are in rem so they follow the root size (15px on phones).
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.brandText {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+.title {
+  margin: 0;
+  font-family: var(--font-heading), sans-serif;
+  font-size: 1.125rem;
+  font-weight: 600;
+  line-height: 1.5rem;
+  text-wrap: balance;
+}
+
+.closeButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: 0.375rem;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+
+  &:hover {
+    border-color: var(--neutral-border-medium);
+  }
+}
+
+.thread {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  width: 100%;
+}
+
+.lineStart,
+.lineEnd {
+  display: flex;
+  width: 100%;
+}
+
+.lineEnd {
+  justify-content: flex-end;
+}
+
+.bubble {
+  display: flex;
+  max-width: 85%;
+  padding: 1rem 1.5rem;
+  border-radius: 0.375rem;
+  white-space: normal;
+  word-break: break-word;
+
+  @include bottom-nav {
+    padding: 0.5rem 0.75rem;
+  }
+}
+
+.botBubble {
+  background: var(--neutral-alpha-weak);
+  border-bottom-left-radius: 0.125rem;
+}
+
+// The same Cobalto fill as the resting primary call to action, so the one
+// solid brand colour in the interface stays consistent (Manual 3.1).
+.userBubble {
+  background: var(--brand-solid-medium);
+  border-bottom-right-radius: 0.125rem;
+}
+
+.inputRow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+.textXs {
+  font-size: 0.75rem;
+  font-weight: 300;
+  line-height: 1rem;
+}
+
+.textS {
+  font-size: 0.875rem;
+  font-weight: 300;
+  line-height: 1.125rem;
+}
+
+.textM {
+  font-size: 1rem;
+  font-weight: 300;
+  line-height: 1.5rem;
+}
+
+.strong {
+  color: var(--neutral-on-background-strong);
+}
+
+.weak {
+  color: var(--neutral-on-background-weak);
+}
+
+.onSolid {
+  color: var(--brand-on-solid-strong);
+}
+
+.typing {
+  font-style: italic;
+}
+
+.limitNote {
+  text-align: center;
+}
+
+.chatbotWrapper .link {
+  color: var(--brand-on-background-weak);
+  text-decoration: underline;
+}
+
+.iconXs,
+.iconS,
+.iconM {
+  display: flex;
+
+  svg {
+    display: block;
+    width: 1em;
+    height: 1em;
+  }
+}
+
+.iconXs {
+  font-size: 1rem;
+}
+
+.iconS {
+  font-size: 1.25rem;
+}
+
+.iconM {
+  font-size: 1.5rem;
 }

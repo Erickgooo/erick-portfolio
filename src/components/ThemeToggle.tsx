@@ -1,31 +1,31 @@
 "use client";
 
-import { Row, ToggleButton, useTheme } from "@once-ui-system/core";
-import type React from "react";
-import { useEffect, useState } from "react";
+// The header key that switches between light and dark: a moon in light, a sun
+// in dark. Styled by the header (see Header.module.scss).
+import { HiOutlineMoon, HiOutlineSun } from "react-icons/hi2";
+import { useTheme } from "./theme";
 
-export const ThemeToggle: React.FC = () => {
-  const { theme, setTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
-  const [currentTheme, setCurrentTheme] = useState("light");
-
-  useEffect(() => {
-    setMounted(true);
-    setCurrentTheme(document.documentElement.getAttribute("data-theme") || "light");
-  }, []);
-
-  useEffect(() => {
-    setCurrentTheme(document.documentElement.getAttribute("data-theme") || "light");
-  }, [theme]);
-
-  const icon = currentTheme === "dark" ? "light" : "dark";
-  const nextTheme = currentTheme === "light" ? "dark" : "light";
+export function ThemeToggle({
+  className,
+  iconClassName,
+}: {
+  className?: string;
+  iconClassName?: string;
+}) {
+  const [theme, setTheme] = useTheme();
+  const next = theme === "dark" ? "light" : "dark";
+  const Icon = theme === "dark" ? HiOutlineSun : HiOutlineMoon;
 
   return (
-    <ToggleButton
-      prefixIcon={icon}
-      onClick={() => setTheme(nextTheme)}
-      aria-label={`Switch to ${nextTheme} mode`}
-    />
+    <button
+      type="button"
+      className={className}
+      onClick={() => setTheme(next)}
+      aria-label={`Switch to ${next} mode`}
+    >
+      <span className={iconClassName}>
+        <Icon />
+      </span>
+    </button>
   );
-};
+}

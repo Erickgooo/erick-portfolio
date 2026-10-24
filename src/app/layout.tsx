@@ -2,16 +2,15 @@ import "@once-ui-system/core/css/styles.css";
 import "@once-ui-system/core/css/tokens.css";
 import "@/resources/custom.css";
 
-import classNames from "classnames";
-
 import { body, code, heading } from "@/app/fonts";
-import { FaqChatbot, Footer, Header, IntroLoader, Providers } from "@/components";
+import { FaqChatbot, Footer, Header, IntroLoader } from "@/components";
 import { SiteMain } from "@/components/SiteMain";
 import { SpotlightBackground } from "@/components/SpotlightBackground";
 import spotlightStyles from "@/components/SpotlightBackground.module.scss";
 import { baseURL, dataStyle, home, style } from "@/resources";
-import { Background, Column, Flex, Meta, RevealFx, SpacingToken } from "@once-ui-system/core";
+import { Meta } from "@once-ui-system/core";
 import { Analytics } from "@vercel/analytics/next";
+import styles from "./layout.module.scss";
 
 export async function generateMetadata() {
   return Meta.generate({
@@ -29,12 +28,10 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <Flex
-      suppressHydrationWarning
-      as="html"
+    <html
       lang="en"
-      fillWidth
-      className={classNames(heading.variable, body.variable, code.variable)}
+      suppressHydrationWarning
+      className={[styles.root, heading.variable, body.variable, code.variable].join(" ")}
     >
       <head>
         <script
@@ -96,37 +93,28 @@ export default async function RootLayout({
           }}
         />
       </head>
-      <Providers>
-        <Column
-          as="body"
-          background="page"
-          fillWidth
-          // The font variables also go on <body>: Once UI's tokens declare
-          // `:root { --font-heading: var(--font-heading) }` (same for body,
-          // label, code), which empties next/font's variables on <html> when
-          // that stylesheet lands after the font one, and Next's CSS chunking
-          // does not keep a fixed order. On <body> they win whatever the order.
-          className={classNames(
-            spotlightStyles.pageDots,
-            heading.variable,
-            body.variable,
-            code.variable,
-          )}
-          style={{ minHeight: "100vh", position: "relative" }}
-          margin="0"
-          padding="0"
-          horizontal="center"
-        >
-          <IntroLoader />
-          <SpotlightBackground />
-          <Flex fillWidth minHeight="16" s={{ hide: true }} />
-          <Header />
-          <SiteMain>{children}</SiteMain>
-          <Footer />
-          <Analytics />
-          <FaqChatbot />
-        </Column>
-      </Providers>
-    </Flex>
+      <body
+        // The font variables also go on <body>: Once UI's tokens declare
+        // `:root { --font-heading: var(--font-heading) }` (same for body,
+        // label, code), which empties next/font's variables on <html> when
+        // that stylesheet lands after the font one, and Next's CSS chunking
+        // does not keep a fixed order. On <body> they win whatever the order.
+        className={[
+          styles.body,
+          spotlightStyles.pageDots,
+          heading.variable,
+          body.variable,
+          code.variable,
+        ].join(" ")}
+      >
+        <IntroLoader />
+        <SpotlightBackground />
+        <Header />
+        <SiteMain>{children}</SiteMain>
+        <Footer />
+        <Analytics />
+        <FaqChatbot />
+      </body>
+    </html>
   );
 }

@@ -1,5 +1,4 @@
 import type { About, Blog, Gallery, Home, Newsletter, Person, Social, Work } from "@/types";
-import { Line, Logo, Row, Text } from "@once-ui-system/core";
 import { Metric } from "./Metric";
 
 const person: Person = {
@@ -54,14 +53,12 @@ const home: Home = {
   ),
   featured: {
     display: true,
+    // Not shown on any page; the chatbot reads it as text.
     title: (
-      <Row gap="12" vertical="center">
-        <strong className="ml-4">Quick Metal Shop: Engineering Virality with AI</strong>{" "}
-        <Line background="brand-alpha-strong" vert height="20" />
-        <Text marginRight="4" onBackground="brand-medium">
-          Featured work
-        </Text>
-      </Row>
+      <span>
+        <strong>Quick Metal Shop: Engineering Virality with AI</strong> <span />
+        <span>Featured work</span>
+      </span>
     ),
     href: "/work/quick-metal-shop-viral-videos",
   },

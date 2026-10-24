@@ -1,238 +1,115 @@
 "use client";
 
+// The site header (see Header.module.scss): location, the pill of page keys
+// with the theme key, and Erick's local time.
+import { about, blog, display, gallery, person, routes, work } from "@/resources";
+import { EMIcon } from "@/resources/EMIcon";
+import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-
-import { Fade, Flex, Line, Row, ToggleButton } from "@once-ui-system/core";
-
-import { about, blog, display, gallery, person, routes, work } from "@/resources";
+import type { IconType } from "react-icons";
+import {
+  PiBookBookmarkDuotone,
+  PiGridFourDuotone,
+  PiImageDuotone,
+  PiUserCircleDuotone,
+} from "react-icons/pi";
 import styles from "./Header.module.scss";
 import { ThemeToggle } from "./ThemeToggle";
 
-type TimeDisplayProps = {
-  timeZone: string;
-  locale?: string; // Optionally allow locale, defaulting to 'en-GB'
-};
-
-const TimeDisplay: React.FC<TimeDisplayProps> = ({ timeZone, locale = "en-GB" }) => {
-  const [currentTime, setCurrentTime] = useState("");
+/** The time in a zone as HH:MM:SS, ticking every second. Empty until mounted. */
+function Clock({ timeZone }: { timeZone: string }) {
+  const [time, setTime] = useState("");
 
   useEffect(() => {
-    const updateTime = () => {
-      const now = new Date();
-      const options: Intl.DateTimeFormatOptions = {
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit",
-        hour12: false,
-      };
-
-      let resolvedTimeZone = timeZone;
-      if (timeZone === "America/Medellin") {
-        resolvedTimeZone = "America/Bogota";
-      }
-
-      try {
-        const timeString = new Intl.DateTimeFormat(locale, {
-          ...options,
-          timeZone: resolvedTimeZone,
-        }).format(now);
-        setCurrentTime(timeString);
-      } catch (error) {
-        console.error("Invalid timezone:", resolvedTimeZone, error);
-        try {
-          const timeString = new Intl.DateTimeFormat(locale, options).format(now);
-          setCurrentTime(timeString);
-        } catch (e) {
-          setCurrentTime("");
-        }
-      }
+    const options: Intl.DateTimeFormatOptions = {
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      hour12: false,
     };
+    let format: Intl.DateTimeFormat;
+    try {
+      format = new Intl.DateTimeFormat("en-GB", { ...options, timeZone });
+    } catch {
+      format = new Intl.DateTimeFormat("en-GB", options);
+    }
+    const tick = () => setTime(format.format(new Date()));
+    tick();
+    const id = setInterval(tick, 1000);
+    return () => clearInterval(id);
+  }, [timeZone]);
 
-    updateTime();
-    const intervalId = setInterval(updateTime, 1000);
+  return <>{time}</>;
+}
 
-    return () => clearInterval(intervalId);
-  }, [timeZone, locale]);
+type Page = { path: keyof typeof routes; label: string; Icon: IconType; exact?: boolean };
 
-  return <>{currentTime}</>;
-};
-
-export default TimeDisplay;
+const PAGES: Page[] = [
+  { path: "/about", label: about.label, Icon: PiUserCircleDuotone, exact: true },
+  { path: "/work", label: work.label, Icon: PiGridFourDuotone },
+  { path: "/blog", label: blog.label, Icon: PiBookBookmarkDuotone },
+  { path: "/gallery", label: gallery.label, Icon: PiImageDuotone },
+];
 
 export const Header = () => {
   const pathname = usePathname() ?? "";
+  const isCurrent = (path: string, exact = false) =>
+    exact ? pathname === path : pathname.startsWith(path);
 
   return (
     <>
-      <Fade s={{ hide: true }} fillWidth position="fixed" height="80" zIndex={9} />
-      <Fade
-        hide
-        s={{ hide: false }}
-        fillWidth
-        position="fixed"
-        bottom="0"
-        to="top"
-        height="80"
-        zIndex={9}
-      />
-      <Row
-        fitHeight
-        className={`${styles.position} ${styles.bar}`}
-        position="sticky"
-        as="header"
-        zIndex={9}
-        fillWidth
-        padding="8"
-        horizontal="center"
-        data-border="rounded"
-        s={{
-          position: "fixed",
-        }}
-      >
-        <Row
-          paddingLeft="12"
-          fillWidth
-          vertical="center"
-          textVariant="body-default-s"
-          className={styles.meta}
-        >
-          {display.location && <Row s={{ hide: true }}>{person.location}</Row>}
-        </Row>
-        <Row fillWidth horizontal="center">
-          <Row
-            className={styles.pill}
-            background="page"
-            border="neutral-alpha-weak"
-            radius="m-4"
-            shadow="l"
-            padding="4"
-            horizontal="center"
-            zIndex={1}
-          >
-            <Row gap="4" vertical="center" textVariant="body-default-s" suppressHydrationWarning>
-              {routes["/"] && (
-                <ToggleButton
-                  prefixIcon="brand"
-                  href="/"
-                  aria-label="Erick Mahecha — Home"
-                  selected={pathname === "/"}
-                  aria-current={pathname === "/" ? "page" : undefined}
-                />
-              )}
-              <Line background="neutral-alpha-medium" vert maxHeight="24" />
-              {routes["/about"] && (
-                <>
-                  <Row s={{ hide: true }}>
-                    <ToggleButton
-                      prefixIcon="person"
-                      href="/about"
-                      label={about.label}
-                      selected={pathname === "/about"}
-                      aria-current={pathname === "/about" ? "page" : undefined}
-                    />
-                  </Row>
-                  <Row hide s={{ hide: false }}>
-                    <ToggleButton
-                      prefixIcon="person"
-                      href="/about"
-                      aria-label={about.label}
-                      selected={pathname === "/about"}
-                      aria-current={pathname === "/about" ? "page" : undefined}
-                    />
-                  </Row>
-                </>
-              )}
-              {routes["/work"] && (
-                <>
-                  <Row s={{ hide: true }}>
-                    <ToggleButton
-                      prefixIcon="grid"
-                      href="/work"
-                      label={work.label}
-                      selected={pathname.startsWith("/work")}
-                      aria-current={pathname.startsWith("/work") ? "page" : undefined}
-                    />
-                  </Row>
-                  <Row hide s={{ hide: false }}>
-                    <ToggleButton
-                      prefixIcon="grid"
-                      href="/work"
-                      aria-label={work.label}
-                      selected={pathname.startsWith("/work")}
-                      aria-current={pathname.startsWith("/work") ? "page" : undefined}
-                    />
-                  </Row>
-                </>
-              )}
-              {routes["/blog"] && (
-                <>
-                  <Row s={{ hide: true }}>
-                    <ToggleButton
-                      prefixIcon="book"
-                      href="/blog"
-                      label={blog.label}
-                      selected={pathname.startsWith("/blog")}
-                      aria-current={pathname.startsWith("/blog") ? "page" : undefined}
-                    />
-                  </Row>
-                  <Row hide s={{ hide: false }}>
-                    <ToggleButton
-                      prefixIcon="book"
-                      href="/blog"
-                      aria-label={blog.label}
-                      selected={pathname.startsWith("/blog")}
-                      aria-current={pathname.startsWith("/blog") ? "page" : undefined}
-                    />
-                  </Row>
-                </>
-              )}
-              {routes["/gallery"] && (
-                <>
-                  <Row s={{ hide: true }}>
-                    <ToggleButton
-                      prefixIcon="gallery"
-                      href="/gallery"
-                      label={gallery.label}
-                      selected={pathname.startsWith("/gallery")}
-                      aria-current={pathname.startsWith("/gallery") ? "page" : undefined}
-                    />
-                  </Row>
-                  <Row hide s={{ hide: false }}>
-                    <ToggleButton
-                      prefixIcon="gallery"
-                      href="/gallery"
-                      aria-label={gallery.label}
-                      selected={pathname.startsWith("/gallery")}
-                      aria-current={pathname.startsWith("/gallery") ? "page" : undefined}
-                    />
-                  </Row>
-                </>
-              )}
-              {display.themeSwitcher && (
-                <>
-                  <Line background="neutral-alpha-medium" vert maxHeight="24" />
-                  <ThemeToggle />
-                </>
-              )}
-            </Row>
-          </Row>
-        </Row>
-        <Flex fillWidth horizontal="end" vertical="center">
-          <Flex
-            paddingRight="12"
-            horizontal="end"
-            vertical="center"
-            textVariant="body-default-s"
-            gap="20"
-            className={styles.meta}
-          >
-            <Flex s={{ hide: true }}>
-              {display.time && <TimeDisplay timeZone={person.timeZone} />}
-            </Flex>
-          </Flex>
-        </Flex>
-      </Row>
+      <div className={styles.gap} />
+      <div className={`${styles.fade} ${styles.fadeTop}`} />
+      <div className={`${styles.fade} ${styles.fadeBottom}`} />
+      <header className={styles.bar}>
+        <div className={`${styles.side} ${styles.start} ${styles.meta}`}>
+          {display.location && <span className={styles.desk}>{person.location}</span>}
+        </div>
+        <div className={styles.middle}>
+          <nav className={styles.pill} aria-label="Main">
+            {routes["/"] && (
+              <Link
+                href="/"
+                className={styles.key}
+                aria-label={`${person.name} — Home`}
+                aria-current={pathname === "/" ? "page" : undefined}
+              >
+                <span className={styles.icon}>
+                  <EMIcon />
+                </span>
+              </Link>
+            )}
+            <span className={styles.rule} />
+            {PAGES.filter((page) => routes[page.path]).map(({ path, label, Icon, exact }) => (
+              <Link
+                key={path}
+                href={path}
+                className={styles.key}
+                aria-current={isCurrent(path, exact) ? "page" : undefined}
+              >
+                <span className={styles.icon}>
+                  <Icon />
+                </span>
+                <span className={styles.label}>{label}</span>
+              </Link>
+            ))}
+            {display.themeSwitcher && (
+              <>
+                <span className={styles.rule} />
+                <ThemeToggle className={styles.key} iconClassName={styles.icon} />
+              </>
+            )}
+          </nav>
+        </div>
+        <div className={`${styles.side} ${styles.end}`}>
+          {display.time && (
+            <span className={`${styles.meta} ${styles.desk}`}>
+              <Clock timeZone={person.timeZone} />
+            </span>
+          )}
+        </div>
+      </header>
     </>
   );
 };
