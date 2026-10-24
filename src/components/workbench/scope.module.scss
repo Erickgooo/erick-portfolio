@@ -32,6 +32,13 @@
     transition-duration: var(--link-dur, 0.28s);
     transition-timing-function: var(--link-ease, #{$ease-soft});
 
+    // This rule outranks a component's own reduced-motion `transition: none`
+    // (one class against two plus an element), so a project card still rose
+    // on hover with reduced motion. Here it holds for every link.
+    @include reduced {
+      transition-duration: 0s;
+    }
+
     &:hover {
       color: var(--link-ink, inherit);
       text-decoration-line: var(--link-deco-hover, var(--link-deco, none));

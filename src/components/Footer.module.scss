@@ -63,6 +63,10 @@
       translate: 0 -2px;
     }
   }
+
+  @include reduced {
+    transition: none;
+  }
 }
 
 .cols {

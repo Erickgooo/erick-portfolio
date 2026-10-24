@@ -878,7 +878,9 @@
   .count,
   .phone::after,
   .deckTop::after,
-  .post::after {
+  .post::after,
+  .index a svg,
+  .related svg {
     transition: none;
   }
 }

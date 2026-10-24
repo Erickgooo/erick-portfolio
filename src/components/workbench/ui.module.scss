@@ -80,3 +80,10 @@
     }
   }
 }
+
+@include reduced {
+  .bookIcon,
+  .textLink svg {
+    transition: none;
+  }
+}
