@@ -16,6 +16,9 @@ async function measure(page: import("@playwright/test").Page) {
     const i = el.getBoundingClientRect();
     return {
       vw: window.innerWidth,
+      // The page's own width: the window less a classic scrollbar's gutter,
+      // which the site keeps (custom.css), as headless Chromium does too.
+      pageWidth: document.documentElement.getBoundingClientRect().width,
       vh: window.innerHeight,
       scrollWidth: document.documentElement.scrollWidth,
       fig: { left: f.left, width: f.width },
@@ -38,7 +41,7 @@ for (const [width, height] of [
 
     expect(m.scrollWidth).toBeLessThanOrEqual(m.vw);
     expect(m.fig.left).toBeCloseTo(16, 0);
-    expect(m.fig.width).toBeCloseTo(m.vw - 32, 0);
+    expect(m.fig.width).toBeCloseTo(m.pageWidth - 32, 0);
     expect(m.img.left).toBeGreaterThanOrEqual(0);
     expect(m.img.right).toBeLessThanOrEqual(m.vw);
     // Not cropped or stretched: the drawn box keeps the file's proportions.
