@@ -18,6 +18,13 @@ const HOLD_MS = 1700;
 const DELETE_MS = 26;
 const GAP_MS = 380;
 
+/**
+ * How long a stepper layer stays visible after it loses data-on: it waits
+ * 0.6 s under the incoming layer, then fades out in 0.5 s (stepper.module.scss,
+ * marginstepper.module.scss).
+ */
+const LAYER_FADE_MS = 1100;
+
 type Part = {
   at: number;
   start: () => void;
@@ -321,6 +328,7 @@ function drive(root: HTMLElement, reduced: boolean): () => void {
   }
 
   let wasLayerOn = true;
+  let layerOffAt = 0;
   const unwatch = watchScene(
     root,
     {
@@ -335,12 +343,20 @@ function drive(root: HTMLElement, reduced: boolean): () => void {
       if (started && !root.hasAttribute("data-started")) {
         root.dataset.started = "";
         enter(0);
-      } else if (started && layerOn && !wasLayerOn) {
-        // A stepper layer became active again: play the scene from the top.
+      } else if (
+        started &&
+        layerOn &&
+        !wasLayerOn &&
+        performance.now() - layerOffAt > LAYER_FADE_MS
+      ) {
+        // A stepper layer became active again after it had faded out: play
+        // the scene from the top. Back sooner, the layer is still on screen,
+        // so the scene carries on from the step where it stopped.
         wasLayerOn = layerOn;
         replay();
         return;
       }
+      if (wasLayerOn && !layerOn) layerOffAt = performance.now();
       wasLayerOn = layerOn;
       if (live) schedule();
       else stop();

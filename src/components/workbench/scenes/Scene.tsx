@@ -14,7 +14,8 @@
 //   content fades out, resets and plays again from step 0.
 // - `afterIntro`: a hero scene, held while the site intro covers the page.
 // - Inside a SceneStepper layer, a scene starts when its step becomes active
-//   and plays again from step 0 every time it does.
+//   and plays again from step 0 every time it does after its layer had faded
+//   out; back before that, it carries on where it was (SceneDriver.tsx).
 // - Every scene is aria-hidden: what it says must also be in the page text.
 //   Its size is reserved by its own CSS (an aspect-ratio or fixed boxes), so
 //   nothing it does moves the layout.

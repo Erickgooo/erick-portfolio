@@ -9,7 +9,8 @@
 // The steps' titles are h3: put the stepper under the section's h2.
 // Server-rendered; StepperController (a small client island inside) only
 // writes data-active and data-on. Scenes inside the layers start when their
-// step becomes active and replay each time it does (see Scene.tsx).
+// step becomes active and replay each time it does after fading out (see
+// Scene.tsx).
 //
 //   <SceneStepper
 //     steps={[{ key: "bots", title: "Bots that qualify leads", text: "...", paper: "cobalt", scene: <LeadSort /> }, ...]}

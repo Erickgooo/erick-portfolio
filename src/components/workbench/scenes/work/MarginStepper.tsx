@@ -4,7 +4,8 @@
 // case's sticky margin) and, as each part of the text passes the middle of
 // the screen, the sheet crossfades to that step's scene and its surface tone
 // (white or pale mist, or their dark tones); the step's scene plays again
-// from its start each time. Below 1024 px nothing pins: the steps' sheets
+// from its start each time it comes back after fading out. Below 1024 px
+// nothing pins: the steps' sheets
 // stack after the text and each scene starts as it comes into view.
 //
 //   <MarginStepper steps={[{ key, label: "Avatar creation", anchor: { sel: "li", text: "Avatar creation" }, scene }, ...]} />
