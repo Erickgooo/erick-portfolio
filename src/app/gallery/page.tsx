@@ -7,17 +7,15 @@ import { Viewer } from "@/components/workbench/gallery/Viewer";
 import { getGalleryBench, piecesIn } from "@/components/workbench/gallery/data";
 import styles from "@/components/workbench/gallery/gallery.module.scss";
 import { SceneDriver } from "@/components/workbench/scenes/SceneDriver";
-import { baseURL, gallery, person } from "@/resources";
+import { pages, profile, protectedRoutes, siteUrl } from "@/resources";
 import { isProtectedPath } from "@/resources/protectedRoutes";
-import { Meta, Schema } from "@once-ui-system/core";
+import { StructuredData, pageMetadata } from "@/utils/seo";
 
 export async function generateMetadata() {
-  return Meta.generate({
-    title: gallery.title,
-    description: gallery.description,
-    baseURL: baseURL,
-    image: `/api/og/generate?title=${encodeURIComponent(gallery.title)}`,
-    path: gallery.path,
+  return pageMetadata({
+    title: pages.gallery.title,
+    description: pages.gallery.description,
+    path: pages.gallery.path,
   });
 }
 
@@ -25,11 +23,11 @@ export async function generateMetadata() {
 const SMALL = 3;
 
 // Visual Work, in sober Workbench: the fullest bench. Every piece of
-// `gallery.images`, sorted by client and format; opening one lifts it into
+// `galleryPieces`, sorted by client and format; opening one lifts it into
 // the viewer; then how the pieces are made (a stepper of scenes). The
 // sections are full-bleed and set their own gutters.
 export default function Gallery() {
-  const bench = getGalleryBench({ hideProtected: !isProtectedPath(gallery.path) });
+  const bench = getGalleryBench({ hideProtected: !isProtectedPath(pages.gallery.path) });
   // Clients come largest first; the ones with a few pieces share a row on
   // wide screens instead of each leaving most of the bench empty.
   const large = bench.clients.filter((c) => piecesIn(c) > SMALL);
@@ -37,17 +35,15 @@ export default function Gallery() {
 
   return (
     <>
-      <Schema
-        as="webPage"
-        baseURL={baseURL}
-        title={gallery.title}
-        description={gallery.description}
-        path={gallery.path}
-        image={`/api/og/generate?title=${encodeURIComponent(gallery.title)}`}
+      <StructuredData
+        type="WebPage"
+        title={pages.gallery.title}
+        description={pages.gallery.description}
+        path={pages.gallery.path}
         author={{
-          name: person.name,
-          url: `${baseURL}${gallery.path}`,
-          image: `${baseURL}${person.avatar}`,
+          name: profile.name,
+          url: `${siteUrl}${pages.gallery.path}`,
+          image: `${siteUrl}${profile.avatar}`,
         }}
       />
       <div className={styles.page}>

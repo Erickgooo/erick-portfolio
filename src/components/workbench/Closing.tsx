@@ -1,5 +1,5 @@
 // Workbench: the closing call to action, a sheet laid on the bench.
-import { person } from "@/resources/content";
+import { profile } from "@/resources";
 import { BookCall } from "./BookCall";
 import styles from "./closing.module.scss";
 
@@ -15,13 +15,13 @@ export function Closing({ title = "Show me where your team’s time goes." }: { 
           </p>
           <div className={styles.actions}>
             <BookCall />
-            <a href={`mailto:${person.email}`} className={styles.mail}>
-              Or write to {person.email}
+            <a href={`mailto:${profile.email}`} className={styles.mail}>
+              Or write to {profile.email}
             </a>
           </div>
         </div>
         <p className={styles.note} data-reveal="">
-          {person.location} &middot; works in {(person.languages ?? []).join(" and ")}
+          {profile.location} &middot; works in {(profile.languages ?? []).join(" and ")}
         </p>
       </div>
     </section>

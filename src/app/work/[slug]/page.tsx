@@ -4,10 +4,10 @@ import { RevealObserver } from "@/components/workbench/RevealObserver";
 import { SceneDriver } from "@/components/workbench/scenes/SceneDriver";
 import { CaseBody, CaseHeader, NextCase } from "@/components/workbench/work/CaseStudy";
 import { getCase, getNextCase } from "@/components/workbench/work/cases";
-import { about, baseURL, person, work } from "@/resources";
+import { pages, profile, protectedRoutes, siteUrl } from "@/resources";
 import { isProtectedPath } from "@/resources/protectedRoutes";
+import { StructuredData, pageMetadata } from "@/utils/seo";
 import { getPosts } from "@/utils/utils";
-import { Meta, Schema } from "@once-ui-system/core";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
@@ -33,13 +33,11 @@ export async function generateMetadata({
 
   if (!post) return {};
 
-  return Meta.generate({
+  return pageMetadata({
     title: post.metadata.title,
     description: post.metadata.summary,
-    baseURL: baseURL,
-    image:
-      post.metadata.image || `/api/og/generate?title=${encodeURIComponent(post.metadata.title)}`,
-    path: `${work.path}/${post.slug}`,
+    image: post.metadata.image,
+    path: `${pages.work.path}/${post.slug}`,
   });
 }
 
@@ -66,21 +64,18 @@ export default async function Project({
 
   return (
     <>
-      <Schema
-        as="blogPosting"
-        baseURL={baseURL}
-        path={`${work.path}/${post.slug}`}
+      <StructuredData
+        type="BlogPosting"
+        path={`${pages.work.path}/${post.slug}`}
         title={post.metadata.title}
         description={post.metadata.summary}
         datePublished={post.metadata.publishedAt}
         dateModified={post.metadata.publishedAt}
-        image={
-          post.metadata.image || `/api/og/generate?title=${encodeURIComponent(post.metadata.title)}`
-        }
+        image={post.metadata.image}
         author={{
-          name: person.name,
-          url: `${baseURL}${about.path}`,
-          image: `${baseURL}${person.avatar}`,
+          name: profile.name,
+          url: `${siteUrl}${pages.about.path}`,
+          image: `${siteUrl}${profile.avatar}`,
         }}
       />
       <article>

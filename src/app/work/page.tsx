@@ -2,17 +2,15 @@ import { Closing } from "@/components/workbench/Closing";
 import { RevealObserver } from "@/components/workbench/RevealObserver";
 import { SceneDriver } from "@/components/workbench/scenes/SceneDriver";
 import { WorkIndex } from "@/components/workbench/work/WorkIndex";
-import { about, baseURL, person, work } from "@/resources";
+import { pages, profile, protectedRoutes, siteUrl } from "@/resources";
 import { isProtectedPath } from "@/resources/protectedRoutes";
-import { Meta, Schema } from "@once-ui-system/core";
+import { StructuredData, pageMetadata } from "@/utils/seo";
 
 export async function generateMetadata() {
-  return Meta.generate({
-    title: work.title,
-    description: work.description,
-    baseURL: baseURL,
-    image: `/api/og/generate?title=${encodeURIComponent(work.title)}`,
-    path: work.path,
+  return pageMetadata({
+    title: pages.work.title,
+    description: pages.work.description,
+    path: pages.work.path,
   });
 }
 
@@ -21,20 +19,18 @@ export async function generateMetadata() {
 export default function Work() {
   return (
     <>
-      <Schema
-        as="webPage"
-        baseURL={baseURL}
-        path={work.path}
-        title={work.title}
-        description={work.description}
-        image={`/api/og/generate?title=${encodeURIComponent(work.title)}`}
+      <StructuredData
+        type="WebPage"
+        path={pages.work.path}
+        title={pages.work.title}
+        description={pages.work.description}
         author={{
-          name: person.name,
-          url: `${baseURL}${about.path}`,
-          image: `${baseURL}${person.avatar}`,
+          name: profile.name,
+          url: `${siteUrl}${pages.about.path}`,
+          image: `${siteUrl}${profile.avatar}`,
         }}
       />
-      <WorkIndex hideProtected={!isProtectedPath(work.path)} />
+      <WorkIndex hideProtected={!isProtectedPath(pages.work.path)} />
       <Closing />
       <RevealObserver />
       <SceneDriver />

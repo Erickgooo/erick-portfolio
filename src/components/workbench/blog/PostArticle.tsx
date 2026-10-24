@@ -3,7 +3,7 @@
 // Erick's monogram as the last mark, then the share keys. "My Workspace" also
 // carries its drawn desk (a scene): in the margin above the index on desktop,
 // lit by the section being read; under the header on phones, on its own loop.
-import { person } from "@/resources";
+import { profile } from "@/resources";
 import { formatDate } from "@/utils/formatDate";
 import Image from "next/image";
 import Link from "next/link";
@@ -56,9 +56,9 @@ export function PostArticle({
           <h1 className={styles.postTitle}>{title}</h1>
           {summary ? <p className={styles.summary}>{summary}</p> : null}
           <p className={styles.author}>
-            <Image src={person.avatar} width={48} height={48} alt="" className={styles.avatar} />
+            <Image src={profile.avatar} width={48} height={48} alt="" className={styles.avatar} />
             <span>
-              By <strong>{person.name}</strong>
+              By <strong>{profile.name}</strong>
             </span>
           </p>
         </div>

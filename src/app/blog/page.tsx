@@ -2,17 +2,15 @@ import { Closing } from "@/components/workbench/Closing";
 import { RevealObserver } from "@/components/workbench/RevealObserver";
 import { BlogIndex } from "@/components/workbench/blog/BlogIndex";
 import { SceneDriver } from "@/components/workbench/scenes/SceneDriver";
-import { baseURL, blog, person } from "@/resources";
+import { pages, profile, protectedRoutes, siteUrl } from "@/resources";
 import { isProtectedPath } from "@/resources/protectedRoutes";
-import { Meta, Schema } from "@once-ui-system/core";
+import { StructuredData, pageMetadata } from "@/utils/seo";
 
 export async function generateMetadata() {
-  return Meta.generate({
-    title: blog.title,
-    description: blog.description,
-    baseURL: baseURL,
-    image: `/api/og/generate?title=${encodeURIComponent(blog.title)}`,
-    path: blog.path,
+  return pageMetadata({
+    title: pages.blog.title,
+    description: pages.blog.description,
+    path: pages.blog.path,
   });
 }
 
@@ -21,20 +19,18 @@ export async function generateMetadata() {
 export default function Blog() {
   return (
     <>
-      <Schema
-        as="blogPosting"
-        baseURL={baseURL}
-        title={blog.title}
-        description={blog.description}
-        path={blog.path}
-        image={`/api/og/generate?title=${encodeURIComponent(blog.title)}`}
+      <StructuredData
+        type="BlogPosting"
+        title={pages.blog.title}
+        description={pages.blog.description}
+        path={pages.blog.path}
         author={{
-          name: person.name,
-          url: `${baseURL}/blog`,
-          image: `${baseURL}${person.avatar}`,
+          name: profile.name,
+          url: `${siteUrl}/blog`,
+          image: `${siteUrl}${profile.avatar}`,
         }}
       />
-      <BlogIndex hideProtected={!isProtectedPath(blog.path)} />
+      <BlogIndex hideProtected={!isProtectedPath(pages.blog.path)} />
       <Closing />
       <RevealObserver />
       <SceneDriver />

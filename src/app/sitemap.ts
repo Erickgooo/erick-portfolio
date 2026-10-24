@@ -1,4 +1,4 @@
-import { baseURL, routes as routesConfig } from "@/resources";
+import { enabledRoutes, siteUrl } from "@/resources";
 import { isProtectedPath } from "@/resources/protectedRoutes";
 import { getPosts } from "@/utils/utils";
 
@@ -13,8 +13,8 @@ export default async function sitemap() {
     lastModified: post.metadata.publishedAt,
   }));
 
-  const activeRoutes = Object.keys(routesConfig).filter(
-    (route) => routesConfig[route as keyof typeof routesConfig],
+  const activeRoutes = Object.keys(enabledRoutes).filter(
+    (route) => enabledRoutes[route as keyof typeof enabledRoutes],
   );
 
   const routes = activeRoutes.map((route) => ({
@@ -26,7 +26,7 @@ export default async function sitemap() {
   return [...routes, ...blogs, ...works]
     .filter((entry) => !isProtectedPath(entry.path))
     .map((entry) => ({
-      url: `${baseURL}${entry.path !== "/" ? entry.path : ""}`,
+      url: `${siteUrl}${entry.path !== "/" ? entry.path : ""}`,
       lastModified: entry.lastModified,
     }));
 }

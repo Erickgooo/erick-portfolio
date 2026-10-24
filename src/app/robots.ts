@@ -1,4 +1,4 @@
-import { baseURL } from "@/resources";
+import { siteUrl } from "@/resources";
 
 export default function robots() {
   return {
@@ -13,6 +13,6 @@ export default function robots() {
         disallow: ["/api/", "/unauthorized"],
       },
     ],
-    sitemap: `${baseURL}/sitemap.xml`,
+    sitemap: `${siteUrl}/sitemap.xml`,
   };
 }

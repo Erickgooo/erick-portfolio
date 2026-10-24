@@ -1,7 +1,7 @@
 // Workbench About: studies and certifications as hairline cards. The two degrees
 // are the large cards; the certifications are grouped by issuer, one card
 // each, and every name links to its credential.
-import { about } from "@/resources/content";
+import { about } from "@/resources";
 import type { CSSProperties } from "react";
 import { FiArrowUpRight } from "react-icons/fi";
 import styles from "./credentials.module.scss";
@@ -22,7 +22,7 @@ function byIssuer(items: Cert[]) {
 }
 
 export function Credentials() {
-  const studies = about.studies.institutions;
+  const studies = about.education.schools;
   const certs = about.certifications.items;
   const issuers = byIssuer(certs);
 
@@ -37,7 +37,7 @@ export function Credentials() {
           </p>
         </div>
         <div className={styles.layout}>
-          <ul className={styles.studies} aria-label={about.studies.title}>
+          <ul className={styles.studies} aria-label={about.education.title}>
             {studies.map((study, i) => (
               <li
                 key={study.name}

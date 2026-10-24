@@ -1,7 +1,7 @@
 // Workbench About: the first screen. The name, the role and the offer are
 // readable from the first frame; the photo stands beside them.
 // Book a call and the resume stay on this screen.
-import { about, person, social } from "@/resources/content";
+import { about, profile, profileLinks } from "@/resources";
 import Image from "next/image";
 import type { IconType } from "react-icons";
 import { FiDownload, FiGithub, FiLinkedin, FiMail } from "react-icons/fi";
@@ -17,8 +17,8 @@ const ICONS: Record<string, IconType> = {
 };
 
 export function Intro() {
-  const resume = about.resume?.link ?? "/resume/Erick_Mahecha_Resume.pdf";
-  const links = social.filter((item) => item.link);
+  const resume = about.resumeUrl ?? "/resume/Erick_Mahecha_Resume.pdf";
+  const links = profileLinks.filter((item) => item.href);
 
   return (
     <section className={styles.intro} aria-labelledby="about-title">
@@ -27,7 +27,7 @@ export function Intro() {
           <h1 id="about-title" className={styles.name}>
             <span>Erick</span> <span>Mahecha</span>
           </h1>
-          <p className={styles.role}>{person.role}</p>
+          <p className={styles.role}>{profile.role}</p>
           <p className={styles.lede}>
             I&rsquo;m a one-person growth department. I build complete marketing infrastructures,
             from brand identity and paid media to CRM automation, SEO systems and AI content
@@ -42,11 +42,11 @@ export function Intro() {
           <ul className={styles.links} aria-label="Elsewhere">
             {links.map((item) => {
               const Icon = ICONS[item.icon] ?? FiMail;
-              const external = item.link.startsWith("http");
+              const external = item.href.startsWith("http");
               return (
                 <li key={item.name}>
                   <a
-                    href={item.link}
+                    href={item.href}
                     className={styles.link}
                     {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
                   >
@@ -64,13 +64,13 @@ export function Intro() {
               src={MEDIA.avatar.src}
               width={MEDIA.avatar.w}
               height={MEDIA.avatar.h}
-              alt={`Portrait of ${person.name}`}
+              alt={`Portrait of ${profile.name}`}
               sizes="(min-width: 1024px) 380px, 64vw"
               priority
             />
             <figcaption>
-              {person.location}
-              <span>Works in {(person.languages ?? []).join(" and ")}</span>
+              {profile.location}
+              <span>Works in {(profile.languages ?? []).join(" and ")}</span>
             </figcaption>
           </figure>
         </div>

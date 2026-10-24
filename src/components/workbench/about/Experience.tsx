@@ -2,7 +2,7 @@
 // shows the dates, the company and the role; it opens (a native <details>, so
 // it needs no script and works from the keyboard) to what was done there. The
 // current role starts open, so the first row shows the way.
-import { about } from "@/resources/content";
+import { about } from "@/resources";
 import type { CSSProperties } from "react";
 import { FiDownload } from "react-icons/fi";
 import { inWords } from "../data";
@@ -16,8 +16,8 @@ function splitTime(timeframe: string): [string, string | undefined] {
 }
 
 export function Experience() {
-  const jobs = about.work.experiences;
-  const resume = about.resume?.link ?? "/resume/Erick_Mahecha_Resume.pdf";
+  const jobs = about.experience.jobs;
+  const resume = about.resumeUrl ?? "/resume/Erick_Mahecha_Resume.pdf";
   const firstYear = jobs.at(-1)?.timeframe.match(/\d{4}/)?.[0];
   const count = inWords(jobs.length);
 

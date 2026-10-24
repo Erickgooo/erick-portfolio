@@ -2,7 +2,7 @@
 
 // The site header (see Header.module.scss): location, the pill of page keys
 // with the theme key, and Erick's local time.
-import { about, blog, display, gallery, person, routes, work } from "@/resources";
+import { about, enabledRoutes, headerShows, pages, profile } from "@/resources";
 import { EMIcon } from "@/resources/EMIcon";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -43,13 +43,13 @@ function Clock({ timeZone }: { timeZone: string }) {
   return <>{time}</>;
 }
 
-type Page = { path: keyof typeof routes; label: string; Icon: IconType; exact?: boolean };
+type Page = { path: keyof typeof enabledRoutes; label: string; Icon: IconType; exact?: boolean };
 
 const PAGES: Page[] = [
-  { path: "/about", label: about.label, Icon: PiUserCircleDuotone, exact: true },
-  { path: "/work", label: work.label, Icon: PiGridFourDuotone },
-  { path: "/blog", label: blog.label, Icon: PiBookBookmarkDuotone },
-  { path: "/gallery", label: gallery.label, Icon: PiImageDuotone },
+  { path: "/about", label: pages.about.label, Icon: PiUserCircleDuotone, exact: true },
+  { path: "/work", label: pages.work.label, Icon: PiGridFourDuotone },
+  { path: "/blog", label: pages.blog.label, Icon: PiBookBookmarkDuotone },
+  { path: "/gallery", label: pages.gallery.label, Icon: PiImageDuotone },
 ];
 
 export const Header = () => {
@@ -64,15 +64,15 @@ export const Header = () => {
       <div className={`${styles.fade} ${styles.fadeBottom}`} />
       <header className={styles.bar}>
         <div className={`${styles.side} ${styles.start} ${styles.meta}`}>
-          {display.location && <span className={styles.desk}>{person.location}</span>}
+          {headerShows.location && <span className={styles.desk}>{profile.location}</span>}
         </div>
         <div className={styles.middle}>
           <nav className={styles.pill} aria-label="Main">
-            {routes["/"] && (
+            {enabledRoutes["/"] && (
               <Link
                 href="/"
                 className={styles.key}
-                aria-label={`${person.name} — Home`}
+                aria-label={`${profile.name} — Home`}
                 aria-current={pathname === "/" ? "page" : undefined}
               >
                 <span className={styles.icon}>
@@ -81,20 +81,22 @@ export const Header = () => {
               </Link>
             )}
             <span className={styles.rule} />
-            {PAGES.filter((page) => routes[page.path]).map(({ path, label, Icon, exact }) => (
-              <Link
-                key={path}
-                href={path}
-                className={styles.key}
-                aria-current={isCurrent(path, exact) ? "page" : undefined}
-              >
-                <span className={styles.icon}>
-                  <Icon />
-                </span>
-                <span className={styles.label}>{label}</span>
-              </Link>
-            ))}
-            {display.themeSwitcher && (
+            {PAGES.filter((page) => enabledRoutes[page.path]).map(
+              ({ path, label, Icon, exact }) => (
+                <Link
+                  key={path}
+                  href={path}
+                  className={styles.key}
+                  aria-current={isCurrent(path, exact) ? "page" : undefined}
+                >
+                  <span className={styles.icon}>
+                    <Icon />
+                  </span>
+                  <span className={styles.label}>{label}</span>
+                </Link>
+              ),
+            )}
+            {headerShows.themeKey && (
               <>
                 <span className={styles.rule} />
                 <ThemeToggle className={styles.key} iconClassName={styles.icon} />
@@ -103,9 +105,9 @@ export const Header = () => {
           </nav>
         </div>
         <div className={`${styles.side} ${styles.end}`}>
-          {display.time && (
+          {headerShows.time && (
             <span className={`${styles.meta} ${styles.desk}`}>
-              <Clock timeZone={person.timeZone} />
+              <Clock timeZone={profile.timeZone} />
             </span>
           )}
         </div>

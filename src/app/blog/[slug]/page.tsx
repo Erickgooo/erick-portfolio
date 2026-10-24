@@ -5,10 +5,10 @@ import { PostArticle } from "@/components/workbench/blog/PostArticle";
 import { RecentPosts } from "@/components/workbench/blog/RecentPosts";
 import { getPostCards } from "@/components/workbench/blog/posts";
 import { SceneDriver } from "@/components/workbench/scenes/SceneDriver";
-import { about, baseURL, blog, person } from "@/resources";
+import { pages, profile, protectedRoutes, siteUrl } from "@/resources";
 import { isProtectedPath } from "@/resources/protectedRoutes";
+import { StructuredData, pageMetadata } from "@/utils/seo";
 import { getPosts } from "@/utils/utils";
-import { Meta, Schema } from "@once-ui-system/core";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
@@ -34,13 +34,11 @@ export async function generateMetadata({
 
   if (!post) return {};
 
-  return Meta.generate({
+  return pageMetadata({
     title: post.metadata.title,
     description: post.metadata.summary,
-    baseURL: baseURL,
-    image:
-      post.metadata.image || `/api/og/generate?title=${encodeURIComponent(post.metadata.title)}`,
-    path: `${blog.path}/${post.slug}`,
+    image: post.metadata.image,
+    path: `${pages.blog.path}/${post.slug}`,
   });
 }
 
@@ -58,27 +56,24 @@ export default async function Blog({ params }: { params: Promise<{ slug: string 
   }
 
   const recent = getPostCards({
-    hideProtected: !isProtectedPath(`${blog.path}/${post.slug}`),
+    hideProtected: !isProtectedPath(`${pages.blog.path}/${post.slug}`),
     exclude: [post.slug],
   }).slice(0, 2);
 
   return (
     <>
-      <Schema
-        as="blogPosting"
-        baseURL={baseURL}
-        path={`${blog.path}/${post.slug}`}
+      <StructuredData
+        type="BlogPosting"
+        path={`${pages.blog.path}/${post.slug}`}
         title={post.metadata.title}
         description={post.metadata.summary}
         datePublished={post.metadata.publishedAt}
         dateModified={post.metadata.publishedAt}
-        image={
-          post.metadata.image || `/api/og/generate?title=${encodeURIComponent(post.metadata.title)}`
-        }
+        image={post.metadata.image}
         author={{
-          name: person.name,
-          url: `${baseURL}${about.path}`,
-          image: `${baseURL}${person.avatar}`,
+          name: profile.name,
+          url: `${siteUrl}${pages.about.path}`,
+          image: `${siteUrl}${profile.avatar}`,
         }}
       />
       <PostArticle
@@ -87,7 +82,7 @@ export default async function Blog({ params }: { params: Promise<{ slug: string 
         publishedAt={post.metadata.publishedAt}
         image={post.metadata.image}
         content={post.content}
-        url={`${baseURL}${blog.path}/${post.slug}`}
+        url={`${siteUrl}${pages.blog.path}/${post.slug}`}
         slug={post.slug}
       />
       <RecentPosts posts={recent} />

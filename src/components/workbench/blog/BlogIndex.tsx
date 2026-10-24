@@ -1,6 +1,6 @@
 // Workbench, Blog: the posts as sheets, newest first. The newest lies open and
 // large; the rest follow as smaller sheets in two columns.
-import { blog } from "@/resources";
+import { pages } from "@/resources";
 import { formatDate } from "@/utils/formatDate";
 import type { CSSProperties } from "react";
 import { TitleSheet } from "../scenes/blog/TitleSheet";
@@ -14,9 +14,9 @@ export function BlogIndex({ hideProtected }: { hideProtected: boolean }) {
   return (
     <>
       <header className={styles.head}>
-        <h1 className={styles.title}>{blog.title}</h1>
+        <h1 className={styles.title}>{pages.blog.title}</h1>
         <div className={styles.headSide}>
-          <p className={styles.lede}>{blog.description}.</p>
+          <p className={styles.lede}>{pages.blog.description}.</p>
           {newest ? (
             <TitleSheet title={newest.title} date={formatDate(newest.publishedAt)} />
           ) : null}

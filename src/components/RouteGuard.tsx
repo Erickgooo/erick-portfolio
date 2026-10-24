@@ -1,7 +1,7 @@
 "use client";
 
 import NotFound from "@/app/not-found";
-import { routes } from "@/resources";
+import { enabledRoutes } from "@/resources";
 import { isRouteEnabled } from "@/utils/routeEnabled";
 import { usePathname } from "next/navigation";
 
@@ -10,7 +10,7 @@ interface RouteGuardProps {
 }
 
 /**
- * Hides routes disabled in the `routes` config.
+ * Hides enabledRoutes disabled in the `enabledRoutes` config.
  *
  * Decided during render (pure function of the pathname), so the page is part
  * of the server HTML — the previous effect-based version rendered a spinner on
@@ -23,7 +23,7 @@ interface RouteGuardProps {
 const RouteGuard: React.FC<RouteGuardProps> = ({ children }) => {
   const pathname = usePathname();
 
-  if (!isRouteEnabled(pathname, routes)) {
+  if (!isRouteEnabled(pathname, enabledRoutes)) {
     return <NotFound />;
   }
 

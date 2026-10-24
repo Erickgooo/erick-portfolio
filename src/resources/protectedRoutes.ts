@@ -1,5 +1,3 @@
-import type { ProtectedRoutesConfig } from "@/types/config.types";
-
 /**
  * Routes that require the password set in PAGE_ACCESS_PASSWORD.
  *
@@ -15,10 +13,13 @@ import type { ProtectedRoutesConfig } from "@/types/config.types";
  * there. Listings on other pages (e.g. project cards on the home page) are not
  * hidden either.
  */
-const protectedRoutes: ProtectedRoutesConfig = {};
+/** Path -> whether it needs the password. */
+export type ProtectedRoutes = Record<`/${string}`, boolean>;
+
+const protectedRoutes: ProtectedRoutes = {};
 
 /** Enabled protected paths, e.g. ["/work"]. */
-function getProtectedPaths(config: ProtectedRoutesConfig = protectedRoutes): string[] {
+function getProtectedPaths(config: ProtectedRoutes = protectedRoutes): string[] {
   return Object.entries(config)
     .filter(([, enabled]) => enabled)
     .map(([path]) => path);
@@ -32,10 +33,7 @@ function getProtectedPaths(config: ProtectedRoutesConfig = protectedRoutes): str
  * addressed on some hosts. Percent-encoding is decoded first so `/%77ork`
  * cannot slip past a check for `/work`.
  */
-function isProtectedPath(
-  pathname: string,
-  config: ProtectedRoutesConfig = protectedRoutes,
-): boolean {
+function isProtectedPath(pathname: string, config: ProtectedRoutes = protectedRoutes): boolean {
   let decoded = pathname;
   try {
     decoded = decodeURIComponent(pathname);

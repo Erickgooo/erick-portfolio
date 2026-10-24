@@ -1,4 +1,4 @@
-import { baseURL, blog, person } from "@/resources";
+import { pages, profile, protectedRoutes, siteUrl } from "@/resources";
 import { isProtectedPath } from "@/resources/protectedRoutes";
 import { getPosts } from "@/utils/utils";
 import { NextResponse } from "next/server";
@@ -28,31 +28,31 @@ export async function GET() {
   const rssXml = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>${escapeXml(blog.title)}</title>
-    <link>${escapeXml(baseURL)}/blog</link>
-    <description>${escapeXml(blog.description)}</description>
+    <title>${escapeXml(pages.blog.title)}</title>
+    <link>${escapeXml(siteUrl)}/blog</link>
+    <description>${escapeXml(pages.blog.description)}</description>
     <language>en</language>
     <lastBuildDate>${new Date().toUTCString()}</lastBuildDate>
-    <atom:link href="${escapeXml(baseURL)}/api/rss" rel="self" type="application/rss+xml" />
-    <managingEditor>${escapeXml(person.email || "noreply@example.com")} (${escapeXml(person.name)})</managingEditor>
-    <webMaster>${escapeXml(person.email || "noreply@example.com")} (${escapeXml(person.name)})</webMaster>
+    <atom:link href="${escapeXml(siteUrl)}/api/rss" rel="self" type="application/rss+xml" />
+    <managingEditor>${escapeXml(profile.email || "noreply@example.com")} (${escapeXml(profile.name)})</managingEditor>
+    <webMaster>${escapeXml(profile.email || "noreply@example.com")} (${escapeXml(profile.name)})</webMaster>
     <image>
-      <url>${escapeXml(baseURL)}${escapeXml(person.avatar || "/images/avatar.jpg")}</url>
-      <title>${escapeXml(blog.title)}</title>
-      <link>${escapeXml(baseURL)}/blog</link>
+      <url>${escapeXml(siteUrl)}${escapeXml(profile.avatar || "/images/avatar.jpg")}</url>
+      <title>${escapeXml(pages.blog.title)}</title>
+      <link>${escapeXml(siteUrl)}/blog</link>
     </image>
     ${sortedPosts
       .map(
         (post) => `
     <item>
       <title>${escapeXml(post.metadata.title)}</title>
-      <link>${escapeXml(baseURL)}/blog/${escapeXml(post.slug)}</link>
-      <guid>${escapeXml(baseURL)}/blog/${escapeXml(post.slug)}</guid>
+      <link>${escapeXml(siteUrl)}/blog/${escapeXml(post.slug)}</link>
+      <guid>${escapeXml(siteUrl)}/blog/${escapeXml(post.slug)}</guid>
       <pubDate>${new Date(post.metadata.publishedAt).toUTCString()}</pubDate>
       <description><![CDATA[${String(post.metadata.summary ?? "").replace(/]]>/g, "]]&gt;")}]]></description>
-      ${post.metadata.image ? `<enclosure url="${escapeXml(baseURL)}${escapeXml(post.metadata.image)}" type="image/jpeg" />` : ""}
+      ${post.metadata.image ? `<enclosure url="${escapeXml(siteUrl)}${escapeXml(post.metadata.image)}" type="image/jpeg" />` : ""}
       ${post.metadata.tag ? `<category>${escapeXml(post.metadata.tag)}</category>` : ""}
-      <author>${escapeXml(person.email || "noreply@example.com")} (${escapeXml(person.name)})</author>
+      <author>${escapeXml(profile.email || "noreply@example.com")} (${escapeXml(profile.name)})</author>
     </item>`,
       )
       .join("")}

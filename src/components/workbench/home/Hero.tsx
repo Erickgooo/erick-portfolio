@@ -1,7 +1,7 @@
 // Workbench: the hero. Text is readable from the first frame; the objects on
 // the bench beside it rise into place as the site intro lifts, over an
 // ambient layer of paper bits that rises with them (BenchAmbient).
-import { person } from "@/resources/content";
+import { profile } from "@/resources";
 import Image from "next/image";
 import { FiArrowDown } from "react-icons/fi";
 import { BookCall } from "../BookCall";
@@ -19,8 +19,8 @@ export function Hero() {
           <p className={styles.who}>
             <Image src={MEDIA.avatar.src} width={48} height={48} alt="" className={styles.avatar} />
             <span>
-              <strong>{person.name}</strong>
-              <span className={styles.role}>{person.role}</span>
+              <strong>{profile.name}</strong>
+              <span className={styles.role}>{profile.role}</span>
             </span>
           </p>
           <h1 id="hero-title" className={styles.title}>

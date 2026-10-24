@@ -1,5 +1,5 @@
 // Workbench: the primary action, everywhere it appears.
-import { about } from "@/resources/content";
+import { about } from "@/resources";
 import { FiCalendar } from "react-icons/fi";
 import styles from "./ui.module.scss";
 
@@ -12,7 +12,7 @@ export function BookCall({
 }) {
   return (
     <a
-      href={about.calendar.link}
+      href={about.bookingUrl}
       target="_blank"
       rel="noopener noreferrer"
       className={[styles.book, size === "small" ? styles.small : "", className ?? ""].join(" ")}

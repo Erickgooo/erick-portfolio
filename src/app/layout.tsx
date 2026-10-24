@@ -7,18 +7,17 @@ import { SiteMain } from "@/components/SiteMain";
 import { SpotlightBackground } from "@/components/SpotlightBackground";
 import spotlightStyles from "@/components/SpotlightBackground.module.scss";
 import { THEME_INIT } from "@/components/themeScript";
-import { baseURL, home } from "@/resources";
-import { Meta } from "@once-ui-system/core";
+import { pages } from "@/resources";
+import { pageMetadata } from "@/utils/seo";
 import { Analytics } from "@vercel/analytics/next";
 import styles from "./layout.module.scss";
 
 export async function generateMetadata() {
-  return Meta.generate({
-    title: home.title,
-    description: home.description,
-    baseURL: baseURL,
-    path: home.path,
-    image: home.image,
+  return pageMetadata({
+    title: pages.home.title,
+    description: pages.home.description,
+    path: pages.home.path,
+    image: pages.home.image,
   });
 }
 

@@ -1,118 +1,13 @@
+// The icons of Erick's profile links and of the resume link.
 import type { IconType } from "react-icons";
+import { FaGithub, FaLinkedin } from "react-icons/fa6";
+import { HiEnvelope, HiOutlineDocument } from "react-icons/hi2";
 
-import {
-  HiArrowRight,
-  HiArrowTopRightOnSquare,
-  HiArrowUpRight,
-  HiCalendarDays,
-  HiEnvelope,
-  HiOutlineDocument,
-  HiOutlineEye,
-  HiOutlineEyeSlash,
-  HiOutlineGlobeAsiaAustralia,
-  HiOutlineLink,
-  HiOutlineRocketLaunch,
-} from "react-icons/hi2";
-
-import {
-  PiBookBookmarkDuotone,
-  PiChatCircleTextDuotone,
-  PiGridFourDuotone,
-  PiHouseDuotone,
-  PiImageDuotone,
-  PiUserCircleDuotone,
-} from "react-icons/pi";
-
-import {
-  SiCanvas,
-  SiClaude,
-  SiDavinciresolve,
-  SiElevenlabs,
-  SiFigma,
-  SiGoogleanalytics,
-  SiGooglegemini,
-  SiGooglesearchconsole,
-  SiJavascript,
-  SiMeta,
-  SiNetlify,
-  SiNextdotjs,
-  SiOdoo,
-  SiPython,
-  SiShopify,
-  SiSupabase,
-  SiTypescript,
-  SiVercel,
-  SiWordpress,
-  SiZapier,
-} from "react-icons/si";
-
-import { EMIcon } from "./EMIcon";
-
-import {
-  FaDiscord,
-  FaFacebook,
-  FaGithub,
-  FaLinkedin,
-  FaPinterest,
-  FaReddit,
-  FaTelegram,
-  FaThreads,
-  FaWhatsapp,
-  FaX,
-  FaXTwitter,
-} from "react-icons/fa6";
-
-export const iconLibrary: Record<string, IconType> = {
-  arrowUpRight: HiArrowUpRight,
-  arrowRight: HiArrowRight,
-  email: HiEnvelope,
-  globe: HiOutlineGlobeAsiaAustralia,
-  person: PiUserCircleDuotone,
-  grid: PiGridFourDuotone,
-  book: PiBookBookmarkDuotone,
-  openLink: HiOutlineLink,
-  calendar: HiCalendarDays,
-  home: PiHouseDuotone,
-  brand: EMIcon,
-  gallery: PiImageDuotone,
-  message: PiChatCircleTextDuotone,
-  discord: FaDiscord,
-  eye: HiOutlineEye,
-  eyeOff: HiOutlineEyeSlash,
+export const icons = {
   github: FaGithub,
   linkedin: FaLinkedin,
-  x: FaX,
-  twitter: FaXTwitter,
-  threads: FaThreads,
-  arrowUpRightFromSquare: HiArrowTopRightOnSquare,
+  email: HiEnvelope,
   document: HiOutlineDocument,
-  rocket: HiOutlineRocketLaunch,
-  javascript: SiJavascript,
-  nextjs: SiNextdotjs,
-  supabase: SiSupabase,
-  figma: SiFigma,
-  facebook: FaFacebook,
-  pinterest: FaPinterest,
-  whatsapp: FaWhatsapp,
-  reddit: FaReddit,
-  telegram: FaTelegram,
-  typescript: SiTypescript,
-  zapier: SiZapier,
-  odoo: SiOdoo,
-  meta: SiMeta,
-  canva: SiCanvas,
-  shopify: SiShopify,
-  wordpress: SiWordpress,
-  netlify: SiNetlify,
-  vercel: SiVercel,
-  python: SiPython,
-  googleAnalytics: SiGoogleanalytics,
-  googleSearchConsole: SiGooglesearchconsole,
-  elevenlabs: SiElevenlabs,
-  davinciresolve: SiDavinciresolve,
-  gemini: SiGooglegemini,
-  claude: SiClaude,
-};
+} satisfies Record<string, IconType>;
 
-export type IconLibrary = typeof iconLibrary;
-export type IconName = keyof IconLibrary;
+export type IconName = keyof typeof icons;

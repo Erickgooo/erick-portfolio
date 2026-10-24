@@ -1,6 +1,6 @@
 // Workbench: a short about, with the photo beside it (sober, 2026-10-22:
 // straight and flat, no tape).
-import { about, person } from "@/resources/content";
+import { about, pages, profile } from "@/resources";
 import Image from "next/image";
 import Link from "next/link";
 import type { CSSProperties } from "react";
@@ -14,7 +14,7 @@ function shortTime(timeframe: string) {
 }
 
 export function About() {
-  const jobs = about.work.experiences;
+  const jobs = about.experience.jobs;
 
   return (
     <section className={styles.about} aria-labelledby="about-title">
@@ -25,12 +25,12 @@ export function About() {
               src={MEDIA.avatar.src}
               width={MEDIA.avatar.w}
               height={MEDIA.avatar.h}
-              alt={`Portrait of ${person.name}`}
+              alt={`Portrait of ${profile.name}`}
               sizes="(min-width: 1024px) 360px, 70vw"
             />
             <figcaption>
-              {person.name}
-              <span>{person.location}</span>
+              {profile.name}
+              <span>{profile.location}</span>
             </figcaption>
           </figure>
         </div>
@@ -59,13 +59,10 @@ export function About() {
             ))}
           </ul>
           <div className={styles.links}>
-            <Link href={about.path} className={ui.textLink}>
+            <Link href={pages.about.path} className={ui.textLink}>
               The full story <FiArrowRight aria-hidden="true" />
             </Link>
-            <a
-              href={about.resume?.link ?? "/resume/Erick_Mahecha_Resume.pdf"}
-              className={ui.textLink}
-            >
+            <a href={about.resumeUrl ?? "/resume/Erick_Mahecha_Resume.pdf"} className={ui.textLink}>
               Resume (PDF)
             </a>
           </div>

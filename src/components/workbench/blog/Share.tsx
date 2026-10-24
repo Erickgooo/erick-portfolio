@@ -1,7 +1,7 @@
 // Workbench, post: share keys under the article. Links for the platforms
 // switched on in socialSharing (once-ui.config.ts), and a key that copies the
 // post's address. Square keys, 44 px, named for screen readers.
-import { socialSharing } from "@/resources";
+import { sharing } from "@/resources";
 import type { ReactNode } from "react";
 import {
   FaFacebookF,
@@ -65,8 +65,8 @@ const PLATFORMS: Record<string, Platform> = {
 };
 
 export function Share({ title, url }: { title: string; url: string }) {
-  if (!socialSharing.display) return null;
-  const enabled = Object.entries(socialSharing.platforms)
+  if (!sharing.enabled) return null;
+  const enabled = Object.entries(sharing.on)
     .filter(([key, on]) => on && key in PLATFORMS)
     .map(([key]) => ({ key, ...PLATFORMS[key] }));
 
@@ -90,7 +90,7 @@ export function Share({ title, url }: { title: string; url: string }) {
             </li>
           );
         })}
-        {socialSharing.platforms.copyLink ? (
+        {sharing.on.copyLink ? (
           <li>
             <CopyPostLink url={url} />
           </li>

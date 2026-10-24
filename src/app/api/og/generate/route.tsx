@@ -1,4 +1,4 @@
-import { about, baseURL, blog, gallery, home, person, work } from "@/resources";
+import { pages, profile, protectedRoutes, siteUrl } from "@/resources";
 import { isProtectedPath } from "@/resources/protectedRoutes";
 import { RateLimiter, getClientIp } from "@/utils/rateLimit";
 import { getPosts } from "@/utils/utils";
@@ -43,7 +43,14 @@ function getAllowedTitles(): Set<string> {
   }
 
   allowedTitles = new Set(
-    [home.title, about.title, blog.title, work.title, gallery.title, ...postTitles]
+    [
+      pages.home.title,
+      pages.about.title,
+      pages.blog.title,
+      pages.work.title,
+      pages.gallery.title,
+      ...postTitles,
+    ]
       .filter((title): title is string => typeof title === "string" && title.length > 0)
       .map(normalizeTitle),
   );
@@ -62,7 +69,7 @@ export async function GET(request: Request) {
 
   const url = new URL(request.url);
   const requested = normalizeTitle((url.searchParams.get("title") || "").slice(0, TITLE_MAX_CHARS));
-  const title = getAllowedTitles().has(requested) ? requested : normalizeTitle(home.title);
+  const title = getAllowedTitles().has(requested) ? requested : normalizeTitle(pages.home.title);
 
   async function loadGoogleFont(font: string) {
     const url = `https://fonts.googleapis.com/css2?family=${font}`;
@@ -131,8 +138,8 @@ export async function GET(request: Request) {
           }}
         >
           <img
-            src={baseURL + person.avatar}
-            alt={person.name}
+            src={siteUrl + profile.avatar}
+            alt={profile.name}
             style={{
               width: "12rem",
               height: "12rem",
@@ -155,7 +162,7 @@ export async function GET(request: Request) {
                 textWrap: "balance",
               }}
             >
-              {person.name}
+              {profile.name}
             </span>
             <span
               style={{
@@ -166,7 +173,7 @@ export async function GET(request: Request) {
                 opacity: "0.6",
               }}
             >
-              {person.role}
+              {profile.role}
             </span>
           </div>
         </div>

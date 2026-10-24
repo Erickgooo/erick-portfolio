@@ -2,20 +2,20 @@
 // monogram with his name, the pages, the social links and the copyright line.
 // Server-rendered; transparent over the page dots.
 import scope from "@/components/workbench/scope.module.scss";
-import { about, blog, gallery, person, routes, social, work } from "@/resources";
+import { about, enabledRoutes, pages, profile, profileLinks } from "@/resources";
 import { EMIcon } from "@/resources/EMIcon";
-import { iconLibrary } from "@/resources/icons";
+import { icons } from "@/resources/icons";
 import Link from "next/link";
 import styles from "./Footer.module.scss";
 
 const PAGES = [
-  { path: about.path, label: about.label },
-  { path: work.path, label: work.label },
-  { path: blog.path, label: blog.label },
-  { path: gallery.path, label: gallery.label },
-].filter((page) => routes[page.path as keyof typeof routes]);
+  { path: pages.about.path, label: pages.about.label },
+  { path: pages.work.path, label: pages.work.label },
+  { path: pages.blog.path, label: pages.blog.label },
+  { path: pages.gallery.path, label: pages.gallery.label },
+].filter((page) => enabledRoutes[page.path as keyof typeof enabledRoutes]);
 
-const ResumeIcon = iconLibrary.document;
+const ResumeIcon = icons.document;
 
 export const Footer = () => {
   const currentYear = new Date().getFullYear();
@@ -24,14 +24,14 @@ export const Footer = () => {
     <footer className={`${scope.scope} ${styles.footer}`}>
       <div className={styles.inner}>
         <div className={styles.lead}>
-          <Link href="/" className={styles.wordmark} aria-label={`${person.name}, home`}>
+          <Link href="/" className={styles.wordmark} aria-label={`${profile.name}, home`}>
             <span className={styles.mark} aria-hidden="true">
               <EMIcon />
             </span>
-            <span>{person.name}</span>
+            <span>{profile.name}</span>
           </Link>
           <p>
-            {person.role}, working from {person.location}.
+            {profile.role}, working from {profile.location}.
           </p>
         </div>
         <nav aria-label="Footer" className={styles.cols}>
@@ -43,14 +43,14 @@ export const Footer = () => {
             ))}
           </ul>
           <ul>
-            {social.map((item) => {
-              if (!item.link) return null;
-              const Icon = iconLibrary[item.icon];
-              const external = item.link.startsWith("http");
+            {profileLinks.map((item) => {
+              if (!item.href) return null;
+              const Icon = icons[item.icon];
+              const external = item.href.startsWith("http");
               return (
                 <li key={item.name}>
                   <a
-                    href={item.link}
+                    href={item.href}
                     {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
                   >
                     {Icon && <Icon aria-hidden="true" className={styles.icon} />}
@@ -59,9 +59,9 @@ export const Footer = () => {
                 </li>
               );
             })}
-            {about.resume?.display && (
+            {about.resumeUrl && (
               <li>
-                <a href={about.resume.link}>
+                <a href={about.resumeUrl}>
                   <ResumeIcon aria-hidden="true" className={styles.icon} />
                   Resume (PDF)
                 </a>
@@ -71,7 +71,7 @@ export const Footer = () => {
         </nav>
       </div>
       <div className={styles.base}>
-        &copy; {currentYear} {person.name}
+        &copy; {currentYear} {profile.name}
       </div>
     </footer>
   );

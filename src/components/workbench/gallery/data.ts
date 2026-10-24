@@ -1,10 +1,10 @@
+import { galleryPieces, protectedRoutes } from "@/resources";
 // Workbench, Visual Work: the gallery's pieces, sorted onto the bench by client
-// and by format. The only source is `gallery.images` in src/resources/content.tsx
+// and by format. The only source is `galleryPieces` in src/resources/content.tsx
 // (the list GalleryView read), unchanged: consecutive items sharing a `group`
 // are one carousel, YouTube links are videos, everything else is a single post.
 // The client of a piece is the name its alt text opens with. Server-only (it
 // reads the project MDX for the related cases).
-import { gallery } from "@/resources/content";
 import { isProtectedPath } from "@/resources/protectedRoutes";
 import { getPosts } from "@/utils/utils";
 import { extractYouTubeId } from "@/utils/youtube";
@@ -35,7 +35,7 @@ export type ClientShelf = {
   related?: { href: string; title: string };
 };
 
-type RawImage = (typeof gallery.images)[number];
+type RawImage = (typeof galleryPieces)[number];
 
 /** Pixel sizes of the gallery files, read from their headers (sharp metadata). */
 const SIZE: Record<string, { w: number; h: number }> = {
@@ -100,7 +100,7 @@ function slideOf(image: RawImage): Slide {
 
 /** The same grouping pass GalleryView made, in the data's own order. */
 function getPieces(): Piece[] {
-  const images = gallery.images;
+  const images = galleryPieces;
   const pieces: Piece[] = [];
   let i = 0;
   while (i < images.length) {

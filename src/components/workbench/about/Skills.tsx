@@ -1,10 +1,10 @@
 // Workbench About: the technical skills, on one sheet behind a hairline.
-import { about } from "@/resources/content";
+import { about } from "@/resources";
 import { inWords } from "../data";
 import styles from "./skills.module.scss";
 
 export function Skills() {
-  const skills = about.technical.skills;
+  const skills = about.skills.groups;
 
   return (
     <section className={styles.skills} aria-labelledby="skills-title">

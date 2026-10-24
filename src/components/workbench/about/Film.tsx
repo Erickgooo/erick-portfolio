@@ -1,7 +1,7 @@
 // Workbench About: the film, and the story that starts under it. The copy is
 // the About introduction from content.tsx, trimmed; every figure on the tags
 // comes from it or from the work experience.
-import { person } from "@/resources/content";
+import { about, profile } from "@/resources";
 import type { CSSProperties } from "react";
 import { SupportQueue } from "../scenes/about/SupportQueue";
 import { FilmFrame } from "./FilmFrame";
@@ -43,7 +43,7 @@ export function Film() {
           poster={FILM.poster}
           width={FILM.w}
           height={FILM.h}
-          label={`Video of ${person.name}`}
+          label={`Video of ${profile.name}`}
           testId="about-video"
         />
       </div>
