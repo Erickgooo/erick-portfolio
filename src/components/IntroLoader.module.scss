@@ -16,6 +16,14 @@
   background: #f4f5f7;
 }
 
+/* The server renders the overlay on "/" and only the script takes it away, so
+   without JavaScript it would cover the home for good. */
+@media (scripting: none) {
+  .overlay {
+    display: none;
+  }
+}
+
 .overlay.leaving {
   opacity: 0;
   visibility: hidden;
