@@ -28,7 +28,15 @@ export type Post = { slug: string; metadata: PostMetadata; content: string };
 
 /** Every .mdx entry in a folder, given as path segments from the project root. */
 export function getPosts(folder: string[]): Post[] {
-  const dir = path.join(process.cwd(), ...folder);
+  return readPosts(path.join(process.cwd(), ...folder));
+}
+
+// Kept apart from getPosts on purpose: when a process.cwd() path reaches the
+// fs calls in the same function, Vercel's file tracer can't tell which folder
+// it is and ships the whole project with every page that lists posts (1 GB,
+// over the 250 MB function limit). The MDX files themselves reach the
+// functions through outputFileTracingIncludes in next.config.mjs.
+function readPosts(dir: string): Post[] {
   if (!fs.existsSync(dir)) notFound();
 
   return fs
