@@ -533,6 +533,9 @@
   }
 
   // In the scrolling row a rise would be clipped: the frames fade and grow in.
+  // They come in all together when the row does (the row carries
+  // data-reveal), so the frames a swipe brings in are already there; each
+  // waiting for its own turn left them empty for most of a second.
   @include below-desk {
     @media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
       opacity: 0;
@@ -542,7 +545,7 @@
         scale 0.8s $ease-settle;
       transition-delay: calc(var(--i, 0) * 90ms);
 
-      &[data-in] {
+      .reel[data-in] > & {
         opacity: 1;
         scale: 1;
       }

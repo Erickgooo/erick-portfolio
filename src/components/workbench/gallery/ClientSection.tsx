@@ -84,7 +84,8 @@ export function ClientSection({
 
         {shelf.videos.length > 0 && (
           <Shelf title="Videos" count={shelf.videos.length}>
-            <ul className={styles.reel}>
+            {/* Below 1024 px the row reveals as a whole (.reelItem). */}
+            <ul className={styles.reel} data-reveal="">
               {shelf.videos.map((video, i) => (
                 <li
                   key={video.id}
