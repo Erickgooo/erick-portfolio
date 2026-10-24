@@ -48,7 +48,7 @@
   position: absolute;
   inset: 0;
   pointer-events: none;
-  background-image: radial-gradient(var(--scheme-neutral-500, #6e7681) 1.5px, transparent 1.5px);
+  background-image: radial-gradient(var(--ui-dots) 1.5px, transparent 1.5px);
   background-size: 24px 24px;
   opacity: 0.2;
   z-index: 0;

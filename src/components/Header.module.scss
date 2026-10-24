@@ -154,10 +154,6 @@
   transition-duration: 0.2s;
   transition-timing-function: ease-in-out;
 
-  &:hover {
-    color: var(--wb-ink);
-  }
-
   &:focus-visible {
     background: rgba(147, 147, 150, 0.15);
     border-color: rgba(147, 147, 150, 0.15);

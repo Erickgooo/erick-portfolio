@@ -23,7 +23,7 @@ interface SpotlightBackgroundProps {
 // starts it again. With reduced motion it jumps straight to the pointer.
 export function SpotlightBackground({
   glowRadius = 260,
-  glowColor = "scheme-brand-600-15",
+  glowColor = "ui-glow",
 }: SpotlightBackgroundProps) {
   const glowRef = useRef<HTMLDivElement>(null);
 

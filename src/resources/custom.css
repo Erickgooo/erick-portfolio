@@ -1,67 +1,42 @@
-/* Custom palette — Erick Mahecha brand manual (Sección 03, Sistema Colorimétrico).
-   brand/accent share one scale (the manual defines a single accent: Cobalto Eléctrico).
-   neutral-100 = Obsidiana Profunda exactly (dark-mode page background);
-   neutral-1200 = Blanco Titanio exactly; neutral-500/800 snap to Grafito/Plata Satinada. */
-/* Labels use the body Inter instance (one font download instead of two).
-   Also on body, where the root layout puts the next/font variables. */
-:root,
-body {
-  --font-label: var(--font-body);
-}
-
-/* Once UI sets the text face on html; body repeats it for the same reason. */
-body {
-  font-family: var(--font-body);
-}
-
+/* Interface tokens outside the Workbench pages (the chatbot, the video
+   facade, the pointer glow and the page dots), switched on html[data-theme]
+   like the Workbench ones below. From the brand manual's palette (Sección
+   03): Obsidiana Profunda, Grafito, Plata Satinada, Blanco Titanio and
+   Cobalto Eléctrico.
+   - --ui-ink / --ui-ink-weak: text, and its quieter tone.
+   - --ui-fill / --ui-fill-strong: translucent fills (bubbles, chips) and their hover.
+   - --ui-surface / --ui-line: an opaque key and a hairline.
+   - --ui-glass / --ui-glass-line: blurred panels over the page.
+   - --ui-cobalt, --ui-on-cobalt, --ui-cobalt-ink: the solid brand fill, the
+     text on it, and Cobalto as text on the page; --ui-underline: a link's line.
+   - --ui-glow / --ui-dots: the pointer glow and the dot texture. */
 :root {
-  --scheme-brand-100: #0a0e1f;
-  --scheme-brand-200: #0d1431;
-  --scheme-brand-300: #172b74;
-  --scheme-brand-400: #1e3a9e;
-  --scheme-brand-500: #2549cb;
-  --scheme-brand-600: #2d5bff;
-  --scheme-brand-700: #6688ff;
-  --scheme-brand-800: #a6baff;
-  --scheme-brand-900: #c1cfff;
-  --scheme-brand-1000: #dbe3ff;
-  --scheme-brand-1100: #e7edff;
-  --scheme-brand-1200: #f3f6ff;
-  --scheme-brand-600-15: #2d5bff26;
-  --scheme-brand-600-30: #2d5bff4d;
-  --scheme-brand-600-50: #2d5bff80;
+  --ui-ink: #0b0b0f;
+  --ui-ink-weak: #6e7681;
+  --ui-fill: #93939626;
+  --ui-fill-strong: #9393964d;
+  --ui-surface: #e8e9eb;
+  --ui-line: #dcdddf;
+  --ui-glass: #ffffff4d;
+  --ui-glass-line: #9393964d;
+  --ui-cobalt: #2d5bff;
+  --ui-on-cobalt: #f4f5f7;
+  --ui-cobalt-ink: #2549cb;
+  --ui-underline: #c7ccd1;
+  --ui-shadow:
+    0 2px 4px rgba(0, 0, 0, 0.12), 0 8px 12px rgba(0, 0, 0, 0.08), 0 8px 16px rgba(0, 0, 0, 0.08);
+  --ui-glow: #2d5bff26;
+  --ui-dots: #6e7681;
+}
 
-  --scheme-accent-100: #0a0e1f;
-  --scheme-accent-200: #0d1431;
-  --scheme-accent-300: #172b74;
-  --scheme-accent-400: #1e3a9e;
-  --scheme-accent-500: #2549cb;
-  --scheme-accent-600: #2d5bff;
-  --scheme-accent-700: #6688ff;
-  --scheme-accent-800: #a6baff;
-  --scheme-accent-900: #c1cfff;
-  --scheme-accent-1000: #dbe3ff;
-  --scheme-accent-1100: #e7edff;
-  --scheme-accent-1200: #f3f6ff;
-  --scheme-accent-600-15: #2d5bff26;
-  --scheme-accent-600-30: #2d5bff4d;
-  --scheme-accent-600-50: #2d5bff80;
-
-  --scheme-neutral-100: #0b0b0f;
-  --scheme-neutral-200: #16161a;
-  --scheme-neutral-300: #3f3f42;
-  --scheme-neutral-400: #58585c;
-  --scheme-neutral-500: #6e7681;
-  --scheme-neutral-600: #939396;
-  --scheme-neutral-700: #afafb2;
-  --scheme-neutral-800: #c7ccd1;
-  --scheme-neutral-900: #dcdddf;
-  --scheme-neutral-1000: #e8e9eb;
-  --scheme-neutral-1100: #eeeff1;
-  --scheme-neutral-1200: #f4f5f7;
-  --scheme-neutral-600-15: #93939626;
-  --scheme-neutral-600-30: #9393964d;
-  --scheme-neutral-600-50: #93939680;
+:root[data-theme="dark"] {
+  --ui-ink: #ffffff;
+  --ui-ink-weak: #afafb2;
+  --ui-surface: #16161a;
+  --ui-line: #3f3f42;
+  --ui-glass: #0000004d;
+  --ui-cobalt-ink: #6688ff;
+  --ui-underline: #58585c;
 }
 
 /* ─── Data Callout (Manual §4.3) ───────────────────────────────────────────
@@ -71,72 +46,22 @@ body {
 .metric {
   font-family: var(--font-code), monospace;
   font-weight: 600;
-  /* -weak, not -strong: --brand-on-background-strong is static white in dark and
-     near-black in light — it is the max-contrast text token, not the brand hue.
-     -weak is the Cobalto one (brand-700 dark / brand-500 light). */
-  color: var(--brand-on-background-weak);
+  color: var(--ui-cobalt-ink);
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
 }
 
-/* ─── Glow Border (Manual §5.3.3) ──────────────────────────────────────────
-   1px Cobalto ring plus a low-intensity glow — the only light effect the manual
-   permits, reserved for metric cards and highlighted data blocks. Defined once
-   here so every data callout carries the identical treatment.
-──────────────────────────────────────────────────────────────────────────── */
-:root {
-  --glow-border: 0 0 0 1px var(--brand-alpha-medium), 0 0 24px var(--brand-alpha-weak);
-}
-
-/* ─── Solid CTA color ──────────────────────────────────────────────────────
-   Manual §3.2: the primary CTA is the one place Cobalto Eléctrico appears as a
-   solid fill, and it has to be the exact brand hex. Once UI paints a resting
-   primary button with --brand-solid-medium and its hover with -strong, and
-   data-solid=color maps those a step apart per theme, so the button would drift
-   off-brand and shift tone between light and dark. Pin the resting fill to
-   Cobalto exactly and darken on hover (brand-500) — going lighter would drop
-   Blanco Titanio label text below AA contrast.
-──────────────────────────────────────────────────────────────────────────── */
-:root[data-solid="color"] {
-  --brand-solid-medium: #2d5bff;
-  --brand-solid-strong: #2549cb;
-  --brand-on-solid-strong: #f4f5f7;
-}
-
-/* ─── Scrollbar gutter ─────────────────────────────────────────────────────
-   The intro and the gallery viewer lock the page's scroll. With a classic
-   scrollbar (Windows desktops) that took the bar away and gave it back, so
-   the page widened by its 15 px and every centred line jumped 7 px sideways.
-   The gutter now stays reserved while the scroll is locked (the intro
-   paints it in its own colour, see IntroLoader.module.scss). Overlay
-   scrollbars (phones, macOS) take no room, so nothing changes there.
-──────────────────────────────────────────────────────────────────────────── */
-html {
-  scrollbar-gutter: stable;
-}
-
-/* ─── Mobile bottom-nav clearance ──────────────────────────────────────────
-   On mobile (≤768px) the header switches to position:fixed at the bottom
-   (bottom: 24px). Without extra padding-bottom, the bar overlaps content.
-   The nav bar is ~56px tall + 24px offset = ~80px, so 96px gives clearance.
-──────────────────────────────────────────────────────────────────────────── */
-@media (max-width: 768px) {
-  .main-content-wrapper {
-    padding-bottom: 96px !important;
-  }
-}
-
 /* ─── Workbench (redesign 2026) ────────────────────────────────────────────
-   Global tokens of the Workbench design, switched on html[data-theme] like
-   Once UI's, so every redesigned page reuses them. Solid fills only. The
+   Global tokens of the Workbench design, switched on html[data-theme], so
+   every redesigned page reuses them. Solid fills only. The
    sober tokens (2026-10-22) follow these, at the end of the file.
    - Paper colours are the same sheets in both themes. Cobalto Eléctrico is
      the accent (call-to-action key, link underlines, focus rings, active
      states), at its exact brand hex in both themes. Papers keep to the
      brand palette: cobalt, mist (a pale cobalt), white paper and ink.
    - The band (the tool wall) is always the opposite of the page.
-   - The page colour also becomes Once UI's --page-background, so the body
-     (with its dots), the header pill and the header fades share it.
+   - The page colour is also the body's, the header pill's and the header
+     fades'.
    Type: --font-wb-display (Montserrat Black), --font-wb-text (Poppins) and
    --font-wb-accent (Luxurious Roman), below. Breakpoints and mixins:
    src/components/workbench/_shared.scss.
@@ -290,19 +215,6 @@ html {
   --wb-band-tile: #f0f0f3;
   --wb-shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 16px 30px -12px rgba(0, 0, 0, 0.7);
   --wb-shadow-lift: 0 2px 4px rgba(0, 0, 0, 0.4), 0 30px 48px -16px rgba(0, 0, 0, 0.8);
-}
-
-:root[data-theme] {
-  --page-background: var(--wb-page);
-}
-
-/* Once UI's stylesheet scrolls the page smoothly (html { scroll-behavior:
-   smooth }), which also slid every anchor jump with reduced motion on.
-   :root outranks its `html` whatever order the CSS chunks land in. */
-@media (prefers-reduced-motion: reduce) {
-  :root {
-    scroll-behavior: auto;
-  }
 }
 
 /* ─── Motion ───────────────────────────────────────────────────────────────

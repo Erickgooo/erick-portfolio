@@ -2,8 +2,8 @@
   position: relative;
   width: 100%;
   overflow: hidden;
-  border-radius: var(--radius-m, 8px);
-  background: var(--surface-background);
+  border-radius: 0.375rem;
+  background: var(--ui-glass);
 }
 
 .button {
@@ -14,7 +14,7 @@
   display: block;
 
   &:focus-visible {
-    outline: 2px solid var(--brand-solid-medium);
+    outline: 2px solid var(--ui-cobalt);
     outline-offset: -2px;
   }
 }
@@ -34,7 +34,10 @@
   height: 3rem;
   border-radius: 50%;
   background: rgba(11, 11, 15, 0.7);
-  box-shadow: var(--glow-border);
+  // A 1px Cobalto ring and a low glow (Manual 5.3.3).
+  box-shadow:
+    0 0 0 1px #2d5bff4d,
+    0 0 24px var(--ui-glow);
 
   &::after {
     content: "";

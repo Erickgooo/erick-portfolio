@@ -1,0 +1,40 @@
+/* The document's ground rules, before any component style: sizes include
+   padding and borders, the root type size the rem-based pieces follow (15px
+   up to 768px wide, 16px above), the text face and ink, smooth jumps to
+   anchors (instant with reduced motion), a scrollbar gutter that never comes
+   and goes, and images that a drag or a long press does not select. */
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 16px;
+  font-family: var(--font-body);
+  color: var(--ui-ink);
+  scroll-behavior: smooth;
+  /* The intro and the gallery viewer lock the page's scroll. With a classic
+     scrollbar (Windows desktops) that took the bar away and gave it back, so
+     the page widened by its 15 px and every centred line jumped 7 px
+     sideways. The gutter stays reserved instead (the intro paints it in its
+     own colour, see IntroLoader.module.scss). Overlay scrollbars (phones,
+     macOS) take no room, so nothing changes there. */
+  scrollbar-gutter: stable;
+}
+
+/* With reduced motion an anchor jump lands at once. */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+@media (max-width: 768px) {
+  html {
+    font-size: 15px;
+  }
+}
+
+img {
+  user-select: none;
+}

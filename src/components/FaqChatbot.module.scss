@@ -33,17 +33,17 @@
   width: 64px;
   height: 64px;
   border-radius: 50%;
-  border: 1px solid var(--neutral-alpha-weak);
-  background: var(--neutral-background-medium);
-  box-shadow: var(--shadow-l);
+  border: 1px solid var(--ui-fill);
+  background: var(--ui-surface);
+  box-shadow: var(--ui-shadow);
   cursor: pointer;
   padding: 0;
   overflow: hidden;
   transition: background-color var(--wb-dur-micro) var(--wb-ease-soft);
-  color: var(--neutral-on-background-strong);
+  color: var(--ui-ink);
 
   &:hover {
-    background: var(--neutral-alpha-weak);
+    background: var(--ui-fill);
   }
 }
 
@@ -73,12 +73,12 @@
   max-height: calc(100svh - 6rem) !important;
   display: flex !important;
   flex-direction: column !important;
-  box-shadow: var(--shadow-l) !important;
+  box-shadow: var(--ui-shadow) !important;
   overflow: hidden !important;
   backdrop-filter: blur(16px) !important;
-  background: var(--surface-background) !important;
-  border: 1px solid var(--surface-border) !important;
-  border-radius: var(--radius-l) !important;
+  background: var(--ui-glass) !important;
+  border: 1px solid var(--ui-glass-line) !important;
+  border-radius: 0.625rem !important;
   box-sizing: border-box !important;
   margin: 0 !important;
   padding: 1rem;
@@ -90,8 +90,8 @@
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  border-bottom: 1px solid var(--neutral-alpha-weak);
-  padding-bottom: var(--static-space-12);
+  border-bottom: 1px solid var(--ui-fill);
+  padding-bottom: 0.75rem;
   box-sizing: border-box;
 }
 
@@ -102,10 +102,10 @@
   overflow-y: auto;
   overscroll-behavior: contain;
   scrollbar-gutter: stable;
-  padding: var(--static-space-12) 0;
+  padding: 0.75rem 0;
   display: flex;
   flex-direction: column;
-  gap: var(--static-space-12);
+  gap: 0.75rem;
   box-sizing: border-box;
   
   /* Custom scrollbar */
@@ -116,7 +116,7 @@
     background: transparent;
   }
   &::-webkit-scrollbar-thumb {
-    background: var(--neutral-alpha-weak);
+    background: var(--ui-fill);
     border-radius: 2px;
   }
 }
@@ -124,7 +124,7 @@
 .suggestedWrapper {
   display: flex;
   flex-direction: column;
-  gap: var(--static-space-8);
+  gap: 0.5rem;
   width: 100%;
   box-sizing: border-box;
 }
@@ -134,20 +134,20 @@
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  padding: var(--static-space-8) var(--static-space-12);
-  background: var(--neutral-alpha-weak);
-  border: 1px solid var(--neutral-alpha-weak);
-  border-radius: var(--radius-m);
-  color: var(--neutral-on-background-strong);
-  font-size: var(--body-font-size-default-s);
+  padding: 0.5rem 0.75rem;
+  background: var(--ui-fill);
+  border: 1px solid var(--ui-fill);
+  border-radius: 0.375rem;
+  color: var(--ui-ink);
+  font-size: inherit;
   font-family: inherit;
   cursor: pointer;
   transition: background-color var(--wb-dur-micro) var(--wb-ease-soft);
   box-sizing: border-box;
 
   &:hover {
-    background: var(--neutral-alpha-medium);
-    border-color: var(--neutral-alpha-medium);
+    background: var(--ui-fill-strong);
+    border-color: var(--ui-fill-strong);
   }
 }
 
@@ -156,20 +156,20 @@
   display: flex;
   width: 100%;
   flex-direction: column;
-  gap: var(--static-space-8);
-  padding: var(--static-space-12) 0;
+  gap: 0.5rem;
+  padding: 0.75rem 0;
   box-sizing: border-box;
 }
 
 .questionButton {
   text-align: left;
   width: 100%;
-  padding: var(--static-space-12) var(--static-space-16);
-  background: var(--neutral-alpha-weak);
-  border: 1px solid var(--neutral-alpha-weak);
-  border-radius: var(--radius-m);
-  color: var(--neutral-on-background-strong);
-  font-size: var(--body-font-size-default-s);
+  padding: 0.75rem 1rem;
+  background: var(--ui-fill);
+  border: 1px solid var(--ui-fill);
+  border-radius: 0.375rem;
+  color: var(--ui-ink);
+  font-size: inherit;
   cursor: pointer;
   transition-property: background-color, border-color;
   transition-duration: var(--wb-dur-micro);
@@ -181,8 +181,8 @@
   box-sizing: border-box !important;
 
   &:hover:not(:disabled) {
-    background: var(--neutral-alpha-medium);
-    border-color: var(--neutral-alpha-medium);
+    background: var(--ui-fill-strong);
+    border-color: var(--ui-fill-strong);
   }
 
   &:disabled {
@@ -192,20 +192,20 @@
 }
 
 .inputArea {
-  border-top: 1px solid var(--neutral-alpha-weak);
-  padding-top: var(--static-space-12);
+  border-top: 1px solid var(--ui-fill);
+  padding-top: 0.75rem;
   box-sizing: border-box;
   flex-shrink: 0;
 }
 
 .textInput {
   flex: 1;
-  padding: var(--static-space-8) var(--static-space-12);
-  background: var(--neutral-alpha-weak);
-  border: 1px solid var(--neutral-alpha-weak);
-  border-radius: var(--radius-m);
-  color: var(--neutral-on-background-strong);
-  font-size: var(--body-font-size-default-s);
+  padding: 0.5rem 0.75rem;
+  background: var(--ui-fill);
+  border: 1px solid var(--ui-fill);
+  border-radius: 0.375rem;
+  color: var(--ui-ink);
+  font-size: inherit;
   font-family: inherit;
   outline: none;
   box-sizing: border-box;
@@ -213,12 +213,12 @@
   min-width: 0;
 
   &::placeholder {
-    color: var(--neutral-on-background-weak);
+    color: var(--ui-ink-weak);
     opacity: 0.7;
   }
 
   &:focus {
-    border-color: var(--brand-solid-medium);
+    border-color: var(--ui-cobalt);
   }
 
   &:disabled {
@@ -234,12 +234,12 @@
   flex-shrink: 0;
   width: 36px;
   height: 36px;
-  border-radius: var(--radius-m);
+  border-radius: 0.375rem;
   border: none;
-  background: var(--brand-solid-medium);
+  background: var(--ui-cobalt);
   // -on-solid, not -on-background: the icon sits on a solid Cobalto fill, so it
   // needs Blanco Titanio. -on-background is itself Cobalto and would vanish.
-  color: var(--brand-on-solid-strong);
+  color: var(--ui-on-cobalt);
   cursor: pointer;
   transition: opacity var(--wb-dur-micro) var(--wb-ease-soft);
 
@@ -274,11 +274,11 @@
   bottom: calc(100% + 12px);
   width: 280px;
   max-width: calc(100vw - 3rem);
-  padding: var(--static-space-12) var(--static-space-32) var(--static-space-12) var(--static-space-16);
-  background: var(--surface-background);
-  border: 1px solid var(--surface-border);
-  border-radius: var(--radius-l);
-  box-shadow: var(--shadow-l);
+  padding: 0.75rem 2rem 0.75rem 1rem;
+  background: var(--ui-glass);
+  border: 1px solid var(--ui-glass-line);
+  border-radius: 0.625rem;
+  box-shadow: var(--ui-shadow);
   backdrop-filter: blur(16px);
   cursor: pointer;
   z-index: 1000;
@@ -304,15 +304,15 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--neutral-on-background-weak);
+  color: var(--ui-ink-weak);
   padding: 4px;
   border-radius: 50%;
   transition: background-color var(--wb-dur-micro) var(--wb-ease-soft), color var(--wb-dur-micro) var(--wb-ease-soft);
   box-sizing: border-box;
 
   &:hover {
-    background-color: var(--neutral-alpha-weak);
-    color: var(--neutral-on-background-strong);
+    background-color: var(--ui-fill);
+    color: var(--ui-ink);
   }
 }
 
@@ -322,9 +322,9 @@
   right: 26px;
   width: 10px;
   height: 10px;
-  background: var(--surface-background);
-  border-right: 1px solid var(--surface-border);
-  border-bottom: 1px solid var(--surface-border);
+  background: var(--ui-glass);
+  border-right: 1px solid var(--ui-glass-line);
+  border-bottom: 1px solid var(--ui-glass-line);
   transform: rotate(45deg);
   z-index: -1;
 }
@@ -379,7 +379,7 @@
   transition: all 0.2s ease-in-out;
 
   &:hover {
-    border-color: var(--neutral-border-medium);
+    border-color: var(--ui-line);
   }
 }
 
@@ -414,14 +414,14 @@
 }
 
 .botBubble {
-  background: var(--neutral-alpha-weak);
+  background: var(--ui-fill);
   border-bottom-left-radius: 0.125rem;
 }
 
 // The same Cobalto fill as the resting primary call to action, so the one
 // solid brand colour in the interface stays consistent (Manual 3.1).
 .userBubble {
-  background: var(--brand-solid-medium);
+  background: var(--ui-cobalt);
   border-bottom-right-radius: 0.125rem;
 }
 
@@ -451,15 +451,15 @@
 }
 
 .strong {
-  color: var(--neutral-on-background-strong);
+  color: var(--ui-ink);
 }
 
 .weak {
-  color: var(--neutral-on-background-weak);
+  color: var(--ui-ink-weak);
 }
 
 .onSolid {
-  color: var(--brand-on-solid-strong);
+  color: var(--ui-on-cobalt);
 }
 
 .typing {
@@ -471,8 +471,10 @@
 }
 
 .chatbotWrapper .link {
-  color: var(--brand-on-background-weak);
+  color: var(--ui-cobalt-ink);
   text-decoration: underline;
+  text-decoration-color: var(--ui-underline);
+  text-underline-offset: 4px;
 }
 
 .iconXs,

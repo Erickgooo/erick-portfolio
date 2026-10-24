@@ -5,11 +5,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { THEME_KEY } from "./themeScript";
 
 export type Theme = "light" | "dark";
-
-/** localStorage key of the visitor's choice (read by the layout's script too). */
-export const THEME_KEY = "data-theme";
 
 const DARK_QUERY = "(prefers-color-scheme: dark)";
 

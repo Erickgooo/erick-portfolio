@@ -14,20 +14,16 @@
     font-size: 18px;
   }
 
-  // Links. Once UI styles every `a:not(.button)` globally (brand colour, an
-  // underline colour marked !important, `transition: all`). This rule mirrors
-  // that selector one class deeper, so it wins inside Workbench areas only and
-  // pages outside them look exactly as before. It reads every visual choice
-  // from custom properties: a component styles its links by setting --link-*
-  // with a plain class, on the link or an ancestor, with no specificity war;
-  // and only transform properties and opacity ever transition.
-  a:not(:global(.button)) {
+  // Links. Every visual choice comes from custom properties: a component
+  // styles its links by setting --link-* with a plain class, on the link or an
+  // ancestor, with no specificity war; and only transform properties and
+  // opacity ever transition. A link marked data-unstyled keeps its own look.
+  a:not([data-unstyled]) {
     color: var(--link-ink, inherit);
     text-decoration-line: var(--link-deco, none);
     text-decoration-thickness: var(--link-thick, 2px);
     text-underline-offset: var(--link-offset, 5px);
-    // !important only because Once UI's rule marks this property !important.
-    text-decoration-color: var(--link-line, currentColor) !important;
+    text-decoration-color: var(--link-line, currentColor);
     transition-property: translate, rotate, scale, opacity;
     transition-duration: var(--link-dur, #{$dur-micro});
     transition-timing-function: var(--link-ease, #{$ease-soft});
