@@ -43,6 +43,11 @@ export const test = base.extend<Fixtures>({
         });
       }
       await use(undefined);
+      // A document still in flight when the test ends (the YouTube player's
+      // iframe, for one) would make route.fetch() throw outside any test.
+      if (browserName === "webkit" && isLocal) {
+        await page.unrouteAll({ behavior: "ignoreErrors" });
+      }
     },
     { auto: true },
   ],
