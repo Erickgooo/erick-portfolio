@@ -14,7 +14,9 @@ export function ScrollToHash() {
       const id = hash.replace("#", "");
       const element = document.getElementById(id);
       if (element) {
-        element.scrollIntoView({ behavior: "smooth" });
+        // With reduced motion the page lands on the anchor at once.
+        const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        element.scrollIntoView({ behavior: reduced ? "auto" : "smooth" });
       }
     }
   }, [router]);

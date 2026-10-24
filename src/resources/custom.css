@@ -299,6 +299,15 @@ html {
   --page-background: var(--wb-page);
 }
 
+/* Once UI's stylesheet scrolls the page smoothly (html { scroll-behavior:
+   smooth }), which also slid every anchor jump with reduced motion on.
+   :root outranks its `html` whatever order the CSS chunks land in. */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    scroll-behavior: auto;
+  }
+}
+
 /* ─── Sober Workbench (Erick, 2026-10-22) ─────────────────────────────────
    White and ink as the base, mist for soft surfaces, cobalt only as an
    accent; in dark, the soft surfaces are the palette's dark tones. Hairlines
