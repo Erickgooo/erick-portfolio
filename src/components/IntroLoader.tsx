@@ -6,11 +6,14 @@ import { useEffect, useRef, useState } from "react";
 import styles from "./IntroLoader.module.scss";
 
 // Fase A (0-2s): trazo del monograma. Fase B (2-4s, en paralelo C): resplandor
-// + wordmark. Fase D (4-5s): fade out del overlay. 2000 + 2000 + 1000 = 5000ms.
+// + wordmark. Fase D (4-4.5s): fade out del overlay. 2000 + 2000 + 500 = 4500ms.
+// FADE_MS is the overlay's opacity transition (IntroLoader.module.scss): the
+// overlay unmounts as soon as it has faded. The page scrolls again from the
+// start of the fade (the "leaving" phase), not from the unmount.
 const DRAW_MS = 2000;
 const GLOW_MS = 2000;
 const HOLD_MS = DRAW_MS + GLOW_MS;
-const FADE_MS = 1000;
+const FADE_MS = 500;
 // Hard backstop: whatever happens (a backgrounded tab throttling timers, a
 // slow device, etc.), never let the overlay block the page longer than this.
 const MAX_LIFETIME_MS = 6500;
