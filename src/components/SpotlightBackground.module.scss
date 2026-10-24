@@ -17,12 +17,23 @@
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
   will-change: transform;
+  // Near an edge the glow's box reaches past the screen.
+  overflow: hidden;
 }
 
+// A circle of twice the radius with the same gradient as when it covered the
+// whole screen (the colour, fading out at 70 % of the radius), on its own
+// layer: SpotlightBackground.tsx moves it with a transform, so following the
+// pointer repaints nothing. It starts centred.
 .glow {
   position: absolute;
-  inset: 0;
-  background-image: radial-gradient(var(--glow-radius) at var(--x, 50%) var(--y, 50%), var(--glow-color) 0%, transparent 70%);
+  top: 0;
+  left: 0;
+  width: calc(var(--glow-radius) * 2);
+  height: calc(var(--glow-radius) * 2);
+  background-image: radial-gradient(var(--glow-radius) at 50% 50%, var(--glow-color) 0%, transparent 70%);
+  transform: translate3d(calc(50vw - var(--glow-radius)), calc(50vh - var(--glow-radius)), 0);
+  will-change: transform;
 }
 
 // A plain, static dot texture — no mask, no JS, no fixed positioning. Applied

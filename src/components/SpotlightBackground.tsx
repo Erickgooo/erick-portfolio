@@ -16,57 +16,75 @@ interface SpotlightBackgroundProps {
 // dots now live as a plain, non-fixed CSS background on the page body (see
 // layout.tsx) so they scroll naturally with content. Only this glow — a
 // small, genuinely viewport-anchored highlight — stays fixed and JS-tracked.
+//
+// The glow is a circle of twice its radius, painted once and moved with a
+// transform, so following the pointer repaints nothing. It eases towards the
+// pointer and stops once it is there (within half a pixel); the next move
+// starts it again. With reduced motion it jumps straight to the pointer.
 export function SpotlightBackground({
   glowRadius = 260,
   glowColor = "scheme-brand-600-15",
 }: SpotlightBackgroundProps) {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const target = useRef({ x: 0, y: 0 });
-  const current = useRef({ x: 0, y: 0 });
-  const frameRef = useRef<number | undefined>(undefined);
+  const glowRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    target.current = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
-    current.current = { ...target.current };
+    const glow = glowRef.current;
+    if (!glow) return;
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
+    // The glow starts centred (its CSS); `current` is where it is drawn.
+    const target = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
+    const current = { ...target };
+    let frame = 0;
 
-    const handleMouseMove = (e: MouseEvent) => {
-      target.current = { x: e.clientX, y: e.clientY };
+    const draw = () => {
+      glow.style.transform = `translate3d(${current.x - glowRadius}px, ${current.y - glowRadius}px, 0)`;
     };
-    // Touch devices have no cursor, so the reveal follows the finger instead —
+
+    const step = () => {
+      frame = 0;
+      const dx = target.x - current.x;
+      const dy = target.y - current.y;
+      if (reduced.matches || (Math.abs(dx) < 0.5 && Math.abs(dy) < 0.5)) {
+        current.x = target.x;
+        current.y = target.y;
+        draw();
+        return;
+      }
+      current.x += dx * 0.08;
+      current.y += dy * 0.08;
+      draw();
+      frame = requestAnimationFrame(step);
+    };
+
+    const follow = (x: number, y: number) => {
+      target.x = x;
+      target.y = y;
+      if (!frame) frame = requestAnimationFrame(step);
+    };
+
+    const handleMouseMove = (e: MouseEvent) => follow(e.clientX, e.clientY);
+    // Touch devices have no cursor, so the glow follows the finger instead —
     // same idea as mousemove, just driven by touchstart/touchmove. Without
-    // this, --x/--y would never move past its initial value on a phone,
-    // leaving the reveal frozen at the same spot while the page scrolls
-    // underneath it.
+    // this, the glow would never move past its initial spot on a phone,
+    // leaving it frozen at the same spot while the page scrolls underneath it.
     const handleTouchMove = (e: TouchEvent) => {
       const touch = e.touches[0];
-      if (touch) target.current = { x: touch.clientX, y: touch.clientY };
+      if (touch) follow(touch.clientX, touch.clientY);
     };
     window.addEventListener("mousemove", handleMouseMove, { passive: true });
     window.addEventListener("touchstart", handleTouchMove, { passive: true });
     window.addEventListener("touchmove", handleTouchMove, { passive: true });
 
-    const loop = () => {
-      current.current.x += (target.current.x - current.current.x) * 0.08;
-      current.current.y += (target.current.y - current.current.y) * 0.08;
-      if (containerRef.current) {
-        containerRef.current.style.setProperty("--x", `${current.current.x}px`);
-        containerRef.current.style.setProperty("--y", `${current.current.y}px`);
-      }
-      frameRef.current = requestAnimationFrame(loop);
-    };
-    frameRef.current = requestAnimationFrame(loop);
-
     return () => {
       window.removeEventListener("mousemove", handleMouseMove);
       window.removeEventListener("touchstart", handleTouchMove);
       window.removeEventListener("touchmove", handleTouchMove);
-      if (frameRef.current) cancelAnimationFrame(frameRef.current);
+      if (frame) cancelAnimationFrame(frame);
     };
-  }, []);
+  }, [glowRadius]);
 
   return (
     <div
-      ref={containerRef}
       className={styles.spotlightWrapper}
       style={
         {
@@ -75,7 +93,7 @@ export function SpotlightBackground({
         } as React.CSSProperties
       }
     >
-      <div className={styles.glow} />
+      <div ref={glowRef} className={styles.glow} />
     </div>
   );
 }
