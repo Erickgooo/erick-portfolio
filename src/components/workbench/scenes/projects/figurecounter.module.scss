@@ -16,8 +16,8 @@
   border: 1px solid var(--wb-rule);
   border-radius: 4px;
   transition:
-    opacity 0.8s $ease-soft,
-    translate 1s $ease-soft;
+    opacity $dur-fade $ease-soft,
+    translate $dur-travel $ease-soft;
 
   @include root-enter {
     opacity: 0;
@@ -45,7 +45,7 @@
   margin-top: 14px;
   background: var(--wb-accent);
   transform-origin: left center;
-  transition: scale 0.9s $ease-soft 0.2s;
+  transition: scale $dur-fade $ease-soft 0.2s;
 
   @include before(0) {
     scale: 0 1;
@@ -81,7 +81,7 @@
   line-height: 1.4;
   color: var(--wb-ink-2);
   opacity: 0;
-  transition: opacity 0.45s $ease-soft;
+  transition: opacity $dur-state $ease-soft;
 
   &[data-shown] {
     opacity: 1;

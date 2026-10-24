@@ -85,7 +85,7 @@
 
 // Each card rises in turn, row by row.
 .slot {
-  @include reveal(40px);
+  @include reveal;
   display: flex;
 }
 
@@ -96,7 +96,7 @@
   gap: 8px;
   width: 100%;
   color: var(--wb-ink);
-  transition: translate 0.45s var(--wb-ease-soft);
+  transition: translate $dur-state $ease-soft;
 
   @include fine-pointer {
     &:hover {
@@ -217,7 +217,7 @@
 
   svg {
     color: var(--wb-accent);
-    transition: translate 0.28s var(--wb-ease-soft);
+    transition: translate $dur-micro $ease-soft;
   }
 
   @include fine-pointer {

@@ -16,8 +16,8 @@
 .manualName {
   position: absolute;
   transition:
-    opacity 0.8s $ease-soft,
-    translate 1s $ease-soft;
+    opacity $dur-fade $ease-soft,
+    translate $dur-travel $ease-soft;
 
   @include before(0) {
     opacity: 0;
@@ -71,7 +71,7 @@
 
 .draft,
 .published {
-  transition: opacity 0.35s $ease-soft;
+  transition: opacity $dur-state $ease-soft;
 }
 
 .published {
@@ -130,8 +130,8 @@
   opacity: 0;
   translate: 0 -5cqi;
   transition:
-    opacity 0.5s $ease-soft,
-    translate 0.8s $ease-soft;
+    opacity $dur-state $ease-soft,
+    translate $dur-fade $ease-soft;
 
   @include before(4) {
     opacity: 1;
@@ -141,8 +141,8 @@
 
 .next {
   transition:
-    opacity 0.5s $ease-soft 0.35s,
-    translate 0.8s $ease-soft 0.35s;
+    opacity $dur-state $ease-soft 0.35s,
+    translate $dur-fade $ease-soft 0.35s;
 
   @include before(4) {
     opacity: 0;
@@ -166,7 +166,7 @@
     border-radius: 1cqi;
     background: var(--sc-bar);
     transform-origin: left center;
-    transition: scale 0.45s $ease-soft;
+    transition: scale $dur-state $ease-soft;
     transition-delay: calc(var(--k) * 200ms);
 
     &:nth-child(2) {
@@ -211,7 +211,7 @@
   inset: -1px;
   border: 1.5px solid var(--wb-accent);
   border-radius: inherit;
-  transition: opacity 0.3s $ease-soft;
+  transition: opacity $dur-micro $ease-soft;
 
   &::after {
     content: "";
@@ -233,7 +233,7 @@
 
     &::after {
       @include from(3) {
-        animation: press 0.8s $ease-soft both;
+        animation: press $dur-fade $ease-soft both;
       }
     }
   }
@@ -245,7 +245,7 @@
 
     &::after {
       @include from(7) {
-        animation: press 0.8s $ease-soft both;
+        animation: press $dur-fade $ease-soft both;
       }
     }
   }
@@ -292,8 +292,8 @@
 .postNext {
   border-color: var(--wb-accent);
   transition:
-    opacity 0.4s $ease-soft,
-    translate 0.6s $ease-settle;
+    opacity $dur-state $ease-soft,
+    translate $dur-enter $ease-settle;
 
   &::before,
   &::after {
@@ -350,8 +350,8 @@
   border-radius: 0.8cqi;
   background: var(--sc-obj);
   transition:
-    opacity 0.5s $ease-soft,
-    translate 0.8s $ease-soft;
+    opacity $dur-state $ease-soft,
+    translate $dur-fade $ease-soft;
 }
 
 .pagePalette {

@@ -31,7 +31,7 @@
   }
 
   &[open]::backdrop {
-    animation: dim 0.3s $ease-soft both;
+    animation: dim $dur-micro $ease-soft both;
   }
 }
 
@@ -105,8 +105,8 @@
   font-size: 22px;
   cursor: pointer;
   transition:
-    translate 0.3s $ease-soft,
-    scale 0.2s $ease-soft;
+    translate $dur-micro $ease-soft,
+    scale $dur-micro $ease-soft;
 
   &::after {
     content: "";
@@ -115,7 +115,7 @@
     border: 1px solid var(--wb-accent);
     border-radius: inherit;
     opacity: 0;
-    transition: opacity 0.3s $ease-soft;
+    transition: opacity $dur-micro $ease-soft;
     pointer-events: none;
   }
 
@@ -168,7 +168,7 @@
   max-width: 100%;
 
   @media (prefers-reduced-motion: no-preference) {
-    animation: lift 0.55s $ease-settle both;
+    animation: lift $dur-state $ease-settle both;
   }
 }
 

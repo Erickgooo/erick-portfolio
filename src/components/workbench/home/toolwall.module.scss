@@ -97,7 +97,7 @@
       background: var(--wb-accent);
       transform-origin: left center;
       scale: 0 1;
-      transition: scale 0.6s var(--wb-ease-soft);
+      transition: scale $dur-enter $ease-soft;
     }
   }
 }
@@ -113,7 +113,7 @@
   @include from-desk {
     font-size: 20px;
     opacity: 0.5;
-    transition: opacity 0.4s var(--wb-ease-soft);
+    transition: opacity $dur-state $ease-soft;
   }
 }
 
@@ -126,8 +126,8 @@
   border-radius: 2px;
   background: var(--wb-accent);
   transition:
-    scale 0.5s $ease-settle,
-    opacity 0.4s var(--wb-ease-soft);
+    scale $dur-state $ease-settle,
+    opacity $dur-state $ease-soft;
 
   @include from-desk {
     scale: 0.66;
@@ -144,7 +144,7 @@
   @include from-desk {
     font-size: 16px;
     opacity: 0.75;
-    transition: opacity 0.4s var(--wb-ease-soft);
+    transition: opacity $dur-state $ease-soft;
   }
 }
 
@@ -190,9 +190,9 @@
     opacity: 0.12;
     scale: 0.92;
     transition:
-      opacity 0.6s var(--wb-ease-soft),
-      scale 0.6s $ease-settle;
-    transition-delay: calc(var(--i) * 90ms);
+      opacity $dur-enter $ease-soft,
+      scale $dur-enter $ease-settle;
+    transition-delay: calc(var(--i) * #{$stagger});
 
     &[data-in] {
       opacity: 1;
@@ -258,9 +258,9 @@
     opacity: 0.25;
     scale: 0.94;
     transition:
-      opacity 0.6s var(--wb-ease-soft),
-      scale 0.55s $ease-settle;
-    transition-delay: calc(var(--k) * 90ms);
+      opacity $dur-enter $ease-soft,
+      scale $dur-state $ease-settle;
+    transition-delay: calc(var(--k) * #{$stagger});
   }
 
   .name {
@@ -295,8 +295,8 @@
   background: var(--tile-hot);
   color: var(--wb-ink);
   opacity: 0;
-  transition: opacity 0.5s var(--wb-ease-soft);
-  transition-delay: calc(var(--k) * 90ms);
+  transition: opacity $dur-state $ease-soft;
+  transition-delay: calc(var(--k) * #{$stagger});
 }
 
 // The stepper: groups before the active one stay lit, the active one lights

@@ -38,8 +38,8 @@
 .in2,
 .in3 {
   transition:
-    opacity 0.7s $ease-soft,
-    translate 0.9s $ease-settle;
+    opacity $dur-enter $ease-soft,
+    translate $dur-fade $ease-settle;
 }
 
 @each $n in 0, 1, 2, 3 {
@@ -183,7 +183,7 @@
     border-radius: 0.4cqi;
     background: var(--wb-ink);
     opacity: 0.82;
-    transition: scale 0.6s $ease-soft;
+    transition: scale $dur-enter $ease-soft;
 
     &:first-child {
       width: 100%;
@@ -316,8 +316,8 @@
 .now {
   color: var(--wb-accent);
   transition:
-    opacity 0.4s $ease-soft,
-    scale 0.5s $ease-settle;
+    opacity $dur-state $ease-soft,
+    scale $dur-state $ease-settle;
 
   &::after {
     content: "";
@@ -325,7 +325,7 @@
     inset: -1px;
     border: 1px solid var(--wb-accent);
     border-radius: inherit;
-    transition: opacity 0.4s $ease-soft;
+    transition: opacity $dur-state $ease-soft;
   }
 
   @include before(1) {

@@ -14,7 +14,7 @@
 
 .floatingButton {
   cursor: pointer;
-  transition: transform 0.2s ease, opacity 0.2s ease;
+  transition: transform var(--wb-dur-micro) var(--wb-ease-soft), opacity var(--wb-dur-micro) var(--wb-ease-soft);
   z-index: 1001;
 
   // Mouse only: a tap leaves a touch screen's button in :hover, so it stayed
@@ -39,7 +39,7 @@
   cursor: pointer;
   padding: 0;
   overflow: hidden;
-  transition: background-color 0.2s ease;
+  transition: background-color var(--wb-dur-micro) var(--wb-ease-soft);
   color: var(--neutral-on-background-strong);
 
   &:hover {
@@ -136,7 +136,7 @@
   font-size: var(--body-font-size-default-s);
   font-family: inherit;
   cursor: pointer;
-  transition: background-color 0.2s ease;
+  transition: background-color var(--wb-dur-micro) var(--wb-ease-soft);
   box-sizing: border-box;
 
   &:hover {
@@ -163,7 +163,9 @@
   color: var(--neutral-on-background-strong);
   font-size: var(--body-font-size-default-s);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition-property: background-color, border-color;
+  transition-duration: var(--wb-dur-micro);
+  transition-timing-function: var(--wb-ease-soft);
   line-height: 1.4;
   white-space: normal !important;
   overflow-wrap: break-word !important;
@@ -199,7 +201,7 @@
   font-family: inherit;
   outline: none;
   box-sizing: border-box;
-  transition: border-color 0.2s ease;
+  transition: border-color var(--wb-dur-micro) var(--wb-ease-soft);
   min-width: 0;
 
   &::placeholder {
@@ -231,7 +233,7 @@
   // needs Blanco Titanio. -on-background is itself Cobalto and would vanish.
   color: var(--brand-on-solid-strong);
   cursor: pointer;
-  transition: opacity 0.2s ease;
+  transition: opacity var(--wb-dur-micro) var(--wb-ease-soft);
 
   &:hover:not(:disabled) {
     opacity: 0.85;
@@ -276,7 +278,7 @@
 
   // With reduced motion the bubble simply appears.
   @media (prefers-reduced-motion: no-preference) {
-    animation: slideUpFadeIn 0.3s ease-out forwards;
+    animation: slideUpFadeIn var(--wb-dur-micro) var(--wb-ease-soft) forwards;
   }
 }
 
@@ -297,7 +299,7 @@
   color: var(--neutral-on-background-weak);
   padding: 4px;
   border-radius: 50%;
-  transition: background-color 0.2s ease, color 0.2s ease;
+  transition: background-color var(--wb-dur-micro) var(--wb-ease-soft), color var(--wb-dur-micro) var(--wb-ease-soft);
   box-sizing: border-box;
 
   &:hover {

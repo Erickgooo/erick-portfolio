@@ -275,9 +275,6 @@ html {
   --wb-band-tile: #212126;
   --wb-shadow: 0 1px 2px rgba(19, 19, 22, 0.1), 0 14px 28px -12px rgba(19, 19, 22, 0.32);
   --wb-shadow-lift: 0 2px 4px rgba(19, 19, 22, 0.1), 0 28px 44px -16px rgba(19, 19, 22, 0.38);
-
-  --wb-ease-soft: cubic-bezier(0.2, 0.7, 0.2, 1);
-  --wb-ease-pop: cubic-bezier(0.3, 1.6, 0.5, 1);
 }
 
 :root[data-theme="dark"] {
@@ -308,6 +305,41 @@ html {
   }
 }
 
+/* ─── Motion ───────────────────────────────────────────────────────────────
+   The one set of curves, durations, staggers and distances every animation
+   of the site draws from. Workbench SCSS reads them through the aliases in
+   src/components/workbench/_shared.scss ($ease-soft, $dur-fade, ...).
+   Loops, progress bars, the counting figures and the intro's own timeline
+   keep their timing where they are.
+   - Curves: soft (almost everything), settle (a small overshoot as a piece
+     lands; a bigger one read playful at the sober pages' scale), move (an
+     object carried from one place to another), fade (cross-fades of whole
+     layers).
+   - Durations: micro (hover and press feedback), state (a state that
+     changes), enter (a piece entering a scene), fade and travel (the
+     opacity and the movement of a reveal or a scene's entrance).
+   - Staggers: between the items of a reveal; between a scene's pieces.
+   - Travel: how far a reveal rises; the large one for big blocks.
+──────────────────────────────────────────────────────────────────────────── */
+:root {
+  --wb-ease-soft: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --wb-ease-settle: cubic-bezier(0.25, 1.22, 0.5, 1);
+  --wb-ease-move: cubic-bezier(0.6, 0, 0.3, 1);
+  --wb-ease-fade: ease;
+
+  --wb-dur-micro: 0.28s;
+  --wb-dur-state: 0.45s;
+  --wb-dur-enter: 0.6s;
+  --wb-dur-fade: 0.9s;
+  --wb-dur-travel: 1.1s;
+
+  --wb-stagger: 90ms;
+  --wb-stagger-scene: 140ms;
+
+  --wb-travel: 32px;
+  --wb-travel-lg: 56px;
+}
+
 /* ─── Sober Workbench (Erick, 2026-10-22) ─────────────────────────────────
    White and ink as the base, mist for soft surfaces, cobalt only as an
    accent; in dark, the soft surfaces are the palette's dark tones. Hairlines
@@ -316,8 +348,6 @@ html {
    - --wb-soft / --wb-soft-2: soft surfaces (mist and a paler mist).
    - --wb-raised: an object laid on a soft surface.
    - --wb-soft-in: a fill inside a raised object.
-   - --wb-ease-settle: the overshoot of a last pop, gentler than
-     --wb-ease-pop, which reads playful at the sober pages' scale.
    - --wb-shadow-soft: the only shadow left, for the floating header pill.
 ──────────────────────────────────────────────────────────────────────────── */
 :root {
@@ -326,7 +356,6 @@ html {
   --wb-soft-2: #f3f6ff;
   --wb-raised: #ffffff;
   --wb-soft-in: #e7edff;
-  --wb-ease-settle: cubic-bezier(0.25, 1.22, 0.5, 1);
   --wb-shadow-soft: 0 1px 2px rgba(19, 19, 22, 0.05), 0 12px 28px -20px rgba(19, 19, 22, 0.35);
 }
 

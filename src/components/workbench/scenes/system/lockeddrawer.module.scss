@@ -33,8 +33,8 @@
   border: 1px solid var(--wb-rule);
   border-radius: 4px;
   transition:
-    opacity 0.8s $ease-soft,
-    translate 1s $ease-settle;
+    opacity $dur-fade $ease-soft,
+    translate $dur-travel $ease-settle;
 
   @include before(0) {
     opacity: 0;
@@ -76,8 +76,8 @@
     border-radius: 50%;
     background: var(--wb-ink);
     transition:
-      opacity 0.3s $ease-soft,
-      scale 0.45s $ease-settle;
+      opacity $dur-micro $ease-soft,
+      scale $dur-state $ease-settle;
     transition-delay: calc(var(--k) * 170ms);
 
     @include before(1) {
@@ -103,7 +103,7 @@
     inset: -1px;
     border: 1px solid var(--wb-accent);
     border-radius: inherit;
-    transition: opacity 0.4s $ease-soft 0.45s;
+    transition: opacity $dur-state $ease-soft 0.45s;
   }
 
   @include before(2) {
@@ -120,7 +120,7 @@
   height: 2.6cqi;
   border-radius: 1.3cqi;
   background: var(--wb-accent);
-  transition: translate 0.7s $ease-settle;
+  transition: translate $dur-enter $ease-settle;
 
   @include before(2) {
     translate: -5cqi 0;

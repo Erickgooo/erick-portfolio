@@ -103,7 +103,7 @@ $header: 76px;
 .note {
   @include from-desk {
     opacity: 0.42;
-    transition: opacity 0.45s $ease-soft;
+    transition: opacity $dur-state $ease-soft;
   }
 }
 
@@ -166,12 +166,12 @@ $header: 76px;
     place-items: center;
     opacity: 0;
     // Leaving: stays under the incoming scene until that one has faded in.
-    transition: opacity 0.5s ease 0.6s;
+    transition: opacity $dur-state $ease-fade 0.6s;
 
     &[data-on] {
       z-index: 2;
       opacity: 1;
-      transition: opacity 0.55s ease 0s;
+      transition: opacity $dur-state $ease-fade 0s;
     }
   }
 }
@@ -202,13 +202,13 @@ $header: 76px;
     translate: 0 26px;
     scale: 0.98;
     transition:
-      translate 0.7s cubic-bezier(0.22, 0.8, 0.24, 1) 0.6s,
-      scale 0.7s cubic-bezier(0.22, 0.8, 0.24, 1) 0.6s;
+      translate $dur-enter $ease-soft 0.6s,
+      scale $dur-enter $ease-soft 0.6s;
 
     .layer[data-on] > & {
       translate: 0 0;
       scale: 1;
-      transition-duration: 0.8s;
+      transition-duration: $dur-fade;
       transition-delay: 0s;
     }
   }

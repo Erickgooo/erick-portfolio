@@ -118,7 +118,13 @@ export const IntroLoader = () => {
       markPath.style.strokeDasharray = `${markLength}`;
       nodePath.style.strokeDasharray = `${nodeLength}`;
 
-      const drawEasing = "cubic-bezier(0.65, 0, 0.35, 1)";
+      // The draw and the wordmark use the site's motion curves (move and
+      // soft, src/resources/custom.css); the Web Animations API takes no
+      // var(), so they are read from the root.
+      const root = getComputedStyle(document.documentElement);
+      const curve = (name: string) => root.getPropertyValue(name).trim() || "ease";
+      const drawEasing = curve("--wb-ease-move");
+      const wordmarkEasing = curve("--wb-ease-soft");
       const glowEasing = "ease-out";
 
       // Fase A — trazo del contorno completo (0–2s).
@@ -189,7 +195,7 @@ export const IntroLoader = () => {
           {
             duration: 700,
             delay: DRAW_MS,
-            easing: "cubic-bezier(0.16, 1, 0.3, 1)",
+            easing: wordmarkEasing,
             fill: "forwards",
           },
         ),

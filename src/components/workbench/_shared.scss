@@ -1,6 +1,7 @@
 // Workbench: breakpoints and helpers shared by every module.
 // Keep this file ASCII-only: a non-ASCII byte makes Sass emit a BOM.
-// Colours and easings are global tokens (--wb-*) in src/resources/custom.css.
+// Colours and motion (curves, durations, staggers, distances) are global
+// tokens (--wb-*) in src/resources/custom.css.
 
 $tablet: 720px;
 $desk: 1024px;
@@ -9,8 +10,23 @@ $wide: 1280px;
 // screen (Once UI's "s" breakpoint, see src/components/Header.module.scss).
 $bottom-nav: 768px;
 
-$ease-soft: cubic-bezier(0.2, 0.7, 0.2, 1);
-$ease-pop: cubic-bezier(0.3, 1.6, 0.5, 1);
+// Motion: aliases of the global tokens in src/resources/custom.css (one
+// source for every curve, duration, stagger and distance). They are CSS
+// custom properties, so Sass cannot do arithmetic with them: write a sum
+// or a product inside calc(), e.g. calc(var(--i, 0) * #{$stagger}).
+$ease-soft: var(--wb-ease-soft);
+$ease-settle: var(--wb-ease-settle);
+$ease-move: var(--wb-ease-move);
+$ease-fade: var(--wb-ease-fade);
+$dur-micro: var(--wb-dur-micro);
+$dur-state: var(--wb-dur-state);
+$dur-enter: var(--wb-dur-enter);
+$dur-fade: var(--wb-dur-fade);
+$dur-travel: var(--wb-dur-travel);
+$stagger: var(--wb-stagger);
+$stagger-scene: var(--wb-stagger-scene);
+$reveal-travel: var(--wb-travel);
+$reveal-travel-lg: var(--wb-travel-lg);
 
 @mixin phone {
   @media (max-width: #{$tablet - 1px}) {
@@ -97,14 +113,15 @@ $ease-pop: cubic-bezier(0.3, 1.6, 0.5, 1);
 
 // A scroll reveal driven by RevealObserver: hidden until [data-in] lands.
 // Only applied when scripting is on, so the page reads without JavaScript.
-@mixin reveal($travel: 28px) {
+// $travel: $reveal-travel, or $reveal-travel-lg for a big block.
+@mixin reveal($travel: $reveal-travel) {
   @media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
     opacity: 0;
     translate: 0 $travel;
     transition:
-      opacity 0.95s $ease-soft,
-      translate 1.1s $ease-soft;
-    transition-delay: calc(var(--i, 0) * 90ms);
+      opacity $dur-fade $ease-soft,
+      translate $dur-travel $ease-soft;
+    transition-delay: calc(var(--i, 0) * #{$stagger});
 
     &[data-in] {
       opacity: 1;
@@ -150,8 +167,6 @@ $ease-pop: cubic-bezier(0.3, 1.6, 0.5, 1);
 // Sober Workbench (Erick, 2026-10-22; variant A, "Line", chosen the same day) -
 // Every page's type and shapes. The display mixins above are the first
 // Workbench style's; pages move off them as they take the sober style.
-
-$ease-settle: cubic-bezier(0.25, 1.22, 0.5, 1);
 
 // Titles: Montserrat Black. The face is wide and heavy, so sizes stay
 // moderate and the tracking only slightly tight.

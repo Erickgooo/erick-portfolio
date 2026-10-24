@@ -41,7 +41,7 @@
   place-items: center;
   color: #ffffff;
   font-size: 18px;
-  transition: translate 0.45s var(--wb-ease-soft);
+  transition: translate $dur-state $ease-soft;
 }
 
 .small {
@@ -71,7 +71,7 @@
   font-weight: 500;
 
   svg {
-    transition: translate 0.28s var(--wb-ease-soft);
+    transition: translate $dur-micro $ease-soft;
   }
 
   @include fine-pointer {

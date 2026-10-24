@@ -19,8 +19,8 @@
 .modes {
   position: absolute;
   transition:
-    opacity 0.8s $ease-soft,
-    translate 1s $ease-soft;
+    opacity $dur-fade $ease-soft,
+    translate $dur-travel $ease-soft;
 
   @include before(0) {
     opacity: 0;
@@ -109,7 +109,7 @@
 .lit {
   stroke: var(--wb-accent);
   stroke-width: 2px;
-  transition: opacity 0.25s $ease-soft;
+  transition: opacity $dur-micro $ease-soft;
   transition-delay: calc(var(--k) * 50ms);
 
   @include before(1) {
@@ -198,7 +198,7 @@
   inset: -1px;
   border: 1.5px solid var(--wb-accent);
   border-radius: inherit;
-  transition: opacity 0.35s $ease-soft;
+  transition: opacity $dur-state $ease-soft;
 }
 
 // Grid gallery: on while the grid shows (the final state), off in single-image mode.

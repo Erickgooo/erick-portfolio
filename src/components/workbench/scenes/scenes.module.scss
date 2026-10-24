@@ -14,7 +14,7 @@
 .content {
   position: relative;
   height: 100%;
-  transition: opacity 0.45s $ease-soft;
+  transition: opacity $dur-state $ease-soft;
 
   [data-clearing] > & {
     opacity: 0;

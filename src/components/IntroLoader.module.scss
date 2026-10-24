@@ -8,7 +8,7 @@
   overflow: hidden;
   background: #0b0b0f;
   /* 500ms is FADE_MS in IntroLoader.tsx, which unmounts the faded overlay. */
-  transition: opacity 500ms ease, visibility 500ms ease;
+  transition: opacity 500ms var(--wb-ease-fade), visibility 500ms var(--wb-ease-fade);
   opacity: 1;
   visibility: visible;
 }

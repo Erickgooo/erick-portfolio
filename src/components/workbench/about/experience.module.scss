@@ -60,7 +60,7 @@
 
 // Each row rises in turn.
 .item {
-  @include reveal(24px);
+  @include reveal;
   border-bottom: 1px solid var(--wb-line);
 }
 
@@ -182,7 +182,7 @@
     width: 1.5px;
     height: 14px;
     margin: -7px 0 0 -0.75px;
-    transition: scale 0.4s var(--wb-ease-soft);
+    transition: scale $dur-state $ease-soft;
   }
 
   .row[open] &::after {
@@ -201,7 +201,7 @@
 
   @media (prefers-reduced-motion: no-preference) {
     .row[open] & {
-      animation: unfold 0.6s var(--wb-ease-soft) both;
+      animation: unfold $dur-enter $ease-soft both;
     }
   }
 

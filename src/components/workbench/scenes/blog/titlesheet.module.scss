@@ -13,8 +13,8 @@
   background: var(--wb-page);
   color: var(--wb-ink);
   transition:
-    opacity 0.8s $ease-soft,
-    translate 1s $ease-soft;
+    opacity $dur-fade $ease-soft,
+    translate $dur-travel $ease-soft;
 
   @include root-enter {
     opacity: 0;
@@ -30,7 +30,7 @@
   color: var(--wb-ink-2);
   font-size: 14px;
   font-weight: 500;
-  transition: opacity 0.5s $ease-soft;
+  transition: opacity $dur-state $ease-soft;
 
   &::before {
     content: "";
@@ -61,7 +61,7 @@
   margin-top: 16px;
   background: var(--wb-ink);
   transform-origin: left center;
-  transition: scale 0.9s $ease-soft;
+  transition: scale $dur-fade $ease-soft;
 
   @include before(3) {
     scale: 0 1;

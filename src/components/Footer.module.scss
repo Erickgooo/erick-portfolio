@@ -56,7 +56,7 @@
 .mark {
   display: inline-flex;
   font-size: 30px;
-  transition: translate 0.45s var(--wb-ease-soft);
+  transition: translate $dur-state $ease-soft;
 
   @include fine-pointer {
     .wordmark:hover & {

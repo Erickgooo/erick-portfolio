@@ -42,7 +42,7 @@
   max-width: 560px;
 
   @media (prefers-reduced-motion: no-preference) {
-    animation: drawer 0.9s $ease-settle 0.1s both;
+    animation: drawer $dur-fade $ease-settle 0.1s both;
   }
 }
 
@@ -73,7 +73,7 @@
   // goes with the error message, so every new error replays it.
   &[data-error] {
     @media (prefers-reduced-motion: no-preference) {
-      animation: nudge 0.5s $ease-soft;
+      animation: nudge $dur-state $ease-soft;
     }
   }
 }
@@ -269,7 +269,7 @@
   font-weight: 600;
   letter-spacing: -0.005em;
   cursor: pointer;
-  transition: translate 0.28s $ease-soft;
+  transition: translate $dur-micro $ease-soft;
 
   &:disabled {
     opacity: 0.6;

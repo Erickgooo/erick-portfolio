@@ -20,10 +20,10 @@ const GAP_MS = 380;
 
 /**
  * How long a stepper layer stays visible after it loses data-on: it waits
- * 0.6 s under the incoming layer, then fades out in 0.5 s (stepper.module.scss,
- * marginstepper.module.scss).
+ * 0.6 s under the incoming layer, then fades out in --wb-dur-state, 0.45 s
+ * (stepper.module.scss, marginstepper.module.scss).
  */
-const LAYER_FADE_MS = 1100;
+const LAYER_FADE_MS = 1050;
 
 type Part = {
   at: number;

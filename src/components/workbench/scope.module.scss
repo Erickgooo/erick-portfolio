@@ -29,7 +29,7 @@
     // !important only because Once UI's rule marks this property !important.
     text-decoration-color: var(--link-line, currentColor) !important;
     transition-property: translate, rotate, scale, opacity;
-    transition-duration: var(--link-dur, 0.28s);
+    transition-duration: var(--link-dur, #{$dur-micro});
     transition-timing-function: var(--link-ease, #{$ease-soft});
 
     // This rule outranks a component's own reduced-motion `transition: none`

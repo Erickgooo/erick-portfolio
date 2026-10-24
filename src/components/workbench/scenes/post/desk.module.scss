@@ -17,8 +17,8 @@
   border-radius: 4px;
   background: var(--wb-page);
   transition:
-    opacity 0.8s $ease-soft,
-    translate 1s $ease-soft;
+    opacity $dur-fade $ease-soft,
+    translate $dur-travel $ease-soft;
 
   @include root-enter {
     opacity: 0;
@@ -58,7 +58,7 @@
   stroke-width: 1.75;
   stroke-linecap: round;
   stroke-linejoin: round;
-  transition: opacity 0.5s $ease-soft;
+  transition: opacity $dur-state $ease-soft;
 
   @include dark {
     stroke: #6688ff;
@@ -79,7 +79,7 @@
   line-height: 1.3;
   color: var(--wb-ink-2);
   opacity: 0;
-  transition: opacity 0.4s $ease-soft;
+  transition: opacity $dur-state $ease-soft;
 
   &[data-cap="all"] {
     opacity: 1;

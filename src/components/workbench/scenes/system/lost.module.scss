@@ -38,8 +38,8 @@
   position: absolute;
   margin: 0;
   transition:
-    opacity 0.8s $ease-soft,
-    translate 1s $ease-settle;
+    opacity $dur-fade $ease-soft,
+    translate $dur-travel $ease-settle;
 }
 
 // The address field.
@@ -124,7 +124,7 @@
 .mark {
   left: var(--x);
   top: var(--y);
-  transition-delay: calc(0.25s + var(--k) * 90ms);
+  transition-delay: calc(0.25s + var(--k) * #{$stagger});
 
   @include before(0) {
     opacity: 0;

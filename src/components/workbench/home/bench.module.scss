@@ -93,8 +93,8 @@
 // Layer 1: the load sequence. Each object rises and settles (the overshoot
 // is gentler than before: the bounce read playful at this restraint).
 .rise {
-  animation: rise 0.8s $ease-settle both;
-  animation-delay: calc(var(--d) * 90ms + 120ms);
+  animation: rise $dur-fade $ease-settle both;
+  animation-delay: calc(var(--d) * #{$stagger} + 120ms);
 }
 
 // While the site intro covers the page the objects wait in their final place
@@ -106,7 +106,7 @@
 // Layer 2: pointer parallax (desktop), deeper objects travel further.
 .par {
   translate: calc(var(--px) * var(--depth) * 10px) calc(var(--py) * var(--depth) * 8px);
-  transition: translate 0.9s var(--wb-ease-soft);
+  transition: translate $dur-fade $ease-soft;
 }
 
 // Layer 3: the idle float, paused while the bench is off screen. A vertical
@@ -129,8 +129,8 @@
 .card {
   position: relative;
   transition:
-    scale 0.55s $ease-settle,
-    translate 0.45s var(--wb-ease-soft);
+    scale $dur-state $ease-settle,
+    translate $dur-state $ease-soft;
 
   .slot[data-front] & {
     scale: 1.03;
