@@ -16,6 +16,20 @@
   background: #f4f5f7;
 }
 
+/* With a classic scrollbar the page keeps the scrollbar's gutter while the
+   intro locks the scroll (custom.css), and the overlay, a fixed box, stops
+   at the gutter, which shows the root's background: the root takes the
+   overlay's colour until the fade starts (the scrollbar is back by then). */
+@media (scripting: enabled) {
+  :global(html):has(.overlay:not(.leaving)) {
+    background: #0b0b0f;
+  }
+
+  :global(html[data-theme="light"]):has(.overlay:not(.leaving)) {
+    background: #f4f5f7;
+  }
+}
+
 /* The server renders the overlay on "/" and only the script takes it away, so
    without JavaScript it would cover the home for good. */
 @media (scripting: none) {
