@@ -102,6 +102,17 @@
   padding-right: 0.75rem;
 }
 
+// The ticking time: Poppins' latin file has no tabular figures, so its width
+// changed every second and the text moved (a layout shift a second). A box
+// wider than any time, with the text set from its start, keeps every glyph
+// where it was.
+.clock {
+  display: inline-block;
+  min-width: 5.4em;
+  box-sizing: content-box;
+  text-align: left;
+}
+
 .desk {
   @include bottom-nav {
     display: none;
