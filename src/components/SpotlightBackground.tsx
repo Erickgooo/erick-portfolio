@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import styles from "./SpotlightBackground.module.scss";
-import { whenIntroLeaves } from "./workbench/scenes/start";
+import { whenIntroLeaves } from "./workbench/scenes/intro";
 
 /** How long after the last scroll event the glow counts the page as still. */
 const STILL_MS = 400;

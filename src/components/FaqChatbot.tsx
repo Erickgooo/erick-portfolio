@@ -7,7 +7,7 @@ import { useEffect, useRef, useState } from "react";
 import { FaX } from "react-icons/fa6";
 import { HiArrowRight, HiChevronDown, HiChevronUp } from "react-icons/hi2";
 import styles from "./FaqChatbot.module.scss";
-import { whenIntroLeaves } from "./workbench/scenes/start";
+import { whenIntroLeaves } from "./workbench/scenes/intro";
 
 // ── Constants ────────────────────────────────────────────────────────────────
 
