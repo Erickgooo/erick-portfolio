@@ -35,21 +35,21 @@
   }
 }
 
-// The drawer opens: the sheet slides down into place once, on load, and
-// settles.
+// The drawer opens: the sheet comes down a short way into place once, on
+// load (it dropped 48 px).
 .drawer {
   width: 100%;
   max-width: 560px;
 
   @media (prefers-reduced-motion: no-preference) {
-    animation: drawer $dur-fade $ease-soft 0.1s both;
+    animation: drawer $dur-travel $ease-soft 0.1s both;
   }
 }
 
 @keyframes drawer {
   from {
     opacity: 0;
-    translate: 0 -48px;
+    translate: 0 calc(-1 * #{$reveal-travel-lg});
   }
 
   to {
@@ -69,11 +69,12 @@
     padding: 52px 48px 44px;
   }
 
-  // A wrong password: the sheet is nudged sideways. The attribute comes and
-  // goes with the error message, so every new error replays it.
+  // A wrong password: the sheet is nudged sideways, a small calm sway (it
+  // shook 14 px four times). The attribute comes and goes with the error
+  // message, so every new error replays it.
   &[data-error] {
     @media (prefers-reduced-motion: no-preference) {
-      animation: nudge $dur-state $ease-soft;
+      animation: nudge $dur-enter $ease-move;
     }
   }
 }
@@ -84,19 +85,11 @@
     translate: 0 0;
   }
 
-  20% {
-    translate: -14px 0;
+  30% {
+    translate: -6px 0;
   }
 
-  40% {
-    translate: 11px 0;
-  }
-
-  60% {
-    translate: -7px 0;
-  }
-
-  80% {
+  65% {
     translate: 3px 0;
   }
 }
@@ -277,7 +270,7 @@
   }
 
   &:not(:disabled):active {
-    translate: 0 2px;
+    translate: 0 1px;
   }
 
   @include fine-pointer {
