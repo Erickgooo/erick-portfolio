@@ -466,12 +466,12 @@
     border-radius: 8px;
     background: var(--wb-cobalt);
     box-shadow: none;
-    transition: scale $dur-state $ease-soft;
+    transition: translate $dur-micro $ease-soft;
   }
 
   @include fine-pointer {
     button:hover > span {
-      scale: 1.04;
+      translate: 0 -2px;
     }
   }
 }
@@ -538,19 +538,21 @@
     color: var(--wb-ink-2);
   }
 
+  // The tags come in one after another with the site's short rise (they
+  // used to grow from 0.94).
   @media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
     li {
       opacity: 0;
-      scale: 0.94;
+      translate: 0 $reveal-travel;
       transition:
-        opacity $dur-state $ease-soft,
-        scale $dur-enter $ease-soft;
+        opacity $dur-fade $ease-soft,
+        translate $dur-travel $ease-soft;
       transition-delay: calc(var(--i, 0) * #{$stagger} + 150ms);
     }
 
     &[data-in] li {
       opacity: 1;
-      scale: 1;
+      translate: 0 0;
     }
   }
 }

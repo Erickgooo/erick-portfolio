@@ -102,7 +102,7 @@
   border: 1px solid var(--wb-rule);
   border-radius: 4px;
   color: var(--wb-ink);
-  transition: translate $dur-state $ease-soft;
+  transition: translate $dur-micro $ease-soft;
 
   @include from-tablet {
     align-items: start;
@@ -123,8 +123,9 @@
     translate: 0 -4px;
   }
 
+  // Pressed, a card goes back to its place.
   &:active {
-    translate: 0 -2px;
+    translate: 0 0;
   }
 }
 
