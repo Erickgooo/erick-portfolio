@@ -22,17 +22,22 @@ function introLeaving(intro: HTMLElement) {
 }
 
 /**
- * Calls `release` once the intro starts to fade, or at once when there is no
- * intro (any page but a first visit to "/"). Returns a cleanup.
+ * Calls `release` once the intro starts to fade (or, with `gone`, once it has
+ * faded and left the page), or at once when there is no intro (any page but a
+ * first visit to "/"). Returns a cleanup.
  */
-export function whenIntroLeaves(release: () => void): () => void {
+export function whenIntroLeaves(
+  release: () => void,
+  { gone = false }: { gone?: boolean } = {},
+): () => void {
   const intro = findIntro();
-  if (!intro || introLeaving(intro)) {
+  const over = (el: HTMLElement) => (gone ? !el.isConnected : introLeaving(el));
+  if (!intro || over(intro)) {
     release();
     return () => {};
   }
   const watch = new MutationObserver(() => {
-    if (!introLeaving(intro)) return;
+    if (!over(intro)) return;
     watch.disconnect();
     release();
   });

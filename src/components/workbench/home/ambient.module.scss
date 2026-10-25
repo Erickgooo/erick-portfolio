@@ -12,16 +12,15 @@
     inset: -3% -4%;
   }
 
+  // Ambience: it only fades in, slowly, once the bench's objects have mostly
+  // risen (data-on is set as the intro starts to fade, 0.5 s before they
+  // start; see bench.module.scss), so it never moves with them.
   @media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
     opacity: 0;
-    translate: 0 48px;
-    transition:
-      opacity 0.6s linear,
-      translate 1.6s $ease-soft;
+    transition: opacity calc(#{$dur-fade} * 2) $ease-fade calc(#{$dur-travel} + 0.5s);
 
     &[data-on] {
       opacity: 1;
-      translate: 0 0;
     }
   }
 }

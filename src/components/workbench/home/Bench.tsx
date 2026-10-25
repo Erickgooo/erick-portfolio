@@ -2,11 +2,12 @@
 
 // Workbench: the hero's workbench, redrawn straight and flat (sober,
 // 2026-10-22): the same composition of objects, none tilted, taped or
-// pinned. Objects rise into place one after another (CSS keyframes, a gentle
-// settle) as the site intro lifts, then float on long offset loops that
-// pause off-screen. On desktop the cluster follows the pointer a little; on
-// touch, a tap brings an object forward. Only transform and opacity move.
-// Only the tablet screenshot, the likely LCP element, loads with priority.
+// pinned. Objects rise a short way into place one after another (CSS
+// keyframes) once the site intro has lifted, and only once they have all
+// settled do they float, on long offset loops that pause off-screen. On
+// desktop the cluster follows the pointer a little; on touch, a tap brings an
+// object forward. Only transform and opacity move. Only the tablet
+// screenshot, the likely LCP element, loads with priority.
 import Image from "next/image";
 import {
   type CSSProperties,
@@ -119,6 +120,10 @@ export function Bench() {
   // starts to fade, so the visitor sees the load sequence instead of missing
   // it. The server renders the hold, since it always renders the intro on "/".
   const [hold, setHold] = useState(true);
+  // `veil`: the hold was released by the intro starting to fade. The objects
+  // then wait, hidden, until the overlay has faded (bench.module.scss), so
+  // the intro is the only thing moving until it is gone.
+  const [veil, setVeil] = useState(false);
   // `ready`: the three prints are not needed while the intro covers them, so
   // their files load halfway through it (or as soon as it goes), off the
   // critical path of the first paint.
@@ -136,6 +141,7 @@ export function Bench() {
     const timer = window.setTimeout(() => setReady(true), PRINTS_BEHIND_INTRO_MS);
     const watch = new MutationObserver(() => {
       if (!isLeaving(intro)) return;
+      setVeil(true);
       setHold(false);
       setReady(true);
       watch.disconnect();
@@ -161,6 +167,17 @@ export function Bench() {
       { threshold: 0 },
     );
     io.observe(bench);
+
+    // The float starts once every object has risen into place, so it never
+    // adds to the entrance.
+    const rises = bench.querySelectorAll(`.${styles.rise}`).length;
+    let risen = 0;
+    const onRisen = (e: AnimationEvent) => {
+      if (!(e.target as HTMLElement).classList.contains(styles.rise)) return;
+      risen += 1;
+      if (risen >= rises) bench.dataset.settled = "";
+    };
+    bench.addEventListener("animationend", onRisen);
 
     // A tap (or click) brings an object forward; tapping it again sets it down.
     const onUp = (e: PointerEvent) => {
@@ -194,6 +211,7 @@ export function Bench() {
 
     return () => {
       io.disconnect();
+      bench.removeEventListener("animationend", onRisen);
       bench.removeEventListener("pointerup", onUp);
       window.removeEventListener("pointermove", onMove);
       if (frame) cancelAnimationFrame(frame);
@@ -201,7 +219,12 @@ export function Bench() {
   }, []);
 
   return (
-    <div className={styles.bench} ref={ref} data-hold={hold ? "" : undefined}>
+    <div
+      className={styles.bench}
+      ref={ref}
+      data-hold={hold ? "" : undefined}
+      data-veil={veil ? "" : undefined}
+    >
       <div className={styles.stage}>
         {/* 0: the bot, on a tablet */}
         <Slot

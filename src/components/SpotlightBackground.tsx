@@ -2,6 +2,10 @@
 
 import { useEffect, useRef } from "react";
 import styles from "./SpotlightBackground.module.scss";
+import { whenIntroLeaves } from "./workbench/scenes/start";
+
+/** How long after the last scroll event the glow counts the page as still. */
+const STILL_MS = 400;
 
 interface SpotlightBackgroundProps {
   glowRadius?: number;
@@ -21,11 +25,41 @@ interface SpotlightBackgroundProps {
 // transform, so following the pointer repaints nothing. It eases towards the
 // pointer and stops once it is there (within half a pixel); the next move
 // starts it again. With reduced motion it jumps straight to the pointer.
+//
+// It is ambience, never the thing that moves (pulido de animaciones,
+// 2026-10-25): it stays dark until the site intro has lifted, then fades in
+// (data-on), and it dims while the page scrolls (data-calm), when the
+// sections' entrances are what moves. Both are opacity on the wrapper's own
+// layer, set as attributes (the glow's style is only its position).
 export function SpotlightBackground({
   glowRadius = 260,
   glowColor = "ui-glow",
 }: SpotlightBackgroundProps) {
+  const wrapRef = useRef<HTMLDivElement>(null);
   const glowRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const wrap = wrapRef.current;
+    if (!wrap) return;
+    const stopWaiting = whenIntroLeaves(() => wrap.setAttribute("data-on", ""), { gone: true });
+
+    let still = 0;
+    const onScroll = () => {
+      if (!still) wrap.setAttribute("data-calm", "");
+      else window.clearTimeout(still);
+      still = window.setTimeout(() => {
+        still = 0;
+        wrap.removeAttribute("data-calm");
+      }, STILL_MS);
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+
+    return () => {
+      stopWaiting();
+      window.removeEventListener("scroll", onScroll);
+      window.clearTimeout(still);
+    };
+  }, []);
 
   useEffect(() => {
     const glow = glowRef.current;
@@ -85,6 +119,7 @@ export function SpotlightBackground({
 
   return (
     <div
+      ref={wrapRef}
       className={styles.spotlightWrapper}
       style={
         {
