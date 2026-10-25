@@ -96,7 +96,7 @@
   gap: 8px;
   width: 100%;
   color: var(--wb-ink);
-  transition: translate $dur-state $ease-soft;
+  transition: translate $dur-micro $ease-soft;
 
   @include fine-pointer {
     &:hover {
