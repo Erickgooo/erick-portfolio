@@ -6,27 +6,11 @@
 // opacity move. Keep this file ASCII-only.
 @use "../shared" as *;
 
-// A piece settling onto the bench as it enters: it rises, fades in and
-// settles to its size. Only with scripting (RevealObserver sets [data-in])
-// and motion allowed. The tilt that used to land with the overshoot is now a
-// slight scale on the gentler settle curve, with the same timing.
+// A piece entering: the site's reveal (a short rise and a fade, one after
+// another along the row; it used to grow from 0.97 as well). Only with
+// scripting (RevealObserver sets [data-in]) and motion allowed.
 @mixin pin-in($travel: $reveal-travel) {
-  @media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
-    opacity: 0;
-    translate: 0 $travel;
-    scale: 0.97;
-    transition:
-      opacity $dur-fade $ease-soft,
-      translate $dur-travel $ease-soft,
-      scale $dur-travel $ease-soft;
-    transition-delay: calc(var(--i, 0) * #{$stagger});
-
-    &[data-in] {
-      opacity: 1;
-      translate: 0 0;
-      scale: 1;
-    }
-  }
+  @include reveal($travel);
 }
 
 @mixin button-reset {
@@ -50,7 +34,7 @@
     border: 1px solid var(--wb-accent);
     border-radius: inherit;
     opacity: 0;
-    transition: opacity $dur-state $ease-soft;
+    transition: opacity $dur-micro $ease-soft;
     pointer-events: none;
   }
 }
@@ -279,7 +263,7 @@
 
 // The client's header: a hairline across the column, the count as a small
 // label after a cobalt stroke, the name, its formats and the related case.
-// It slides in from the left and fades in.
+// It rises and fades in, like every section head.
 .divider {
   --link-ink: var(--wb-ink);
 
@@ -304,18 +288,7 @@
     text-wrap: balance;
   }
 
-  @media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
-    opacity: 0;
-    translate: calc(-1 * #{$reveal-travel}) 0;
-    transition:
-      opacity $dur-fade $ease-soft,
-      translate $dur-travel $ease-soft;
-
-    &[data-in] {
-      opacity: 1;
-      translate: 0 0;
-    }
-  }
+  @include reveal;
 }
 
 .tab {
@@ -532,14 +505,15 @@
     @include pin-in;
   }
 
-  // In the scrolling row a rise would be clipped: the frames fade and grow in.
+  // In the scrolling row a rise would be clipped: the frames fade in and grow
+  // the least the site allows (0.98).
   // They come in all together when the row does (the row carries
   // data-reveal), so the frames a swipe brings in are already there; each
   // waiting for its own turn left them empty for most of a second.
   @include below-desk {
     @media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
       opacity: 0;
-      scale: 0.96;
+      scale: 0.98;
       transition:
         opacity $dur-fade $ease-soft,
         scale $dur-fade $ease-soft;
@@ -564,12 +538,10 @@
   border: 1px solid var(--wb-rule);
   border-radius: 4px;
   background: var(--wb-page);
-  transition:
-    translate $dur-state $ease-soft,
-    scale $dur-micro $ease-soft;
+  transition: translate $dur-micro $ease-soft;
 
   &:active {
-    scale: 0.98;
+    translate: 0 0;
   }
 
   @include fine-pointer {
@@ -578,10 +550,6 @@
 
       &::after {
         opacity: 1;
-      }
-
-      .play {
-        scale: 1.06;
       }
     }
   }
@@ -615,7 +583,6 @@
   background: rgba(19, 19, 22, 0.78);
   color: #ffffff;
   font-size: 20px;
-  transition: scale $dur-state $ease-soft;
 
   svg {
     translate: 1px 0;
@@ -658,8 +625,9 @@
   padding: 0;
   background: none;
 
-  &:active .deckTop {
-    scale: 0.98;
+  &:active .deckTop,
+  &:active .count {
+    translate: 0 0;
   }
 
   @include fine-pointer {
@@ -688,14 +656,15 @@
 }
 
 // The sheets under the cover: hairline sheets in a straight stack, dealt out
-// to their offsets once the stack has landed. The first one lies deepest.
+// to their offsets once the stack has landed (a keyframe with its own delay,
+// so the delay never holds back a hover). The first one lies deepest.
 .sheet {
   position: absolute;
   inset: 0;
   border: 1px solid var(--wb-rule);
   border-radius: 4px;
   background: var(--wb-page);
-  transition: translate $dur-enter $ease-soft;
+  transition: translate $dur-micro $ease-soft;
 }
 
 .sheetA {
@@ -707,16 +676,18 @@
 }
 
 @media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
-  .deckItem .sheet {
-    transition-delay: 0.45s;
-  }
-
   .deckItem:not([data-in]) .sheet {
     translate: 0 0;
   }
 
-  .deckItem[data-in] .deck:hover .sheet {
-    transition-delay: 0s;
+  .deckItem[data-in] .sheet {
+    animation: deal $dur-enter $ease-soft $dur-state backwards;
+  }
+}
+
+@keyframes deal {
+  from {
+    translate: 0 0;
   }
 }
 
@@ -727,9 +698,7 @@
   border: 1px solid var(--wb-rule);
   border-radius: 4px;
   background: var(--wb-soft-2);
-  transition:
-    translate $dur-state $ease-soft,
-    scale $dur-micro $ease-soft;
+  transition: translate $dur-micro $ease-soft;
 }
 
 .count {
@@ -748,7 +717,7 @@
   font-size: 16px;
   font-weight: 500;
   line-height: 1.2;
-  transition: translate $dur-state $ease-soft;
+  transition: translate $dur-micro $ease-soft;
 
   svg {
     flex: none;
@@ -810,12 +779,10 @@
   border: var(--pad) solid var(--wb-rule);
   border-radius: 4px;
   background: var(--wb-soft-2);
-  transition:
-    translate $dur-state $ease-soft,
-    scale $dur-micro $ease-soft;
+  transition: translate $dur-micro $ease-soft;
 
   &:active {
-    scale: 0.98;
+    translate: 0 0;
   }
 
   @include fine-pointer {
@@ -877,7 +844,6 @@
   .deckTop,
   .post,
   .sheet,
-  .play,
   .count,
   .phone::after,
   .deckTop::after,
