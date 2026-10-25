@@ -31,7 +31,7 @@ Lo que «clean» quiere decir en este sitio, y lo que comprueban las pruebas:
 | C2 | Aparición al hacer scroll (`reveal`) | `workbench/_shared.scss`, `RevealObserver.tsx` | Heredaba los tokens largos | Afinada con los tokens | ☑ |
 | C3 | Hover, foco y toque | `scope.module.scss`, `ui.module.scss`, `Header`, `Footer`, `FaqChatbot`, tarjetas de Work, Blog, Gallery, caso y prosa | Tiempos mezclados (0,2 s `ease-in-out`, 0,28 s, 0,45 s, `transition: all`) y gestos mezclados (escalas 1,04 / 1,05 / 1,06 / 0,98 / 0,94, subir 4 px, bajar 2 px) | Regla 5 en todo el sitio | ☑ |
 | C4 | Resplandor del puntero | `SpotlightBackground.tsx` | Se veía en el centro mientras se levantaba el velo; en celular seguía al dedo durante el scroll y competía con las apariciones | Oscuro hasta que la intro se fue, entra con un fundido de 1 s y baja al 45 % mientras la página se desplaza (D3) | ☑ |
-| C5 | Intro | `IntroLoader.tsx` | Con movimiento reducido se reproducía entera; el monograma se iba un paso antes que el velo | Coreografía y duración sin cambios (D4); quieta con movimiento reducido (D5); el monograma se va con el velo | ☑ |
+| C5 | Intro | `IntroLoader.tsx`, `IntroLoader.module.scss` | Con movimiento reducido se reproducía entera; el monograma se iba un paso antes que el velo; al llegar Space Grotesk el nombre se estrechaba 1,5 em y el monograma se movía (CLS 0,0003–0,0006, 0,001 en Lighthouse) | Coreografía y duración sin cambios (D4); quieta con movimiento reducido (D5); el monograma se va con el velo; la caja del nombre tiene su ancho final desde el primer pintado (CLS de la Home ≈ 0) | ☑ |
 | C6 | Header: teclas y barra de la página actual | `Header.module.scss` | Teclas a 0,2 s `ease-in-out`, fuera de los tokens | `micro` / `soft` | ☑ |
 | C7 | Reloj del header | `Header.tsx`, `Header.module.scss` | El subconjunto latino de Poppins no trae cifras tabulares: la hora cambiaba de ancho cada segundo (71,5 → 67,1 → 70,5 px) y movía el texto, un desplazamiento de layout por segundo en todas las páginas | Caja más ancha que cualquier hora y texto alineado al inicio | ☑ |
 | C8 | Chatbot: burbuja de saludo | `FaqChatbot.tsx`, `FaqChatbot.module.scss` | Salía a los 2,5 s: en la Home, justo cuando el velo se levantaba y el banco entraba | Sale 2,5 s después de que la página queda a la vista (tras la intro en la Home), con la subida corta | ☑ |
@@ -138,7 +138,18 @@ Lo que «clean» quiere decir en este sitio, y lo que comprueban las pruebas:
 
 ## Mediciones
 
-- **Pruebas** (rama en `d25c015`): `npx tsc --noEmit` limpio; `npm run test:unit` 32/32 (28 de antes + 4 de reglas de movimiento); `npm run test:e2e -- --workers=2` en Chromium, Chromium móvil, Firefox y WebKit: 318 pasan, 38 omitidas (las que solo aplican a un proyecto o plataforma), 0 fallos.
+- **Pruebas** (árbol final, `1551f67`): `npx tsc --noEmit` limpio; `npm run test:unit` 32/32 (28 de antes + 4 de reglas de movimiento); `npm run test:e2e -- --workers=2` en Chromium, Chromium móvil, Firefox y WebKit: 318 pasan, 38 omitidas (las que solo aplican a un proyecto o plataforma), 0 fallos.
+- **Lighthouse móvil, solo Performance** (`npm run perf:lh`, `next start` de main en :3200 y de la rama en :3100 a la vez, Chromium de Playwright, 5 rondas intercaladas alternando quién va primero, mismas condiciones y misma hora). Medianas, main → rama:
+
+  | Página | Performance | LCP (ms) | CLS |
+  |---|---|---|---|
+  | Home | 85 → 85 | 3853 → 3847 | 0,001 → 0,001 |
+  | About | 89 → 89 | 3532 → 3531 | 0 → 0 |
+  | Projects | 88 → 89 | 3614 → 3537 | 0 → 0 |
+  | Post (`/blog/my-workspace`) | 88 → 88 | 3610 → 3608 | 0,024 → 0,025 |
+  | Visual Work | 84 → 84 | 3991 → 3985 | 0 → 0 |
+
+  Ninguna mediana baja. Tras esa tanda se corrigió el salto del monograma de la intro (C5): dos rondas más de la Home, intercaladas, dan 83,5 → 84,5 y CLS 0,001 → 0. El CLS del post (0,024 en ambos) es el cambio de fuente del título (B6, D10), igual en main.
 - **Build** (`npm run build` en una copia de la rama fuera del repo anidado, como la línea base de main): pasa, con los mismos 4 avisos `<img>` que main (`build-main-baseline.log`) y ninguno nuevo.
 - **Lint** (`npm run lint` desde un `git worktree add` en el scratchpad con su propio `npm ci`): 0 errores, los mismos 4 avisos `<img>` de main.
 - **JS** (gzip, por ruta): el layout pasa de 13,4 a 14,0 kB contando su fragmento compartido, y cada página sube entre 0,5 y 1 kB, sobre todo por el coordinador de escenas (D9).
