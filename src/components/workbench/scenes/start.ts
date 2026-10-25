@@ -5,12 +5,82 @@
 //   2. if it is a hero scene (`afterIntro`), the site intro has started to
 //      fade, so nothing moves behind it (the same hold the bench uses);
 //   3. if it sits in a stepper layer (`[data-scene-layer]`), that layer is
-//      the active one (`data-on`).
-// After that it is "live" only while it is on screen, the tab is visible and
-// its layer (if any) is on: loops and timers run only while live.
+//      the active one (`data-on`);
+//   4. it leads (below).
+// After that it is "live" only while it is on screen, the tab is visible, its
+// layer (if any) is on and it leads: loops and timers run only while live.
+//
+// One scene moves at a time (pulido de animaciones, 2026-10-25). Of the
+// scenes on screen, the one nearest the middle of the screen leads; the
+// others wait to start, or hold where they are, until they lead. On phones,
+// where a stepper's sheets stack, the end of one scene and the start of the
+// next used to play together. A canvas inside a scene follows its scene.
 //
 // Everything here is plain DOM (no React), so a server-rendered scene needs
 // no hydration: SceneDriver finds it by its attributes.
+
+type Contender = {
+  el: HTMLElement;
+  /** On screen, its layer on, released and the tab visible. */
+  ready: () => boolean;
+  /** Re-evaluates the scene's state after the lead changes. */
+  refresh: () => void;
+};
+
+const contenders = new Set<Contender>();
+let lead: Contender | null = null;
+let electing = 0;
+/** How much nearer the middle (a share of the screen's height) a scene must be to take the lead. */
+const HOLD = 0.12;
+
+function offCentre(c: Contender) {
+  const box = c.el.getBoundingClientRect();
+  return Math.abs((box.top + box.bottom) / 2 - window.innerHeight / 2);
+}
+
+function elect() {
+  electing = 0;
+  let best: Contender | null = null;
+  let bestOff = Number.POSITIVE_INFINITY;
+  for (const c of contenders) {
+    if (!c.ready()) continue;
+    const off = offCentre(c);
+    if (off < bestOff) {
+      best = c;
+      bestOff = off;
+    }
+  }
+  // The lead only changes hands for a clear difference, so two scenes at
+  // about the same distance do not take turns.
+  if (
+    lead &&
+    best &&
+    best !== lead &&
+    lead.ready() &&
+    offCentre(lead) - bestOff < window.innerHeight * HOLD
+  ) {
+    best = lead;
+  }
+  if (best === lead) return;
+  const was = lead;
+  lead = best;
+  was?.refresh();
+  lead?.refresh();
+}
+
+function requestElection() {
+  if (!electing) electing = requestAnimationFrame(elect);
+}
+
+function listen(on: boolean) {
+  if (on) {
+    window.addEventListener("scroll", requestElection, { passive: true });
+    window.addEventListener("resize", requestElection);
+  } else {
+    window.removeEventListener("scroll", requestElection);
+    window.removeEventListener("resize", requestElection);
+  }
+}
 
 /** The site intro overlay (IntroLoader, kept as it is), found by its CSS-module class like Bench does. */
 export function findIntro(): HTMLElement | null {
@@ -87,14 +157,34 @@ export function watchScene(
   let started = false;
   let live = false;
 
-  const update = (layerChanged = false) => {
+  // A canvas inside a scene follows its scene; every other scene contends.
+  const contends = !el.parentElement?.closest("[data-scene]");
+  const self: Contender = {
+    el,
+    ready: () => onScreen && layerOn && released && visible,
+    refresh: () => update(),
+  };
+  const leads = () => !contends || lead === self;
+
+  function update(layerChanged = false) {
     const was = { started, live };
-    if (!started && seen && released && layerOn) started = true;
-    live = started && onScreen && visible && layerOn;
+    if (!started && seen && released && layerOn && leads()) started = true;
+    live = started && onScreen && visible && layerOn && leads();
     if (layerChanged || started !== was.started || live !== was.live) {
       onChange({ started, live, layerOn });
     }
+  }
+
+  // Something that decides the lead changed: elect (next frame), then update.
+  const changed = (layerChanged = false) => {
+    if (contends) requestElection();
+    update(layerChanged);
   };
+
+  if (contends) {
+    if (contenders.size === 0) listen(true);
+    contenders.add(self);
+  }
 
   const io = new IntersectionObserver(
     (entries) => {
@@ -102,7 +192,7 @@ export function watchScene(
         onScreen = entry.isIntersecting;
         if (entry.intersectionRatio >= threshold) seen = true;
       }
-      update();
+      changed();
     },
     { threshold: [0, threshold] },
   );
@@ -110,7 +200,7 @@ export function watchScene(
 
   const onVisibility = () => {
     visible = !document.hidden;
-    update();
+    changed();
   };
   document.addEventListener("visibilitychange", onVisibility);
 
@@ -120,7 +210,7 @@ export function watchScene(
       const next = layer.hasAttribute("data-on");
       if (next === layerOn) return;
       layerOn = next;
-      update(true);
+      changed(true);
     });
     layerWatch.observe(layer, { attributes: true, attributeFilter: ["data-on"] });
   }
@@ -128,7 +218,7 @@ export function watchScene(
   const stopIntro = afterIntro
     ? whenIntroLeaves(() => {
         released = true;
-        update();
+        changed();
       })
     : undefined;
 
@@ -137,5 +227,13 @@ export function watchScene(
     layerWatch?.disconnect();
     stopIntro?.();
     document.removeEventListener("visibilitychange", onVisibility);
+    if (contends) {
+      contenders.delete(self);
+      if (lead === self) {
+        lead = null;
+        requestElection();
+      }
+      if (contenders.size === 0) listen(false);
+    }
   };
 }

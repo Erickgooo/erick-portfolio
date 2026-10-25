@@ -7,7 +7,8 @@
 // the steps: at step k the scene carries data-step="k" and data-s0 ... data-sk,
 // which its CSS reads (see _scene.scss). Typed text and counting figures start
 // at their own step. Timers run only while the scene is live (on screen, tab
-// visible, stepper layer on); `data-live` marks that for CSS loops. With
+// visible, stepper layer on, and it is the scene that leads: start.ts);
+// `data-live` lets CSS loops run and `data-held` pauses them. With
 // reduced motion every scene is set to its last step, with its text and
 // figures complete, and nothing runs.
 import { useEffect } from "react";
@@ -337,8 +338,15 @@ function drive(root: HTMLElement, reduced: boolean): () => void {
     },
     ({ started, live: nowLive, layerOn }) => {
       live = nowLive;
-      if (live) root.dataset.live = "";
-      else root.removeAttribute("data-live");
+      // Loops exist from the first time the scene is live; when it stops
+      // being live they hold where they are (data-held pauses them,
+      // scenes.module.scss) instead of dropping back to their start.
+      if (live) {
+        root.dataset.live = "";
+        root.removeAttribute("data-held");
+      } else if (root.hasAttribute("data-live")) {
+        root.dataset.held = "";
+      }
       for (const p of parts) p.setLive(live);
       if (started && !root.hasAttribute("data-started")) {
         root.dataset.started = "";
