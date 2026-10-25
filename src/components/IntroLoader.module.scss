@@ -126,7 +126,12 @@
   stroke: #0b0b0f;
 }
 
+/* The wordmark's box has its final width (Space Grotesk's, measured: 7.7642em)
+   from the first paint. With the fallback face it was 1.5em wider, so when
+   Space Grotesk arrived the centred row narrowed and the mark moved. */
 .wordmark {
+  flex: none;
+  width: 7.7643em;
   font-family: var(--font-heading), sans-serif;
   font-weight: 700;
   font-size: 34px;
