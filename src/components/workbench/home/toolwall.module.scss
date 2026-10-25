@@ -188,7 +188,7 @@
 
   @media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
     opacity: 0.12;
-    scale: 0.92;
+    scale: 0.98;
     transition:
       opacity $dur-enter $ease-soft,
       scale $dur-enter $ease-soft;
@@ -256,7 +256,7 @@
 
   @media (scripting: enabled) {
     opacity: 0.25;
-    scale: 0.94;
+    scale: 0.98;
     transition:
       opacity $dur-enter $ease-soft,
       scale $dur-state $ease-soft;
