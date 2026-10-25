@@ -126,7 +126,7 @@
 
 .presenter.in2 {
   @include before(2) {
-    translate: 0 8cqi;
+    translate: 0 $reveal-travel-lg;
   }
 }
 

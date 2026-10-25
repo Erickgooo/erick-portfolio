@@ -28,7 +28,7 @@
 
   @include before(0) {
     opacity: 0;
-    translate: 0 5cqi;
+    translate: 0 $reveal-travel-lg;
   }
 }
 

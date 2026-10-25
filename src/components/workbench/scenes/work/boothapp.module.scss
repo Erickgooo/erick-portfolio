@@ -61,7 +61,7 @@
 
   @include before(3) {
     opacity: 0;
-    translate: 0 4cqi;
+    translate: 0 $reveal-travel-lg;
   }
 
   @include portrait(".portrait") {
@@ -104,7 +104,7 @@
 
   @include before(0) {
     opacity: 0;
-    translate: 0 5cqi;
+    translate: 0 $reveal-travel-lg;
   }
 
   @include portrait(".portrait") {
@@ -297,7 +297,7 @@
 
   @include before(0) {
     opacity: 0;
-    translate: 0 5cqi;
+    translate: 0 $reveal-travel-lg;
   }
 
   @include portrait(".portrait") {
