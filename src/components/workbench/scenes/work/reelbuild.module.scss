@@ -249,7 +249,7 @@
   font-size: 3.4cqi;
   transition:
     opacity $dur-state $ease-soft,
-    scale $dur-state $ease-settle;
+    scale $dur-state $ease-soft;
 
   @include portrait(".portrait") {
     width: 13cqi;
@@ -328,7 +328,7 @@
 .newSheet {
   transition:
     opacity $dur-state $ease-soft,
-    translate $dur-fade $ease-settle;
+    translate $dur-fade $ease-soft;
   transition-delay: 0.35s;
 
   @include before(6) {
@@ -379,7 +379,7 @@
 .newThumb {
   transition:
     opacity $dur-state $ease-soft,
-    scale $dur-enter $ease-settle;
+    scale $dur-enter $ease-soft;
   transition-delay: 0.1s;
 
   @include before(6) {
@@ -403,7 +403,7 @@
   transition:
     opacity $dur-enter $ease-soft,
     translate $dur-fade $ease-soft,
-    scale $dur-enter $ease-settle;
+    scale $dur-enter $ease-soft;
 
   @include before(7) {
     opacity: 0;
@@ -461,7 +461,7 @@
   gap: 1.4cqi;
   transition:
     opacity $dur-state $ease-soft,
-    translate $dur-enter $ease-settle;
+    translate $dur-enter $ease-soft;
 
   .thumb {
     width: 13cqi;
@@ -502,7 +502,7 @@
   transition:
     opacity $dur-enter $ease-soft,
     translate $dur-fade $ease-soft,
-    scale $dur-enter $ease-settle;
+    scale $dur-enter $ease-soft;
 
   @include before(9) {
     opacity: 0;

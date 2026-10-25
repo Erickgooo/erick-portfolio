@@ -87,7 +87,7 @@
   transform-origin: center bottom;
   transition:
     opacity $dur-enter $ease-soft,
-    scale $dur-fade $ease-settle;
+    scale $dur-fade $ease-soft;
 
   @include stage-before(".fresh", 3) {
     opacity: 0;
@@ -257,7 +257,7 @@
   background: var(--wb-accent);
   transition:
     opacity $dur-micro $ease-soft,
-    scale $dur-state $ease-settle;
+    scale $dur-state $ease-soft;
 
   &::after {
     content: "";
@@ -387,7 +387,7 @@
   background: var(--sc-obj);
   transition:
     opacity $dur-micro $ease-soft,
-    scale $dur-state $ease-settle;
+    scale $dur-state $ease-soft;
   transition-delay: calc(0.2s + var(--n) * 230ms);
 
   @include before(2) {

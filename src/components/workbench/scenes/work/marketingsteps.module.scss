@@ -119,7 +119,7 @@
     width: 6cqi;
     aspect-ratio: 1;
     border-radius: 0.6cqi;
-    transition: scale $dur-state $ease-settle;
+    transition: scale $dur-state $ease-soft;
     transition-delay: calc(var(--k) * #{$stagger-scene});
 
     @include before(2) {
@@ -314,7 +314,7 @@
   border-color: var(--wb-accent);
   transition:
     opacity $dur-state $ease-soft,
-    translate $dur-enter $ease-settle;
+    translate $dur-enter $ease-soft;
 
   i {
     background: var(--wb-accent);
@@ -428,7 +428,7 @@
   border-radius: 0.8cqi;
   transition:
     opacity $dur-state $ease-soft,
-    translate $dur-enter $ease-settle;
+    translate $dur-enter $ease-soft;
 
   i {
     flex: none;
@@ -511,7 +511,7 @@
   background: var(--wb-accent);
   transition:
     opacity $dur-micro $ease-soft,
-    scale $dur-state $ease-settle;
+    scale $dur-state $ease-soft;
 
   .right & {
     transition-delay: 0.2s;
@@ -590,7 +590,7 @@
     border-radius: 0.3cqi;
     background: var(--wb-accent);
     transform-origin: center bottom;
-    transition: scale $dur-state $ease-settle;
+    transition: scale $dur-state $ease-soft;
     transition-delay: calc(var(--k) * 80ms);
 
     &:nth-child(3n + 2) {

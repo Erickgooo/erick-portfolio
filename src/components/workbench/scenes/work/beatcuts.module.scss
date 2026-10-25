@@ -240,7 +240,7 @@ $sweep: 3.6s;
   background: var(--sc-obj);
   transition:
     opacity $dur-micro $ease-soft,
-    scale $dur-state $ease-settle;
+    scale $dur-state $ease-soft;
   transition-delay: calc(var(--i) * 70ms);
 
   @include before(2) {
@@ -274,7 +274,7 @@ $sweep: 3.6s;
   background: var(--wb-accent);
   transition:
     opacity $dur-micro $ease-soft,
-    translate $dur-state $ease-settle;
+    translate $dur-state $ease-soft;
   transition-delay: calc(var(--k) * 380ms);
 
   @include before(3) {

@@ -42,7 +42,7 @@
   max-width: 560px;
 
   @media (prefers-reduced-motion: no-preference) {
-    animation: drawer $dur-fade $ease-settle 0.1s both;
+    animation: drawer $dur-fade $ease-soft 0.1s both;
   }
 }
 

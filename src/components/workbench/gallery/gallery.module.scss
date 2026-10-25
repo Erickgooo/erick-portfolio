@@ -18,7 +18,7 @@
     transition:
       opacity $dur-fade $ease-soft,
       translate $dur-travel $ease-soft,
-      scale $dur-travel $ease-settle;
+      scale $dur-travel $ease-soft;
     transition-delay: calc(var(--i, 0) * #{$stagger});
 
     &[data-in] {
@@ -154,7 +154,7 @@
   }
 
   @media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
-    animation: card-in $dur-fade $ease-settle 0.15s both;
+    animation: card-in $dur-fade $ease-soft 0.15s both;
   }
 }
 
@@ -542,7 +542,7 @@
       scale: 0.96;
       transition:
         opacity $dur-fade $ease-soft,
-        scale $dur-fade $ease-settle;
+        scale $dur-fade $ease-soft;
       transition-delay: calc(var(--i, 0) * #{$stagger});
 
       .reel[data-in] > & {
@@ -565,7 +565,7 @@
   border-radius: 4px;
   background: var(--wb-page);
   transition:
-    translate $dur-state $ease-settle,
+    translate $dur-state $ease-soft,
     scale $dur-micro $ease-soft;
 
   &:active {
@@ -615,7 +615,7 @@
   background: rgba(19, 19, 22, 0.78);
   color: #ffffff;
   font-size: 20px;
-  transition: scale $dur-state $ease-settle;
+  transition: scale $dur-state $ease-soft;
 
   svg {
     translate: 1px 0;
@@ -695,7 +695,7 @@
   border: 1px solid var(--wb-rule);
   border-radius: 4px;
   background: var(--wb-page);
-  transition: translate $dur-enter $ease-settle;
+  transition: translate $dur-enter $ease-soft;
 }
 
 .sheetA {
@@ -728,7 +728,7 @@
   border-radius: 4px;
   background: var(--wb-soft-2);
   transition:
-    translate $dur-state $ease-settle,
+    translate $dur-state $ease-soft,
     scale $dur-micro $ease-soft;
 }
 
@@ -748,7 +748,7 @@
   font-size: 16px;
   font-weight: 500;
   line-height: 1.2;
-  transition: translate $dur-state $ease-settle;
+  transition: translate $dur-state $ease-soft;
 
   svg {
     flex: none;
@@ -811,7 +811,7 @@
   border-radius: 4px;
   background: var(--wb-soft-2);
   transition:
-    translate $dur-state $ease-settle,
+    translate $dur-state $ease-soft,
     scale $dur-micro $ease-soft;
 
   &:active {

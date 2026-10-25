@@ -124,7 +124,7 @@
   background: var(--wb-accent);
   transition:
     opacity $dur-micro $ease-soft,
-    scale $dur-state $ease-settle;
+    scale $dur-state $ease-soft;
 
   &::after {
     content: "";
@@ -224,7 +224,7 @@
   transform-origin: left center;
   transition:
     opacity $dur-state $ease-soft,
-    scale $dur-enter $ease-settle;
+    scale $dur-enter $ease-soft;
 
   @include before(6) {
     opacity: 0;

@@ -93,7 +93,7 @@
 // Layer 1: the load sequence. Each object rises and settles (the overshoot
 // is gentler than before: the bounce read playful at this restraint).
 .rise {
-  animation: rise $dur-fade $ease-settle both;
+  animation: rise $dur-fade $ease-soft both;
   animation-delay: calc(var(--d) * #{$stagger} + 120ms);
 }
 
@@ -129,7 +129,7 @@
 .card {
   position: relative;
   transition:
-    scale $dur-state $ease-settle,
+    scale $dur-state $ease-soft,
     translate $dur-state $ease-soft;
 
   .slot[data-front] & {

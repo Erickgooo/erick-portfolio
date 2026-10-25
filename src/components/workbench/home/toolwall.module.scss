@@ -126,7 +126,7 @@
   border-radius: 2px;
   background: var(--wb-accent);
   transition:
-    scale $dur-state $ease-settle,
+    scale $dur-state $ease-soft,
     opacity $dur-state $ease-soft;
 
   @include from-desk {
@@ -191,7 +191,7 @@
     scale: 0.92;
     transition:
       opacity $dur-enter $ease-soft,
-      scale $dur-enter $ease-settle;
+      scale $dur-enter $ease-soft;
     transition-delay: calc(var(--i) * #{$stagger});
 
     &[data-in] {
@@ -259,7 +259,7 @@
     scale: 0.94;
     transition:
       opacity $dur-enter $ease-soft,
-      scale $dur-state $ease-settle;
+      scale $dur-state $ease-soft;
     transition-delay: calc(var(--k) * #{$stagger});
   }
 

@@ -168,7 +168,7 @@
   max-width: 100%;
 
   @media (prefers-reduced-motion: no-preference) {
-    animation: lift $dur-state $ease-settle both;
+    animation: lift $dur-state $ease-soft both;
   }
 }
 

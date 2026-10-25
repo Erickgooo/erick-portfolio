@@ -112,7 +112,7 @@
     border: solid #ffffff;
     border-width: 0 2px 2px 0;
     rotate: 45deg;
-    transition: scale $dur-state $ease-settle;
+    transition: scale $dur-state $ease-soft;
   }
 }
 

@@ -466,7 +466,7 @@
     border-radius: 8px;
     background: var(--wb-cobalt);
     box-shadow: none;
-    transition: scale $dur-state $ease-settle;
+    transition: scale $dur-state $ease-soft;
   }
 
   @include fine-pointer {
@@ -544,7 +544,7 @@
       scale: 0.94;
       transition:
         opacity $dur-state $ease-soft,
-        scale $dur-enter $ease-settle;
+        scale $dur-enter $ease-soft;
       transition-delay: calc(var(--i, 0) * #{$stagger} + 150ms);
     }
 

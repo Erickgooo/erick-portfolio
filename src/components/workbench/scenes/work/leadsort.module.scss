@@ -101,7 +101,7 @@
   transition:
     opacity $dur-enter $ease-soft,
     translate $dur-fade $ease-soft,
-    scale $dur-enter $ease-settle;
+    scale $dur-enter $ease-soft;
 
   @include before(7) {
     opacity: 0;
@@ -214,7 +214,7 @@
   transition:
     opacity $dur-state $ease-soft,
     translate $dur-enter $ease-soft,
-    scale $dur-state $ease-settle;
+    scale $dur-state $ease-soft;
 }
 
 .in {
@@ -394,7 +394,7 @@
   height: 0.95em;
   border-radius: 50%;
   background: var(--wb-accent);
-  transition: scale $dur-state $ease-settle;
+  transition: scale $dur-state $ease-soft;
   transition-delay: calc(0.25s + var(--k) * #{$stagger-scene});
 
   &::after {
@@ -467,7 +467,7 @@
 .newTicket {
   transition:
     opacity $dur-state $ease-soft,
-    scale $dur-state $ease-settle;
+    scale $dur-state $ease-soft;
   transition-delay: 0.5s;
 
   @include before(5) {
@@ -538,7 +538,7 @@
   transition:
     opacity $dur-state $ease-soft,
     translate $dur-enter $ease-soft,
-    scale $dur-enter $ease-settle;
+    scale $dur-enter $ease-soft;
   transition-delay: 0.55s;
 
   @include before(6) {

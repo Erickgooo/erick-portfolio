@@ -14,8 +14,8 @@ $bottom-nav: 768px;
 // source for every curve, duration, stagger and distance). They are CSS
 // custom properties, so Sass cannot do arithmetic with them: write a sum
 // or a product inside calc(), e.g. calc(var(--i, 0) * #{$stagger}).
+// There is no overshooting curve: a piece that "lands" uses $ease-soft.
 $ease-soft: var(--wb-ease-soft);
-$ease-settle: var(--wb-ease-settle);
 $ease-move: var(--wb-ease-move);
 $ease-fade: var(--wb-ease-fade);
 $dur-micro: var(--wb-dur-micro);

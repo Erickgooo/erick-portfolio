@@ -80,7 +80,7 @@
     width: 5.4cqi;
     aspect-ratio: 1;
     border-radius: 0.5cqi;
-    transition: scale $dur-state $ease-settle;
+    transition: scale $dur-state $ease-soft;
     transition-delay: calc(var(--k) * #{$stagger-scene});
 
     @include before(2) {
@@ -127,7 +127,7 @@
   width: 12cqi;
   height: auto;
   overflow: visible;
-  transition: scale $dur-state $ease-settle 0.2s;
+  transition: scale $dur-state $ease-soft 0.2s;
 
   polygon {
     fill: none;
@@ -208,7 +208,7 @@
 .hex {
   transition:
     opacity $dur-state $ease-soft,
-    scale $dur-state $ease-settle;
+    scale $dur-state $ease-soft;
   transition-delay: calc(var(--d) * 1ms);
 
   @include before(4) {

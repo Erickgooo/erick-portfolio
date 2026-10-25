@@ -209,7 +209,7 @@
     }
 
     @media (prefers-reduced-motion: no-preference) {
-      animation: settleIn $dur-enter $ease-settle 1s both;
+      animation: settleIn $dur-enter $ease-soft 1s both;
     }
   }
 
@@ -346,7 +346,7 @@
     scale: 0.94;
     transition:
       opacity $dur-state $ease-soft,
-      scale $dur-enter $ease-settle;
+      scale $dur-enter $ease-soft;
 
     &[data-in] {
       opacity: 1;
