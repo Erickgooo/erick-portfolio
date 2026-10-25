@@ -42,12 +42,10 @@ test.describe("reduced motion", () => {
     const state = await intro.evaluate((el) => ({
       wordmark: getComputedStyle(el.querySelector('[class*="IntroLoader_wordmark"]') as Element)
         .opacity,
-      moving: document
-        .getAnimations()
-        .filter((a) => {
-          const target = (a.effect as KeyframeEffect | null)?.target;
-          return target instanceof Element && el.contains(target) && a.playState === "running";
-        }).length,
+      moving: document.getAnimations().filter((a) => {
+        const target = (a.effect as KeyframeEffect | null)?.target;
+        return target instanceof Element && el.contains(target) && a.playState === "running";
+      }).length,
     }));
     expect(state).toEqual({ wordmark: "1", moving: 0 });
   });
@@ -66,7 +64,10 @@ test("nothing under the intro moves while its veil fades", async ({ page }) => {
         const intro = document.querySelector(introSel) as HTMLElement;
         const look = () =>
           resolve({
-            rises: Array.from(document.querySelectorAll(riseSel), (el) => getComputedStyle(el).opacity),
+            rises: Array.from(
+              document.querySelectorAll(riseSel),
+              (el) => getComputedStyle(el).opacity,
+            ),
             glow: getComputedStyle(document.querySelector(glowSel) as Element).opacity,
             bubble: !!document.querySelector(bubbleSel),
           });
@@ -150,7 +151,11 @@ for (const path of ["/", "/about", "/work", "/work/leadbot-ai", "/gallery", "/bl
         waiting.evaluateAll(
           (els) =>
             els.filter((el) => {
-              for (let up: Element | null = el; up && up.tagName !== "MAIN"; up = up.parentElement) {
+              for (
+                let up: Element | null = el;
+                up && up.tagName !== "MAIN";
+                up = up.parentElement
+              ) {
                 if (up.getBoundingClientRect().width <= 1) return false;
               }
               return getComputedStyle(el).opacity !== "1";
@@ -176,7 +181,12 @@ test("no more than one scene moves at a time", async ({ page }) => {
       const moving = await page
         .locator("main [data-scene][data-live]:not([data-held])")
         .evaluateAll(
-          (els) => els.filter((el) => el.getBoundingClientRect().bottom > 0 && el.getBoundingClientRect().top < innerHeight).length,
+          (els) =>
+            els.filter(
+              (el) =>
+                el.getBoundingClientRect().bottom > 0 &&
+                el.getBoundingClientRect().top < innerHeight,
+            ).length,
         );
       expect(moving, `${path} at ${Math.round(y)} px`).toBeLessThanOrEqual(1);
     }
@@ -188,11 +198,14 @@ test("a stepper's stage never moves: its sheets keep their place and size", asyn
   for (const path of ["/", "/work/ai-powered-ad-creatives"]) {
     await page.goto(path);
     const moved = await page
-      .locator("[data-stepper] [data-scene-layer] > div, [data-margin-stepper] [data-scene-layer] > div")
-      .evaluateAll((els) =>
-        els
-          .map((el) => getComputedStyle(el))
-          .filter((style) => style.translate !== "none" || style.scale !== "none").length,
+      .locator(
+        "[data-stepper] [data-scene-layer] > div, [data-margin-stepper] [data-scene-layer] > div",
+      )
+      .evaluateAll(
+        (els) =>
+          els
+            .map((el) => getComputedStyle(el))
+            .filter((style) => style.translate !== "none" || style.scale !== "none").length,
       );
     expect(moved).toBe(0);
   }
