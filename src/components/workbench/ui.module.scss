@@ -22,7 +22,7 @@
   white-space: nowrap;
 
   &:active {
-    translate: 0 2px;
+    translate: 0 1px;
   }
 
   @include fine-pointer {
@@ -41,7 +41,7 @@
   place-items: center;
   color: #ffffff;
   font-size: 18px;
-  transition: translate $dur-state $ease-soft;
+  transition: translate $dur-micro $ease-soft;
 }
 
 .small {
