@@ -75,12 +75,14 @@
       translate: 0 var(--y0);
     }
 
-    // Opening: a long soft scale.
+    // Opening: the page's one long move, a soft scale that slows into the
+    // wide frame (1 s; it took 1.3 s).
     .stage[data-open] & {
       opacity: 1;
       translate: 0 0;
       scale: 1;
-      transition-duration: $dur-enter, 1.3s, 1.3s;
+      transition-duration: $dur-enter, calc(#{$dur-travel} + #{$dur-state}),
+        calc(#{$dur-travel} + #{$dur-state});
     }
   }
 
