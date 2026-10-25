@@ -44,7 +44,9 @@
   }
 }
 
-// While the scene runs on screen (for infinite keyframe loops).
+// While the scene runs on screen (for infinite keyframe loops). Once a scene
+// has run, its loops stay and pause while it is held (off screen, or another
+// scene leads: scenes.module.scss), so they never jump back to their start.
 @mixin live {
   @media (prefers-reduced-motion: no-preference) {
     :where([data-scene][data-live]) & {

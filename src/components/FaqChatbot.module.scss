@@ -12,17 +12,23 @@
   box-sizing: border-box !important;
 }
 
+// Hover and press follow the site's rule (pulido de animaciones): the key
+// lifts 2 px in --wb-dur-micro, colours change at once, nothing grows.
 .floatingButton {
   cursor: pointer;
-  transition: transform var(--wb-dur-micro) var(--wb-ease-soft), opacity var(--wb-dur-micro) var(--wb-ease-soft);
+  transition: translate var(--wb-dur-micro) var(--wb-ease-soft);
   z-index: 1001;
 
   // Mouse only: a tap leaves a touch screen's button in :hover, so it stayed
-  // enlarged after opening and closing the chat.
+  // lifted after opening and closing the chat.
   @media (hover: hover) and (pointer: fine) {
     &:hover {
-      transform: scale(1.05);
+      translate: 0 -2px;
     }
+  }
+
+  @include reduced {
+    transition: none;
   }
 }
 
@@ -39,7 +45,6 @@
   cursor: pointer;
   padding: 0;
   overflow: hidden;
-  transition: background-color var(--wb-dur-micro) var(--wb-ease-soft);
   color: var(--ui-ink);
 
   &:hover {
@@ -83,6 +88,11 @@
   margin: 0 !important;
   padding: 1rem;
   gap: 1rem;
+
+  // It opens with the greeting bubble's short rise; it closes at once.
+  @media (prefers-reduced-motion: no-preference) {
+    animation: slideUpFadeIn var(--wb-dur-state) var(--wb-ease-soft) both;
+  }
 }
 
 .header {
@@ -142,7 +152,6 @@
   font-size: inherit;
   font-family: inherit;
   cursor: pointer;
-  transition: background-color var(--wb-dur-micro) var(--wb-ease-soft);
   box-sizing: border-box;
 
   &:hover {
@@ -171,9 +180,6 @@
   color: var(--ui-ink);
   font-size: inherit;
   cursor: pointer;
-  transition-property: background-color, border-color;
-  transition-duration: var(--wb-dur-micro);
-  transition-timing-function: var(--wb-ease-soft);
   line-height: 1.4;
   white-space: normal !important;
   overflow-wrap: break-word !important;
@@ -209,7 +215,6 @@
   font-family: inherit;
   outline: none;
   box-sizing: border-box;
-  transition: border-color var(--wb-dur-micro) var(--wb-ease-soft);
   min-width: 0;
 
   &::placeholder {
@@ -286,7 +291,7 @@
 
   // With reduced motion the bubble simply appears.
   @media (prefers-reduced-motion: no-preference) {
-    animation: slideUpFadeIn var(--wb-dur-micro) var(--wb-ease-soft) forwards;
+    animation: slideUpFadeIn var(--wb-dur-state) var(--wb-ease-soft) both;
   }
 }
 
@@ -307,7 +312,6 @@
   color: var(--ui-ink-weak);
   padding: 4px;
   border-radius: 50%;
-  transition: background-color var(--wb-dur-micro) var(--wb-ease-soft), color var(--wb-dur-micro) var(--wb-ease-soft);
   box-sizing: border-box;
 
   &:hover {
@@ -332,7 +336,7 @@
 @keyframes slideUpFadeIn {
   from {
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateY(var(--wb-travel));
   }
   to {
     opacity: 1;
@@ -376,7 +380,6 @@
   background: transparent;
   color: inherit;
   cursor: pointer;
-  transition: all 0.2s ease-in-out;
 
   &:hover {
     border-color: var(--ui-line);

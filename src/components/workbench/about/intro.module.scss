@@ -129,7 +129,7 @@
   }
 
   @media (prefers-reduced-motion: no-preference) {
-    animation: rise $dur-travel $ease-settle 0.15s both;
+    animation: rise $dur-travel $ease-soft 0.15s both;
   }
 
   img {

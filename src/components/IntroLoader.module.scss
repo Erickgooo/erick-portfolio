@@ -74,7 +74,10 @@
   transition: opacity 200ms ease;
 }
 
-.overlay.entering .icon {
+/* The mark stays while the overlay fades, so the veil leaves as one piece
+   (it used to fade the mark a step ahead of the rest). */
+.overlay.entering .icon,
+.overlay.leaving .icon {
   opacity: 1;
 }
 
@@ -123,7 +126,12 @@
   stroke: #0b0b0f;
 }
 
+/* The wordmark's box has its final width (Space Grotesk's, measured: 7.7642em)
+   from the first paint. With the fallback face it was 1.5em wider, so when
+   Space Grotesk arrived the centred row narrowed and the mark moved. */
 .wordmark {
+  flex: none;
+  width: 7.7643em;
   font-family: var(--font-heading), sans-serif;
   font-weight: 700;
   font-size: 34px;
@@ -131,6 +139,22 @@
   text-transform: uppercase;
   white-space: nowrap;
   opacity: 0;
+}
+
+/* Reduced motion (IntroLoader.tsx, `still`): the finished mark and wordmark
+   show at once and nothing moves; only the overlay's own fade remains. */
+.still .icon {
+  transition: none;
+}
+
+.overlay.still .flash {
+  animation: none;
+}
+
+/* Together with the mark, which shows once the intro is entering. */
+.overlay.entering.still .wordmark,
+.overlay.leaving.still .wordmark {
+  opacity: 1;
 }
 
 @media (max-width: 480px) {

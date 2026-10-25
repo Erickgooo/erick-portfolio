@@ -7,7 +7,9 @@
 @use "../scene" as *;
 
 // The scene's own content box (Scene wraps the children) stacks the figure
-// over the rule.
+// over the rule. The box itself stays put from the first paint (it used to
+// rise with the cards below, two entrances at once): the cards come in first,
+// then the rule draws and the figure is written.
 .counter {
   width: fit-content;
   min-width: 220px;
@@ -15,14 +17,6 @@
   padding: 18px 22px 20px;
   border: 1px solid var(--wb-rule);
   border-radius: 4px;
-  transition:
-    opacity $dur-fade $ease-soft,
-    translate $dur-travel $ease-soft;
-
-  @include root-enter {
-    opacity: 0;
-    translate: 0 24px;
-  }
 }
 
 .figure {
@@ -45,7 +39,7 @@
   margin-top: 14px;
   background: var(--wb-accent);
   transform-origin: left center;
-  transition: scale $dur-fade $ease-soft 0.2s;
+  transition: scale $dur-fade $ease-soft $dur-fade;
 
   @include before(0) {
     scale: 0 1;
@@ -96,7 +90,6 @@
 }
 
 @include reduced {
-  .counter,
   .rule,
   .caption {
     transition: none !important;

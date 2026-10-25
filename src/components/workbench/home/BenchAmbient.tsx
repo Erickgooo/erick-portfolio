@@ -2,11 +2,12 @@
 
 // Home, scene (type 3): the hero's ambient layer, a canvas behind the bench.
 // A few quiet marks around the objects (sober, 2026-10-22): rings, dots,
-// squares and short strokes, drawn in line, never tilted. As the site intro
-// fades the layer rises into place, then each mark drifts on its own slow
-// loop. It draws nothing else: the page dots and the pointer glow show
-// through everywhere around the marks. It holds behind the intro like the bench (start.ts),
-// runs only on screen, and with reduced motion it is one still frame.
+// squares and short strokes, drawn in line, never tilted. Each mark drifts on
+// its own slow loop. It draws nothing else: the page dots and the pointer
+// glow show through everywhere around the marks. It holds behind the intro
+// like the bench (start.ts), fades in (no rise) once the bench's objects are
+// in place, runs only on screen, and with reduced motion it is one still
+// frame.
 import { useCallback, useRef } from "react";
 import { CanvasLoop, type Frame } from "../scenes/CanvasLoop";
 import styles from "./ambient.module.scss";

@@ -53,8 +53,9 @@
     border-radius: 50%;
     background: var(--wb-accent);
 
+    // A slow, quiet pulse: the window is live, never a signal to look at.
     @include live {
-      animation: blink 1.6s ease-in-out infinite;
+      animation: blink 2.4s ease-in-out infinite;
     }
   }
 }
@@ -112,7 +113,7 @@
     border: solid #ffffff;
     border-width: 0 2px 2px 0;
     rotate: 45deg;
-    transition: scale $dur-state $ease-settle;
+    transition: scale $dur-state $ease-soft;
   }
 }
 
@@ -137,7 +138,7 @@
   }
 
   50% {
-    opacity: 0.25;
+    opacity: 0.45;
   }
 }
 

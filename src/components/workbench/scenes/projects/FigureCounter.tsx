@@ -1,5 +1,6 @@
-// Projects, scene (type 2): a hairline counter in the page head. Its cobalt
-// rule draws in, then it types each case's figure in turn, holds it, deletes
+// Projects, scene (type 2): a hairline counter in the page head. Once the
+// cards below have come in, its cobalt rule draws in, then it types each
+// case's figure in turn, holds it, deletes
 // it and types the next, for as long as it is on screen. Under the rule, what
 // the figure measures and the case's name fade in once the figure is typed and
 // out as it starts to delete; a click or tap opens that case, and a mouse over
@@ -16,7 +17,7 @@ export type CounterFigure = { value: string; label: string; name: string; href: 
 export function FigureCounter({ figures }: { figures: CounterFigure[] }) {
   if (figures.length === 0) return null;
   return (
-    <Scene className={styles.counter} steps={[700, 900]} afterIntro>
+    <Scene className={styles.counter} steps={[1100, 900]} afterIntro>
       <CounterLink className={styles.link} hrefs={figures.map((f) => f.href)}>
         <span className={styles.figure}>
           <Typed phrases={figures.map((f) => f.value)} cycle at={1} />

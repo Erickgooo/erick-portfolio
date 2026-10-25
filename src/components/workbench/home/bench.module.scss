@@ -90,17 +90,23 @@
   }
 }
 
-// Layer 1: the load sequence. Each object rises and settles (the overshoot
-// is gentler than before: the bounce read playful at this restraint).
+// Layer 1: the load sequence. Each object rises a short way and slows into
+// place, one after another (no overshoot, no scale).
 .rise {
-  animation: rise $dur-fade $ease-settle both;
-  animation-delay: calc(var(--d) * #{$stagger} + 120ms);
+  animation: rise $dur-travel $ease-soft both;
+  animation-delay: calc(var(--d) * #{$stagger} + 100ms);
 }
 
 // While the site intro covers the page the objects wait in their final place
-// (see `hold` in Bench.tsx), and rise as it starts to fade.
+// (see `hold` in Bench.tsx). When it starts to fade they are hidden at once
+// (still under the opaque overlay) and rise only once the overlay has faded:
+// 0.5 s is the overlay's fade, FADE_MS in IntroLoader.tsx.
 .bench[data-hold] .rise {
   animation-name: none;
+}
+
+.bench[data-veil] .rise {
+  animation-delay: calc(var(--d) * #{$stagger} + 0.5s);
 }
 
 // Layer 2: pointer parallax (desktop), deeper objects travel further.
@@ -110,30 +116,31 @@
 }
 
 // Layer 3: the idle float, paused while the bench is off screen. A vertical
-// drift only (it used to sway as well). It only exists once the hold is
-// released: infinite animations present at the first frame held back its
-// presentation (see Bench.tsx).
+// drift only (it used to sway as well). It starts once every object has risen
+// (data-settled, Bench.tsx), so it never adds to the entrance, and each object
+// starts from rest a little after the one before (a positive delay: no jump);
+// infinite animations present at the first frame also held back the page's
+// presentation.
 @media (prefers-reduced-motion: no-preference) {
-  .bench:not([data-hold]) .bob {
+  .bench[data-settled] .bob {
     animation: bob var(--bob) ease-in-out infinite;
-    animation-delay: calc(var(--d) * -0.63s);
+    animation-delay: calc(var(--d) * 0.63s);
     animation-play-state: paused;
   }
 
-  .bench[data-live]:not([data-hold]) .bob {
+  .bench[data-live][data-settled] .bob {
     animation-play-state: running;
   }
 }
 
-// Layer 4: the object itself and its lift.
+// Layer 4: the object itself and its lift. Brought forward by a tap, an
+// object lifts like a hovered one (it used to grow to 1.03).
 .card {
   position: relative;
-  transition:
-    scale $dur-state $ease-settle,
-    translate $dur-state $ease-soft;
+  transition: translate $dur-micro $ease-soft;
 
   .slot[data-front] & {
-    scale: 1.03;
+    translate: 0 -1cqi;
   }
 
   @include fine-pointer {
@@ -220,14 +227,12 @@
 @keyframes rise {
   from {
     opacity: 0;
-    translate: 0 16cqi;
-    scale: 0.96;
+    translate: 0 $reveal-travel-lg;
   }
 
   to {
     opacity: 1;
     translate: 0 0;
-    scale: 1;
   }
 }
 

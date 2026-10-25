@@ -27,6 +27,15 @@
   transition: none !important;
 }
 
+// A held scene (off screen, or another scene leads; SceneDriver.tsx) keeps
+// its loops where they are.
+.scene[data-held],
+.scene[data-held] *,
+.scene[data-held] *::before,
+.scene[data-held] *::after {
+  animation-play-state: paused !important;
+}
+
 // Typed text and counting figures: every phrase (and the final figure) is laid
 // out invisibly in the same grid cell, so the box keeps the size of the
 // largest one while its visible copy changes. Without scripting the first

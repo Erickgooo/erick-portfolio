@@ -39,7 +39,7 @@
   margin: 0;
   transition:
     opacity $dur-fade $ease-soft,
-    translate $dur-travel $ease-settle;
+    translate $dur-travel $ease-soft;
 }
 
 // The address field.
@@ -115,7 +115,7 @@
 
   @include before(0) {
     opacity: 0;
-    translate: 0 4cqi;
+    translate: 0 $reveal-travel-lg;
   }
 }
 

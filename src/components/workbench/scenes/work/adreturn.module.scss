@@ -42,7 +42,7 @@
 
   @include before(0) {
     opacity: 0;
-    translate: 0 5cqi;
+    translate: 0 $reveal-travel-lg;
   }
 }
 
@@ -142,7 +142,7 @@
   background: var(--creative);
   transition:
     opacity $dur-enter $ease-soft,
-    scale $dur-enter $ease-settle;
+    scale $dur-enter $ease-soft;
 
   .adC & {
     @include before(1) {
@@ -288,7 +288,7 @@
   transition:
     opacity $dur-enter $ease-soft,
     translate $dur-fade $ease-soft,
-    scale $dur-enter $ease-settle;
+    scale $dur-enter $ease-soft;
 
   @include before(5) {
     opacity: 0;
@@ -378,7 +378,7 @@
   background: var(--sc-obj);
   transition:
     opacity $dur-state $ease-soft,
-    translate $dur-enter $ease-settle;
+    translate $dur-enter $ease-soft;
 
   @include before(4) {
     opacity: 0;
@@ -423,7 +423,7 @@
     background: var(--sc-obj);
     transition:
       opacity $dur-state $ease-soft,
-      translate $dur-enter $ease-settle;
+      translate $dur-enter $ease-soft;
     transition-delay: calc(0.35s + var(--k) * #{$stagger-scene});
 
     // The fourth coin is not quite whole.
@@ -477,7 +477,7 @@
     background: var(--sc-soft);
     transition:
       opacity $dur-state $ease-soft,
-      scale $dur-state $ease-settle;
+      scale $dur-state $ease-soft;
     transition-delay: calc(0.3s + var(--k) * 120ms);
 
     &::before {

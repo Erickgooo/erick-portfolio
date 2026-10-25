@@ -7,6 +7,7 @@ import { useEffect, useRef, useState } from "react";
 import { FaX } from "react-icons/fa6";
 import { HiArrowRight, HiChevronDown, HiChevronUp } from "react-icons/hi2";
 import styles from "./FaqChatbot.module.scss";
+import { whenIntroLeaves } from "./workbench/scenes/intro";
 
 // ── Constants ────────────────────────────────────────────────────────────────
 
@@ -267,20 +268,28 @@ export const FaqChatbot: React.FC = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [isOpen]);
 
-  // Proactive greeting bubble logic
+  // Proactive greeting bubble logic. It shows 2.5 s after the page is in
+  // view: on the home's first visit, after the site intro has lifted, so it
+  // never arrives while the intro or the hero's entrance is moving.
   useEffect(() => {
     if (typeof window === "undefined") return;
 
     if (greetingShownThisPageLoad || isOpen) return;
 
-    const delayTimer = setTimeout(() => {
-      if (!isOpen && !greetingShownThisPageLoad) {
-        setShowBubble(true);
-        greetingShownThisPageLoad = true;
-      }
-    }, 2500);
+    let delayTimer = 0;
+    const stopWaiting = whenIntroLeaves(() => {
+      delayTimer = window.setTimeout(() => {
+        if (!isOpen && !greetingShownThisPageLoad) {
+          setShowBubble(true);
+          greetingShownThisPageLoad = true;
+        }
+      }, 2500);
+    });
 
-    return () => clearTimeout(delayTimer);
+    return () => {
+      stopWaiting();
+      window.clearTimeout(delayTimer);
+    };
   }, [isOpen]);
 
   // Auto-dismiss after 8 seconds

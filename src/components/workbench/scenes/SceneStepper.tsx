@@ -2,8 +2,8 @@
 // advances the steps: the active step's text lights up with a cobalt line
 // that grows with the scroll, and the stage beside it crossfades to that
 // step's scene, each scene on its own paper colour, so the background colour
-// changes as one layer fades over the other (about 0.6 s, both visible
-// half-way). Below 1024 px nothing pins: each step's text is followed by its
+// changes as one layer fades over the other (0.5 s). The stage itself never
+// moves: the incoming scene's own entrance is the one thing that does. Below 1024 px nothing pins: each step's text is followed by its
 // own scene, a plain stack, and each scene starts as it comes into view.
 //
 // The steps' titles are h3: put the stepper under the section's h2.

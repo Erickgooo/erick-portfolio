@@ -106,7 +106,7 @@ export const Header = () => {
         </div>
         <div className={`${styles.side} ${styles.end}`}>
           {headerShows.time && (
-            <span className={`${styles.meta} ${styles.desk}`}>
+            <span className={`${styles.meta} ${styles.desk} ${styles.clock}`}>
               <Clock timeZone={profile.timeZone} />
             </span>
           )}

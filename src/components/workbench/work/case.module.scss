@@ -154,7 +154,10 @@
 }
 
 // The cover panel (it was a project folder): the cover behind a hairline,
-// then the case's figure under it. Its units follow its own width.
+// then the case's figure under it. Its units follow its own width. As the
+// page loads the cover rises a short way, then the figure and its label come
+// in together (they used to arrive a second apart, the figure growing from
+// 0.9); the delays let the page's first frames pass first.
 .panel {
   position: relative;
   container-type: inline-size;
@@ -165,10 +168,6 @@
   max-width: 680px;
   justify-self: center;
   margin-top: 16px;
-
-  @media (prefers-reduced-motion: no-preference) {
-    animation: panelIn $dur-fade $ease-soft both;
-  }
 }
 
 .cover {
@@ -179,7 +178,7 @@
   background: var(--wb-soft-2);
 
   @media (prefers-reduced-motion: no-preference) {
-    animation: coverRise $dur-travel $ease-soft 0.2s both;
+    animation: caseIn $dur-travel $ease-soft 0.15s both;
   }
 
   img {
@@ -196,20 +195,19 @@
   gap: 6px 18px;
   color: var(--wb-ink);
 
+  @media (prefers-reduced-motion: no-preference) {
+    animation: caseIn $dur-travel $ease-soft calc(0.15s + 4 * #{$stagger}) both;
+  }
+
   strong {
     @include title;
     font-size: clamp(48px, 11cqi, 76px);
     line-height: 1;
     letter-spacing: -0.03em;
     color: var(--wb-accent);
-    transform-origin: left bottom;
 
     @include dark {
       color: #6688ff;
-    }
-
-    @media (prefers-reduced-motion: no-preference) {
-      animation: settleIn $dur-enter $ease-settle 1s both;
     }
   }
 
@@ -340,19 +338,7 @@
   border: 1px solid var(--wb-rule);
   border-radius: 4px;
   color: var(--wb-ink);
-
-  @media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
-    opacity: 0;
-    scale: 0.94;
-    transition:
-      opacity $dur-state $ease-soft,
-      scale $dur-enter $ease-settle;
-
-    &[data-in] {
-      opacity: 1;
-      scale: 1;
-    }
-  }
+  @include reveal;
 
   strong {
     @include title;
@@ -419,7 +405,7 @@
   border: 1px solid var(--wb-rule);
   border-radius: 4px;
   color: var(--wb-ink);
-  transition: translate $dur-state $ease-soft;
+  transition: translate $dur-micro $ease-soft;
 
   @include from-tablet {
     grid-template-columns: minmax(0, 1fr) minmax(0, 44%);
@@ -549,22 +535,9 @@
   }
 }
 
-@keyframes coverRise {
+@keyframes caseIn {
   from {
     opacity: 0;
-    translate: 0 8cqi;
-  }
-}
-
-@keyframes settleIn {
-  from {
-    opacity: 0;
-    scale: 0.9;
-  }
-}
-
-@keyframes panelIn {
-  from {
     translate: 0 $reveal-travel;
   }
 }

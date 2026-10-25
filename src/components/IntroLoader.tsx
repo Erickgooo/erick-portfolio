@@ -14,6 +14,13 @@ const DRAW_MS = 2000;
 const GLOW_MS = 2000;
 const HOLD_MS = DRAW_MS + GLOW_MS;
 const FADE_MS = 500;
+// With reduced motion nothing draws, glows or rises: the finished mark and
+// wordmark show at once, hold this long, and the overlay fades as usual
+// (pulido de animaciones, 2026-10-25, decision D5).
+const STILL_HOLD_MS = 2000;
+// The mark's resting look at the end of Fase B (the last keyframes below).
+const MARK_REST = "drop-shadow(0 0 3px rgba(45, 91, 255, 0.2))";
+const NODE_REST = "drop-shadow(0 0 4px rgba(45, 91, 255, 0.25))";
 // Hard backstop: whatever happens (a backgrounded tab throttling timers, a
 // slow device, etc.), never let the overlay block the page longer than this.
 const MAX_LIFETIME_MS = 6500;
@@ -83,6 +90,7 @@ export const IntroLoader = () => {
   const [phase, setPhase] = useState<"pending" | "entering" | "leaving" | "done">(
     shouldShow ? "pending" : "done",
   );
+  const [still, setStill] = useState(false);
   const markPathRef = useRef<SVGPathElement>(null);
   const nodePathRef = useRef<SVGPathElement>(null);
   const wordmarkRef = useRef<HTMLSpanElement>(null);
@@ -92,12 +100,16 @@ export const IntroLoader = () => {
 
     hasPlayedThisPageLoad = true;
 
-    // Deliberately NOT gated behind prefers-reduced-motion: this is a brand
+    // Deliberately NOT skipped with prefers-reduced-motion: this is a brand
     // reveal the site owner wants every visitor to see regardless of that
     // OS/browser preference (a conscious call, made after confirming via
     // [IntroLoader] diagnostics below that respecting it was the actual
-    // cause of the animation not appearing on a real desktop machine).
-    console.info("[IntroLoader] playing:", { holdMs: HOLD_MS, fadeMs: FADE_MS });
+    // cause of the animation not appearing on a real desktop machine). With
+    // that preference the reveal is still: the finished mark, no motion.
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const holdMs = reduced ? STILL_HOLD_MS : HOLD_MS;
+    if (reduced) setStill(true);
+    console.info("[IntroLoader] playing:", { holdMs, fadeMs: FADE_MS, still: reduced });
 
     // double rAF so the "entering" class change is picked up as a transition, not the initial state
     const raf = requestAnimationFrame(() => requestAnimationFrame(() => setPhase("entering")));
@@ -111,7 +123,12 @@ export const IntroLoader = () => {
     const nodePath = nodePathRef.current;
     const wordmark = wordmarkRef.current;
 
-    if (markPath && nodePath && wordmark) {
+    if (reduced && markPath && nodePath) {
+      markPath.style.fillOpacity = "1";
+      markPath.style.filter = MARK_REST;
+      nodePath.style.fillOpacity = "1";
+      nodePath.style.filter = NODE_REST;
+    } else if (markPath && nodePath && wordmark) {
       const markLength = markPath.getTotalLength();
       const nodeLength = nodePath.getTotalLength();
       console.info("[IntroLoader] path lengths:", { markLength, nodeLength });
@@ -159,10 +176,7 @@ export const IntroLoader = () => {
                 "drop-shadow(0 0 8px rgba(45, 91, 255, 0.55)) drop-shadow(0 0 18px rgba(45, 91, 255, 0.25))",
               offset: 0.5,
             },
-            {
-              fillOpacity: 1,
-              filter: "drop-shadow(0 0 3px rgba(45, 91, 255, 0.2))",
-            },
+            { fillOpacity: 1, filter: MARK_REST },
           ],
           { duration: GLOW_MS, delay: DRAW_MS, easing: glowEasing, fill: "forwards" },
         ),
@@ -177,10 +191,7 @@ export const IntroLoader = () => {
                 "drop-shadow(0 0 10px rgba(45, 91, 255, 0.7)) drop-shadow(0 0 20px rgba(45, 91, 255, 0.3))",
               offset: 0.5,
             },
-            {
-              fillOpacity: 1,
-              filter: "drop-shadow(0 0 4px rgba(45, 91, 255, 0.25))",
-            },
+            { fillOpacity: 1, filter: NODE_REST },
           ],
           { duration: GLOW_MS, delay: DRAW_MS, easing: glowEasing, fill: "forwards" },
         ),
@@ -208,8 +219,8 @@ export const IntroLoader = () => {
       });
     }
 
-    const leaveTimer = setTimeout(() => setPhase("leaving"), HOLD_MS);
-    const doneTimer = setTimeout(() => setPhase("done"), HOLD_MS + FADE_MS);
+    const leaveTimer = setTimeout(() => setPhase("leaving"), holdMs);
+    const doneTimer = setTimeout(() => setPhase("done"), holdMs + FADE_MS);
 
     // Background tabs (and unfocused windows) throttle/pause rAF and
     // setTimeout, so switching away mid-intro can otherwise get it stuck
@@ -280,7 +291,7 @@ export const IntroLoader = () => {
     <div
       className={`${styles.overlay} ${phase === "leaving" ? styles.leaving : ""} ${
         phase === "entering" ? styles.entering : ""
-      }`}
+      } ${still ? styles.still : ""}`}
       aria-hidden="true"
     >
       <div className={styles.mark}>
