@@ -1,3 +1,6 @@
+@use "./glass/glass" as *;
+@use "./workbench/shared" as *;
+
 .root {
   position: relative;
   width: 100%;
@@ -26,18 +29,20 @@
   display: block;
 }
 
+// The play key: cobalt Liquid Glass over the still (src/components/glass/).
+// Over media the tint never drops below --lg-key-a (0.78 or more), which keeps
+// the white mark at 3:1 or better whatever the still shows.
 .play {
   position: absolute;
   inset: 0;
   margin: auto;
   width: 3rem;
   height: 3rem;
+  overflow: hidden;
   border-radius: 50%;
-  background: rgba(11, 11, 15, 0.7);
-  // A 1px Cobalto ring and a low glow (Manual 5.3.3).
-  box-shadow:
-    0 0 0 1px #2d5bff4d,
-    0 0 24px var(--ui-glow);
+  transition: translate $dur-micro $ease-soft;
+
+  @include material(var(--lg-blur), lg-play);
 
   &::after {
     content: "";
@@ -51,6 +56,23 @@
     border-bottom: 9px solid transparent;
     border-left: 14px solid #f4f5f7;
   }
+
+  // A press: down 1px and back (D6).
+  .button:active > & {
+    translate: 0 1px;
+  }
+
+  @include reduced {
+    transition: none;
+  }
+}
+
+.light {
+  @include light;
+}
+
+.tint {
+  @include tint(var(--lg-fill-key));
 }
 
 .iframe {

@@ -32,6 +32,46 @@ test.describe("reduced motion", () => {
     expect(running).toBe(0);
   });
 
+  // Liquid Glass (2026-10-25): the floating layer is still and whole. The
+  // light rests where the stylesheet puts it, and the scroll state, the
+  // tint and the chatbot's panel switch without a transition or animation.
+  test("the floating glass does not move", async ({ page, isMobile }) => {
+    await page.goto("/work/leadbot-ai");
+    const pill = page.locator('[data-lg-glass="pill"]');
+    await expect(pill).toBeVisible();
+    if (!isMobile) {
+      const box = await pill.boundingBox();
+      if (box) await page.mouse.move(box.x + box.width * 0.8, box.y + box.height / 2);
+      await page.waitForTimeout(300);
+      expect(await pill.evaluate((el) => el.style.getPropertyValue("--lg-dx"))).toBe("");
+    }
+    await page.evaluate(() => window.scrollTo({ top: 400, behavior: "instant" }));
+    await expect(page.locator("html")).toHaveAttribute("data-lg-scrolled", "");
+    await page.getByRole("button", { name: "Toggle ErickBot" }).click();
+    const panel = page.locator('[class*="FaqChatbot_chatbotContainer"]');
+    await expect(panel).toBeVisible();
+    const still = await page.evaluate(() => {
+      const glass = [
+        ...document.querySelectorAll("header *, header"),
+        ...document.querySelectorAll('[class*="FaqChatbot_chatbotWrapper"] *'),
+      ];
+      const timed = (el: Element, pseudo?: string) =>
+        getComputedStyle(el, pseudo)
+          .transitionDuration.split(",")
+          .some((d) => Number.parseFloat(d) > 0);
+      return {
+        running: document.getAnimations().filter((a) => {
+          const target = (a.effect as KeyframeEffect | null)?.target;
+          return target instanceof Element && glass.includes(target);
+        }).length,
+        transitions: glass
+          .filter((el) => timed(el) || timed(el, "::before") || timed(el, "::after"))
+          .map((el) => (typeof el.className === "string" ? el.className : el.nodeName)),
+      };
+    });
+    expect(still).toEqual({ running: 0, transitions: [] });
+  });
+
   // Pulido de animaciones (2026-10-25): the intro still shows (a brand
   // decision) but nothing in it moves.
   test("the intro shows its finished mark and nothing in it moves", async ({ page }) => {

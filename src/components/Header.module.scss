@@ -1,10 +1,15 @@
 // The site header: Erick's location on the left, the pill of page keys in the
-// middle, his local time on the right. On desktop it sticks to the top under
-// a fade; up to 768px it floats at the bottom of the screen, keys only, over
-// a fade of its own. Sizes are in rem so they follow the root size (15px on
-// phones, 16px above). Colours: the --wb-* tokens in src/resources/custom.css.
+// middle, his local time on the right. On desktop it sticks to the top; up to
+// 768px it floats at the bottom of the screen, keys only. The pill is Liquid
+// Glass (src/components/glass/): the page slides under it, blurred; the old
+// 80px fades under the bar are gone (a 24px scroll edge is left at the top on
+// desktop). Once the page scrolls, the location
+// and the time step aside (they come back at the top) so the pill floats
+// alone. Sizes are in rem so they follow the root size (15px on phones, 16px
+// above). Colours: the --wb-* and --lg-* tokens in src/resources/custom.css.
 // Keep this file ASCII-only.
 @use "./workbench/shared" as *;
+@use "./glass/glass" as *;
 
 // The 16px of page above the sticky bar on desktop.
 .gap {
@@ -16,36 +21,29 @@
   }
 }
 
-// The page fading under the bar (blurred, so text never reads through it).
-.fade {
+// A short scroll edge on desktop: the page colour fading over the top 24px, so
+// content leaving the screen dissolves instead of being cut at the edge. No
+// blur (the pill's glass does that) and far shorter than the old 80px fade,
+// so what passes under the pill stays visible.
+.edge {
   position: fixed;
+  top: 0;
   left: 0;
   right: 0;
   z-index: 9;
-  height: 5rem;
+  height: 1.5rem;
+  background: linear-gradient(var(--wb-page), transparent);
   pointer-events: none;
-  backdrop-filter: blur(0.5rem);
-  mask-image: linear-gradient(#000 20%, transparent 100%);
-}
-
-.fadeTop {
-  top: 0;
-  background-image: linear-gradient(var(--wb-page), transparent);
 
   @include bottom-nav {
     display: none;
   }
 }
 
-.fadeBottom {
-  bottom: 0;
+// TEMPORARY (liquid glass variants): variant b has no edge at all; the page
+// slides whole under the lens.
+:global(html[data-lg="b"]) .edge {
   display: none;
-  background-image: linear-gradient(0deg, var(--wb-page), transparent);
-  mask-image: linear-gradient(0deg, #000 20%, transparent 100%);
-
-  @include bottom-nav {
-    display: block;
-  }
 }
 
 .bar {
@@ -84,6 +82,31 @@
   justify-content: flex-end;
 }
 
+// Scrolled (html[data-lg-scrolled], from GlassController): the location and
+// the time fade out; in variant b they also slide toward the pill.
+.side {
+  transition:
+    opacity $dur-state $ease-fade,
+    translate $dur-state $ease-soft;
+
+  :global(html[data-lg-scrolled]) & {
+    opacity: 0;
+  }
+
+  @include reduced {
+    transition: none;
+  }
+}
+
+// TEMPORARY (liquid glass variants): variant b.
+:global(html[data-lg="b"][data-lg-scrolled]) .start {
+  translate: $reveal-travel 0;
+}
+
+:global(html[data-lg="b"][data-lg-scrolled]) .end {
+  translate: calc(-1 * #{$reveal-travel}) 0;
+}
+
 // Location and local time: Poppins, secondary ink, figures that do not jiggle.
 .meta {
   font-family: var(--font-wb-text), system-ui, sans-serif;
@@ -119,22 +142,89 @@
   }
 }
 
-// The pill: the page colour, a hairline and a soft shadow (the only shadow the
-// sober pages keep: the pill floats over the page).
+// The pill: glass over the page (the material, then its layers: the light,
+// the usual tint and a denser tint that fades in while media or a contrasting
+// section passes underneath, data-lg-tone="dense"). Its soft shadow (the only
+// shadow the sober pages keep) fades in once the page scrolls, when content
+// starts to pass under it; on the bottom bar content is always passing, so
+// it stays. The padding takes the pixel the old border took.
 .pill {
   position: relative;
   z-index: 1;
   display: flex;
   align-items: center;
   gap: 0.25rem;
-  padding: 0.25rem;
-  border: 1px solid var(--wb-line);
+  padding: calc(0.25rem + 1px);
   border-radius: 1.5rem;
-  background: var(--wb-page);
-  box-shadow: var(--wb-shadow-soft);
   font-size: 0.875rem;
   font-weight: 300;
   line-height: 1.125rem;
+  transition: translate $dur-state $ease-soft;
+
+  @include material(var(--lg-blur), lg-pill);
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    box-shadow: var(--wb-shadow-soft);
+    opacity: 0;
+    pointer-events: none;
+
+    @include fades;
+
+    :global(html[data-lg-scrolled]) & {
+      opacity: 1;
+    }
+
+    @include bottom-nav {
+      opacity: 1;
+    }
+  }
+
+  @include reduced {
+    transition: none;
+  }
+}
+
+// TEMPORARY (liquid glass variants): in variant b the scrolled pill also rises
+// 4px on desktop, closer to the top, as the side texts gather into it.
+@media (min-width: #{$bottom-nav + 1px}) {
+  :global(html[data-lg="b"][data-lg-scrolled]) .pill {
+    translate: 0 -4px;
+  }
+}
+
+.glass {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+.light {
+  @include light;
+}
+
+.tint {
+  @include tint(var(--lg-fill));
+}
+
+.dense {
+  @include tint(var(--lg-fill-dense));
+
+  box-shadow: none;
+  opacity: 0;
+
+  @include fades;
+
+  [data-lg-tone="dense"] > .glass > & {
+    opacity: 1;
+  }
 }
 
 .rule {
@@ -170,6 +260,15 @@
     border-color: rgba(147, 147, 150, 0.15);
     outline: 3px solid var(--wb-accent);
     outline-offset: 2px;
+  }
+
+  // A press: down 1px and back (D6), on touch screens too.
+  &:active {
+    translate: 0 1px;
+  }
+
+  @include reduced {
+    transition: none;
   }
 }
 
