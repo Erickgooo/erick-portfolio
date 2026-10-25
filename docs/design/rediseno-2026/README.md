@@ -254,3 +254,42 @@ Three branches from `feat/wb-sobrio`, merged back into it: `feat/wb-sobrio-pagin
 - **Case scenes:** atv-riders ChatTriage beside "Building the Automation System"; ai-powered-ad-creatives a margin stepper (PresenterBuild) beside "Behind the Scenes" and AdReturn `results` beside "Ad 01"; viral-videos ReelBuild `views` beside "The Process"; arquiexpo KioskStand beside "Core Application Features"; marketing a margin stepper (MarketingSteps) beside "Strategic Solution"; brand-comes-to-life BrandWall beside "Act One" and BeatCuts beside "Act Two"; dakoma ArticleEngine («Soro AI») beside "Strategic Solution"; ai-portfolio PromptDeploy beside "The Methodology". No MDX changed. `MarginStepper` (type 4 in a case margin: its steps are the case's own h3 or li, active past 42 % of the screen, 5:4 sheets, a stack below 1024 px) and `WideSheet` are in `scenes/work/`. The drawing variants `results`, `views` and `line` are off by default; the home was checked identical. From 1024 px the case margin keeps 320 px.
 - **Fixes at integration:** a scene root's entrance (`root-enter` in `_scene.scss`) keys off `data-started`, set once, so the home's activity window now enters and the looped windows (About, Projects, Blog, post) no longer re-enter on every replay; `list.index` instead of Sass's deprecated global `index()` in the desk scene; `experimental.cssChunking: "strict"` in `next.config.mjs` (only that key; CSP and headers untouched).
 - **Copy to confirm:** Visual Work's heading "How the pieces are made" and its four step lines (paraphrased from the pipelines in `ai-powered-ad-creatives.mdx` and `quick-metal-shop-viral-videos.mdx`); the filler article titles in the Dakoma scene ("Signs your roof needs a repair", "How to get a roof ready for storm season"); the scene labels listed in the agents' notes (ATV "Hi! What can we help you with?", "Advisor", "Follow-up", "Closed"; "Week 1", "Instant Form", "Edit", "Soundtrack", "Draft", "Published", "Publish", "Deploy").
+
+## Liquid Glass on the floating layer (2026-10-25)
+
+Branch `feat/liquid-glass`, from `origin/main` at `5e6a64b` (the return point). Brief: `liquid-glass-encargo.md`. It lifts the glass ban only for the layer that floats over the content, approves a visual restyle of the chatbot (its logic untouched) and allows the `apple-design` skill only for Liquid Glass principles. Decisions D11–D19 are in `pulido-animaciones.md`. This step builds two variants on the home and the LeadBot case, then stops for Erick's pick.
+
+### Inventory of the floating layer
+
+Checked in the code (`position: fixed` or `sticky`, and controls over media):
+
+- **Glass in this step:** the header pill (`Header.tsx`; at the top on desktop, at the bottom up to 768 px), the chatbot's launcher, greeting and panel (`FaqChatbot.module.scss` only; `FaqChatbot.tsx` is unchanged), and the play key of `YouTubeFacade` (the YouTube embeds of three cases; LeadBot has none, so it is shown on `/work/quick-metal-shop-viral-videos`).
+- **Candidates, not touched:** the Visual Work viewer (`gallery/Viewer.tsx`, over pieces that are not opened), the `PasswordPrompt` sheet (auth), and two more controls that float over video: the About film's play and pause keys (`about/FilmFrame.tsx`) and the case margin videos' keys (`work/VideoPrint.tsx`).
+- **Not floating:** the other sticky elements are pinned content (the stepper, the tool wall, the home's About column, the post index, the case margin).
+
+### How it is built
+
+- `src/components/glass/_glass.scss`: the material (blur and saturation, a hairline drawn as an inset shadow so the light can catch it), the light (a spot moved with `translate`) and the tint layers. `src/components/glass/GlassController.tsx` (client, in the root layout): the scroll state (`html[data-lg-scrolled]`), the pill's tone (`data-lg-tone="dense"` over media or a contrasting fill), the pointer light, and the lens filters (Chromium only, set up when the page is idle).
+- Tokens `--lg-*` in `src/resources/custom.css`, with the legibility floor written beside them.
+- The lens is an SVG displacement filter per surface, sized to it, drawn pixel by pixel in a canvas; `backdrop-filter: blur() url(#lens) saturate()`. Safari and Firefox get `blur(12px)`.
+- **Switch (TEMPORARY, never on main):** `?v=b` shows variant b, anything else variant a. An inline script beside `theme-init` in `src/app/layout.tsx` sets `data-lg` on `<html>`; b's CSS hangs off it. `grep -rn "TEMPORARY (liquid glass variants)"` finds every piece.
+
+### The two variants
+
+| | a, "Vidrio claro" | b, "Vidrio líquido" |
+|---|---|---|
+| Pill | Blur 10 px with a contained lens (8 px edge, 5 px shift), page tint 0.74 (0.72 dark), dense 0.9 over media | Visible refraction at the edges (14 px edge, 14 px shift) over a 3 px blur, page tint 0.56 (0.64 dark), dense 0.84 |
+| Light | Faint: rests at 0.45, follows the pointer briskly | Stronger and larger: rests at 0.7, follows with a lag; on touch screens it slides along the pill with the scroll |
+| Scroll | Location and time fade out, the pill's soft shadow fades in | The same, plus the pill rises 4 px and the side texts gather 12 px toward it |
+| Chatbot | Panel and greeting at tint 0.92, the panel opens with the 12 px rise | Tint 0.9, the panel rises 20 px from 0.98 and its three parts follow 60 ms apart |
+| Play key | Cobalt glass at 0.86 | Cobalt glass at 0.78 with the lens |
+| Header fades | The two 80 px fades go; a 24 px edge stays at the top on desktop | No fade at all |
+
+Both: the denser tint fades in over media and contrasting sections; a press moves keys down 1 px; with reduced motion the glass is still and whole; with Reduce Transparency or Increase Contrast it is opaque. Not done: View Transitions (they need `experimental.viewTransition` in `next.config.mjs`, which is Erick's call).
+
+### Checks (steps 2 and 3)
+
+- `npx tsc --noEmit`; `node scripts/quality/biome-gate.mjs main` and `biome check` on LF copies (the one remaining diagnostic is `custom.css`'s existing `--ui-shadow` line, as on `main`); `npm run build` (only the known workspace-root warning); `npm run test:unit` 32/32; `motion.spec.ts` and `a11y-names.spec.ts` on chromium and mobile-chromium: 40 passed, 4 skipped, including the new reduced-motion test.
+- Contrast of the glass's text, measured on the rendered pixels behind each label (worst 1 % of pixels), on the home and the LeadBot case at 390 and 1440, light and dark, both variants, the pointer resting on the pill; media under a label is skipped (288 of 4840 boxes): pill labels 5.34:1 at worst (median 17:1), pill icons 5.34:1, chatbot panel text 6.24:1. In Playwright's Firefox and WebKit, which paint no backdrop blur at all, the labels keep 5.34:1 and 5.42:1: the tint alone carries legibility.
+- No horizontal scroll and no console errors (besides the local insights 404) on both pages, both variants, 360, 390, 768, 1024 and 1440 px, light and dark, with the chatbot opened, in Chromium, Firefox and WebKit (120 runs).
+- Evidence in `docs/design/screens/liquid-glass/` (outside git): `erick/` unmasked, `review/` with media masked; `screens/` (both pages at 390 and 1440, light and dark, content passing under the header over text and over media), `closeups/` (the header at 2x) and `frames/` (6 frames of the pill changing state, the chatbot opening and the light following the pointer).

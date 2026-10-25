@@ -9,12 +9,13 @@
 //   with `translate` (fine pointers only; on touch screens it rests, and in
 //   variant b it slides with the scroll); with reduced motion it rests;
 // - the lens: in Chromium, which draws SVG filters in backdrop-filter, one
-//   displacement filter per glass surface, sized to it, then
-//   html[data-lg-lens]. Safari and Firefox keep the blur alone.
+//   displacement filter per glass surface, sized to it; the surface gets
+//   data-lg-lens-on once its filter is in the page. Safari and Firefox keep
+//   the blur alone.
 // The chatbot's surfaces are found by their module classes, so its component
 // stays as it is.
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import chat from "../FaqChatbot.module.scss";
 import { whenIntroLeaves } from "../workbench/scenes/intro";
 
@@ -24,7 +25,16 @@ const REACH = 160;
 const MEDIA = new Set(["IMG", "VIDEO", "IFRAME", "PICTURE"]);
 
 type Variant = "a" | "b";
-type Lens = { id: string; w: number; h: number; r: number; bezel: number; scale: number };
+type Lens = {
+  id: string;
+  w: number;
+  h: number;
+  r: number;
+  bezel: number;
+  scale: number;
+  /** The map's blob: URL, once drawn. */
+  href?: string;
+};
 
 const variantOf = (): Variant => (document.documentElement.dataset.lg === "b" ? "b" : "a");
 
@@ -106,9 +116,10 @@ function readTone() {
  * sideways and green up and down, 128 leaves it in place. Within `bezel` of
  * the edge each pixel pulls the backdrop from further inside, along the
  * edge's normal and harder toward the edge, so the rim bends what lies
- * under it like the edge of a lens; the middle stays still.
+ * under it like the edge of a lens; the middle stays still. Only the band
+ * along the edge is computed, and the PNG is encoded off the main thread.
  */
-const maps = new Map<string, string>();
+const maps = new Map<string, Promise<string>>();
 
 function lensMap(lens: Lens) {
   const key = `${lens.w}x${lens.h}r${lens.r}b${lens.bezel}`;
@@ -120,12 +131,12 @@ function lensMap(lens: Lens) {
   return map;
 }
 
-function drawLensMap({ w, h, r, bezel }: Lens) {
+function drawLensMap({ w, h, r, bezel }: Lens): Promise<string> {
   const canvas = document.createElement("canvas");
   canvas.width = w;
   canvas.height = h;
   const ctx = canvas.getContext("2d");
-  if (!ctx) return "";
+  if (!ctx) return Promise.resolve("");
   const img = ctx.createImageData(w, h);
   // Every pixel still (128, 128, 128, opaque) to start with.
   new Uint32Array(img.data.buffer).fill(0xff808080);
@@ -166,7 +177,9 @@ function drawLensMap({ w, h, r, bezel }: Lens) {
     }
   }
   ctx.putImageData(img, 0, 0);
-  return canvas.toDataURL("image/png");
+  return new Promise((resolve) =>
+    canvas.toBlob((blob) => resolve(blob ? URL.createObjectURL(blob) : ""), "image/png"),
+  );
 }
 
 /** The lens of each surface: a contained one in variant a, a visible one in b. */
@@ -188,11 +201,25 @@ function lensFor(id: string, el: HTMLElement, variant: Variant): Lens {
 
 // ── The component ───────────────────────────────────────────────────────────
 
-const sameLens = (a: Lens, b: Lens) => a.w === b.w && a.h === b.h && a.r === b.r;
+const sameLens = (a: Lens, b: Lens) =>
+  a.w === b.w && a.h === b.h && a.r === b.r && a.href === b.href;
+
+/** Lets every surface whose filter is in the page use its lens. */
+function markReady(ids: Set<string>) {
+  for (const el of document.querySelectorAll<HTMLElement>("[data-lg-lens]")) {
+    const on = ids.has(el.dataset.lgLens ?? "");
+    if (on !== (el.dataset.lgLensOn !== undefined)) {
+      if (on) el.dataset.lgLensOn = "";
+      else delete el.dataset.lgLensOn;
+    }
+  }
+}
 
 export function GlassController() {
   const pathname = usePathname();
   const [lenses, setLenses] = useState<Lens[]>([]);
+  const ready = useRef(new Set<string>());
+  const scanRef = useRef<(() => void) | null>(null);
   // Adds or resizes one surface's lens, keeping the others.
   const upsert = (lens: Lens) =>
     setLenses((all) => {
@@ -365,20 +392,43 @@ export function GlassController() {
     };
   }, []);
 
-  // The lens, in Chromium only (navigator.userAgentData is Chromium's), set
-  // up once the page is idle so it never weighs on the first load.
+  // The lens, in Chromium only (navigator.userAgentData is Chromium's). Each
+  // surface is measured when it appears or changes size; its map is drawn in
+  // an idle moment, one surface at a time, and encoded off the main thread,
+  // so the lens never weighs on loading. A surface takes its lens
+  // (data-lg-lens-on) only once its filter is in the page: a missing filter
+  // would drop the blur too.
   // biome-ignore lint/correctness/useExhaustiveDependencies: upsert only calls the state setter
   useEffect(() => {
     if (!("userAgentData" in navigator)) return;
     const variant = variantOf();
+    let alive = true;
+    const idle = typeof window.requestIdleCallback === "function";
+    const later = (run: () => void) =>
+      idle ? window.requestIdleCallback(run, { timeout: 3000 }) : window.setTimeout(run, 300);
+    const queue = new Map<string, HTMLElement>();
+    let pending = 0;
+
+    const pump = () => {
+      pending = 0;
+      const next = queue.entries().next();
+      if (next.done) return;
+      const [id, el] = next.value;
+      queue.delete(id);
+      const lens = el.isConnected ? lensFor(id, el, variant) : null;
+      if (lens && lens.w > 0 && lens.h > 0) {
+        lensMap(lens).then((href) => {
+          if (alive && href) upsert({ ...lens, href });
+        });
+      }
+      if (queue.size > 0) pending = later(pump);
+    };
     const sizes = new ResizeObserver((entries) => {
       for (const entry of entries) {
         const el = entry.target as HTMLElement;
-        const id = el.dataset.lgLens;
-        if (!id) continue;
-        const lens = lensFor(id, el, variant);
-        if (lens.w > 0 && lens.h > 0) upsert(lens);
+        if (el.dataset.lgLens) queue.set(el.dataset.lgLens, el);
       }
+      if (queue.size > 0 && !pending) pending = later(pump);
     });
     const watch = (el: Element | null, id: string) => {
       if (!(el instanceof HTMLElement) || el.dataset.lgLens === id) return;
@@ -387,58 +437,48 @@ export function GlassController() {
     };
     const scan = () => {
       watch(document.querySelector('[data-lg-glass="pill"]'), "lg-pill");
-      watch(document.querySelector('[data-lg-glass="play"]'), "lg-play");
+      // The play keys are all the same size and share one lens.
+      for (const key of document.querySelectorAll('[data-lg-glass="play"]')) watch(key, "lg-play");
       watch(document.querySelector(`.${chat.toggleButton}`), "lg-launch");
       watch(document.querySelector(`.${chat.greetingBubble}`), "lg-bubble");
       watch(document.querySelector(`.${chat.chatbotContainer}`), "lg-panel");
+      markReady(ready.current);
     };
+    scanRef.current = scan;
     // The chatbot's greeting and panel come and go; the play keys arrive
-    // with the pages that have videos.
+    // with the pages that have videos (scanned again on every navigation).
     const changes = new MutationObserver(scan);
-    const start = () => {
-      // The greeting and the panel get a lens at their usual size before they
-      // first open, so their filter is never missing; it is refitted as soon
-      // as they are measured.
-      const panelWidth = Math.min(380, innerWidth * 0.9);
-      for (const [id, w, h] of [
-        ["lg-bubble", 280, 56],
-        ["lg-panel", panelWidth, 480],
-      ] as const) {
-        const seed = lensFor(id, document.documentElement, variant);
-        upsert({ ...seed, w: Math.round(w), h, r: 10 });
-      }
+    const start = later(() => {
       scan();
       const wrapper = document.querySelector(`.${chat.chatbotWrapper}`);
       if (wrapper) changes.observe(wrapper, { childList: true });
-    };
-    const idle = typeof window.requestIdleCallback === "function";
-    const handle = idle
-      ? window.requestIdleCallback(start, { timeout: 2000 })
-      : window.setTimeout(start, 500);
+    });
     return () => {
-      if (idle) window.cancelIdleCallback(handle);
-      else window.clearTimeout(handle);
+      alive = false;
+      scanRef.current = null;
+      for (const handle of [start, pending]) {
+        if (idle) window.cancelIdleCallback(handle);
+        else window.clearTimeout(handle);
+      }
       changes.disconnect();
       sizes.disconnect();
-      document.documentElement.removeAttribute("data-lg-lens");
+      for (const el of document.querySelectorAll<HTMLElement>("[data-lg-lens]")) {
+        delete el.dataset.lgLens;
+        delete el.dataset.lgLensOn;
+      }
     };
   }, []);
 
-  // A page with a video: its play keys (all the same size) share one lens.
+  // A new page may bring play keys.
   // biome-ignore lint/correctness/useExhaustiveDependencies: runs on every navigation
   useEffect(() => {
-    const key = document.querySelector<HTMLElement>('[data-lg-glass="play"]');
-    if (!key || !("userAgentData" in navigator)) return;
-    const lens = lensFor("lg-play", key, variantOf());
-    if (lens.w > 0 && lens.h > 0) upsert(lens);
+    scanRef.current?.();
   }, [pathname]);
 
-  // The lenses are in the page (the pill's comes with the first scan): the
-  // stylesheets may use them now. A missing filter would drop the blur too.
+  // Filters in the page: their surfaces may use them now.
   useEffect(() => {
-    if (lenses.some((lens) => lens.id === "lg-pill")) {
-      document.documentElement.setAttribute("data-lg-lens", "");
-    }
+    ready.current = new Set(lenses.map((lens) => lens.id));
+    markReady(ready.current);
   }, [lenses]);
 
   if (lenses.length === 0) return null;
@@ -458,7 +498,7 @@ export function GlassController() {
             colorInterpolationFilters="sRGB"
           >
             <feImage
-              href={lensMap(lens)}
+              href={lens.href}
               x="0"
               y="0"
               width={lens.w}

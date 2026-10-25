@@ -9,7 +9,7 @@
 // The material: what lies behind is blurred, and where the browser draws SVG
 // filters in backdrop-filter (Chromium) it is then bent at the edges by the
 // lens `$lens` (an SVG filter id written by GlassController, which sets
-// html[data-lg-lens] once the filters are in the page). The blur goes first:
+// data-lg-lens-on on the surface once its filter is in the page). The blur goes first:
 // after a reference filter Chromium dropped it. Elsewhere the blur alone (8
 // to 16 px) stands in for the lens. A hairline draws the edge as an
 // inset shadow, not a border, so the light can catch it: the element clips
@@ -31,7 +31,7 @@
   backdrop-filter: blur($blur) saturate(var(--lg-sat));
 
   @if $lens {
-    :global(html[data-lg-lens]) & {
+    &[data-lg-lens-on] {
       -webkit-backdrop-filter: blur(var(--lg-lens-blur)) url("##{$lens}") saturate(var(--lg-sat));
       backdrop-filter: blur(var(--lg-lens-blur)) url("##{$lens}") saturate(var(--lg-sat));
     }
@@ -41,7 +41,7 @@
   // turn opaque in custom.css) and a firmer edge.
   @media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
     &,
-    :global(html[data-lg-lens]) & {
+    &[data-lg-lens-on] {
       -webkit-backdrop-filter: none;
       backdrop-filter: none;
     }
