@@ -165,13 +165,15 @@ $header: 76px;
     display: grid;
     place-items: center;
     opacity: 0;
-    // Leaving: stays under the incoming scene until that one has faded in.
-    transition: opacity $dur-state $ease-fade 0.6s;
+    // Leaving: stays under the incoming scene until that one has faded in
+    // (its sheet covers this one), then goes. LAYER_FADE_MS in SceneDriver.tsx
+    // is this delay plus this duration.
+    transition: opacity $dur-state $ease-fade $dur-fade;
 
     &[data-on] {
       z-index: 2;
       opacity: 1;
-      transition: opacity $dur-state $ease-fade 0s;
+      transition: opacity $dur-fade $ease-fade 0s;
     }
   }
 }
@@ -199,18 +201,6 @@ $header: 76px;
 
   @include from-desk {
     width: min(100%, calc((100svh - #{$header} - 88px) * 5 / 4));
-    translate: 0 26px;
-    scale: 0.98;
-    transition:
-      translate $dur-enter $ease-soft 0.6s,
-      scale $dur-enter $ease-soft 0.6s;
-
-    .layer[data-on] > & {
-      translate: 0 0;
-      scale: 1;
-      transition-duration: $dur-fade;
-      transition-delay: 0s;
-    }
   }
 }
 
@@ -224,15 +214,9 @@ $header: 76px;
 
 @include reduced {
   .layer,
-  .sheet,
   .title,
   .line,
   .note {
     transition: none !important;
-  }
-
-  .sheet {
-    translate: none !important;
-    scale: none !important;
   }
 }
