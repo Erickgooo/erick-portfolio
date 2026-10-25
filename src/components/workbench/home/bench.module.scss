@@ -133,15 +133,14 @@
   }
 }
 
-// Layer 4: the object itself and its lift.
+// Layer 4: the object itself and its lift. Brought forward by a tap, an
+// object lifts like a hovered one (it used to grow to 1.03).
 .card {
   position: relative;
-  transition:
-    scale $dur-state $ease-soft,
-    translate $dur-micro $ease-soft;
+  transition: translate $dur-micro $ease-soft;
 
   .slot[data-front] & {
-    scale: 1.03;
+    translate: 0 -1cqi;
   }
 
   @include fine-pointer {
