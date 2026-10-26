@@ -119,18 +119,10 @@
   @include material(var(--lg-panel-blur), lg-panel, var(--wb-shadow-soft));
   @include chat-glass(var(--lg-fill-panel));
 
-  // It opens from the launcher with the greeting bubble's short rise; it
-  // closes at once.
+  // It opens from the launcher: the panel rises, settling from 0.98, and its
+  // three parts follow it in, 60 ms apart. It closes at once.
   @media (prefers-reduced-motion: no-preference) {
     transform-origin: bottom right;
-    animation: slideUpFadeIn var(--wb-dur-state) var(--wb-ease-soft) both;
-  }
-}
-
-// TEMPORARY (liquid glass variants): in variant b the panel rises further,
-// settling from 0.98, and its three parts follow it in, 60 ms apart.
-@media (prefers-reduced-motion: no-preference) {
-  :global(html[data-lg="b"]) .chatbotContainer {
     animation: lgPanelIn var(--wb-dur-enter) var(--wb-ease-soft) both;
 
     > * {

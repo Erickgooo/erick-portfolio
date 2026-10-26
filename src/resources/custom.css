@@ -307,7 +307,8 @@
      text-heavy surfaces (always denser than the pill, so glass over glass
      never reads as glass).
    - --lg-blur / --lg-panel-blur: the blur where there is no lens (8 to 16 px);
-     --lg-lens-blur: the blur after the lens where the browser draws it.
+     --lg-lens-blur: the light blur that goes with the lens where the browser
+     draws it (Chromium), so the refraction at the edges shows.
    - --lg-rim / --lg-hi: the hairline and the fine light on the upper edge;
      --lg-spot: the specular light that follows the pointer, --lg-spot-rest
      its strength at rest, --lg-spot-size its diameter.
@@ -319,20 +320,20 @@
 ──────────────────────────────────────────────────────────────────────────── */
 :root {
   --lg-tint: 255 255 255;
-  --lg-tint-a: 0.74;
-  --lg-dense-a: 0.9;
-  --lg-panel-a: 0.92;
+  --lg-tint-a: 0.56;
+  --lg-dense-a: 0.84;
+  --lg-panel-a: 0.9;
   --lg-blur: 12px;
   --lg-panel-blur: 16px;
-  --lg-lens-blur: 10px;
-  --lg-sat: 1.5;
+  --lg-lens-blur: 3px;
+  --lg-sat: 1.7;
   --lg-rim: rgb(19 19 22 / 0.1);
   --lg-hi: rgb(255 255 255 / 0.8);
-  --lg-spot: rgb(255 255 255 / 0.75);
-  --lg-spot-rest: 0.45;
-  --lg-spot-size: 140px;
+  --lg-spot: rgb(255 255 255 / 0.9);
+  --lg-spot-rest: 0.7;
+  --lg-spot-size: 200px;
   --lg-key: 45 91 255;
-  --lg-key-a: 0.86;
+  --lg-key-a: 0.78;
 
   /* The fills, composed here so the stylesheets never do colour maths. */
   --lg-fill: rgb(var(--lg-tint) / var(--lg-tint-a));
@@ -343,33 +344,14 @@
 
 :root[data-theme="dark"] {
   --lg-tint: 19 19 22;
-  --lg-tint-a: 0.72;
-  --lg-dense-a: 0.88;
+  --lg-tint-a: 0.64;
   --lg-rim: rgb(255 255 255 / 0.1);
   --lg-hi: rgb(255 255 255 / 0.14);
-  --lg-spot: rgb(255 255 255 / 0.16);
-}
-
-/* TEMPORARY (liquid glass variants): variant b, "Vidrio liquido", ?v=b. */
-:root[data-lg="b"] {
-  --lg-tint-a: 0.56;
-  --lg-dense-a: 0.84;
-  --lg-panel-a: 0.9;
-  --lg-lens-blur: 3px;
-  --lg-sat: 1.7;
-  --lg-spot: rgb(255 255 255 / 0.9);
-  --lg-spot-rest: 0.7;
-  --lg-spot-size: 200px;
-  --lg-key-a: 0.78;
-}
-
-:root[data-lg="b"][data-theme="dark"] {
-  --lg-tint-a: 0.64;
   --lg-spot: rgb(255 255 255 / 0.22);
 }
 
 /* Reduce Transparency and Increase Contrast get an opaque material (the
-   selector outranks the variant and theme rules above). */
+   selector outranks the theme rule above). */
 /* biome-ignore lint/correctness/noUnknownMediaFeatureName: prefers-reduced-transparency is Media Queries Level 5, read by Chromium; Biome 1.9 does not list it yet */
 @media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
   :root:root:root:root {

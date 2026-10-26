@@ -4,6 +4,7 @@ Este encargo llegó desde la sesión que sirve de canal con Erick; el prompt lo 
 
 - **Rama:** `feat/liquid-glass` (worktree `.claude/worktrees/liquid-glass`), desde `origin/main` en `5e6a64b`, que es el punto de regreso.
 - **Decisiones:** en la sección nueva de `README.md` y como D11 en adelante en `pulido-animaciones.md`.
+- **Elección (2026-10-25):** b, «Vidrio líquido», entera (D20). La a y el interruptor `?v=b` se quitaron en el paso 4.
 
 ## Objetivo
 

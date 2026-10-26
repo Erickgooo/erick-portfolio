@@ -60,7 +60,6 @@ export const Header = () => {
   return (
     <>
       <div className={styles.gap} />
-      <div className={styles.edge} />
       <header className={styles.bar}>
         <div className={`${styles.side} ${styles.start} ${styles.meta}`}>
           {headerShows.location && <span className={styles.desk}>{profile.location}</span>}

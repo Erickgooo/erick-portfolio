@@ -6,8 +6,9 @@
 // - data-lg-tone="dense" on the header pill while media or a section that
 //   contrasts with the page passes underneath, so its denser tint fades in;
 // - the specular light of every glass surface, carried toward the pointer
-//   with `translate` (fine pointers only; on touch screens it rests, and in
-//   variant b it slides with the scroll); with reduced motion it rests;
+//   with `translate`, lagging a little behind like a liquid (fine pointers;
+//   on touch screens the pill's light slides with the scroll instead); with
+//   reduced motion it rests;
 // - the lens: in Chromium, which draws SVG filters in backdrop-filter, one
 //   displacement filter per glass surface, sized to it; the surface gets
 //   data-lg-lens-on once its filter is in the page. Safari and Firefox keep
@@ -24,7 +25,6 @@ const SCROLLED_AT = 4;
 const REACH = 160;
 const MEDIA = new Set(["IMG", "VIDEO", "IFRAME", "PICTURE"]);
 
-type Variant = "a" | "b";
 type Lens = {
   id: string;
   w: number;
@@ -35,8 +35,6 @@ type Lens = {
   /** The map's blob: URL, once drawn. */
   href?: string;
 };
-
-const variantOf = (): Variant => (document.documentElement.dataset.lg === "b" ? "b" : "a");
 
 function glassTargets(): HTMLElement[] {
   return Array.from(
@@ -182,8 +180,8 @@ function drawLensMap({ w, h, r, bezel }: Lens): Promise<string> {
   );
 }
 
-/** The lens of each surface: a contained one in variant a, a visible one in b. */
-function lensFor(id: string, el: HTMLElement, variant: Variant): Lens {
+/** The lens of each surface: a bezel deep enough for the refraction to show. */
+function lensFor(id: string, el: HTMLElement): Lens {
   const w = Math.round(el.offsetWidth);
   const h = Math.round(el.offsetHeight);
   const radius = getComputedStyle(el).borderTopLeftRadius;
@@ -194,7 +192,6 @@ function lensFor(id: string, el: HTMLElement, variant: Variant): Lens {
     Math.min(w, h) / 2,
   );
   const panel = id === "lg-panel" || id === "lg-bubble";
-  if (variant === "a") return { id, w, h, r, bezel: panel ? 10 : 8, scale: 10 };
   const bezel = panel ? 16 : Math.min(14, Math.round(h * 0.34));
   return { id, w, h, r, bezel, scale: panel ? 24 : 28 };
 }
@@ -284,10 +281,10 @@ export function GlassController() {
   // The light.
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    const variant = variantOf();
     const fine = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
-    // How fast a light catches up with its target each frame: b lags more.
-    const ease = variant === "b" ? 0.18 : 0.32;
+    // How far a light catches up with its target each frame (it lags, like a
+    // liquid).
+    const ease = 0.18;
     const state = new WeakMap<HTMLElement, { dx: number; dy: number; o: number }>();
     let pointer: { x: number; y: number } | null = null;
     let frame = 0;
@@ -370,9 +367,7 @@ export function GlassController() {
       };
     }
 
-    // Touch screens: the light rests, except in variant b, where the pill's
-    // light slides along it as the page scrolls.
-    if (variant !== "b") return;
+    // Touch screens: the pill's light slides along it as the page scrolls.
     let scrollFrame = 0;
     const slide = () => {
       scrollFrame = 0;
@@ -401,7 +396,6 @@ export function GlassController() {
   // biome-ignore lint/correctness/useExhaustiveDependencies: upsert only calls the state setter
   useEffect(() => {
     if (!("userAgentData" in navigator)) return;
-    const variant = variantOf();
     let alive = true;
     const idle = typeof window.requestIdleCallback === "function";
     const later = (run: () => void) =>
@@ -415,7 +409,7 @@ export function GlassController() {
       if (next.done) return;
       const [id, el] = next.value;
       queue.delete(id);
-      const lens = el.isConnected ? lensFor(id, el, variant) : null;
+      const lens = el.isConnected ? lensFor(id, el) : null;
       if (lens && lens.w > 0 && lens.h > 0) {
         lensMap(lens).then((href) => {
           if (alive && href) upsert({ ...lens, href });

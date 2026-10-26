@@ -1,12 +1,12 @@
 // The site header: Erick's location on the left, the pill of page keys in the
 // middle, his local time on the right. On desktop it sticks to the top; up to
 // 768px it floats at the bottom of the screen, keys only. The pill is Liquid
-// Glass (src/components/glass/): the page slides under it, blurred; the old
-// 80px fades under the bar are gone (a 24px scroll edge is left at the top on
-// desktop). Once the page scrolls, the location
-// and the time step aside (they come back at the top) so the pill floats
-// alone. Sizes are in rem so they follow the root size (15px on phones, 16px
-// above). Colours: the --wb-* and --lg-* tokens in src/resources/custom.css.
+// Glass (src/components/glass/): the page slides whole under it and bends at
+// its edges; the old 80px fades under the bar are gone. Once the page
+// scrolls, the location and the time gather into the pill and fade (they come
+// back at the top), and the pill rises 4px, floating alone. Sizes are in rem
+// so they follow the root size (15px on phones, 16px above). Colours: the
+// --wb-* and --lg-* tokens in src/resources/custom.css.
 // Keep this file ASCII-only.
 @use "./workbench/shared" as *;
 @use "./glass/glass" as *;
@@ -19,31 +19,6 @@
   @include bottom-nav {
     display: none;
   }
-}
-
-// A short scroll edge on desktop: the page colour fading over the top 24px, so
-// content leaving the screen dissolves instead of being cut at the edge. No
-// blur (the pill's glass does that) and far shorter than the old 80px fade,
-// so what passes under the pill stays visible.
-.edge {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 9;
-  height: 1.5rem;
-  background: linear-gradient(var(--wb-page), transparent);
-  pointer-events: none;
-
-  @include bottom-nav {
-    display: none;
-  }
-}
-
-// TEMPORARY (liquid glass variants): variant b has no edge at all; the page
-// slides whole under the lens.
-:global(html[data-lg="b"]) .edge {
-  display: none;
 }
 
 .bar {
@@ -83,7 +58,7 @@
 }
 
 // Scrolled (html[data-lg-scrolled], from GlassController): the location and
-// the time fade out; in variant b they also slide toward the pill.
+// the time fade out as they slide toward the pill.
 .side {
   transition:
     opacity $dur-state $ease-fade,
@@ -98,12 +73,11 @@
   }
 }
 
-// TEMPORARY (liquid glass variants): variant b.
-:global(html[data-lg="b"][data-lg-scrolled]) .start {
+:global(html[data-lg-scrolled]) .start {
   translate: $reveal-travel 0;
 }
 
-:global(html[data-lg="b"][data-lg-scrolled]) .end {
+:global(html[data-lg-scrolled]) .end {
   translate: calc(-1 * #{$reveal-travel}) 0;
 }
 
@@ -189,10 +163,10 @@
   }
 }
 
-// TEMPORARY (liquid glass variants): in variant b the scrolled pill also rises
-// 4px on desktop, closer to the top, as the side texts gather into it.
+// Scrolled, the pill rises 4px on desktop, closer to the top, as the side
+// texts gather into it.
 @media (min-width: #{$bottom-nav + 1px}) {
-  :global(html[data-lg="b"][data-lg-scrolled]) .pill {
+  :global(html[data-lg-scrolled]) .pill {
     translate: 0 -4px;
   }
 }
