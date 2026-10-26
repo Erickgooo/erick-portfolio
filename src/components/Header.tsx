@@ -60,14 +60,19 @@ export const Header = () => {
   return (
     <>
       <div className={styles.gap} />
-      <div className={`${styles.fade} ${styles.fadeTop}`} />
-      <div className={`${styles.fade} ${styles.fadeBottom}`} />
       <header className={styles.bar}>
         <div className={`${styles.side} ${styles.start} ${styles.meta}`}>
           {headerShows.location && <span className={styles.desk}>{profile.location}</span>}
         </div>
         <div className={styles.middle}>
-          <nav className={styles.pill} aria-label="Main">
+          {/* data-lg-glass: GlassController moves its light, sets data-lg-tone
+              from what passes underneath and fits the lens filter to it. */}
+          <nav className={styles.pill} aria-label="Main" data-lg-glass="pill">
+            <span className={styles.glass} aria-hidden="true">
+              <span className={styles.light} />
+              <span className={styles.tint} />
+              <span className={styles.dense} />
+            </span>
             {enabledRoutes["/"] && (
               <Link
                 href="/"

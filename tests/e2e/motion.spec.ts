@@ -32,6 +32,46 @@ test.describe("reduced motion", () => {
     expect(running).toBe(0);
   });
 
+  // Liquid Glass (2026-10-25): the floating layer is still and whole. The
+  // light rests where the stylesheet puts it, and the scroll state, the
+  // tint and the chatbot's panel switch without a transition or animation.
+  test("the floating glass does not move", async ({ page, isMobile }) => {
+    await page.goto("/work/leadbot-ai");
+    const pill = page.locator('[data-lg-glass="pill"]');
+    await expect(pill).toBeVisible();
+    if (!isMobile) {
+      const box = await pill.boundingBox();
+      if (box) await page.mouse.move(box.x + box.width * 0.8, box.y + box.height / 2);
+      await page.waitForTimeout(300);
+      expect(await pill.evaluate((el) => el.style.getPropertyValue("--lg-dx"))).toBe("");
+    }
+    await page.evaluate(() => window.scrollTo({ top: 400, behavior: "instant" }));
+    await expect(page.locator("html")).toHaveAttribute("data-lg-scrolled", "");
+    await page.getByRole("button", { name: "Toggle ErickBot" }).click();
+    const panel = page.locator('[class*="FaqChatbot_chatbotContainer"]');
+    await expect(panel).toBeVisible();
+    const still = await page.evaluate(() => {
+      const glass = [
+        ...document.querySelectorAll("header *, header"),
+        ...document.querySelectorAll('[class*="FaqChatbot_chatbotWrapper"] *'),
+      ];
+      const timed = (el: Element, pseudo?: string) =>
+        getComputedStyle(el, pseudo)
+          .transitionDuration.split(",")
+          .some((d) => Number.parseFloat(d) > 0);
+      return {
+        running: document.getAnimations().filter((a) => {
+          const target = (a.effect as KeyframeEffect | null)?.target;
+          return target instanceof Element && glass.includes(target);
+        }).length,
+        transitions: glass
+          .filter((el) => timed(el) || timed(el, "::before") || timed(el, "::after"))
+          .map((el) => (typeof el.className === "string" ? el.className : el.nodeName)),
+      };
+    });
+    expect(still).toEqual({ running: 0, transitions: [] });
+  });
+
   // Pulido de animaciones (2026-10-25): the intro still shows (a brand
   // decision) but nothing in it moves.
   test("the intro shows its finished mark and nothing in it moves", async ({ page }) => {
@@ -125,6 +165,53 @@ test("the header's clock never moves anything", async ({ page, browserName }) =>
       }),
   );
   expect(moved).toEqual([]);
+});
+
+// Liquid Glass, "Vidrio liquido" (Erick's pick, 2026-10-25): once the page
+// scrolls, the location and the time gather into the pill as they fade, and
+// the pill rises 4 px; the chatbot's panel parts come in one after another.
+/** A computed `translate` as [x, y] in px ("none" and a missing y are 0). */
+const px = (value: string) => {
+  const [x = 0, y = 0] = value === "none" ? [] : value.split(" ").map(Number.parseFloat);
+  return [x, y];
+};
+
+test("the scrolled header gathers into the pill", async ({ page }) => {
+  test.skip((page.viewportSize()?.width ?? 0) <= 768, "the side texts show on desktop only");
+  await page.goto("/about");
+  const pill = page.locator('[data-lg-glass="pill"]');
+  await expect(pill).toBeVisible();
+  await page.evaluate(() => window.scrollTo({ top: 400, behavior: "instant" }));
+  await expect(page.locator("html")).toHaveAttribute("data-lg-scrolled", "");
+  await expect
+    .poll(() => pill.evaluate((el) => getComputedStyle(el).translate).then(px))
+    .toEqual([0, -4]);
+  const sides = page.locator('header [class*="Header_side"]');
+  await expect
+    .poll(async () =>
+      (
+        await sides.evaluateAll((els) =>
+          els.map((el) => [getComputedStyle(el).opacity, getComputedStyle(el).translate]),
+        )
+      ).map(([opacity, translate]) => [opacity, ...px(translate)]),
+    )
+    .toEqual([
+      ["0", 12, 0],
+      ["0", -12, 0],
+    ]);
+});
+
+test("the chatbot's panel parts come in one after another", async ({ page }) => {
+  await page.goto("/about");
+  await page.getByRole("button", { name: "Toggle ErickBot" }).click();
+  const panel = page.locator('[class*="FaqChatbot_chatbotContainer"]');
+  await expect(panel).toBeVisible();
+  const delays = await panel.evaluate((el) =>
+    Array.from(el.children)
+      .slice(0, 3)
+      .map((part) => Number.parseFloat(getComputedStyle(part).animationDelay)),
+  );
+  expect(delays).toEqual([0, 0.06, 0.12]);
 });
 
 // Nothing is left half-way: scrolled through at a reading pace, every reveal

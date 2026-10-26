@@ -458,14 +458,12 @@
     outline-offset: -3px;
   }
 
-  // The play key: a flat cobalt key with a small radius instead of a grey
-  // disc.
+  // The play key: a cobalt key with a small radius instead of a disc. Its
+  // glass (cobalt tint, light and lens) comes from the facade itself.
   button > span {
     width: 64px;
     height: 64px;
     border-radius: 8px;
-    background: var(--wb-cobalt);
-    box-shadow: none;
     transition: translate $dur-micro $ease-soft;
   }
 
@@ -473,6 +471,10 @@
     button:hover > span {
       translate: 0 -2px;
     }
+  }
+
+  button:active > span {
+    translate: 0 1px;
   }
 }
 

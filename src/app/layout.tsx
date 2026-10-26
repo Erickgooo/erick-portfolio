@@ -6,6 +6,7 @@ import { FaqChatbot, Footer, Header, IntroLoader } from "@/components";
 import { SiteMain } from "@/components/SiteMain";
 import { SpotlightBackground } from "@/components/SpotlightBackground";
 import spotlightStyles from "@/components/SpotlightBackground.module.scss";
+import { GlassController } from "@/components/glass/GlassController";
 import { THEME_INIT } from "@/components/themeScript";
 import { pages } from "@/resources";
 import { pageMetadata } from "@/utils/seo";
@@ -42,6 +43,7 @@ export default async function RootLayout({
       <body className={`${styles.body} ${spotlightStyles.pageDots}`}>
         <IntroLoader />
         <SpotlightBackground />
+        <GlassController />
         <Header />
         <SiteMain>{children}</SiteMain>
         <Footer />

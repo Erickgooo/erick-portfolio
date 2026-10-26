@@ -74,7 +74,11 @@ export function YouTubeFacade({
             fetchPriority={eager ? "high" : undefined}
             decoding="async"
           />
-          <span className={styles.play} aria-hidden="true" />
+          {/* Liquid Glass (src/components/glass/): its light and tint. */}
+          <span className={styles.play} aria-hidden="true" data-lg-glass="play">
+            <span className={styles.light} />
+            <span className={styles.tint} />
+          </span>
         </button>
       )}
     </div>

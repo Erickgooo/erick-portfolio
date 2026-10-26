@@ -1,0 +1,97 @@
+// Liquid Glass for the floating layer: the header pill, the chatbot (launcher,
+// greeting and panel) and the video play key. Nothing in the content layer
+// uses it. Tokens: --lg-* in src/resources/custom.css. The pointer light, the
+// scroll state, the tint that follows what passes underneath and the lens
+// filters come from GlassController.tsx.
+// Keep this file ASCII-only: a non-ASCII byte makes Sass emit a BOM.
+@use "../workbench/shared" as *;
+
+// The material: what lies behind is blurred, and where the browser draws SVG
+// filters in backdrop-filter (Chromium) it is then bent at the edges by the
+// lens `$lens` (an SVG filter id written by GlassController, which sets
+// data-lg-lens-on on the surface once its filter is in the page). The blur goes first:
+// after a reference filter Chromium dropped it. Elsewhere the blur alone (8
+// to 16 px) stands in for the lens. A hairline draws the edge as an
+// inset shadow, not a border, so the light can catch it: the element clips
+// its layers at the border box and the tint starts one pixel in.
+// The element must be positioned: its layers are absolute children.
+// `$shadow`: a soft outer shadow beside the hairline (never a large one).
+@mixin material($blur: var(--lg-blur), $lens: null, $shadow: null) {
+  $edge: inset 0 0 0 1px var(--lg-rim);
+  $firm: inset 0 0 0 1px var(--wb-ink-2);
+  @if $shadow {
+    $edge: $edge, $shadow;
+    $firm: $firm, $shadow;
+  }
+
+  border: 0;
+  background: transparent;
+  box-shadow: $edge;
+  -webkit-backdrop-filter: blur($blur) saturate(var(--lg-sat));
+  backdrop-filter: blur($blur) saturate(var(--lg-sat));
+
+  @if $lens {
+    &[data-lg-lens-on] {
+      -webkit-backdrop-filter: blur(var(--lg-lens-blur)) url("##{$lens}") saturate(var(--lg-sat));
+      backdrop-filter: blur(var(--lg-lens-blur)) url("##{$lens}") saturate(var(--lg-sat));
+    }
+  }
+
+  // Reduce Transparency and Increase Contrast: an opaque surface (the fills
+  // turn opaque in custom.css) and a firmer edge.
+  @media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
+    &,
+    &[data-lg-lens-on] {
+      -webkit-backdrop-filter: none;
+      backdrop-filter: none;
+    }
+  }
+
+  @media (prefers-contrast: more) {
+    box-shadow: $firm;
+  }
+}
+
+// The specular light: a soft spot that GlassController carries toward the
+// pointer with `translate` (--lg-dx and --lg-dy from its rest point near the
+// upper left, --lg-o its strength). It lies under the tint, so it shows whole
+// on the one-pixel rim and only faintly through the tint inside.
+@mixin light {
+  position: absolute;
+  top: 0;
+  left: 30%;
+  z-index: -1;
+  width: var(--lg-spot-size);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, var(--lg-spot), transparent);
+  translate: calc(var(--lg-dx, 0px) - 50%) calc(var(--lg-dy, 0px) - 50%);
+  opacity: var(--lg-o, var(--lg-spot-rest));
+  pointer-events: none;
+
+  @media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
+    display: none;
+  }
+}
+
+// A tint layer: one pixel in from the edge, over the light, with the fine
+// light along its upper edge. `$fill` is one of the --lg-fill tokens.
+@mixin tint($fill: var(--lg-fill)) {
+  position: absolute;
+  inset: 1px;
+  z-index: -1;
+  border-radius: inherit;
+  background: $fill;
+  box-shadow: inset 0 1px 0 var(--lg-hi);
+  pointer-events: none;
+}
+
+// A layer that fades in and out with a state (the denser tint, the shadow).
+// Only its opacity moves; with reduced motion it switches at once.
+@mixin fades($dur: $dur-state) {
+  transition: opacity $dur $ease-fade;
+
+  @include reduced {
+    transition: none;
+  }
+}
