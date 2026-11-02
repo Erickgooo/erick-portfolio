@@ -273,6 +273,10 @@
     display: grid;
     grid-template-columns: repeat(6, minmax(0, 1fr));
     gap: 10px;
+    // Six square rows must fit the pinned panel (the screen less the header
+    // and the panel's padding), so the board is never wider than that.
+    width: min(100%, calc(100svh - 200px));
+    justify-self: center;
   }
 }
 
