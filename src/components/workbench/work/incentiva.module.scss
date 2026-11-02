@@ -1,0 +1,391 @@
+// Workbench, /work/incentiva-group (see IncentivaIndex.tsx): the role's head
+// beside its scene, the case studies as a list of links, and every project as
+// an unfilled card in a grid of three, grouped by area. Sober like the
+// Projects page: hairlines, no fills, cobalt only for what is live.
+// Keep this file ASCII-only.
+@use "../shared" as *;
+
+// Head -------------------------------------------------------------------
+
+.top {
+  @include wrap;
+  padding-top: 32px;
+}
+
+.back {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--wb-ink-2);
+  font-size: 15px;
+  font-weight: 500;
+  transition: translate $dur-micro $ease-soft;
+
+  @include fine-pointer {
+    &:hover {
+      color: var(--wb-ink);
+      translate: -4px 0;
+    }
+  }
+}
+
+.head {
+  @include wrap;
+  display: grid;
+  gap: 40px;
+  padding-top: 24px;
+  padding-bottom: 56px;
+
+  @include from-desk {
+    grid-template-columns: minmax(0, 6fr) minmax(0, 5fr);
+    align-items: start;
+    column-gap: 56px;
+    padding-bottom: 88px;
+  }
+}
+
+.headText {
+  display: grid;
+  justify-items: start;
+  gap: 16px;
+}
+
+.fileLabel {
+  @include s-label;
+}
+
+.title {
+  @include title;
+  font-size: clamp(44px, 6.4vw, 80px);
+  line-height: 1;
+  letter-spacing: -0.03em;
+}
+
+.role {
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.summary {
+  @include s-lede;
+  max-width: 60ch;
+}
+
+.method {
+  max-width: 60ch;
+  margin-bottom: 8px;
+  color: var(--wb-ink-2);
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+.headScene {
+  @include reveal;
+  width: 100%;
+  max-width: 560px;
+
+  @include from-desk {
+    position: sticky;
+    top: 112px;
+  }
+}
+
+// Case studies -----------------------------------------------------------
+
+.h2 {
+  @include s-h2;
+  font-size: clamp(26px, 3vw, 36px);
+}
+
+.cases {
+  @include wrap;
+  display: grid;
+  gap: 24px;
+  padding-bottom: 72px;
+
+  @include from-desk {
+    padding-bottom: 104px;
+  }
+
+  > .h2 {
+    @include reveal;
+  }
+}
+
+.caseList {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--wb-line);
+  list-style: none;
+
+  @include from-desk {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 32px;
+  }
+}
+
+.caseSlot {
+  @include reveal;
+  border-bottom: 1px solid var(--wb-line);
+}
+
+.caseLink {
+  --link-ink: inherit;
+
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 4px 16px;
+  padding: 18px 0;
+  color: var(--wb-ink);
+
+  &:focus-visible {
+    outline: 3px solid var(--wb-accent);
+    outline-offset: 4px;
+  }
+
+  @include fine-pointer {
+    &:hover .caseArrow {
+      translate: 4px 0;
+    }
+  }
+}
+
+.caseName {
+  font-size: 19px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.caseSub {
+  grid-column: 1;
+  color: var(--wb-ink-2);
+  font-size: 16px;
+  line-height: 1.45;
+}
+
+.caseMetric {
+  grid-column: 1;
+  color: var(--wb-ink-2);
+  font-size: 15px;
+
+  strong {
+    color: var(--wb-ink);
+    font-weight: 700;
+  }
+}
+
+.caseArrow {
+  grid-column: 2;
+  grid-row: 1 / span 3;
+  align-self: center;
+  font-size: 20px;
+  transition: translate $dur-micro $ease-soft;
+}
+
+// Areas -------------------------------------------------------------------
+
+.areas {
+  @include wrap;
+  display: grid;
+  gap: 72px;
+  padding-bottom: 72px;
+
+  @include from-desk {
+    gap: 96px;
+    padding-bottom: 120px;
+  }
+}
+
+.areasLede {
+  @include reveal;
+  @include s-lede;
+  max-width: 62ch;
+}
+
+.area {
+  display: grid;
+  gap: 28px;
+}
+
+.areaHead {
+  @include reveal;
+  display: grid;
+  gap: 8px;
+  padding-top: 20px;
+  border-top: 1px solid var(--wb-line);
+
+  @include from-desk {
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    align-items: baseline;
+    column-gap: 48px;
+  }
+}
+
+.areaLine {
+  max-width: 56ch;
+  color: var(--wb-ink-2);
+  font-size: 16px;
+  line-height: 1.55;
+}
+
+.grid {
+  display: grid;
+  gap: 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  @include from-tablet {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  @include from-desk {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 20px;
+  }
+}
+
+.slot {
+  @include reveal;
+  display: flex;
+}
+
+.card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  padding: 20px 20px 22px;
+  border: 1px solid var(--wb-rule);
+  border-radius: 4px;
+  color: var(--wb-ink);
+  transition: translate $dur-micro $ease-soft;
+
+  &:has(.stretch) {
+    @include fine-pointer {
+      &:hover {
+        translate: 0 -4px;
+      }
+    }
+
+    &:focus-within {
+      translate: 0 -4px;
+    }
+  }
+}
+
+// The status: a dot and the label. Live work is cobalt; the rest is ink.
+.status {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  color: var(--wb-ink-2);
+}
+
+.statusDot {
+  width: 8px;
+  height: 8px;
+  border: 1px solid currentColor;
+  border-radius: 50%;
+}
+
+.status[data-status="live"] {
+  color: var(--wb-ink);
+
+  .statusDot {
+    border-color: var(--wb-accent);
+    background: var(--wb-accent);
+  }
+}
+
+.status[data-status="delivered"] .statusDot {
+  background: currentColor;
+}
+
+.status[data-status="proposal"] .statusDot {
+  border-style: dashed;
+}
+
+.cardTitle {
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.stretch {
+  --link-ink: inherit;
+
+  outline: none;
+
+  &::after {
+    content: "";
+    position: absolute;
+    z-index: 2;
+    inset: 0;
+    border-radius: 4px;
+  }
+
+  &:focus-visible::after {
+    outline: 3px solid var(--wb-accent);
+    outline-offset: 4px;
+  }
+}
+
+.client {
+  color: var(--wb-ink-2);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.line {
+  font-size: 15px;
+  line-height: 1.55;
+}
+
+.stack {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 4px 0 0;
+  padding: 0;
+  list-style: none;
+
+  li {
+    padding: 3px 9px;
+    border: 1px solid var(--wb-line);
+    border-radius: 999px;
+    color: var(--wb-ink-2);
+    font-size: 13px;
+    line-height: 1.4;
+  }
+}
+
+.open {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: auto;
+  padding-top: 6px;
+  color: var(--wb-accent);
+  font-size: 15px;
+  font-weight: 600;
+
+  @include dark {
+    color: #6688ff;
+  }
+
+  svg {
+    transition: translate $dur-micro $ease-soft;
+  }
+
+  .card:hover & svg {
+    translate: 4px 0;
+  }
+}
