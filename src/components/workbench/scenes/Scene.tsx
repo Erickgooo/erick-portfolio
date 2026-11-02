@@ -16,6 +16,10 @@
 // - Inside a SceneStepper layer, a scene starts when its step becomes active
 //   and plays again from step 0 every time it does after its layer had faded
 //   out; back before that, it carries on where it was (SceneDriver.tsx).
+// - `scrub`: the scroll, not the clock, picks the step (in both directions):
+//   the step follows how far the reader is through the scene's part of the
+//   text on desktop, where the scene is pinned in the margin, and through the
+//   scene itself on phones (SceneDriver.tsx). No `loop`.
 // - Every scene is aria-hidden: what it says must also be in the page text.
 //   Its size is reserved by its own CSS (an aspect-ratio or fixed boxes), so
 //   nothing it does moves the layout.
@@ -35,6 +39,7 @@ export function Scene({
   steps = [0],
   loop = false,
   afterIntro = false,
+  scrub = false,
   threshold,
   className,
   style,
@@ -43,6 +48,8 @@ export function Scene({
   steps?: number[];
   loop?: boolean;
   afterIntro?: boolean;
+  /** The scroll picks the step instead of the clock (see above). */
+  scrub?: boolean;
   /** Share of the scene on screen needed to start it (default 0.3). */
   threshold?: number;
   className?: string;
@@ -58,6 +65,7 @@ export function Scene({
       data-steps={steps.join(",")}
       data-loop={loop ? "" : undefined}
       data-after-intro={afterIntro ? "" : undefined}
+      data-scrub={scrub ? "" : undefined}
       data-threshold={threshold}
     >
       <div className={styles.content}>{children}</div>

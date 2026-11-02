@@ -286,6 +286,53 @@ function drive(root: HTMLElement, reduced: boolean): () => void {
     for (const p of parts) if (p.at === k) p.start();
   };
 
+  // A scrubbed scene (data-scrub): the scroll picks the step, forwards and
+  // back, while the scene is live. Its progress is the reader's way through
+  // the scene's part of the text on desktop (the scene is pinned beside it)
+  // and through the scene itself on phones (it follows the text).
+  const scrub = root.hasAttribute("data-scrub");
+  const desk = window.matchMedia("(min-width: 1024px)");
+  let scrubFrame = 0;
+  let scrubbing = false;
+  const scrubTarget = () => {
+    const anchor = desk.matches ? (root.closest<HTMLElement>("section") ?? root) : root;
+    const box = anchor.getBoundingClientRect();
+    const vh = window.innerHeight;
+    const p = (vh * 0.85 - box.top) / (box.height + vh * 0.4);
+    return Math.max(0, Math.min(last, Math.floor(p * total)));
+  };
+  const scrubTo = (k: number) => {
+    if (k === step) return;
+    const was = step;
+    step = k;
+    setStep(root, k, total);
+    for (const p of parts) {
+      if (p.at > was && p.at <= k) p.start();
+      else if (p.at > k && p.at <= was) p.reset();
+    }
+  };
+  const onScrub = () => {
+    if (scrubFrame) return;
+    scrubFrame = requestAnimationFrame(() => {
+      scrubFrame = 0;
+      if (live) scrubTo(scrubTarget());
+    });
+  };
+  const listenScrub = (on: boolean) => {
+    if (!scrub || on === scrubbing) return;
+    scrubbing = on;
+    if (on) {
+      window.addEventListener("scroll", onScrub, { passive: true });
+      window.addEventListener("resize", onScrub);
+      onScrub();
+    } else {
+      window.removeEventListener("scroll", onScrub);
+      window.removeEventListener("resize", onScrub);
+      if (scrubFrame) cancelAnimationFrame(scrubFrame);
+      scrubFrame = 0;
+    }
+  };
+
   const stop = () => {
     if (timer) window.clearTimeout(timer);
     timer = 0;
@@ -319,7 +366,7 @@ function drive(root: HTMLElement, reduced: boolean): () => void {
 
   function schedule() {
     stop();
-    if (!live) return;
+    if (!live || scrub) return;
     if (clearing) {
       timer = window.setTimeout(replay, 500);
       return;
@@ -366,6 +413,7 @@ function drive(root: HTMLElement, reduced: boolean): () => void {
       }
       if (wasLayerOn && !layerOn) layerOffAt = performance.now();
       wasLayerOn = layerOn;
+      listenScrub(live);
       if (live) schedule();
       else stop();
     },
@@ -373,6 +421,7 @@ function drive(root: HTMLElement, reduced: boolean): () => void {
 
   return () => {
     unwatch();
+    listenScrub(false);
     stop();
     for (const p of parts) p.reset();
   };
