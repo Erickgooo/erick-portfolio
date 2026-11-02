@@ -144,6 +144,16 @@ export function ToolWall() {
                   </li>
                 ))}
               </ul>
+              {/* Desktop: the active group's line, in one slot under the list (six
+                  groups with their lines would not fit a 720 px screen). The lines
+                  above stay for screen readers. */}
+              <div className={styles.notes} aria-hidden="true">
+                {TOOL_GROUPS.map((group, g) => (
+                  <p key={group.id} className={styles.note} data-g={g}>
+                    {group.line}
+                  </p>
+                ))}
+              </div>
             </div>
             <div className={styles.board} aria-hidden="true">
               {WALL_ORDER.map(([g, k]) => {

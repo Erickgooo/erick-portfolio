@@ -83,7 +83,7 @@
 .group {
   @include from-desk {
     position: relative;
-    padding: 16px 0;
+    padding: 13px 0;
     border-top: 1px solid var(--wb-rule);
 
     // The progress underline.
@@ -141,11 +141,38 @@
   line-height: 1.55;
   color: var(--wb-ink-2);
 
+  // On desktop the lines stay for screen readers; the active one shows in
+  // the notes slot under the list.
   @include from-desk {
-    font-size: 16px;
-    opacity: 0.75;
-    transition: opacity $dur-state $ease-soft;
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
   }
+}
+
+// Desktop: one slot under the list, the height of the longest line, where
+// the active group's line fades in over the others.
+.notes {
+  display: none;
+
+  @include from-desk {
+    display: grid;
+    margin-top: 18px;
+  }
+}
+
+.note {
+  grid-area: 1 / 1;
+  max-width: 44ch;
+  font-size: 16px;
+  line-height: 1.55;
+  color: var(--wb-ink-2);
+  opacity: 0;
+  transition: opacity $dur-state $ease-soft;
 }
 
 // Phones and tablets: each group has its own small wall.
@@ -313,6 +340,10 @@
 
       @if $g == $a {
         .cell[data-g="#{$g}"] .hot {
+          opacity: 1;
+        }
+
+        .note[data-g="#{$g}"] {
           opacity: 1;
         }
 
