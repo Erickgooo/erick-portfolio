@@ -29,9 +29,9 @@ export function Intro() {
           </h1>
           <p className={styles.role}>{profile.role}</p>
           <p className={styles.lede}>
-            I&rsquo;m a one-person growth department. I build complete marketing infrastructures,
-            from brand identity and paid media to CRM automation, SEO systems and AI content
-            production, for companies across construction, food and retail.
+            I build growth systems and the software behind them, from brand identity and paid media
+            to CRM automation and AI content production. Today I run Incentiva Group&rsquo;s
+            in-house platforms as Operations Manager.
           </p>
           <div className={styles.actions}>
             <BookCall />

@@ -3,6 +3,7 @@
 // book a call and to the resume.
 import { Fragment, type ReactNode } from "react";
 import { Metric } from "./Metric";
+import { incentivaRole } from "./incentiva";
 
 export type Job = {
   company: string;
@@ -31,7 +32,7 @@ export type About = {
 export const about: About = {
   intro: (
     <>
-      I'm a one-person growth department. I've built complete marketing infrastructures: brand
+      I build growth systems and the software that runs them. I've built complete marketing infrastructures: brand
       identity, paid media, CRM automation, SEO systems, and AI content production, for companies
       across construction, food, and retail. Most recently, I generated <Metric>338K+</Metric>{" "}
       organic video views for Quick Metal Shop with zero ad spend, using an AI production pipeline I
@@ -65,8 +66,10 @@ export const about: About = {
       that removes that friction permanently.
       <br />
       <br />
-      Today I work at the intersection of marketing strategy, AI tooling, and systems design. I
-      don't run campaigns in isolation. I build the ecosystems that make campaigns compound over
+      Today I work at the intersection of marketing strategy, AI tooling, and systems design. As
+      Operations Manager at Incentiva Group, I lead the company's in-house software, a field-sales
+      app, a client portal and a WhatsApp AI platform, built and audited with AI agents under my
+      direction. I don't run campaigns in isolation. I build the ecosystems that make campaigns compound over
       time: automated content pipelines, real-time lead qualification, full-funnel tracking, and
       creative production workflows that let a one-person operation output at agency scale.
       <br />
@@ -83,15 +86,29 @@ export const about: About = {
       {
         company: "Incentiva Group",
         timeframe: "July 2026 - Present",
-        role: "Growth & Operations Lead",
+        role: "Operations Manager",
+        description: incentivaRole.summary,
         achievements: [
-          "Leading retention strategy and conversion funnel optimization through RFM models and CRM automation.",
-          "Implementing and managing generative AI solutions and virtual assistants across client operations.",
-          "Overseeing Meta Ads campaigns and WhatsApp Business API communications for client accounts.",
-          "Monitoring KPIs and managing client accounts to ensure on-time, high-quality delivery.",
-          <Fragment key="team">
-            Leading and mentoring a <Metric>2-person</Metric> operations team.
+          <Fragment key="platforms">
+            Took over three inherited production platforms that had little or no CI/CD and few or
+            no tests. I brought them under version control and automated pipelines, and grew their
+            test suites to more than <Metric>13,000</Metric> automated tests.
           </Fragment>,
+          <Fragment key="multi-client">
+            Architected the move of a single-client field-sales app to a multi-client platform, with
+            a database per client and fail-closed tenant isolation. A second fintech client went
+            live <Metric>11 days</Metric> after the diagnosis started.
+          </Fragment>,
+          <Fragment key="releases">
+            Shipped the field-sales app&apos;s first iOS release and <Metric>13</Metric> production
+            versions across the App Store and Google Play in two months, resolving three App Store
+            review rejections.
+          </Fragment>,
+          "Launched a DIRECTV dealer sales channel end to end: strategy, a Meta click-to-WhatsApp campaign with 7 ads and 62 creatives, and an AI sales assistant that pre-qualifies leads and reports conversions back to Meta.",
+          "Led code and security audits across the company's products, covering more than 170 findings. I had them fixed test-first and added tenant-isolation tests, two-factor login and Key Vault-managed secrets.",
+          "Directed an AI CV-screening tool from spec to production in one afternoon. It scores CVs with a fixed rubric, resists prompt injection, and was calibrated against reference CVs.",
+          "Redesigned Incentiva's brand identity (a 78-page manual and a 357-file kit) and designed and built the new 28-page corporate website. I rolled the brand into the company's software, removing about 750,000 lines of unused template code and halving the client portal's initial bundle.",
+          "Built proposals and cost models for Samsung, Ingredion, Wompi, Nequi and Mall Indiana, with verification scripts that check every figure in a quote against its source table.",
         ],
       },
       {
@@ -292,14 +309,35 @@ export const about: About = {
     title: "Technical Skills",
     groups: [
       {
-        title: "Automation, AI & Systems",
+        title: "Product & Engineering Leadership",
         description:
-          "AI Chatbot Design & Deployment · Lead Qualification Automation · CRM Workflow Design (Bitrix24, Kommo) · Process Optimization & Automation Logic · API Integrations · Zapier Automation · Prompt Engineering & AI-Assisted Workflows",
+          "Directing AI coding agents (Claude Code: spec, plan, test-first, review) · Multi-Tenant SaaS Architecture · Mobile Release Management (App Store Connect, Google Play) · CI/CD (Azure DevOps Pipelines) · Incident Response & Reliability · Test Automation (Vitest, Playwright, xUnit, Flutter tests)",
       },
       {
-        title: "Marketing & Growth",
+        title: "Software & Cloud",
+        description: (
+          <>
+            <strong>Apps & APIs:</strong> Flutter / Dart, .NET / C# (EF Core), Angular, React,
+            TypeScript, Node.js, Next.js
+            <br />
+            <strong>Cloud:</strong> Azure (App Service, SQL, Key Vault, managed identity,
+            Application Insights), Netlify, Vercel
+            <br />
+            <strong>Security & Compliance:</strong> Application security audits (OWASP ASVS and
+            MASVS), two-factor login, secret management, data-protection compliance under
+            Colombia&apos;s habeas data law
+          </>
+        ),
+      },
+      {
+        title: "Automation, AI & Systems",
         description:
-          "Digital Marketing Strategy · Lead Generation & Funnel Optimization · Content Strategy & Execution · Meta Ads (B2B & B2C) · SEO Strategy & Implementation · Customer Experience Optimization · Brand Identity & Manual Development",
+          "AI Chatbot Design & Deployment · LLM Application Design (grounding, structured output, model calibration, prompt-injection defense) · WhatsApp Cloud API · Meta Conversions API · Lead Qualification Automation · CRM Workflow Design (Bitrix24, Kommo) · API & Integration Architecture (Salesforce, Google Sheets) · Zapier Automation · Prompt Engineering & AI-Assisted Workflows",
+      },
+      {
+        title: "Marketing, Growth & Commercial",
+        description:
+          "Digital Marketing Strategy · Meta Ads (B2B, B2C and click-to-WhatsApp) · Media Planning & Unit Economics (break-even cost per lead) · Lead Generation & Funnel Optimization · Content Strategy & Social Planning · SEO Strategy & Implementation · Brand Systems & Asset Kits · Cost Modeling & Pricing · Proposals & Sales Decks · Automated Document Generation with Figure Checks",
       },
       {
         title: "Platforms & Tools",
@@ -307,7 +345,7 @@ export const about: About = {
           <>
             <strong>Web & Deployment:</strong> Vercel, WordPress, Netlify, Odoo (CMS), Shopify
             <br />
-            <strong>Analytics:</strong> Google Analytics, Google Search Console
+            <strong>Analytics & Data:</strong> Google Analytics, Google Search Console, SQL, Excel
             <br />
             <strong>Design & Media:</strong> Canva, Affinity, DaVinci Resolve, CapCut
             <br />
@@ -334,6 +372,9 @@ export const about: About = {
             Generative AI image tools
             <br />
             <strong>Production:</strong> DaVinci Resolve, CapCut, ElevenLabs
+            <br />
+            <strong>Video in Code:</strong> Remotion, forced-alignment subtitles, loudness and OCR
+            QA
             <br />
             <strong>Use cases:</strong> Paid ad creatives, short-form video, AI-generated brand
             content, social media performance assets
