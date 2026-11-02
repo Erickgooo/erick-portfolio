@@ -8,6 +8,60 @@ export type GalleryPiece = {
 };
 
 export const galleryPieces: GalleryPiece[] = [
+  // Incentiva Group: the corporate website (P07) and the brand manual (P19), 2026-11-02.
+  {
+    src: "/images/projects/incentiva-website/cover.webp",
+    alt: "Incentiva Group corporate website (built, launch pending), homepage hero with the brand's 3D medal, slide 1 of 4",
+    orientation: "horizontal",
+    group: "incentiva-site",
+  },
+  {
+    src: "/images/projects/incentiva-website/site-1.webp",
+    alt: "Incentiva Group corporate website, slide 2 of 4: the homepage chapter where the medal comes apart",
+    orientation: "horizontal",
+    group: "incentiva-site",
+  },
+  {
+    src: "/images/projects/incentiva-website/site-2.webp",
+    alt: "Incentiva Group corporate website, slide 3 of 4: the services, entered by the visitor's challenge",
+    orientation: "horizontal",
+    group: "incentiva-site",
+  },
+  {
+    src: "/images/projects/incentiva-website/site-3.webp",
+    alt: "Incentiva Group corporate website, slide 4 of 4: a service page's method and what it measures",
+    orientation: "horizontal",
+    group: "incentiva-site",
+  },
+  {
+    src: "/images/projects/incentiva-brand/manual-2.webp",
+    alt: "Incentiva Group brand manual 2026, slide 1 of 4: the medal, its construction and its seven official versions",
+    orientation: "horizontal",
+    group: "incentiva-manual",
+  },
+  {
+    src: "/images/projects/incentiva-brand/manual-3.webp",
+    alt: "Incentiva Group brand manual 2026, slide 2 of 4: colour pairs checked for WCAG contrast",
+    orientation: "horizontal",
+    group: "incentiva-manual",
+  },
+  {
+    src: "/images/projects/incentiva-brand/manual-4.webp",
+    alt: "Incentiva Group brand manual 2026, slide 3 of 4: the open-license typeface",
+    orientation: "horizontal",
+    group: "incentiva-manual",
+  },
+  {
+    src: "/images/projects/incentiva-brand/manual-5.webp",
+    alt: "Incentiva Group brand manual 2026, slide 4 of 4: merchandise applications",
+    orientation: "horizontal",
+    group: "incentiva-manual",
+  },
+  {
+    src: "/images/projects/incentiva-website/site-4.webp",
+    alt: "Incentiva Group corporate website on a phone, the homepage hero with the medal above the headline",
+    orientation: "vertical",
+  },
   {
     src: "https://youtube.com/shorts/BzDuYfJs3Oo",
     alt: "Quick Metal Shop video ad, short-form vertical creative",
