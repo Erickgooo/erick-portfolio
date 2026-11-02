@@ -36,7 +36,7 @@ export function About() {
         </div>
         <div className={styles.text}>
           <h2 id="about-title" data-reveal="">
-            A one-person growth department.
+            Growth, and the systems behind it.
           </h2>
           <div className={styles.story} data-reveal="" style={{ "--i": 1 } as CSSProperties}>
             <p>
@@ -46,7 +46,8 @@ export function About() {
             </p>
             <p>
               It taught me where systems break and what it costs when they do. Now I build the ones
-              that remove that friction, for companies across construction, food and retail.
+              that remove that friction, and run them: today at Incentiva Group, where I lead a
+              field-sales app, a client portal and a WhatsApp AI platform.
             </p>
           </div>
           <ul className={styles.jobs} aria-label="Where I have worked">

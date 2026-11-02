@@ -20,7 +20,7 @@ export const profile: Profile = {
   firstName: "Erick Santiago",
   lastName: "Mahecha Tafur",
   name: "Erick Mahecha",
-  role: "Growth Marketing & AI Automation Specialist",
+  role: "Operations Manager · Growth & AI Systems",
   avatar: "/images/avatar.jpg",
   email: "santiagomahecha2328@gmail.com",
   location: "Medellín, Colombia",

@@ -7,7 +7,7 @@
 @use "../shared" as *;
 
 .wall {
-  @include below-fold(2600px, 300vh);
+  @include below-fold(3400px, 450vh);
   position: relative;
   z-index: 1;
   border-top: 1px solid var(--wb-line);
@@ -17,7 +17,7 @@
 
 .track {
   @include from-desk {
-    height: 300vh;
+    height: 450vh;
   }
 }
 
@@ -238,7 +238,7 @@
   line-height: 1.2;
 }
 
-// Desktop board: 24 tiles, groups scattered across it.
+// Desktop board: 36 tiles, groups scattered across it.
 .board {
   display: none;
 
@@ -301,9 +301,9 @@
 
 // The stepper: groups before the active one stay lit, the active one lights
 // up, the rest wait.
-@for $a from 0 through 3 {
+@for $a from 0 through 5 {
   .wall[data-active="#{$a}"] {
-    @for $g from 0 through 3 {
+    @for $g from 0 through 5 {
       @if $g <= $a {
         .cell[data-g="#{$g}"] {
           opacity: 1;

@@ -1,5 +1,5 @@
 // Workbench: the curated content of the home. Every figure, name and path
-// below comes from src/resources/content.tsx or the project MDX.
+// below comes from src/resources (about.tsx, incentiva.ts) or the project MDX.
 import { isProtectedPath } from "@/resources/protectedRoutes";
 import { getPosts } from "@/utils/posts";
 
@@ -16,14 +16,14 @@ const COVER_SIZE: Record<string, { w: number; h: number }> = {
 };
 const DEFAULT_COVER = { w: 2400, h: 1357 };
 
-/** The order of the fan on the home (the six cases with a metric), and the paper each card is printed on. */
+/** The order of the fan on the home (three Incentiva Group cases and the three strongest earlier ones), and the paper each card is printed on. */
 const FAN: { slug: string; paper: Paper }[] = [
+  { slug: "scope-multi-client-platform", paper: "cobalt" },
+  { slug: "directv-click-to-whatsapp", paper: "mist" },
+  { slug: "ai-cv-screening", paper: "ink" },
   { slug: "quick-metal-shop-viral-videos", paper: "ink" },
-  { slug: "ai-powered-ad-creatives", paper: "mist" },
   { slug: "leadbot-ai", paper: "cobalt" },
-  { slug: "atv-riders", paper: "paper" },
-  { slug: "quick-metal-shop-arquiexpo", paper: "mist" },
-  { slug: "ai-portfolio", paper: "ink" },
+  { slug: "ai-powered-ad-creatives", paper: "mist" },
 ];
 
 export type FanCard = {
@@ -87,8 +87,12 @@ export function countProjects(): number {
   return getProjects().length;
 }
 
-/** Each tool's official logo, a file in ./home/tools, imported by ToolWall (sources: docs/design/rediseno-2026/tool-logos.md). */
-export type Tool = { name: string; logo: string };
+/**
+ * Each tool's official logo, a file in ./home/tools, imported by ToolWall
+ * (sources: docs/design/rediseno-2026/tool-logos.md). A tool without `logo`
+ * shows its name only: its brand does not allow its mark in a tool list.
+ */
+export type Tool = { name: string; logo?: string };
 export type ToolGroup = {
   id: string;
   title: string;
@@ -96,12 +100,12 @@ export type ToolGroup = {
   tools: Tool[];
 };
 
-/** Only tools named in content.tsx or the project MDX. */
+/** Only tools named in src/resources (about.tsx, incentiva.ts) or the project MDX. Six groups of six. */
 export const TOOL_GROUPS: ToolGroup[] = [
   {
     id: "conversations",
     title: "Conversations and CRM",
-    line: "Every lead lands, gets sorted and reaches the right stage on its own.",
+    line: "Every lead lands, gets sorted and reaches the right stage, in a CRM or on a WhatsApp platform I run.",
     tools: [
       { name: "WhatsApp Business API", logo: "whatsapp.svg" },
       { name: "Bitrix24", logo: "bitrix24.svg" },
@@ -129,7 +133,7 @@ export const TOOL_GROUPS: ToolGroup[] = [
     title: "Paid media and analytics",
     line: "Campaigns built from creative to audience, measured end to end.",
     tools: [
-      { name: "Meta Ads", logo: "meta.svg" },
+      { name: "Meta Ads and Conversions API", logo: "meta.svg" },
       { name: "Instagram", logo: "instagram.png" },
       { name: "Facebook", logo: "facebook.png" },
       { name: "Google Analytics", logo: "google-analytics.svg" },
@@ -144,39 +148,77 @@ export const TOOL_GROUPS: ToolGroup[] = [
     tools: [
       { name: "Higgsfield", logo: "higgsfield.svg" },
       { name: "Kling 3.0", logo: "kling.svg" },
+      { name: "Remotion", logo: "remotion.svg" },
       { name: "DaVinci Resolve", logo: "davinci-resolve.png" },
       { name: "CapCut", logo: "capcut.svg" },
       { name: "Next.js", logo: "nextjs.svg" },
+    ],
+  },
+  {
+    id: "platforms",
+    title: "Apps and platforms",
+    line: "Field apps, portals and APIs, built with AI agents under my direction.",
+    tools: [
+      { name: "Claude Code", logo: "claude.svg" },
+      { name: "Flutter", logo: "flutter.svg" },
+      { name: "React", logo: "react.svg" },
+      { name: "Angular", logo: "angular.svg" },
+      { name: "Node.js", logo: "nodejs.svg" },
+      { name: ".NET", logo: "dotnet.svg" },
+    ],
+  },
+  {
+    id: "delivery",
+    title: "Cloud, releases and tests",
+    line: "Pipelines, store releases and the tests that let a small team ship.",
+    tools: [
+      { name: "Azure and Azure DevOps" },
+      { name: "App Store Connect and Google Play" },
       { name: "Netlify", logo: "netlify.svg" },
+      { name: "Playwright", logo: "playwright.svg" },
+      { name: "Vitest", logo: "vitest.svg" },
+      { name: "xUnit.net", logo: "xunit.svg" },
     ],
   },
 ];
 
-/** Where the tiles of each group sit on the 6-column wall, scattered across it. */
+/** Where the tiles of each group sit on the 6 x 6 wall: every row holds one tool of each group, scattered. */
 export const WALL_ORDER: [number, number][] = [
-  // [group, tool] for each of the 24 cells, row by row
-  [1, 0],
+  // [group, tool] for each of the 36 cells, row by row
   [0, 0],
-  [2, 3],
-  [3, 2],
-  [0, 4],
+  [1, 0],
   [2, 0],
   [3, 0],
+  [4, 0],
+  [5, 0],
   [2, 1],
-  [1, 2],
-  [0, 1],
-  [3, 4],
-  [1, 4],
-  [0, 3],
-  [1, 1],
   [3, 1],
-  [2, 4],
+  [4, 1],
+  [5, 1],
+  [0, 1],
+  [1, 1],
+  [4, 2],
+  [5, 2],
   [0, 2],
-  [3, 3],
+  [1, 2],
   [2, 2],
-  [3, 5],
+  [3, 2],
+  [0, 3],
   [1, 3],
-  [2, 5],
-  [1, 5],
+  [2, 3],
+  [3, 3],
+  [4, 3],
+  [5, 3],
+  [2, 4],
+  [3, 4],
+  [4, 4],
+  [5, 4],
+  [0, 4],
+  [1, 4],
+  [4, 5],
+  [5, 5],
   [0, 5],
+  [1, 5],
+  [2, 5],
+  [3, 5],
 ];
