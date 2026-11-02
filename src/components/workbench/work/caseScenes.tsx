@@ -11,7 +11,9 @@ import { ArticleEngine } from "../scenes/work/ArticleEngine";
 import { BeatCuts } from "../scenes/work/BeatCuts";
 import { BrandWall } from "../scenes/work/BrandWall";
 import { ChatTriage } from "../scenes/work/ChatTriage";
+import { CvScreen } from "../scenes/work/CvScreen";
 import { KioskStand } from "../scenes/work/KioskStand";
+import { LaunchChain } from "../scenes/work/LaunchChain";
 import { LeadSort } from "../scenes/work/LeadSort";
 import { MarginStepper, WideSheet } from "../scenes/work/MarginStepper";
 import {
@@ -21,13 +23,44 @@ import {
   PixelStep,
   SeoStep,
 } from "../scenes/work/MarketingSteps";
+import { MedalScroll } from "../scenes/work/MedalScroll";
+import { PlatformTakeover } from "../scenes/work/PlatformTakeover";
 import { PresenterBuild } from "../scenes/work/PresenterBuild";
 import { PromptDeploy } from "../scenes/work/PromptDeploy";
 import { ReelBuild } from "../scenes/work/ReelBuild";
+import { StoreReleases } from "../scenes/work/StoreReleases";
+import { TenantGate } from "../scenes/work/TenantGate";
+import { WhatsAppFunnel } from "../scenes/work/WhatsAppFunnel";
 
 export type CaseScene = { id: string; part: RegExp; scene: ReactNode };
 
+/** The Incentiva Group cases (2026-11-02): one scene each, beside The Build. */
+const BUILD = /^the build$/i;
+
+function sheet(scene: ReactNode) {
+  return (
+    <SceneSheet paper="cobalt" portrait>
+      {scene}
+    </SceneSheet>
+  );
+}
+
+const INCENTIVA_SCENES: Record<string, CaseScene[]> = {
+  "scope-multi-client-platform": [{ id: "tenant-gate", part: BUILD, scene: sheet(<TenantGate />) }],
+  "scope-ios-launch": [{ id: "store-releases", part: BUILD, scene: sheet(<StoreReleases />) }],
+  "chatflow-whatsapp-ai-platform": [
+    { id: "platform-takeover", part: BUILD, scene: sheet(<PlatformTakeover />) },
+  ],
+  "directv-click-to-whatsapp": [
+    { id: "whatsapp-funnel", part: BUILD, scene: sheet(<WhatsAppFunnel />) },
+  ],
+  "ai-cv-screening": [{ id: "cv-screen", part: BUILD, scene: sheet(<CvScreen />) }],
+  "incentiva-launch-campaign": [{ id: "launch-chain", part: BUILD, scene: sheet(<LaunchChain />) }],
+  "incentiva-website-brand": [{ id: "medal-scroll", part: BUILD, scene: sheet(<MedalScroll />) }],
+};
+
 export const CASE_SCENES: Record<string, CaseScene[]> = {
+  ...INCENTIVA_SCENES,
   "leadbot-ai": [
     {
       id: "leadbot-chat",

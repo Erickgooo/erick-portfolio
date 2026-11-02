@@ -1,0 +1,70 @@
+---
+title: "Incentiva Group: A Corporate Website on a Redesigned Brand"
+publishedAt: "2026-10-21"
+summary: "I redesigned Incentiva's brand identity, a 78-page manual and a 357-file kit, and built the company's new 28-page website on it: a five-chapter scroll story around the brand's 3D medal, rendered live in WebGL2. Built; launch pending."
+images:
+  - "/images/projects/incentiva-website/cover.webp"
+  - "/images/projects/incentiva-brand/manual-2.webp"
+  - "/images/projects/incentiva-website/medal-scroll.mp4"
+  - "/images/projects/incentiva-website/site-1.webp"
+  - "/images/projects/incentiva-brand/manual-3.webp"
+team:
+  - name: "Erick Mahecha"
+    role: "Operations Manager, brand and web designer"
+    avatar: "/images/avatar.jpg"
+    linkedIn: "https://www.linkedin.com/in/erick-mahecha/"
+metric: "28|pages on a 78-page brand manual"
+---
+
+## Overview
+
+Incentiva Group is a marketing agency in Medellín. Its identity lived in a 2025 brand book that used a licensed typeface and loosely specified colours, and the teams had no ready-to-use kit, so every deck and post reinvented the brand a little. The website ran on WordPress with one page for all services, a fixed headline and marketing jargon.
+
+The company was also repositioning, with technology and AI inside every service instead of as a separate line, and the old site could not tell that story. I redesigned the brand and built a new site on it.
+
+The site is built and launch is pending: it sits in a review environment marked no-index, and the company domain still serves the previous site until the switch.
+
+**Result: a 78-page brand manual and a 357-file kit, and a 28-page website built on them, with 7 service pages, 5 case studies and 3 guides.**
+
+## The Build
+
+### The brand: same medal, a stricter system
+
+I kept what the company already owned, the medal symbol and the existing tagline, and re-systematized everything around it. The 78-page manual covers essence and logotype, colour with WCAG AA-checked pairs, an open-license typeface in place of the licensed one, graphic elements and photography, voice and tone, misuse, applications, and resources, naming and control. Colours were re-specified for screen in sRGB and for print in CMYK.
+
+The 357-file kit makes the manual usable on day one: logo and medal versions, avatars and banners for the company's platforms, post, story and highlight templates, wallpapers, an HTML e-mail signature with a generator, a new presentation template, CMYK print files and an editable letterhead, pictograms, fonts, mock-ups and a read-me guide.
+
+### The homepage as a five-chapter story
+
+The homepage is told as a scroll story in five chapters: the problem, the idea, how we do it, the proof, and diagnosis. It is built around the brand's medal as a live 3D object, rendered in WebGL2 with three.js, which comes apart and reassembles as the visitor scrolls, with GSAP and Lenis keeping the motion tied to the scroll.
+
+### Enter by your challenge
+
+Visitors do not start from a list of services. "Start with your challenge" lets them pick the business problem they have, and each challenge leads to the service that solves it. The 7 service pages share one structure: the challenge and what Incentiva does, the technology and AI in each process, how the work is done and a case, "what we measure" with indicators and a baseline defined before launch, and FAQs.
+
+### Proof with its sources
+
+The 5 case studies print the source under every figure. The positioning is plain on purpose: plain language, no named testimonials, and fewer, clearer verticals. An About page, a diagnosis page for conversion with scheduling and a form, a blog with 3 practical guides, and the legal pages, including the data policy, the privacy notice, the terms and cookie preferences, complete the site.
+
+### Built like a product
+
+The site is a WordPress block theme written for this brand, exported as a static build and deployed from the command line to Netlify, with redirect rules, security header rules including anti-framing protection, and built-in forms. Its review environment is marked no-index so it cannot compete with the live domain before launch.
+
+I designed the brand and the site and built both with AI coding agents (Claude Code) under my direction. I then rolled the brand into the company's own software, removing about 750,000 lines of unused template code and halving the client portal's initial bundle.
+
+## Results
+
+- **28 public pages**, including **7 service pages, 5 case studies and 3 guides**.
+- A **78-page brand manual** and **357 kit files**, with colours re-specified for screen and print.
+- The brand reached the company's software too, removing about **750,000 lines** of unused template code.
+- A four-piece launch campaign is produced around the site and waits for go-live.
+
+## What This Demonstrates
+
+A brand and a website are usually two projects with two vendors, and the site ends up interpreting the manual. Here they are one system: the manual defines the medal, the colours and the voice, and the website, the software and the launch campaign all use the same files. The medal in the scroll story is the medal in the manual.
+
+**Stack:**
+
+<TechStack data="WordPress (custom block theme), three.js, WebGL2, GSAP, Lenis, Netlify, HTML to PDF (Chromium), SVG, CMYK print files, Claude Code" />
+
+Rebuilding a brand and the site that carries it? [Book a call](https://calendly.com/santiagomahecha2328/30min).

@@ -1,0 +1,70 @@
+---
+title: "Scope: From Single-Client App to Multi-Client Platform"
+publishedAt: "2026-10-21"
+summary: "I re-architected Incentiva's field-sales app and client portal so one platform serves several clients, each in its own database behind fail-closed tenant isolation. A second fintech client went live 11 days after the diagnosis started."
+images:
+  - "/images/projects/incentiva/scope-multi-client-platform.webp"
+team:
+  - name: "Erick Mahecha"
+    role: "Operations Manager, architect and rollout lead"
+    avatar: "/images/avatar.jpg"
+    linkedIn: "https://www.linkedin.com/in/erick-mahecha/"
+metric: "11 days|to a second client live"
+---
+
+## Overview
+
+Scope is the field-sales system Incentiva's teams use in the street. Field staff log merchant visits, photos and placements in a Flutter app, and coordinators follow the operation from the Incentiva Portal, a web portal with its own API. When I took it over, Scope had been built for one client. There was no concept of a campaign anywhere in the stack: one database, one set of users, one client's data.
+
+Then the company sold Scope to a second client, a fintech, and the existing client added a new product line. Every layer of the product had to separate data by client. Between two financial clients, a leak was not a risk anyone could accept, and a slow rollout was not something the commercial side could wait for.
+
+**Result: a second fintech client went live 11 days after the diagnosis started, on a platform where every route is tested for cross-tenant isolation.**
+
+## The Build
+
+### A read-only diagnosis before any change
+
+I started by commissioning a read-only diagnosis of the app, the API, the portal and the cloud setup. It mapped 87 endpoints one by one: who can call each of them, what it reads, and what stops a user from reaching someone else's data.
+
+The finding that shaped the whole project: the API checked who you were, but not which client you belonged to or what role you had there. Adding a second client on top of that would have meant trusting every screen to filter correctly. I wanted a design where a missing filter could not become an incident.
+
+### One database per client
+
+I chose the strictest separation available: a database per client, not one shared database with a client column. A shared schema is the usual shortcut, and it stays one forgotten filter away from a leak. With separate databases, a query can only ever see the client it was opened for.
+
+What makes it work is a campaign-resolution layer in the API. Every request carries a signed token. The layer reads the campaign from the token, never from the request body or the address, and opens that campaign's database. If the token does not resolve to a campaign the user belongs to, the request is refused. It fails closed: an unclear case is a denied case.
+
+Roles moved inside the campaign as well. An admin or a coordinator is an admin or a coordinator of one campaign, not of the whole platform.
+
+### The same build for every client
+
+I did not want one app per client in the stores. The Flutter app was changed so that the same build serves any campaign, which comes from the user's session. On the Portal, coordinators got a campaign selector, management got a consolidated all-campaigns view, and a client can now run several product lines, which is how the existing client's second line went live next to the new client.
+
+### A test for every route
+
+The rule I set for the codebase: every route needs a cross-tenant isolation test, or a written exemption that explains why it does not. Each test signs in as one client and tries to reach another client's data, and the only passing result is a refusal. A new route cannot quietly skip the check, because the suite looks for it.
+
+### A staged rollout with a way back
+
+Nothing went live in one jump. The rollout ran in stages, each with its own rollback package and its own checks before the next one started: data separated by campaign first, then the new client switched on, then the first field staff of the new product line. Around it, coordinators got self-service for creating field staff, a guide per client, and the new client's configuration, so the launch did not depend on me being in every step.
+
+The work was built with AI coding agents (Claude Code, in several coordinated sessions) under my direction. I commissioned the diagnosis, chose the architecture, approved each rollout stage and ran the production steps myself.
+
+## Results
+
+- A second fintech client went live **11 days** after the diagnosis started.
+- The rollout QA checklist ended with **146 checks passed and 0 failures**.
+- One platform now serves several clients and product lines from the same app build, with data separated by database and isolation tested route by route.
+- Coordinators create their own field staff and follow their own client's guide, so a new campaign is configuration, not a project.
+
+## What This Demonstrates
+
+The fastest path to a second client was not the shortcut. A client column and careful screens would have looked done sooner, and it would have stayed one mistake away from showing one client's data to another. Choosing the stricter architecture, and making isolation a rule the test suite enforces instead of something a review hopes to catch, is what made the 11 days safe.
+
+It is also the shape of the role I hold: the product decision, the security posture and the rollout risk owned by one person, with AI agents doing the volume of engineering against a plan I approved and checks I can read.
+
+**Stack:**
+
+<TechStack data=".NET, EF Core, Azure SQL, Angular, Flutter, Azure DevOps, Claude Code" />
+
+Taking a product from one client to many? [Book a call](https://calendly.com/santiagomahecha2328/30min) and let's look at your isolation model before the second client arrives.

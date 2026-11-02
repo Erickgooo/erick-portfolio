@@ -1,0 +1,73 @@
+---
+title: "AI CV Screening: An Internal Tool Shipped in an Afternoon"
+publishedAt: "2026-10-29"
+summary: "I built an internal tool that screens batches of up to 30 CVs for field-sales vacancies. Claude returns structured JSON, the code scores it with a fixed-weight rubric, CVs are never stored, and a prompt-injection test CV scores low. Designed, reviewed and deployed in one afternoon."
+images:
+  - "/images/projects/incentiva/ai-cv-screening.webp"
+team:
+  - name: "Erick Mahecha"
+    role: "Operations Manager, product owner"
+    avatar: "/images/avatar.jpg"
+    linkedIn: "https://www.linkedin.com/in/erick-mahecha/"
+metric: "265|tests, shipped in one afternoon"
+---
+
+## Overview
+
+Incentiva hires field-sales staff for its client operations, and the selection team was screening large batches of CVs for those vacancies by hand. The first pass was slow and depended on who was reading. They needed a fast, consistent first filter that ranks every CV against the same rubric, and that never keeps candidates' documents.
+
+The constraint that shaped the design: an AI model is good at reading a messy CV and bad at being a fair, repeatable judge. So the tool splits the job. The model reads; the code decides.
+
+**Result: a production tool, designed, built, independently reviewed and deployed in one afternoon, with 265 automated tests.**
+
+## The Build
+
+### The model reads, the code decides
+
+A recruiter uploads a batch of up to 30 CVs, in PDF or DOCX. Claude reads each one and returns structured JSON: what the CV actually says about experience, field sales and the other criteria. That JSON is validated with zod, and anything that does not match the schema is rejected rather than guessed at.
+
+The score is not the model's opinion. The code turns the validated answers into a percentage with a fixed-weight rubric, applies exclusion caps where a hard requirement is missing, and assigns one of three levels: **fit**, **review** or **not fit**. The same CV gets the same score every time, and the selection team can see why.
+
+### Built to be attacked
+
+A CV is text written by someone who wants the job, so the tool treats it as untrusted input:
+
+- **Prompt-injection resistance.** A test CV that instructs the model to give it a perfect score is part of the test suite, and it scores low.
+- **No storage.** CVs are never stored or logged; they exist only while the batch is being scored.
+- **Shared-key access** with a constant-time comparison, per-IP rate limits, a content security policy and noindex.
+- **Retries on overload**, so a busy model does not drop half a batch.
+
+The Excel export neutralizes formulas, so a CV cannot plant a formula in the recruiter's spreadsheet, and the interface got accessibility fixes before release.
+
+### Calibrated before it was trusted
+
+I chose the model after a calibration run against reference CVs, not before. 5 of 6 reference CVs were rated fit. 4 of 4 negative cases scored below 50%. And 33 of 33 responses were valid JSON. A tool that ranks people has to be checked against cases where the right answer is known.
+
+### Reviewed, then shipped
+
+An independent review went through the tool before it reached the selection team, and the fixes were redeployed the same afternoon. The vacancy profiles and the tool's address stay internal.
+
+### One afternoon
+
+The whole cycle, from the approved design spec to the reviewed production deploy, ran in 53 commits between 14:28 and 17:34, and the test suite grew from 163 to 265 along the way.
+
+The tool was built with AI coding agents (Claude Code) under my direction. I approved the design spec, directed the build and chose the model after the calibration run.
+
+## Results
+
+- **Designed, built, reviewed and deployed in one afternoon**: 53 commits between 14:28 and 17:34.
+- Tests grew from **163 to 265**.
+- Calibration: **5 of 6** reference CVs rated fit, **4 of 4** negative cases below 50%, **33 of 33** responses valid JSON.
+- In production for the selection team, with CVs never stored.
+
+## What This Demonstrates
+
+Speed and care are not opposites when the design puts each decision in the right place. The model does what it is good at, reading unstructured documents; deterministic code does what has to be fair and explainable, the scoring. Security was part of the first afternoon, not a later phase, because the input is written by people with a reason to game it.
+
+It is a small product, and it is a complete one: owned from the spec to the calibration to production.
+
+**Stack:**
+
+<TechStack data="Vite, React, TypeScript, Netlify Functions, Anthropic SDK (Claude), mammoth, zod, Vitest, Claude Code" />
+
+Need an internal AI tool your team can actually trust? [Book a call](https://calendly.com/santiagomahecha2328/30min).

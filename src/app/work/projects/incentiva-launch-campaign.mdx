@@ -1,0 +1,73 @@
+---
+title: "Website Launch: A Social Campaign Built in Code"
+publishedAt: "2026-10-20"
+summary: "I produced a four-piece launch campaign for Incentiva's new website: a reel, a carousel, a LinkedIn document and a LinkedIn video. The site's own 3D medal was recorded frame by frame, edited in Remotion with voice-aligned subtitles, and every video passed a 13-point QA."
+images:
+  - "/images/projects/incentiva/incentiva-launch-campaign.webp"
+team:
+  - name: "Erick Mahecha"
+    role: "Operations Manager, creative director"
+    avatar: "/images/avatar.jpg"
+    linkedIn: "https://www.linkedin.com/in/erick-mahecha/"
+metric: "13-point|QA passed by both videos"
+---
+
+## Overview
+
+Incentiva's new corporate website, which I designed and built on the redesigned brand, needed a launch push on Instagram, Facebook and LinkedIn. The brief I set myself was strict: the campaign had to use the site's own visual identity, not an approximation of it, and every claim in it had to be something the website itself says.
+
+The campaign is produced and held for launch day. It goes out when the new site moves to the company domain; until then, it waits.
+
+**Result: four finished pieces, a reel, a carousel, a LinkedIn document and a LinkedIn video, with both videos passing a 13-point QA that a machine can rerun.**
+
+## The Build
+
+### The site's own medal as the hero
+
+The brand's symbol is a medal, and on the new website it is a live 3D object rendered in WebGL that comes apart and reassembles as the visitor scrolls. Rather than redraw or film it, I had the real one recorded: the site's medal was captured frame by frame in a headless Chromium browser driven by Puppeteer, so every frame in the videos is exactly what the website renders, at the resolution the edit needs.
+
+### An edit written in code
+
+The edit is a Remotion project, so the video is code and can be rebuilt from its sources at any time. Around the medal frames:
+
+- **Subtitles aligned to the voice** with Whisper and MMS forced alignment, word by word, instead of timed by hand.
+- **Music and sound effects synthesized in Python**, so there is no licensed track to clear.
+- **Narration in an ElevenLabs clone of my own voice.**
+- **Generative shots from Higgsfield** where the story needed an image the site does not have.
+
+### Claims that trace back
+
+A claim-traceability table lists every statement in the campaign and where the website says it. If the site does not say it, the campaign does not either. No phone number or messaging-app mention appears in any piece, because the launch sends people to the site, not to a chat. A posting calendar counts from launch day, so the whole campaign can be scheduled the moment the date is fixed.
+
+### A QA a machine can run
+
+Both videos passed a 13-point technical QA before delivery. It checks, among other things:
+
+- **Loudness** at -14 LUFS, the level the platforms normalize to.
+- **OCR against the script**: the text on screen is read back from the rendered frames and compared with what was approved.
+- **Safe zones**, so no text sits under the platforms' buttons and captions.
+- **Contrast** of at least 8.5:1 for on-screen text.
+- **A pixel-exact logo**, compared against the official file.
+
+Because the checks are scripts, a correction to the edit is followed by the same QA, not by someone watching the video again and hoping.
+
+The campaign was produced with AI agents (Claude Code for the code, Higgsfield for the generative shots) under my direction. I approved the proposal and each production decision, then directed the production.
+
+## Results
+
+- A **four-piece launch campaign**: a reel, a carousel, a LinkedIn document and a LinkedIn video.
+- Both videos passed the **13-point QA**: loudness at -14 LUFS, OCR matching the script, safe zones, contrast of at least 8.5:1 and a pixel-exact logo.
+- **No phone number or messaging-app mention** in any piece.
+- Produced and held for launch day, with a posting calendar ready to run.
+
+## What This Demonstrates
+
+A content engine is not a person with good taste and a timeline. It is a pipeline that turns approved decisions into finished pieces, and a QA that proves each piece matches what was approved. Building the edit in code, aligning text to the voice automatically and checking the frames by OCR is what lets a campaign be corrected in minutes and still be right.
+
+It also keeps the brand intact. The medal in the reel is the medal on the website, frame for frame, because it is the same object.
+
+**Stack:**
+
+<TechStack data="Remotion, Puppeteer, Headless Chromium, Python audio synthesis, Whisper, MMS forced alignment, ElevenLabs, Higgsfield, Claude Code" />
+
+Want a content pipeline that checks its own work? [Book a call](https://calendly.com/santiagomahecha2328/30min).
