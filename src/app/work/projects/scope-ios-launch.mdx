@@ -24,7 +24,7 @@ I took over release management with two goals: get the app onto the App Store, a
 
 ### Making iOS build at all
 
-The first work was the unglamorous kind. iOS signing and builds had to work reliably, from a clean checkout, every time. Background GPS had to work too, because visit tracking depends on it, and on iOS that meant a native location monitor that keeps reporting while the app is not on screen, within the limits Apple allows.
+The first work was the unglamorous kind. iOS signing and builds had to work reliably, from a clean checkout, every time. Background GPS had to work too, because visit tracking depends on it, and on iOS that meant a native location monitor that keeps reporting while the app is not on screen, within the limits Apple allows. None of it shows in a demo, and all of it decides whether a field worker with an iPhone can start the working day.
 
 ### Owning the app's infrastructure
 
@@ -61,6 +61,8 @@ The engineering was done with AI coding agents (Claude Code) under my direction.
 Release management is where product work meets the people using it. The code for a fix can be ready in an hour and still reach the field a month later if signing breaks, a review stalls or uploads depend on one person's laptop. Most of this project was removing those delays: owning the infrastructure, answering the reviewer precisely, and scripting the path to both stores until shipping became ordinary.
 
 The numbers are the proof of that routine. Thirteen production versions in two months is not a sprint; it is a release path that no longer needs heroics.
+
+It also changes what the operation can be promised. When a coordinator reports a problem from the field, the answer is no longer "in the next release, whenever that is", but a version and a date.
 
 **Stack:**
 

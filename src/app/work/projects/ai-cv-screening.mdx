@@ -14,7 +14,7 @@ metric: "265|tests, shipped in one afternoon"
 
 ## Overview
 
-Incentiva hires field-sales staff for its client operations, and the selection team was screening large batches of CVs for those vacancies by hand. The first pass was slow and depended on who was reading. They needed a fast, consistent first filter that ranks every CV against the same rubric, and that never keeps candidates' documents.
+Incentiva hires field-sales staff for its client operations, and the selection team was screening large batches of CVs for those vacancies by hand. The first pass was slow and depended on who was reading, and a filter done by hand gets slower and less consistent as the pile grows. They needed a fast, consistent first filter that ranks every CV against the same rubric, and that never keeps candidates' documents.
 
 The constraint that shaped the design: an AI model is good at reading a messy CV and bad at being a fair, repeatable judge. So the tool splits the job. The model reads; the code decides.
 
@@ -63,6 +63,8 @@ The tool was built with AI coding agents (Claude Code) under my direction. I app
 ## What This Demonstrates
 
 Speed and care are not opposites when the design puts each decision in the right place. The model does what it is good at, reading unstructured documents; deterministic code does what has to be fair and explainable, the scoring. Security was part of the first afternoon, not a later phase, because the input is written by people with a reason to game it.
+
+It also shows where AI helps a non-technical team most. The tool does not replace the recruiter's judgment; it gives every CV the same first reading, so the recruiter's time goes to the candidates marked for review and to the interviews.
 
 It is a small product, and it is a complete one: owned from the spec to the calibration to production.
 
