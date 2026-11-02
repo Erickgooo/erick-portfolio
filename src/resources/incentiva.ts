@@ -352,5 +352,48 @@ export const INCENTIVA_AREAS: IncentivaArea[] = [
   },
 ];
 
+/**
+ * The case studies of the role, for ErickBot (the pages read the MDX itself;
+ * the chatbot's route cannot read files at request time). Titles and figures
+ * as in src/app/work/projects/<slug>.mdx.
+ */
+export const incentivaCases: { slug: string; title: string; figure: string }[] = [
+  {
+    slug: "scope-multi-client-platform",
+    title: "Scope: From Single-Client App to Multi-Client Platform",
+    figure: "a second fintech client live 11 days after the diagnosis started",
+  },
+  {
+    slug: "scope-ios-launch",
+    title: "Scope: First iOS Launch and 13 Store Releases",
+    figure: "13 production versions on the App Store and Google Play in two months",
+  },
+  {
+    slug: "chatflow-whatsapp-ai-platform",
+    title: "ChatFlow: Taking Over a WhatsApp AI Platform",
+    figure: "from no tests to 3,177 automated tests",
+  },
+  {
+    slug: "directv-click-to-whatsapp",
+    title: "DIRECTV: A Click-to-WhatsApp Sales Funnel",
+    figure: "7 ads and 62 creatives across six rounds",
+  },
+  {
+    slug: "ai-cv-screening",
+    title: "AI CV Screening: An Internal Tool Shipped in an Afternoon",
+    figure: "built, reviewed and deployed in one afternoon, with 265 tests",
+  },
+  {
+    slug: "incentiva-launch-campaign",
+    title: "Website Launch: A Social Campaign Built in Code",
+    figure: "both videos passed a 13-point QA",
+  },
+  {
+    slug: "incentiva-website-brand",
+    title: "Incentiva Group: A Corporate Website on a Redesigned Brand",
+    figure: "a 28-page website on a 78-page brand manual; built, launch pending",
+  },
+];
+
 /** Every project, in the order of the areas. */
 export const incentivaProjects = INCENTIVA_AREAS.flatMap((area) => area.projects);
