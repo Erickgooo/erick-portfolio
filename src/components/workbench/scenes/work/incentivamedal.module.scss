@@ -1,0 +1,27 @@
+// IncentivaMedal (see IncentivaMedal.tsx): the two pieces of the official
+// mark, one SVG each, lying exactly over each other in the mark's own
+// proportions. Keep this file ASCII-only.
+
+.medal {
+  position: relative;
+  display: block;
+  aspect-ratio: 329.604 / 601.274;
+}
+
+.piece {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+// Each piece turns about its own centre: the ribbon's at 28 % of the mark's
+// height, the disc's at 82.4 % (from the paths' extents).
+.ribbon {
+  transform-origin: 50% 28.2%;
+}
+
+.disc {
+  transform-origin: 50% 82.4%;
+}

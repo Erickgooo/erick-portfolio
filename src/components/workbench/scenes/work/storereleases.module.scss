@@ -1,0 +1,215 @@
+// Scene: StoreReleases (see StoreReleases.tsx). Portrait (4:5, 100 x 125 cqi).
+// Keep this file ASCII-only.
+@use "../../shared" as *;
+@use "../scene" as *;
+@use "incentiva" as *;
+
+.scene {
+  @include root;
+  @include still;
+}
+
+.label {
+  @include label;
+}
+
+.note {
+  @include muted;
+  display: block;
+  font-size: fs(3);
+  font-weight: 400;
+}
+
+.tick {
+  @include tick(3.4cqi);
+}
+
+.cross {
+  @include cross(3.6cqi);
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2cqi;
+}
+
+// The review ----------------------------------------------------------------------
+
+.review {
+  @include card;
+  @include enter(0);
+  position: absolute;
+  left: 5cqi;
+  top: 5cqi;
+  width: 90cqi;
+  display: grid;
+  gap: 2.4cqi;
+  padding: 3cqi 3.4cqi;
+}
+
+.approved {
+  @include chip;
+  @include appear(3);
+  font-size: fs(3);
+  color: var(--wb-ink);
+}
+
+.rounds {
+  display: grid;
+  gap: 1.6cqi;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.round {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 1.6cqi;
+  border-top: 1px solid var(--sc-line);
+  font-weight: 500;
+}
+
+// The verdict: "rejected" at step 1, replaced by "resolved" at step 2. The
+// final state (reduced motion, no script) shows only "resolved".
+.verdict {
+  display: grid;
+  justify-items: end;
+
+  > * {
+    grid-area: 1 / 1;
+    display: inline-flex;
+    align-items: center;
+    gap: 1.4cqi;
+    font-size: fs(3.1);
+  }
+}
+
+.rejected {
+  opacity: 0;
+  translate: 0 $reveal-travel;
+  transition:
+    opacity $dur-state $ease-soft,
+    translate $dur-enter $ease-soft;
+  transition-delay: calc(var(--k) * #{$stagger-scene});
+
+  @include from(1) {
+    opacity: 1;
+    translate: 0 0;
+  }
+
+  @include from(2) {
+    opacity: 0;
+  }
+}
+
+.resolved {
+  @include appear(2, calc(var(--k) * #{$stagger-scene}));
+}
+
+// The releases ----------------------------------------------------------------------
+
+.releases {
+  @include card;
+  @include enter(0, 0.12s);
+  position: absolute;
+  left: 5cqi;
+  top: 47cqi;
+  width: 90cqi;
+  height: 73cqi;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  gap: 2.4cqi;
+  padding: 3cqi 3.4cqi;
+}
+
+.legend {
+  @include muted;
+  display: inline-flex;
+  gap: 2.6cqi;
+  font-size: fs(3);
+
+  span {
+    display: inline-flex;
+    align-items: center;
+    gap: 1cqi;
+  }
+}
+
+.ios,
+.android {
+  width: 2.4cqi;
+  aspect-ratio: 1;
+  border-radius: 50%;
+}
+
+.ios {
+  background: var(--wb-accent);
+}
+
+.android {
+  border: 1px solid var(--wb-ink);
+  background: var(--wb-ink);
+}
+
+// Two columns of versions, filled one after another at step 3.
+.versions {
+  display: grid;
+  grid-auto-flow: column;
+  grid-template-rows: repeat(7, minmax(0, 1fr));
+  grid-template-columns: 1fr 1fr;
+  column-gap: 6cqi;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.version {
+  display: flex;
+  align-items: center;
+  gap: 1.6cqi;
+  border-top: 1px solid var(--sc-line);
+  font-variant-numeric: tabular-nums;
+
+  .ios,
+  .android {
+    transition:
+      opacity $dur-state $ease-soft,
+      translate $dur-enter $ease-soft;
+    transition-delay: calc(var(--k) * 90ms);
+
+    @include before(3) {
+      opacity: 0;
+      translate: 0 $reveal-travel;
+    }
+  }
+
+  .android {
+    transition-delay: calc(var(--k) * 90ms + 45ms);
+  }
+}
+
+.number {
+  flex: 1;
+  font-weight: 500;
+}
+
+.total {
+  @include appear(4);
+  display: flex;
+  align-items: center;
+  gap: 3.4cqi;
+  padding-top: 2.4cqi;
+  border-top: 1px solid var(--sc-line);
+}
+
+.value {
+  @include figure(10cqi);
+}
+
+.caption {
+  font-weight: 600;
+}

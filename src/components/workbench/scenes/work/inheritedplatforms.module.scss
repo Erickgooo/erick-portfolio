@@ -1,0 +1,173 @@
+// Scene: InheritedPlatforms (see InheritedPlatforms.tsx). Landscape (5:4,
+// 100 x 80 cqi) from 720 px; portrait (4:5, 100 x 125 cqi) on phones and with
+// .portrait. Keep this file ASCII-only.
+@use "../../shared" as *;
+@use "../scene" as *;
+@use "incentiva" as *;
+
+.scene {
+  @include root;
+  @include still;
+  font-size: fs(2.6);
+
+  @include phone {
+    font-size: fs(3.4);
+  }
+}
+
+// The root's own portrait rule (the mixin only reaches its descendants).
+.scene.portrait {
+  font-size: fs(3.4);
+}
+
+// The scene's content box (Scene.tsx wraps the pieces in it).
+.scene > * {
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto;
+  gap: 4cqi;
+  padding: 5cqi;
+
+  @include portrait(".portrait") {
+    gap: 5cqi;
+  }
+}
+
+.tick {
+  @include tick(2.8cqi);
+
+  @include portrait(".portrait") {
+    width: 3.4cqi;
+  }
+}
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 2.6cqi;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  @include portrait(".portrait") {
+    grid-template-columns: 1fr;
+    gap: 2.4cqi;
+  }
+}
+
+.card {
+  @include card;
+  @include enter(0, calc(var(--p) * #{$stagger-scene}));
+  display: grid;
+  align-content: start;
+  gap: 1.4cqi;
+  padding: 2.6cqi;
+
+  @include portrait(".portrait") {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 1.2cqi 3cqi;
+    padding: 2.4cqi 3cqi;
+  }
+}
+
+.name {
+  @include label;
+}
+
+.was {
+  @include muted;
+  font-size: fs(2.4);
+
+  @include portrait(".portrait") {
+    font-size: fs(3);
+  }
+}
+
+.stages {
+  display: grid;
+  gap: 1cqi;
+  margin-top: 1cqi;
+  padding-top: 1.6cqi;
+  border-top: 1px solid var(--sc-line);
+
+  @include portrait(".portrait") {
+    grid-column: 1 / -1;
+    grid-auto-flow: column;
+    justify-content: start;
+    gap: 3.4cqi;
+    margin-top: 0.6cqi;
+  }
+}
+
+.stage {
+  display: flex;
+  align-items: center;
+  gap: 1.2cqi;
+  font-weight: 500;
+  white-space: nowrap;
+
+  .tick {
+    transition: opacity $dur-state $ease-soft;
+    transition-delay: calc(0.2s + var(--p) * 0.22s);
+  }
+}
+
+// Version control at step 1, the pipeline at step 2, the tests at step 3.
+@for $k from 0 through 2 {
+  .stage[data-k="#{$k}"] .tick {
+    @include before($k + 1) {
+      opacity: 0;
+    }
+  }
+}
+
+.bar {
+  height: 0.9cqi;
+  overflow: hidden;
+  border-radius: 1cqi;
+  background: var(--sc-line);
+
+  @include portrait(".portrait") {
+    grid-column: 1 / -1;
+  }
+
+  i {
+    display: block;
+    height: 100%;
+    border-radius: inherit;
+    background: var(--wb-accent);
+    @include grow(3, x, 1s, calc(0.2s + var(--p) * 0.22s));
+  }
+}
+
+.total {
+  @include appear(4);
+  display: flex;
+  align-items: center;
+  gap: 3.4cqi;
+  padding-top: 3cqi;
+  border-top: 1px solid var(--sc-line);
+}
+
+.value {
+  @include figure(8cqi);
+
+  @include portrait(".portrait") {
+    font-size: 11cqi;
+  }
+}
+
+.caption {
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.note {
+  @include muted;
+  display: block;
+  font-size: fs(2.4);
+  font-weight: 400;
+
+  @include portrait(".portrait") {
+    font-size: fs(3);
+  }
+}

@@ -1,0 +1,234 @@
+// Scene: CvScreen (see CvScreen.tsx). Portrait (4:5, 100 x 125 cqi).
+// Keep this file ASCII-only.
+@use "../../shared" as *;
+@use "../scene" as *;
+@use "incentiva" as *;
+
+.scene {
+  @include root;
+  @include still;
+}
+
+// The scene's content box (Scene.tsx wraps the pieces in it): a column.
+.scene > * {
+  display: flex;
+  flex-direction: column;
+  gap: 2.6cqi;
+  padding: 5cqi;
+
+  @include phone {
+    gap: 2cqi;
+    padding: 4cqi;
+  }
+}
+
+.label {
+  @include label;
+}
+
+.note {
+  @include muted;
+  display: block;
+  font-size: fs(3);
+  font-weight: 400;
+}
+
+.tick {
+  @include tick(3.2cqi);
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2cqi;
+}
+
+.block {
+  @include card;
+  position: relative;
+  padding: 2.8cqi 3.4cqi;
+}
+
+// The batch ---------------------------------------------------------------------------
+
+.batch {
+  @extend .block;
+  @include enter(0);
+  display: flex;
+  align-items: center;
+  gap: 4cqi;
+}
+
+// Three sheets, fanned straight (no tilt): each one a little higher.
+.stack {
+  position: relative;
+  flex: none;
+  width: 9cqi;
+  height: 10cqi;
+
+  i {
+    position: absolute;
+    width: 7cqi;
+    height: 9cqi;
+    border: 1px solid var(--wb-ink);
+    border-radius: 0.8cqi;
+    background: var(--sc-obj);
+
+    &:nth-child(1) {
+      left: 2cqi;
+      top: 0;
+    }
+
+    &:nth-child(2) {
+      left: 1cqi;
+      top: 0.5cqi;
+    }
+
+    &:nth-child(3) {
+      left: 0;
+      top: 1cqi;
+      background:
+        linear-gradient(var(--sc-bar), var(--sc-bar)) 1.2cqi 2cqi / 4cqi 0.7cqi no-repeat,
+        linear-gradient(var(--sc-bar), var(--sc-bar)) 1.2cqi 3.8cqi / 3cqi 0.7cqi no-repeat,
+        var(--sc-obj);
+    }
+  }
+}
+
+// The JSON ---------------------------------------------------------------------------
+
+.json {
+  @extend .block;
+  @include enter(1);
+  display: grid;
+  gap: 2cqi;
+}
+
+.valid {
+  @include chip;
+  @include appear(1, 1s);
+  font-size: fs(3);
+}
+
+.code {
+  display: grid;
+  gap: 1cqi;
+  font-family: inherit;
+  font-size: fs(3.1);
+}
+
+.field {
+  transition: opacity $dur-state $ease-soft;
+  transition-delay: calc(0.2s + var(--k) * 0.18s);
+
+  @include before(1) {
+    opacity: 0;
+  }
+}
+
+.key {
+  color: var(--wb-accent);
+  font-weight: 600;
+
+  @include dark {
+    color: #6688ff;
+  }
+}
+
+// The rubric ---------------------------------------------------------------------------
+
+.rubric {
+  @extend .block;
+  @include enter(2);
+  display: grid;
+  gap: 1.8cqi;
+}
+
+.level {
+  @include appear(2, 1.2s);
+  padding: 0.8cqi 2.4cqi;
+  border-radius: 10cqi;
+  background: var(--wb-accent);
+  color: #ffffff;
+  font-size: fs(3);
+  font-weight: 600;
+}
+
+.criterion {
+  display: grid;
+  grid-template-columns: 30cqi minmax(0, 1fr);
+  align-items: center;
+  gap: 3cqi;
+  font-size: fs(3);
+}
+
+// Bar lengths are drawn, not stated: a fixed rubric, not a figure.
+.track {
+  height: 1.1cqi;
+  overflow: hidden;
+  border-radius: 1cqi;
+  background: var(--sc-line);
+
+  i {
+    display: block;
+    width: 82%;
+    height: 100%;
+    border-radius: inherit;
+    background: var(--wb-accent);
+    @include grow(2, x, 0.7s, calc(0.2s + var(--k) * 0.12s));
+  }
+
+  .criterion:nth-of-type(3) & i {
+    width: 64%;
+  }
+
+  .criterion:nth-of-type(4) & i {
+    width: 92%;
+  }
+
+  .criterion:nth-of-type(5) & i {
+    width: 70%;
+  }
+}
+
+// The attack ---------------------------------------------------------------------------
+
+.attack {
+  @extend .block;
+  @include enter(3);
+  display: grid;
+  gap: 1.8cqi;
+}
+
+.injection {
+  padding: 1.6cqi 2.2cqi;
+  border: 1px dashed var(--wb-ink-2);
+  border-radius: 1.2cqi;
+  font-style: italic;
+  line-height: 1.3;
+}
+
+.verdict {
+  @include appear(4);
+  display: flex;
+  align-items: center;
+  gap: 2.4cqi;
+}
+
+.low {
+  @include figure(6cqi);
+  color: var(--wb-ink);
+
+  @include dark {
+    color: var(--wb-ink);
+  }
+}
+
+.notFit {
+  padding: 0.8cqi 2.4cqi;
+  border: 1px solid var(--wb-ink);
+  border-radius: 10cqi;
+  font-size: fs(3);
+  font-weight: 600;
+}

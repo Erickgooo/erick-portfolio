@@ -1,0 +1,159 @@
+// Workbench scenes: shared pieces of the Incentiva Group scenes (2026-11-02).
+// Drawn in line on the sheet's tokens, like the other case scenes: hairline
+// cards, quiet bars, cobalt for what the system does, and nothing from a real
+// product's interface. Keep this file ASCII-only.
+@use "../../shared" as *;
+@use "../scene" as *;
+
+// The scene root: portrait (4:5, 100 x 125 cqi).
+@mixin root {
+  position: absolute;
+  inset: 0;
+  color: var(--wb-ink);
+  font-size: fs(3.4);
+  line-height: 1.25;
+}
+
+// A piece that enters at step $n: it rises a short way and fades in.
+@mixin enter($n, $delay: 0s) {
+  transition:
+    opacity $dur-fade $ease-soft,
+    translate $dur-travel $ease-soft;
+  transition-delay: $delay;
+
+  @include before($n) {
+    opacity: 0;
+    translate: 0 $reveal-travel-lg;
+  }
+}
+
+// A small mark that appears at step $n (a tick, a chip): a fade and a 12 px rise.
+@mixin appear($n, $delay: 0s) {
+  transition:
+    opacity $dur-state $ease-soft,
+    translate $dur-enter $ease-soft;
+  transition-delay: $delay;
+
+  @include before($n) {
+    opacity: 0;
+    translate: 0 $reveal-travel;
+  }
+}
+
+// A bar or a line that grows from its start at step $n.
+@mixin grow($n, $axis: x, $dur: 0.9s, $delay: 0s) {
+  transition: scale $dur $ease-move;
+  transition-delay: $delay;
+
+  @if $axis == x {
+    transform-origin: left center;
+  } @else {
+    transform-origin: center top;
+  }
+
+  @include before($n) {
+    @if $axis == x {
+      scale: 0 1;
+    } @else {
+      scale: 1 0;
+    }
+  }
+}
+
+@mixin card {
+  border: 1px solid var(--sc-line);
+  border-radius: 1.6cqi;
+  background: var(--sc-obj);
+}
+
+@mixin label {
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+@mixin muted {
+  color: var(--wb-ink-2);
+}
+
+// The cobalt figure of a scene.
+@mixin figure($size: 11cqi) {
+  @include title;
+  font-size: $size;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  color: var(--wb-accent);
+
+  @include dark {
+    color: #6688ff;
+  }
+}
+
+// A round cobalt tick.
+@mixin tick($size: 4cqi) {
+  position: relative;
+  flex: none;
+  width: $size;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: var(--wb-accent);
+
+  &::after {
+    content: "";
+    position: absolute;
+    left: 36%;
+    top: 22%;
+    width: 26%;
+    height: 44%;
+    border: solid #ffffff;
+    border-width: 0 0.45cqi 0.45cqi 0;
+    rotate: 45deg;
+  }
+}
+
+// A round refusal mark: an ink ring with a cross.
+@mixin cross($size: 4cqi) {
+  position: relative;
+  flex: none;
+  width: $size;
+  aspect-ratio: 1;
+  border: 1px solid var(--wb-ink);
+  border-radius: 50%;
+
+  &::before,
+  &::after {
+    content: "";
+    position: absolute;
+    left: 22%;
+    top: calc(50% - 0.25cqi);
+    width: 56%;
+    height: 0.5cqi;
+    border-radius: 1cqi;
+    background: var(--wb-ink);
+    rotate: 45deg;
+  }
+
+  &::after {
+    rotate: -45deg;
+  }
+}
+
+// A rounded tag of text.
+@mixin chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 1.2cqi;
+  padding: 0.8cqi 2cqi;
+  border: 1px solid var(--sc-line);
+  border-radius: 10cqi;
+  background: var(--sc-obj);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+@mixin still {
+  @include reduced {
+    * {
+      transition: none !important;
+    }
+  }
+}
