@@ -28,8 +28,8 @@ Estado: ☐ pendiente · ☑ hecho · ➖ fuera (con motivo).
 | T13 | ErickBot: cargo, proyectos nuevos, cifras confidenciales; snapshot | ☑ |
 | T14 | Visual Work: imágenes de P07 y P19 que pasen las reglas (P08: sus piezas finales no están en esta máquina, D6) | ☑ |
 | T15 | e2e: cada caso y el índice cargan, su escena arranca y queda quieta con movimiento reducido | ☑ |
-| T16 | Puerta: tsc, build, lint, unit, e2e ×4, Lighthouse intercalado, frames ≤ 50 ms, búsqueda de términos y cifras | ☐ |
-| T17 | Merge `--no-ff` a main, push y comprobaciones en producción | ☐ |
+| T16 | Puerta: tsc, build, lint, unit, e2e ×4, Lighthouse intercalado, frames ≤ 50 ms, búsqueda de términos y cifras | ☑ |
+| T17 | Merge `--no-ff` a main, push y comprobaciones en producción | ☑ |
 
 ## Decisiones
 
@@ -43,3 +43,11 @@ Estado: ☐ pendiente · ☑ hecho · ➖ fuera (con motivo).
 - **D8. Pared con seis grupos.** En escritorio cada grupo muestra solo su título y la línea del activo aparece en un hueco bajo la lista (fundido de opacidad); el tablero no es más ancho de lo que permite la altura de la pantalla. Con las seis líneas, en 720 px el título se recortaba y su aparición no llegaba nunca (lo cazó `motion.spec`).
 - **D9. Hero.** Antes: «Growth Marketing & AI Automation Specialist» · «A one-person growth department for founders: AI content pipelines, CRM automation and paid media, plus the software itself when nothing exists yet.» · cifras 85 %, 338K+, 3.92x, $3.45. Después: «Operations Manager · Growth & AI Systems» · «Growth systems and the software that runs them: AI content pipelines, WhatsApp assistants and paid media, and the field and client platforms I lead as Operations Manager at Incentiva Group.» · cifras 85 %, 338K+, 13 store releases, 11 days. El titular no cambia.
 - **D10. `content.tsx`.** El encargo lo nombra, pero el contenido vive en `src/resources/about.tsx` (experiencia, habilidades), `profile.ts` (cargo) y `incentiva.ts` (nuevo: índice y datos para ErickBot).
+- **D11. Inglés B2 (Erick, durante el encargo).** ErickBot lo sabe por `profile.languageLevels`; las páginas siguen diciendo «works in Spanish and English».
+
+## Resultados (2026-11-02)
+
+- **Puerta:** tsc limpio; build sin avisos (el de la raíz del workspace solo aparece en el worktree anidado; fuera del repo, 0 como main); lint 0 errores; unit 32/32; e2e 401/0 (39 saltos por navegador, los de siempre) en chromium, mobile-chromium, firefox y webkit, puerto 3100, `--workers=2`.
+- **Lighthouse móvil, 3 rondas intercaladas (local):** medianas main/rama iguales en Home 85, About 89, Projects 89, Visual Work 85, post 88 y LeadBot 85. Rutas nuevas 85–90 (índice 90). CLS ≤ 0,0005 en las nuevas (el índice tenía 0,023 por el corte del título y de la línea del cargo al llegar la fuente; corregido a 0).
+- **Frames (Chromium, LoAF + rAF):** 0 frames largos en las 8 rutas nuevas y la Home, a 1440 y 390; p95 16,7 ms, máximo 33,4 ms.
+- **Producción:** merge `d5c71ec` (punto de regreso `d34c3de`), Vercel en verde; 23 URLs del sitemap en 200; cabeceras idénticas; ErickBot responde con el cargo, el B2 y la confidencialidad; e2e de Incentiva 36/36 contra producción; Lighthouse en producción: Home 99, Projects 97, índice 97, Scope 95, web 94.
