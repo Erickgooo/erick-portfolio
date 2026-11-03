@@ -89,10 +89,14 @@ export function countProjects(): number {
 
 /**
  * Each tool's official logo, a file in ./home/tools, imported by ToolWall
- * (sources: docs/design/rediseno-2026/tool-logos.md). A tool without `logo`
- * shows its name only: its brand does not allow its mark in a tool list.
+ * (sources: docs/design/rediseno-2026/tool-logos.md). A tool whose brand does
+ * not allow its mark in a tool list shows a neutral pictogram instead
+ * (`pictogram`, drawn by ToolWall in the site's own icon set), so no tile is
+ * left without a glyph. `wide` tiles take two cells of the desktop board
+ * (38 tools fill its 6 x 7 cells), and two of the phone list in a group of 8.
  */
-export type Tool = { name: string; logo?: string };
+export type Pictogram = "cloud" | "pipeline" | "phone" | "package";
+export type Tool = { name: string; logo?: string; pictogram?: Pictogram; wide?: boolean };
 export type ToolGroup = {
   id: string;
   title: string;
@@ -100,14 +104,14 @@ export type ToolGroup = {
   tools: Tool[];
 };
 
-/** Only tools named in src/resources (about.tsx, incentiva.ts) or the project MDX. Six groups of six. */
+/** Only tools named in src/resources (about.tsx, incentiva.ts) or the project MDX. Six groups: five of six and one of eight. */
 export const TOOL_GROUPS: ToolGroup[] = [
   {
     id: "conversations",
     title: "Conversations and CRM",
     line: "Every lead lands, gets sorted and reaches the right stage, in a CRM or on a WhatsApp platform I run.",
     tools: [
-      { name: "WhatsApp Business API", logo: "whatsapp.svg" },
+      { name: "WhatsApp Business API", logo: "whatsapp.svg", wide: true },
       { name: "Bitrix24", logo: "bitrix24.svg" },
       { name: "Kommo CRM", logo: "kommo.png" },
       { name: "BotSL IA", logo: "botsl.png" },
@@ -133,7 +137,7 @@ export const TOOL_GROUPS: ToolGroup[] = [
     title: "Paid media and analytics",
     line: "Campaigns built from creative to audience, measured end to end.",
     tools: [
-      { name: "Meta Ads and Conversions API", logo: "meta.svg" },
+      { name: "Meta Ads and Conversions API", logo: "meta.svg", wide: true },
       { name: "Instagram", logo: "instagram.png" },
       { name: "Facebook", logo: "facebook.png" },
       { name: "Google Analytics", logo: "google-analytics.svg" },
@@ -149,7 +153,7 @@ export const TOOL_GROUPS: ToolGroup[] = [
       { name: "Higgsfield", logo: "higgsfield.svg" },
       { name: "Kling 3.0", logo: "kling.svg" },
       { name: "Remotion", logo: "remotion.svg" },
-      { name: "DaVinci Resolve", logo: "davinci-resolve.png" },
+      { name: "DaVinci Resolve", logo: "davinci-resolve.png", wide: true },
       { name: "CapCut", logo: "capcut.svg" },
       { name: "Next.js", logo: "nextjs.svg" },
     ],
@@ -172,53 +176,68 @@ export const TOOL_GROUPS: ToolGroup[] = [
     title: "Cloud, releases and tests",
     line: "Pipelines, store releases and the tests that let a small team ship.",
     tools: [
-      { name: "Azure and Azure DevOps" },
-      { name: "App Store Connect and Google Play" },
+      // Azure, Azure DevOps, App Store Connect and Google Play: their brand
+      // terms do not allow their marks in a tool list (tool-logos.md).
+      { name: "Azure", pictogram: "cloud" },
+      { name: "Azure DevOps", pictogram: "pipeline" },
       { name: "Netlify", logo: "netlify.svg" },
       { name: "Playwright", logo: "playwright.svg" },
       { name: "Vitest", logo: "vitest.svg" },
       { name: "xUnit.net", logo: "xunit.svg" },
+      { name: "App Store Connect", pictogram: "phone", wide: true },
+      { name: "Google Play", pictogram: "package" },
     ],
   },
 ];
 
-/** Where the tiles of each group sit on the 6 x 6 wall: every row holds one tool of each group, scattered. */
+/**
+ * Where the tiles sit on the desktop board, 6 cells by 7 rows: 38 tools, four
+ * of them wide, so every row is full; the groups are scattered across it.
+ */
 export const WALL_ORDER: [number, number][] = [
-  // [group, tool] for each of the 36 cells, row by row
-  [0, 0],
+  // [group, tool], row by row; a wide tile takes two cells
+  [0, 0], // wide
   [1, 0],
-  [2, 0],
   [3, 0],
   [4, 0],
   [5, 0],
+
   [2, 1],
   [3, 1],
   [4, 1],
   [5, 1],
   [0, 1],
   [1, 1],
+
+  [2, 0], // wide
   [4, 2],
   [5, 2],
   [0, 2],
   [1, 2],
-  [2, 2],
+
   [3, 2],
   [0, 3],
   [1, 3],
-  [2, 3],
-  [3, 3],
+  [2, 2],
   [4, 3],
   [5, 3],
-  [2, 4],
-  [3, 4],
+
+  [3, 3], // wide
+  [2, 3],
   [4, 4],
   [5, 4],
   [0, 4],
+
   [1, 4],
+  [2, 4],
+  [3, 4],
   [4, 5],
   [5, 5],
   [0, 5],
+
+  [5, 6], // wide
   [1, 5],
   [2, 5],
   [3, 5],
+  [5, 7],
 ];

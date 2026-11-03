@@ -5,9 +5,10 @@
 //
 // Facts: src/app/work/projects/scope-multi-client-platform.mdx ("one database
 // per client", "a campaign-resolution layer that picks the database from the
-// signed token and fails closed", "146 checks passed and 0 failures", "a
-// second fintech client went live on the same platform"). The clients are placeholders ("Client A", "Client B"): no real
-// campaign, screen or data. Portrait (4:5) only.
+// signed token and fails closed", "146 checks passed and 0 failures", "Wompi
+// went live on the same platform as Nequi"). Scenes show no real client, so
+// the clients are placeholders ("Client A", "Client B"): no real campaign,
+// screen or data. Portrait (4:5) only.
 import { CountUp, Scene } from "../Scene";
 import s from "./tenantgate.module.scss";
 

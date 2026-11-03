@@ -10,14 +10,14 @@ export const faqData: FAQItem[] = [
     id: "current",
     question: "What does Erick do currently?",
     answer:
-      "Erick is **Operations Manager at Incentiva Group**, a marketing agency in Medellín. He runs the company's in-house software as product owner and technical lead (a field-sales app, a client portal and a WhatsApp AI-assistant platform), directing AI-assisted development from audit to App Store release, and leads brand and go-to-market work. Before that he built the complete marketing infrastructure for **Quick Metal Shop**.",
+      "Erick is **Operations Manager at Incentiva Group**, a marketing agency in Medellín, where he has led projects for **Nequi, Wompi, Colmaíz and Samsung**. He runs the company's in-house software as product owner and technical lead (a field-sales app, a client portal and a WhatsApp AI-assistant platform), directing AI-assisted development from audit to App Store release, and leads brand and go-to-market work. Before that he built the complete marketing infrastructure for **Quick Metal Shop**.",
     relatedIds: ["incentiva", "notable-project", "contact"],
   },
   {
     id: "incentiva",
     question: "What has he built at Incentiva Group?",
     answer:
-      "Seven case studies, among them:\n\n• **Scope**: a field-sales app turned into a multi-client platform, with a second fintech client live on the same platform, and its first iOS launch with **13** production releases.\n• **ChatFlow**: a WhatsApp AI platform taken from backups to **3,177** automated tests.\n• **DIRECTV**: a click-to-WhatsApp funnel with an AI assistant that pre-qualifies leads.\n• **Samsung × LifeMiles**: at Incentiva Group he led the WhatsApp campaign where Galaxy S26 buyers earned **2M+ LifeMiles miles**.\n• The company's new brand and 28-page website.\n\nApart from the figures above and Colmaíz's (35,000+ contacts, 6,000+ served), client figures are confidential. Every project is in the [Incentiva Group index](/work/incentiva-group).",
+      "Seven case studies, among them:\n\n• **Scope**: Incentiva's custom app for the **Nequi** and **Wompi** field teams, turned into a multi-client platform with Wompi live next to Nequi, and its first iOS launch with **13** production releases.\n• **ChatFlow**: the WhatsApp AI platform behind the **Colmaíz** (Ingredion) assistant, taken from backups to **3,177** automated tests.\n• **DIRECTV**: a click-to-WhatsApp funnel for Incentiva as an authorized DIRECTV dealer, with an AI assistant that pre-qualifies leads.\n• **Samsung × LifeMiles**: at Incentiva Group he led the WhatsApp chatbot through which **2M+ LifeMiles miles** were awarded to Galaxy S26 buyers.\n• The company's new brand and 28-page website.\n\nApart from the figures above and Colmaíz's (35,000+ contacts, 6,000+ served), client figures are confidential. Every project is in the [Incentiva Group index](/work/incentiva-group).",
     relatedIds: ["current", "ai-tools", "contact"],
   },
   {

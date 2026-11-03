@@ -35,7 +35,7 @@ export const incentivaRole = {
   timeframe: "July 2026 - Present",
   place: "Medellín, hybrid",
   summary:
-    "Operations Manager at Incentiva Group, a marketing agency in Medellín, reporting to the CEO and leading a team of two. I run the company's in-house software as product owner and technical lead: a field-sales app, a client portal and a WhatsApp AI-assistant platform, and I direct AI-assisted development from audit to App Store release. I also lead brand and go-to-market work: the 2026 brand redesign and new corporate website, a DIRECTV click-to-WhatsApp sales funnel, and proposals and cost models for clients such as Samsung and Ingredion.",
+    "At Incentiva Group, a marketing agency in Medellín, I led projects for Nequi, Wompi, Colmaíz and Samsung. As Operations Manager I report to the CEO, lead a team of two and run the company's in-house software as product owner and technical lead: Scope, the field app for the Nequi and Wompi field teams, a client portal and ChatFlow, the WhatsApp AI-assistant platform, directing AI-assisted development from audit to App Store release. I also lead brand and go-to-market work: the 2026 brand redesign and new corporate website, a click-to-WhatsApp sales channel for Incentiva as an authorized DIRECTV dealer, and commercial proposals and cost models.",
   method:
     "The software, decks and media were produced with AI agents, mainly Claude Code, with Higgsfield for generative media. I define the requirements, approve specs and designs, make the product, legal and pricing decisions, and merge and release to production.",
 };
@@ -48,7 +48,7 @@ export const INCENTIVA_AREAS: IncentivaArea[] = [
     projects: [
       {
         id: "P14",
-        title: "Scope multi-campaign platform: a second client and a new product line",
+        title: "Scope multi-campaign platform: Wompi as a second client and a new Nequi line",
         client: "Wompi and Nequi",
         status: "In production",
         line: "Turned a single-client field app into a multi-client platform, with a database per client and fail-closed tenant resolution.",
@@ -58,7 +58,7 @@ export const INCENTIVA_AREAS: IncentivaArea[] = [
       {
         id: "P30",
         title: "Scope app: first iOS launch and release management",
-        client: "Incentiva (internal), for its field staff",
+        client: "Incentiva (internal), for the Nequi and Wompi field teams",
         status: "In production",
         line: "Took the app through iOS signing, background GPS and App Store review to its first iOS release, then 13 versions on both stores.",
         stack: ["Flutter", "Xcode", "App Store Connect API", "Google Play Developer API"],
@@ -69,7 +69,7 @@ export const INCENTIVA_AREAS: IncentivaArea[] = [
         title: "ChatFlow platform takeover, CI/CD and audits",
         client: "Incentiva (internal)",
         status: "In production",
-        line: "Brought a WhatsApp AI platform that existed only as backups under git, a gated pipeline, three audits and 3,177 tests.",
+        line: "Took a WhatsApp AI platform from backups to version control, a gated pipeline, three audits and 3,177 tests.",
         stack: ["React", "Node.js", "Azure", "Azure DevOps", "Vitest"],
         caseSlug: "chatflow-whatsapp-ai-platform",
       },
@@ -103,7 +103,7 @@ export const INCENTIVA_AREAS: IncentivaArea[] = [
         title: "Samsung × LifeMiles WhatsApp promotion assistant (ChatFlow)",
         client: "Samsung",
         status: "In production",
-        line: "Led the campaign: rebuilt the running assistant, rewrote its prompt and added fraud controls before the peak. Buyers earned 2M+ LifeMiles miles.",
+        line: "Led the promotion: took over its WhatsApp chatbot, rebuilt it for a high-volume promotion, rewrote its prompt and added fraud controls before the peak. 2M+ LifeMiles miles were awarded through it.",
         stack: ["Node.js", "TypeScript", "Anthropic Claude", "OCR", "WhatsApp Cloud API"],
         caseSlug: "samsung-lifemiles-whatsapp",
       },
@@ -151,7 +151,7 @@ export const INCENTIVA_AREAS: IncentivaArea[] = [
   {
     id: "growth",
     title: "Growth and paid media",
-    line: "Incentiva's DIRECTV dealership: channel strategy, a Meta click-to-WhatsApp campaign and an AI assistant feeding a human closer.",
+    line: "Incentiva as an authorized DIRECTV dealer: channel strategy, a Meta click-to-WhatsApp campaign and an AI assistant feeding a human closer.",
     projects: [
       {
         id: "P18",
@@ -354,7 +354,7 @@ export const incentivaCases: { slug: string; title: string; figure: string }[] =
     slug: "scope-multi-client-platform",
     title: "Scope: From Single-Client App to Multi-Client Platform",
     figure:
-      "a second fintech client live on the same platform; the rollout passed 146 of 146 checks",
+      "Scope is Incentiva's custom app for the Nequi and Wompi field teams; Wompi went live on the same platform as Nequi, and the rollout passed 146 of 146 checks",
   },
   {
     slug: "scope-ios-launch",
@@ -365,18 +365,19 @@ export const incentivaCases: { slug: string; title: string; figure: string }[] =
     slug: "chatflow-whatsapp-ai-platform",
     title: "ChatFlow: Taking Over a WhatsApp AI Platform",
     figure:
-      "from no tests to 3,177 automated tests; its Colmaíz assistant serves a community of 35,000+ contacts, 6,000+ served",
+      "at Incentiva Group Erick led the platform and, on it, the WhatsApp assistant of Colmaíz (Ingredion): from no tests to 3,177 automated tests; the Colmaíz assistant serves a community of 35,000+ contacts, 6,000+ served",
   },
   {
     slug: "directv-click-to-whatsapp",
     title: "DIRECTV: A Click-to-WhatsApp Sales Funnel",
-    figure: "7 ads and 62 creatives across six rounds",
+    figure:
+      "a sales channel for Incentiva as an authorized DIRECTV dealer (DIRECTV did not hire Erick): 7 ads and 62 creatives across six rounds",
   },
   {
     slug: "samsung-lifemiles-whatsapp",
     title: "Samsung: LifeMiles on WhatsApp, a Promotion I Led at Incentiva Group",
     figure:
-      "Galaxy S26 buyers earned 2M+ LifeMiles miles, in a campaign Erick led at Incentiva Group",
+      "2M+ LifeMiles miles were awarded to Galaxy S26 buyers through the WhatsApp chatbot Erick led for Samsung at Incentiva Group",
   },
   {
     slug: "incentiva-launch-campaign",

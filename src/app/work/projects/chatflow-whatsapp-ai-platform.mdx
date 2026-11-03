@@ -1,7 +1,7 @@
 ---
 title: "ChatFlow: Taking Over a WhatsApp AI Platform"
 publishedAt: "2026-11-02"
-summary: "I inherited a multi-client WhatsApp AI-assistant platform that existed only as backups, with manual zip deploys and no tests, and turned it into an audited platform with a gated pipeline and 3,177 automated tests, while shipping a client portal."
+summary: "At Incentiva Group, I led ChatFlow, the WhatsApp AI platform behind the Colmaíz (Ingredion) assistant: from backups, zip deploys and no tests yet to an audited platform with a gated pipeline and 3,177 automated tests, plus a client portal."
 images:
   - "/images/projects/incentiva/chatflow-whatsapp-ai-platform.webp"
 team:
@@ -14,11 +14,11 @@ metric: "3,177|automated tests, from none"
 
 ## Overview
 
-ChatFlow is Incentiva's platform for WhatsApp AI assistants: a React panel, a Node API on Azure, Claude models and the WhatsApp Cloud API. One platform runs the assistants of several client lines, from Ingredion's Colmaíz brand and the [Samsung × LifeMiles promotion](/work/samsung-lifemiles-whatsapp) I led at Incentiva Group to Incentiva's own DIRECTV dealership, so a defect in one place can reach every client at once.
+At Incentiva Group, I led ChatFlow, the company's platform for WhatsApp AI assistants, and on it the WhatsApp assistant of Colmaíz, Ingredion's brand. ChatFlow is a React panel, a Node API on Azure, Claude models and the WhatsApp Cloud API. One platform runs the assistants of several client lines, from Colmaíz and the [Samsung × LifeMiles promotion](/work/samsung-lifemiles-whatsapp) I led at Incentiva Group to the sales line of Incentiva as an authorized DIRECTV dealer, so a change in one place reaches every client at once.
 
-It existed before I joined, but only as backups. There was no repository, deploys were manual zip uploads, and there were no tests. Nobody could say with certainty which version of the code was running in production. Meanwhile the platform kept serving real conversations every day, and one of its clients could not see or act on any of them.
+When I took it on, ChatFlow lived as backups: there was no repository yet, deploys were zip uploads and there were no tests. That was the starting point. The platform was serving real conversations every day, and Colmaíz's team did not yet have a view of its own conversations.
 
-**Result: a platform under version control, behind a gated pipeline, audited three times and covered by 3,177 automated tests, with a client portal that the brand's commercial team uses daily.**
+**Result: a platform under version control, behind a gated pipeline, audited three times and covered by 3,177 automated tests, with a client portal that Colmaíz's commercial team uses daily.**
 
 ## The Build
 
@@ -28,7 +28,7 @@ The first job was knowing what was actually running. I imported the code into gi
 
 ### A pipeline with gates
 
-Manual zip uploads ended. A CI/CD pipeline now builds and tests every change, and production deploys wait behind manual approval gates, with a documented deploy recipe so a release does not depend on memory. A set of guard tests fails the build on secret leaks, unsafe calls or routes mounted without protection.
+Deploys moved from zip uploads to a CI/CD pipeline that builds and tests every change, while production deploys wait behind manual approval gates, with a documented deploy recipe so a release does not depend on memory. A set of guard tests fails the build on secret leaks, unsafe calls or routes mounted without protection.
 
 ### Three audits, then the fixes
 
@@ -44,9 +44,9 @@ With the base stable, the platform grew where the operation needed it: message d
 
 ### A portal for the client
 
-The client could not see its own conversations, so I led a client-role portal on top of the platform. The client role is isolated in every layer, from the interface to the API to the data. It gives the brand's commercial team a dashboard with Excel export, read-only live chats, location KPIs that map each city to its department and its responsible technician, salesperson or distributor, and "who to call" lists. Before release, **643 dashboard figures were reconciled three ways**, against the API, the Excel export and SQL.
+Colmaíz's team needed to see and act on its own conversations, so I led a client-role portal on top of the platform. The client role is isolated in every layer, from the interface to the API to the data. It gives Colmaíz's commercial team a dashboard with Excel export, read-only live chats, location KPIs that map each city to its department and its responsible technician, salesperson or distributor, and "who to call" lists. Before release, **643 dashboard figures were reconciled three ways**, against the API, the Excel export and SQL.
 
-The assistant itself got stricter too. An audit of unsupported claims led to knowledge loaded per turn by context, the assistant moved to a faster, lower-cost model, and it now gives a contact instead of promising a handoff it cannot make.
+The Colmaíz assistant itself got sharper too. An audit of its answers against its sources led to knowledge loaded per turn by context, the assistant moved to a faster, lower-cost model, and it now gives a contact instead of promising a handoff it cannot make.
 
 The work was built with AI coding agents (Claude Code) under my direction. I ran the takeover, decided what each audit meant for the roadmap, approved the releases and followed up the incidents.
 
@@ -57,11 +57,11 @@ The work was built with AI coding agents (Claude Code) under my direction. I ran
 - **Three audits** with more than 100 findings, fixed and deployed in releases.
 - The assistant's test battery improved from **270 to 318 of 320**, and **643 dashboard figures** were reconciled three ways before the portal shipped.
 - The Colmaíz assistant serves a community of **35,000+ contacts**, with **6,000+ served**.
-- The same platform ran the [Samsung × LifeMiles promotion](/work/samsung-lifemiles-whatsapp), where buyers earned **2M+ LifeMiles miles**.
+- The same platform ran the [Samsung × LifeMiles promotion](/work/samsung-lifemiles-whatsapp), whose chatbot awarded buyers **2M+ LifeMiles miles**.
 
 ## What This Demonstrates
 
-Inheriting a running system is a different job from building one. You cannot stop it, you cannot trust what you were told about it, and every fix has to land without breaking the conversations happening right now. The order mattered: first the truth (a repository that matches production), then a safe way to change it (gates and tests), then the audits, and only then new features.
+Taking over a running system is a different job from building one. You cannot stop it, you first have to learn exactly what is running, and every change has to land without breaking the conversations happening right now. The order mattered: first the truth (a repository that matches production), then a safe way to change it (gates and tests), then the audits, and only then new features.
 
 The 3,177 tests are not the goal in themselves. They are what lets a small team change a multi-client platform with confidence that no client will notice.
 

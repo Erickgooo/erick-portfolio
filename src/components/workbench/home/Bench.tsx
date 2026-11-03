@@ -303,7 +303,7 @@ export function Bench() {
         >
           <Tag
             value="2M+"
-            caption="LifeMiles miles in a Samsung campaign I led at Incentiva Group"
+            caption="LifeMiles miles awarded through the WhatsApp chatbot I led for Samsung at Incentiva Group"
           />
         </Slot>
       </div>

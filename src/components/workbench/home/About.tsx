@@ -46,8 +46,9 @@ export function About() {
             </p>
             <p>
               It taught me where systems break and what it costs when they do. Now I build the ones
-              that remove that friction, and run them: today at Incentiva Group, where I lead a
-              field-sales app, a client portal and a WhatsApp AI platform.
+              that remove that friction, and run them. At Incentiva Group, I led projects for Nequi,
+              Wompi, Colmaíz and Samsung, and I lead the company&rsquo;s field-sales app, client
+              portal and WhatsApp AI platform.
             </p>
           </div>
           <ul className={styles.jobs} aria-label="Where I have worked">
