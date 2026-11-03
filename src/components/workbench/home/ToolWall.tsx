@@ -11,15 +11,16 @@
 // on every visit). The imports live here, not in ../data, because Next also
 // ships an imported image's details to the browser on every route whose
 // server components import that module, and only the Home shows the wall.
-// A tool whose brand does not allow its mark here gets a neutral pictogram
-// from the site's own icon set (Feather, the arrows and links everywhere
-// else), drawn in the tile's ink.
+// Azure and Azure DevOps, whose icon terms do not allow their marks here, get
+// a neutral pictogram from the site's own icon set (Feather, the arrows and
+// links everywhere else), drawn in the tile's ink.
 import type { StaticImageData } from "next/image";
 import type { CSSProperties } from "react";
 import type { IconType } from "react-icons";
-import { FiCloud, FiGitMerge, FiPackage, FiSmartphone } from "react-icons/fi";
+import { FiCloud, FiGitMerge } from "react-icons/fi";
 import { type Pictogram, TOOL_GROUPS, type Tool, WALL_ORDER } from "../data";
 import { WallController } from "./WallController";
+import appStoreConnect from "./tools/app-store-connect.png";
 import bitrix24 from "./tools/bitrix24.svg";
 import botsl from "./tools/botsl.png";
 import capcut from "./tools/capcut.svg";
@@ -32,6 +33,7 @@ import facebook from "./tools/facebook.png";
 import flutter from "./tools/flutter.svg";
 import gemini from "./tools/gemini.svg";
 import googleAnalytics from "./tools/google-analytics.svg";
+import googlePlay from "./tools/google-play.svg";
 import higgsfield from "./tools/higgsfield.svg";
 import holo from "./tools/holo.png";
 import instagram from "./tools/instagram.png";
@@ -51,6 +53,7 @@ import shopify from "./tools/shopify.svg";
 import soro from "./tools/soro.svg";
 import vitest from "./tools/vitest.svg";
 import whatsapp from "./tools/whatsapp.svg";
+import xcode from "./tools/xcode.png";
 import xunit from "./tools/xunit.svg";
 import zapier from "./tools/zapier.svg";
 import styles from "./toolwall.module.scss";
@@ -65,7 +68,10 @@ const LOGOS: Record<string, StaticImageData> = {
   "react.svg": react,
   "remotion.svg": remotion,
   "vitest.svg": vitest,
+  "xcode.png": xcode,
   "xunit.svg": xunit,
+  "app-store-connect.png": appStoreConnect,
+  "google-play.svg": googlePlay,
   "bitrix24.svg": bitrix24,
   "botsl.png": botsl,
   "capcut.svg": capcut,
@@ -96,8 +102,6 @@ const LOGOS: Record<string, StaticImageData> = {
 const PICTOGRAMS: Record<Pictogram, IconType> = {
   cloud: FiCloud,
   pipeline: FiGitMerge,
-  phone: FiSmartphone,
-  package: FiPackage,
 };
 
 function Glyph({ tool }: { tool: Tool }) {

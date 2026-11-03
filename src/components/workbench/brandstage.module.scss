@@ -2,8 +2,8 @@
 // reduced-motion layout (cards, nothing pinned); the pinned stage is one
 // media block, from the tool wall's breakpoint (1024 px) with motion allowed
 // and scripting on. Only transform and opacity move. Logos keep one visual
-// area (--w, --h at 16,000 px2) times --scale, on a white card, never
-// recoloured.
+// area (--w, --h at 16,000 px2) times --scale, straight on the page, with
+// one file per theme.
 // Keep this file ASCII-only.
 @use "./shared" as *;
 
@@ -88,20 +88,13 @@
   }
 }
 
-// The logo's white card: the same height for every brand, so the lines
-// below start at the same place.
+// The logo's row, with no card (Erick, 2026-11-03): the logo sits straight on
+// the page. The same height for every brand (the tallest logo, Colmaiz, plus
+// a little air), so the lines below start at the same place.
 .logoCard {
-  display: grid;
-  place-items: center;
-  height: calc(73px * var(--scale) + 32px);
-  padding: 16px 20px;
-  border: 1px solid var(--wb-rule);
-  border-radius: 6px;
-  background: #ffffff;
-
-  @include dark {
-    border-color: #ffffff;
-  }
+  display: flex;
+  align-items: center;
+  height: calc(73px * var(--scale) + 8px);
 }
 
 .logo {
@@ -109,6 +102,23 @@
   width: calc(var(--w) * var(--scale) * 1px);
   height: calc(var(--h) * var(--scale) * 1px);
   max-width: none;
+  object-fit: contain;
+}
+
+// One file per theme, by the site's theme key (html[data-theme]); without it
+// (no script) the page is light.
+.onLight {
+  @include dark {
+    display: none;
+  }
+}
+
+.onDark {
+  display: none;
+
+  @include dark {
+    display: block;
+  }
 }
 
 .line {
@@ -318,8 +328,7 @@
   }
 
   .onHome .logoCard {
-    height: calc(73px + 44px);
-    padding: 22px 28px;
+    height: calc(73px + 12px);
   }
 
   .onHome .line {

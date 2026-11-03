@@ -31,7 +31,7 @@ export const faqData: FAQItem[] = [
     id: "ai-tools",
     question: "What AI tools does he use?",
     answer:
-      "Erick operates a high-velocity, AI-augmented creative and marketing stack:\n\n• **AI Video Production**: Higgsfield (Kling 3.0, Seedance 2.0), Google Veo 3\n• **AI Spokespersons**: Nano Banana Pro, TikTok Symphony\n• **SEO Automation**: Soro AI, Holo AI\n• **AI Orchestration & Logic**: Claude, Gemini 3.1 Pro, ChatGPT\n• **AI-Assisted Development**: Claude Code, directed from spec to release\n• **Operational Tools**: Zapier, Kommo CRM, Bitrix24",
+      "Erick operates a high-velocity, AI-augmented creative and marketing stack:\n\n• **AI Video Production**: Higgsfield (Kling 3.0, Seedance 2.0), Google Veo 3\n• **AI Spokespersons**: Nano Banana Pro, TikTok Symphony\n• **SEO Automation**: Soro AI, Holo AI\n• **AI Orchestration & Logic**: Claude, Gemini 3.1 Pro, ChatGPT 6.1 Sol\n• **AI-Assisted Development**: Claude Code, directed from spec to release\n• **Operational Tools**: Zapier, Kommo CRM, Bitrix24",
     relatedIds: ["chatbot-exp", "notable-project", "contact"],
   },
   {

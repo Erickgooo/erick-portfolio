@@ -58,7 +58,7 @@ También salió el cuarto indicador del héroe (85 %) y la Home ya no destaca Qu
 | «Led the security reviews of the company's products and their remediation, test-first: hardened sign-in with two-factor authentication, encrypted secrets and tenant-isolation tests.» | seguridad | CEO de Incentiva | pendiente |
 | «Led the Samsung × LifeMiles WhatsApp promotion… fraud controls (deterministic IMEI validation and a second model on identity documents). 2M+ LifeMiles miles were awarded to buyers through the chatbot.» | cliente, cifra, seguridad | CEO de Incentiva; contacto de Samsung | pendiente |
 | «Redesigned Incentiva's brand identity (a 78-page manual and a 357-file kit)… removing about 750,000 lines of unused template code and halving the client portal's initial bundle.» | indicador | CEO de Incentiva | pendiente |
-| «Built proposals and cost models for Samsung, Ingredion, Wompi, Nequi and Mall Indiana…» | cliente | CEO de Incentiva; contactos de Samsung, Ingredion, Wompi, Nequi y Mall Indiana | pendiente |
+| «Built proposals and cost models for Samsung, Ingredion, Wompi, Nequi and Mall Indiana…» | cliente | CEO de Incentiva; contactos de Samsung, Ingredion, Wompi, Nequi y Mall Indiana | retirado del sitio (2026-11-03): Erick descartó las propuestas; salió también del CV y de ErickBot |
 | Habilidades: «Security reviews and remediation, two-factor authentication, secret management…» · «Azure (App Service, SQL, Application Insights)» | seguridad | CEO de Incentiva | pendiente |
 
 ## Projects (`/work`)
@@ -80,7 +80,7 @@ También salió el cuarto indicador del héroe (85 %) y la Home ya no destaca Qu
 | «Scope visit heat map, visit verification and client report» (Nequi and Wompi) | cliente, proceso | CEO de Incentiva; contactos de Nequi y Wompi | pendiente |
 | «Azure cloud and DevOps for Scope and Portal» · «CI/CD for the Scope API and the Portal, a QA environment and encrypted secrets» | arquitectura | CEO de Incentiva | pendiente |
 | «Scope and Portal security reviews and hardening» · «Hardened sign-in with two-factor authentication and encrypted secrets; I led the security reviews and their remediation.» | seguridad | CEO de Incentiva | pendiente |
-| Propuestas con cliente nombrado: Samsung (cotización), Wompi y Nequi (BPO), Mall Indiana (fidelización), Ingredion (Salesforce, presentación de resultados) | cliente | CEO de Incentiva; contacto de cada cliente | pendiente |
+| Propuestas con cliente nombrado: Samsung (cotización), Wompi y Nequi (BPO), Mall Indiana (fidelización), Ingredion (Salesforce, presentación de resultados) | cliente | CEO de Incentiva; contacto de cada cliente | retirado del sitio (2026-11-03): el grupo «Commercial proposals and cost models» (P05, P16, P22, P25 y P26) se borró del índice, del CV y de ErickBot |
 | «Client figures and internal economics stay with the clients.» | proceso | CEO de Incentiva | pendiente |
 
 ## Casos

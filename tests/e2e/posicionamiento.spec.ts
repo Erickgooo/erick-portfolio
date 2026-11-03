@@ -5,9 +5,11 @@ import { expect, test } from "./fixtures";
 import { pdfText } from "./pdf-text";
 
 // Positioning of 2026-11-03 (docs/design/rediseno-2026/validacion-confidencial.md):
-// the umbrella title, the hero, the recruiter's route to #experience, the four
-// featured cases, the page titles, the blog's four posts, the resume, and the
-// accessibility pass (keyboard focus, axe, 360 px).
+// the umbrella title, the hero, the experience on About with the resume at its
+// top, the four featured cases, the page titles, the blog's four posts, the
+// resume, and the accessibility pass (keyboard focus, axe, 360 px). Round 6
+// (ajustes-cv-marcas-encargo.md) took out the hero's "Growth / AI / Systems"
+// line and the "Experience & Resume" link (ajustes-cv-marcas.spec.ts).
 
 const INTRO = '[class*="IntroLoader_overlay"]';
 const ROLE = "Growth & AI Systems Lead";
@@ -17,10 +19,10 @@ async function openHome(page: Page) {
   await expect(page.locator(INTRO)).toHaveCount(0, { timeout: 15_000 });
 }
 
-test("the hero carries the umbrella title, the headline and the three routes", async ({ page }) => {
+test("the hero carries the umbrella title, the headline and the two routes", async ({ page }) => {
   await openHome(page);
   const hero = page.locator("section", { has: page.locator("#hero-title") });
-  await expect(hero.getByText("Growth / AI / Systems", { exact: true })).toBeVisible();
+  await expect(hero.getByText("Growth / AI / Systems")).toHaveCount(0);
   await expect(hero.getByText(ROLE, { exact: true })).toBeVisible();
   await expect(page.locator("#hero-title")).toHaveText(
     "I build the systems behind business growth.",
@@ -36,10 +38,7 @@ test("the hero carries the umbrella title, the headline and the three routes", a
     "href",
     /calendly\.com/,
   );
-  await expect(hero.getByRole("link", { name: "Experience & Resume" })).toHaveAttribute(
-    "href",
-    "/about#experience",
-  );
+  await expect(hero.getByRole("link", { name: /Experience/ })).toHaveCount(0);
 });
 
 test("the bench shows three figures and recent Incentiva work", async ({ page }) => {
@@ -56,14 +55,11 @@ test("the bench shows three figures and recent Incentiva work", async ({ page })
   await expect(bench.getByRole("img", { name: /Samsung × LifeMiles/ })).toBeAttached();
 });
 
-test("Experience & Resume in the header opens the experience, resume first", async ({ page }) => {
-  await openHome(page);
-  const key = page.locator("header").getByRole("link", { name: "Experience & Resume" });
-  await expect(key).toHaveAttribute("href", "/about#experience");
-  await key.click();
-  await expect(page).toHaveURL(/\/about#experience$/);
+test("#experience on About is titled Experience and puts the resume first", async ({ page }) => {
+  await page.goto("/about#experience");
   const section = page.locator("#experience");
   await expect(section).toBeInViewport({ timeout: 10_000 });
+  await expect(section.getByRole("heading", { level: 2 })).toHaveText("Experience");
   const resume = section.getByRole("link", { name: /Download the resume/ });
   await expect(resume).toBeVisible();
   await expect(resume).toHaveAttribute("href", "/resume/Erick_Mahecha_Resume.pdf");

@@ -2,7 +2,7 @@
 
 // The site header (see Header.module.scss): location, the pill of page keys
 // with the theme key, and Erick's local time.
-import { enabledRoutes, experience, headerShows, pages, profile } from "@/resources";
+import { enabledRoutes, headerShows, pages, profile } from "@/resources";
 import { EMIcon } from "@/resources/EMIcon";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -12,7 +12,6 @@ import {
   PiBookBookmarkDuotone,
   PiGridFourDuotone,
   PiImageDuotone,
-  PiReadCvLogoDuotone,
   PiUserCircleDuotone,
 } from "react-icons/pi";
 import styles from "./Header.module.scss";
@@ -44,26 +43,10 @@ function Clock({ timeZone }: { timeZone: string }) {
   return <>{time}</>;
 }
 
-type Page = {
-  path: keyof typeof enabledRoutes;
-  label: string;
-  Icon: IconType;
-  exact?: boolean;
-  /** A key that opens a section of a page (it is never the current page). */
-  href?: string;
-  /** Its label shows from 1280 px; below, the key is its icon, named by the label. */
-  long?: boolean;
-};
+type Page = { path: keyof typeof enabledRoutes; label: string; Icon: IconType; exact?: boolean };
 
 const PAGES: Page[] = [
   { path: "/about", label: pages.about.label, Icon: PiUserCircleDuotone, exact: true },
-  {
-    path: "/about",
-    href: experience.href,
-    label: experience.label,
-    Icon: PiReadCvLogoDuotone,
-    long: true,
-  },
   { path: "/work", label: pages.work.label, Icon: PiGridFourDuotone },
   { path: "/blog", label: pages.blog.label, Icon: PiBookBookmarkDuotone },
   { path: "/gallery", label: pages.gallery.label, Icon: PiImageDuotone },
@@ -104,20 +87,17 @@ export const Header = () => {
             )}
             <span className={styles.rule} />
             {PAGES.filter((page) => enabledRoutes[page.path]).map(
-              ({ path, href, label, Icon, exact, long }) => (
+              ({ path, label, Icon, exact }) => (
                 <Link
-                  key={href ?? path}
-                  href={href ?? path}
+                  key={path}
+                  href={path}
                   className={styles.key}
-                  aria-current={!href && isCurrent(path, exact) ? "page" : undefined}
-                  title={long ? label : undefined}
+                  aria-current={isCurrent(path, exact) ? "page" : undefined}
                 >
                   <span className={styles.icon}>
                     <Icon />
                   </span>
-                  <span className={long ? `${styles.label} ${styles.long}` : styles.label}>
-                    {label}
-                  </span>
+                  <span className={styles.label}>{label}</span>
                 </Link>
               ),
             )}

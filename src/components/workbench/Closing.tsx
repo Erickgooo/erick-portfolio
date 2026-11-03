@@ -1,13 +1,7 @@
-// Workbench: the closing call to action, a sheet laid on the bench. Two
-// routes: "Book a call", the primary one, for hiring Erick, and "Experience &
-// Resume", the secondary one, for reviewing his profile; the email address
-// stays below them.
-import { experience, profile } from "@/resources";
-import Link from "next/link";
-import { FiArrowRight } from "react-icons/fi";
+// Workbench: the closing call to action, a sheet laid on the bench.
+import { profile } from "@/resources";
 import { BookCall } from "./BookCall";
 import styles from "./closing.module.scss";
-import ui from "./ui.module.scss";
 
 export function Closing({ title = "Show me where your team’s time goes." }: { title?: string }) {
   return (
@@ -21,13 +15,10 @@ export function Closing({ title = "Show me where your team’s time goes." }: { 
           </p>
           <div className={styles.actions}>
             <BookCall />
-            <Link href={experience.href} className={ui.textLink}>
-              {experience.label} <FiArrowRight aria-hidden="true" />
-            </Link>
+            <a href={`mailto:${profile.email}`} className={styles.mail}>
+              Or write to {profile.email}
+            </a>
           </div>
-          <a href={`mailto:${profile.email}`} className={styles.mail}>
-            Or write to {profile.email}
-          </a>
         </div>
         <p className={styles.note} data-reveal="">
           {profile.location} &middot; works in {(profile.languages ?? []).join(" and ")}

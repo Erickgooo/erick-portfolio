@@ -3,10 +3,13 @@
 // glyph codes to Unicode with its ToUnicode CMap, and decode the Tj and TJ
 // strings of the page content in the font they are set in. Enough for
 // Chromium's output (Type0 fonts, two-byte codes, hex strings); not a
-// general PDF reader.
+// general PDF reader. pdfLineBoxes also places each line on its page (in
+// points, from the page's left edge), from the content's matrices, the Td
+// moves and the glyph widths of each font's /W array.
 import { inflateSync } from "node:zlib";
 
 type CMap = Map<number, string>;
+type Objects = Map<number, { dict: string; stream: string }>;
 
 function hexToString(hex: string): string {
   let out = "";
@@ -33,10 +36,10 @@ function parseCMap(text: string): CMap {
   return map;
 }
 
-export function pdfText(pdf: Buffer): string {
+/** Every object, with its dictionary and its stream (inflated when Flate). */
+function readObjects(pdf: Buffer): Objects {
   const raw = pdf.toString("latin1");
-  // Every object, with its dictionary and its stream (inflated when Flate).
-  const objects = new Map<number, { dict: string; stream: string }>();
+  const objects: Objects = new Map();
   for (const m of raw.matchAll(/(\d+) 0 obj([\s\S]*?)endobj/g)) {
     const body = m[2];
     const at = body.indexOf("stream");
@@ -56,17 +59,12 @@ export function pdfText(pdf: Buffer): string {
     }
     objects.set(Number(m[1]), { dict, stream });
   }
-  const cmapOf = new Map<number, CMap>();
-  const fontCMap = (fontObj: number): CMap => {
-    const cached = cmapOf.get(fontObj);
-    if (cached) return cached;
-    const ref = objects.get(fontObj)?.dict.match(/\/ToUnicode\s+(\d+)\s+0\s+R/);
-    const map = ref ? parseCMap(objects.get(Number(ref[1]))?.stream ?? "") : new Map();
-    cmapOf.set(fontObj, map);
-    return map;
-  };
+  return objects;
+}
 
-  const lines: string[] = [];
+/** The pages in object order, each with its font names and content streams. */
+function readPages(objects: Objects) {
+  const pages: { dict: string; fonts: Map<string, number>; contents: string[] }[] = [];
   for (const { dict } of objects.values()) {
     if (!/\/Type\s*\/Page\b/.test(dict)) continue;
     // The page's fonts: /Font << /F4 12 0 R ... >>, inline or by reference.
@@ -85,9 +83,30 @@ export function pdfText(pdf: Buffer): string {
       ...(dict.match(/\/Contents\s*(\[[^\]]*\]|\d+\s+0\s+R)/)?.[1] ?? "").matchAll(
         /(\d+)\s+0\s+R/g,
       ),
-    ];
-    for (const c of contents) {
-      const content = objects.get(Number(c[1]))?.stream ?? "";
+    ].map((c) => objects.get(Number(c[1]))?.stream ?? "");
+    pages.push({ dict, fonts, contents });
+  }
+  return pages;
+}
+
+function cmapReader(objects: Objects) {
+  const cmapOf = new Map<number, CMap>();
+  return (fontObj: number): CMap => {
+    const cached = cmapOf.get(fontObj);
+    if (cached) return cached;
+    const ref = objects.get(fontObj)?.dict.match(/\/ToUnicode\s+(\d+)\s+0\s+R/);
+    const map = ref ? parseCMap(objects.get(Number(ref[1]))?.stream ?? "") : new Map();
+    cmapOf.set(fontObj, map);
+    return map;
+  };
+}
+
+export function pdfText(pdf: Buffer): string {
+  const objects = readObjects(pdf);
+  const fontCMap = cmapReader(objects);
+  const lines: string[] = [];
+  for (const { fonts, contents } of readPages(objects)) {
+    for (const content of contents) {
       let map: CMap = new Map();
       let line = "";
       // Chromium positions runs with Td and Tm inside one text object, so a
@@ -112,4 +131,118 @@ export function pdfText(pdf: Buffer): string {
     }
   }
   return lines.join("\n");
+}
+
+/**
+ * A CIDFont's glyph widths, in 1/1000 em: its /W array ("c [w1 w2 ...]" and
+ * "c1 c2 w" entries) and, under the key -1, its /DW for every other glyph
+ * (1000 when it has none).
+ */
+function parseWidths(dict: string): Map<number, number> {
+  const widths = new Map<number, number>();
+  widths.set(-1, Number(dict.match(/\/DW\s+([\d.]+)/)?.[1] ?? 1000));
+  const at = dict.search(/\/W\s*\[/);
+  if (at < 0) return widths;
+  let i = dict.indexOf("[", at) + 1;
+  let depth = 1;
+  let body = "";
+  for (; i < dict.length && depth > 0; i++) {
+    if (dict[i] === "[") depth++;
+    if (dict[i] === "]") depth--;
+    if (depth > 0) body += dict[i];
+  }
+  const tokens = body.match(/\[|\]|-?[\d.]+/g) ?? [];
+  for (let k = 0; k < tokens.length; ) {
+    const first = Number(tokens[k]);
+    if (tokens[k + 1] === "[") {
+      k += 2;
+      let c = first;
+      while (k < tokens.length && tokens[k] !== "]") widths.set(c++, Number(tokens[k++]));
+      k++;
+    } else {
+      const last = Number(tokens[k + 1]);
+      const w = Number(tokens[k + 2]);
+      for (let c = first; c <= last; c++) widths.set(c, w);
+      k += 3;
+    }
+  }
+  return widths;
+}
+
+export type LineBox = { page: number; text: string; x0: number; x1: number; pageWidth: number };
+
+/**
+ * Each text object of each page (Chromium sets one line per BT ... ET), with
+ * its decoded text and its horizontal extent in points from the page's left
+ * edge. Assumes no rotation or skew, which is how Chromium prints.
+ */
+export function pdfLineBoxes(pdf: Buffer): LineBox[] {
+  const objects = readObjects(pdf);
+  const fontCMap = cmapReader(objects);
+  const widthsOf = new Map<number, Map<number, number>>();
+  const fontWidths = (fontObj: number) => {
+    const cached = widthsOf.get(fontObj);
+    if (cached) return cached;
+    const desc = objects.get(fontObj)?.dict.match(/\/DescendantFonts\s*\[\s*(\d+)\s+0\s+R/);
+    const map = parseWidths(desc ? (objects.get(Number(desc[1]))?.dict ?? "") : "");
+    widthsOf.set(fontObj, map);
+    return map;
+  };
+  const boxes: LineBox[] = [];
+  readPages(objects).forEach(({ dict, fonts, contents }, page) => {
+    const media = dict.match(/\/MediaBox\s*\[\s*([-\d.]+)\s+[-\d.]+\s+([-\d.]+)/);
+    const pageWidth = media ? Number(media[2]) - Number(media[1]) : 612;
+    for (const content of contents) {
+      // The x part of the current transformation: x' = a x + e.
+      let ctm = { a: 1, e: 0 };
+      const stack: { a: number; e: number }[] = [];
+      let map: CMap = new Map();
+      let widths = new Map<number, number>();
+      let size = 0;
+      let lineX = 0;
+      let current: { text: string; x0: number; x1: number } | null = null;
+      for (const op of content.matchAll(
+        /([-\d.]+)\s+([-\d.]+)\s+([-\d.]+)\s+([-\d.]+)\s+([-\d.]+)\s+([-\d.]+)\s+(cm|Tm)\b|([-\d.]+)\s+([-\d.]+)\s+Td\b|\/([\w.+-]+)\s+([\d.]+)\s+Tf\b|<([0-9a-fA-F]*)>\s*Tj|\b(q|Q|BT|ET)\b/g,
+      )) {
+        if (op[7] === "cm") {
+          const [a, , , , e] = op.slice(1, 6).map(Number);
+          ctm = { a: a * ctm.a, e: e * ctm.a + ctm.e };
+        } else if (op[7] === "Tm") {
+          lineX = Number(op[5]);
+        } else if (op[8] !== undefined) {
+          lineX += Number(op[8]);
+        } else if (op[10]) {
+          const obj = fonts.get(op[10]) ?? -1;
+          map = fontCMap(obj);
+          widths = fontWidths(obj);
+          size = Number(op[11]);
+        } else if (op[12] !== undefined) {
+          const hex = op[12];
+          let x = lineX;
+          for (let i = 0; i + 4 <= hex.length; i += 4) {
+            const code = Number.parseInt(hex.slice(i, i + 4), 16);
+            const w = ((widths.get(code) ?? widths.get(-1) ?? 1000) * size) / 1000;
+            const x0 = ctm.a * x + ctm.e;
+            const x1 = ctm.a * (x + w) + ctm.e;
+            if (!current) current = { text: "", x0, x1 };
+            current.text += map.get(code) ?? "";
+            current.x0 = Math.min(current.x0, x0);
+            current.x1 = Math.max(current.x1, x1);
+            x += w;
+          }
+        } else if (op[13] === "q") {
+          stack.push(ctm);
+        } else if (op[13] === "Q") {
+          ctm = stack.pop() ?? { a: 1, e: 0 };
+        } else if (op[13] === "BT") {
+          current = null;
+          lineX = 0;
+        } else if (op[13] === "ET" && current) {
+          boxes.push({ page, pageWidth, ...current });
+          current = null;
+        }
+      }
+    }
+  });
+  return boxes;
 }

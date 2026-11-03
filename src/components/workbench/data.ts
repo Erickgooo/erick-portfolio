@@ -96,13 +96,16 @@ export function countProjects(): number {
 
 /**
  * Each tool's official logo, a file in ./home/tools, imported by ToolWall
- * (sources: docs/design/rediseno-2026/tool-logos.md). A tool whose brand does
- * not allow its mark in a tool list shows a neutral pictogram instead
- * (`pictogram`, drawn by ToolWall in the site's own icon set), so no tile is
- * left without a glyph. `wide` tiles take two cells of the desktop board
- * (38 tools fill its 6 x 7 cells), and two of the phone list in a group of 8.
+ * (sources: docs/design/rediseno-2026/tool-logos.md). Azure and Azure DevOps,
+ * whose icon terms do not allow their marks in a tool list, show a neutral
+ * pictogram instead (`pictogram`, drawn by ToolWall in the site's own icon
+ * set), so no tile is left without a glyph. Xcode, App Store Connect and
+ * Google Play show their official icons by Erick's decision of 2026-11-03,
+ * taken knowing that Apple's and Google's brand terms do not allow them in a
+ * tool list (tool-logos.md). `wide` tiles take two cells of the desktop board
+ * (39 tools fill its 6 x 7 cells) and of the phone list in a group of 8.
  */
-export type Pictogram = "cloud" | "pipeline" | "phone" | "package";
+export type Pictogram = "cloud" | "pipeline";
 export type Tool = { name: string; logo?: string; pictogram?: Pictogram; wide?: boolean };
 export type ToolGroup = {
   id: string;
@@ -111,7 +114,7 @@ export type ToolGroup = {
   tools: Tool[];
 };
 
-/** Only tools named in src/resources (about.tsx, incentiva.ts) or the project MDX. Six groups: five of six and one of eight. */
+/** Only tools named in src/resources (about.tsx, incentiva.ts) or the project MDX. Six groups: four of six, one of seven and one of eight. */
 export const TOOL_GROUPS: ToolGroup[] = [
   {
     id: "conversations",
@@ -131,7 +134,7 @@ export const TOOL_GROUPS: ToolGroup[] = [
     title: "AI models",
     line: "Picked per job: precision for sales, range for content.",
     tools: [
-      { name: "GPT-4o mini", logo: "openai.svg" },
+      { name: "ChatGPT 6.1 Sol", logo: "openai.svg" },
       { name: "Gemini", logo: "gemini.svg" },
       { name: "Claude", logo: "claude.svg" },
       { name: "ElevenLabs", logo: "elevenlabs.svg" },
@@ -160,7 +163,7 @@ export const TOOL_GROUPS: ToolGroup[] = [
       { name: "Higgsfield", logo: "higgsfield.svg" },
       { name: "Kling 3.0", logo: "kling.svg" },
       { name: "Remotion", logo: "remotion.svg" },
-      { name: "DaVinci Resolve", logo: "davinci-resolve.png", wide: true },
+      { name: "DaVinci Resolve", logo: "davinci-resolve.png" },
       { name: "CapCut", logo: "capcut.svg" },
       { name: "Next.js", logo: "nextjs.svg" },
     ],
@@ -176,6 +179,7 @@ export const TOOL_GROUPS: ToolGroup[] = [
       { name: "Angular", logo: "angular.svg" },
       { name: "Node.js", logo: "nodejs.svg" },
       { name: ".NET", logo: "dotnet.svg" },
+      { name: "Xcode", logo: "xcode.png" },
     ],
   },
   {
@@ -183,22 +187,22 @@ export const TOOL_GROUPS: ToolGroup[] = [
     title: "Cloud, releases and tests",
     line: "Pipelines, store releases and the tests that let a small team ship.",
     tools: [
-      // Azure, Azure DevOps, App Store Connect and Google Play: their brand
-      // terms do not allow their marks in a tool list (tool-logos.md).
+      // Azure and Azure DevOps: their icon terms do not allow their marks in
+      // a tool list (tool-logos.md).
       { name: "Azure", pictogram: "cloud" },
       { name: "Azure DevOps", pictogram: "pipeline" },
       { name: "Netlify", logo: "netlify.svg" },
       { name: "Playwright", logo: "playwright.svg" },
       { name: "Vitest", logo: "vitest.svg" },
       { name: "xUnit.net", logo: "xunit.svg" },
-      { name: "App Store Connect", pictogram: "phone", wide: true },
-      { name: "Google Play", pictogram: "package" },
+      { name: "App Store Connect", logo: "app-store-connect.png", wide: true },
+      { name: "Google Play", logo: "google-play.svg" },
     ],
   },
 ];
 
 /**
- * Where the tiles sit on the desktop board, 6 cells by 7 rows: 38 tools, four
+ * Where the tiles sit on the desktop board, 6 cells by 7 rows: 39 tools, three
  * of them wide, so every row is full; the groups are scattered across it.
  */
 export const WALL_ORDER: [number, number][] = [
@@ -229,13 +233,14 @@ export const WALL_ORDER: [number, number][] = [
   [4, 3],
   [5, 3],
 
-  [3, 3], // wide
+  [3, 3],
   [2, 3],
   [4, 4],
   [5, 4],
   [0, 4],
-
   [1, 4],
+
+  [1, 5],
   [2, 4],
   [3, 4],
   [4, 5],
@@ -243,7 +248,7 @@ export const WALL_ORDER: [number, number][] = [
   [0, 5],
 
   [5, 6], // wide
-  [1, 5],
+  [4, 6],
   [2, 5],
   [3, 5],
   [5, 7],

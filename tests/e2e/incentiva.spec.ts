@@ -87,22 +87,32 @@ for (const { path, figures, scrub } of PAGES) {
   });
 }
 
-test("the index lists every project of the role, with one of the four statuses", async ({
+test("the index lists every project of the role, with one of the three statuses", async ({
   page,
 }) => {
   await page.goto("/work/incentiva-group");
   const cards = page.locator("main article");
-  await expect(cards).toHaveCount(31);
+  // 31 until 2026-11-03, when Erick withdrew the five commercial proposals.
+  await expect(cards).toHaveCount(26);
   const statuses = await cards.evaluateAll((els) =>
     els.map((el) => el.querySelector("p")?.textContent?.trim() ?? ""),
   );
-  const allowed = ["In production", "Delivered to client", "Internal", "Proposal / pitch"];
+  const allowed = ["In production", "Delivered to client", "Internal"];
   for (const s of statuses) expect(allowed).toContain(s);
   // The projects that are part of a case link to it; the seven cases are listed above.
   await expect(page.locator("main article a[href^='/work/']")).toHaveCount(11);
   await expect(page.getByRole("heading", { name: "Seven case studies" })).toBeVisible();
   const text = (await page.locator("main").textContent()) ?? "";
-  for (const banned of ["Mars", "Masterfoods", "Impulso", "incentiva-preview"]) {
+  for (const banned of [
+    "Mars",
+    "Masterfoods",
+    "Impulso",
+    "incentiva-preview",
+    "Proposal",
+    "proposal",
+    "Mall Indiana",
+    "quotation",
+  ]) {
     expect(text).not.toContain(banned);
   }
 });
