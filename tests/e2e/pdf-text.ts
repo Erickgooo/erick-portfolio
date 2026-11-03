@@ -169,12 +169,23 @@ function parseWidths(dict: string): Map<number, number> {
   return widths;
 }
 
-export type LineBox = { page: number; text: string; x0: number; x1: number; pageWidth: number };
+export type LineBox = {
+  page: number;
+  text: string;
+  x0: number;
+  x1: number;
+  /** The baseline of the line's first glyph, in points from the page's top edge. */
+  y: number;
+  pageWidth: number;
+};
 
 /**
  * Each text object of each page (Chromium sets one line per BT ... ET), with
- * its decoded text and its horizontal extent in points from the page's left
- * edge. Assumes no rotation or skew, which is how Chromium prints.
+ * its decoded text, its horizontal extent in points from the page's left edge
+ * and its baseline from the page's top edge. Assumes no rotation or skew,
+ * which is how Chromium prints. Chromium paints the text of a page in layers
+ * (every job's head before the bullets), so the order of the boxes is not the
+ * reading order: `y` places a line on the page.
  */
 export function pdfLineBoxes(pdf: Buffer): LineBox[] {
   const objects = readObjects(pdf);
@@ -190,27 +201,32 @@ export function pdfLineBoxes(pdf: Buffer): LineBox[] {
   };
   const boxes: LineBox[] = [];
   readPages(objects).forEach(({ dict, fonts, contents }, page) => {
-    const media = dict.match(/\/MediaBox\s*\[\s*([-\d.]+)\s+[-\d.]+\s+([-\d.]+)/);
-    const pageWidth = media ? Number(media[2]) - Number(media[1]) : 612;
+    const media = dict.match(/\/MediaBox\s*\[\s*([-\d.]+)\s+([-\d.]+)\s+([-\d.]+)\s+([-\d.]+)/);
+    const pageWidth = media ? Number(media[3]) - Number(media[1]) : 612;
+    const pageTop = media ? Number(media[4]) : 792;
     for (const content of contents) {
-      // The x part of the current transformation: x' = a x + e.
-      let ctm = { a: 1, e: 0 };
-      const stack: { a: number; e: number }[] = [];
+      // The current transformation without rotation: x' = a x + e, y' = d y + f.
+      type Ctm = { a: number; d: number; e: number; f: number };
+      let ctm: Ctm = { a: 1, d: 1, e: 0, f: 0 };
+      const stack: Ctm[] = [];
       let map: CMap = new Map();
       let widths = new Map<number, number>();
       let size = 0;
       let lineX = 0;
-      let current: { text: string; x0: number; x1: number } | null = null;
+      let lineY = 0;
+      let current: { text: string; x0: number; x1: number; y: number } | null = null;
       for (const op of content.matchAll(
         /([-\d.]+)\s+([-\d.]+)\s+([-\d.]+)\s+([-\d.]+)\s+([-\d.]+)\s+([-\d.]+)\s+(cm|Tm)\b|([-\d.]+)\s+([-\d.]+)\s+Td\b|\/([\w.+-]+)\s+([\d.]+)\s+Tf\b|<([0-9a-fA-F]*)>\s*Tj|\b(q|Q|BT|ET)\b/g,
       )) {
         if (op[7] === "cm") {
-          const [a, , , , e] = op.slice(1, 6).map(Number);
-          ctm = { a: a * ctm.a, e: e * ctm.a + ctm.e };
+          const [a, , , d, e, f] = op.slice(1, 7).map(Number);
+          ctm = { a: a * ctm.a, d: d * ctm.d, e: e * ctm.a + ctm.e, f: f * ctm.d + ctm.f };
         } else if (op[7] === "Tm") {
           lineX = Number(op[5]);
+          lineY = Number(op[6]);
         } else if (op[8] !== undefined) {
           lineX += Number(op[8]);
+          lineY += Number(op[9]);
         } else if (op[10]) {
           const obj = fonts.get(op[10]) ?? -1;
           map = fontCMap(obj);
@@ -224,7 +240,7 @@ export function pdfLineBoxes(pdf: Buffer): LineBox[] {
             const w = ((widths.get(code) ?? widths.get(-1) ?? 1000) * size) / 1000;
             const x0 = ctm.a * x + ctm.e;
             const x1 = ctm.a * (x + w) + ctm.e;
-            if (!current) current = { text: "", x0, x1 };
+            if (!current) current = { text: "", x0, x1, y: pageTop - (ctm.d * lineY + ctm.f) };
             current.text += map.get(code) ?? "";
             current.x0 = Math.min(current.x0, x0);
             current.x1 = Math.max(current.x1, x1);
@@ -233,10 +249,11 @@ export function pdfLineBoxes(pdf: Buffer): LineBox[] {
         } else if (op[13] === "q") {
           stack.push(ctm);
         } else if (op[13] === "Q") {
-          ctm = stack.pop() ?? { a: 1, e: 0 };
+          ctm = stack.pop() ?? { a: 1, d: 1, e: 0, f: 0 };
         } else if (op[13] === "BT") {
           current = null;
           lineX = 0;
+          lineY = 0;
         } else if (op[13] === "ET" && current) {
           boxes.push({ page, pageWidth, ...current });
           current = null;

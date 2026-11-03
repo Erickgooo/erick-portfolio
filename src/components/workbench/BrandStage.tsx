@@ -17,15 +17,15 @@
 // per theme, shown by html[data-theme] (the site's own theme key, which a
 // prefers-color-scheme <picture> would ignore): its official colour logo on
 // the light theme and its official light version on the dark one (Nequi's
-// press kit, Wompi's brand assets, Samsung's site), or, where the brand
-// publishes none (DIRECTV), its official file in one white ink. Colmaiz has
-// one transparent file for both. DIRECTV's line keeps the frame: Incentiva is
-// an authorized dealer.
+// press kit, Wompi's brand assets, Samsung's and Colmaiz's own sites), or,
+// where the brand publishes none (DIRECTV), its official file in one white
+// ink. DIRECTV's line keeps the frame: Incentiva is an authorized dealer.
 import type { StaticImageData } from "next/image";
 import Link from "next/link";
 import type { CSSProperties } from "react";
 import { FiArrowRight } from "react-icons/fi";
 import { BrandStageController } from "./BrandStageController";
+import colmaizOnDark from "./brands/colmaiz-on-dark.webp";
 import colmaiz from "./brands/colmaiz.webp";
 import directvOnDark from "./brands/directv-on-dark.svg";
 import directv from "./brands/directv.svg";
@@ -41,7 +41,7 @@ import ui from "./ui.module.scss";
 type Brand = {
   name: string;
   file: StaticImageData;
-  /** The file for the dark theme (the same one where the brand has one). */
+  /** The file for the dark theme. */
   onDark: StaticImageData;
   /** On-stage size, in px, from the equal-area formula (16,000 px2). */
   w: number;
@@ -83,7 +83,7 @@ export const BRANDS: Brand[] = [
   {
     name: "Colmaíz",
     file: colmaiz,
-    onDark: colmaiz,
+    onDark: colmaizOnDark,
     w: 218,
     h: 73,
     line: "The WhatsApp AI assistant I directed on ChatFlow for Colmaíz (Ingredion).",

@@ -25,8 +25,8 @@ const TAGS: { value: string; caption: string }[] = [
     caption: "of conversations handled by the bot, Artesa Panadería",
   },
   {
-    value: "285",
-    caption: "panel variants in the ArquiExpo 2026 touchscreen gallery app",
+    value: "2M+",
+    caption: "LifeMiles miles awarded to buyers by the chatbot I led at Incentiva Group",
   },
   {
     value: "2023",
@@ -66,9 +66,9 @@ export function Film() {
             </p>
             <p>
               The answer has taken different shapes. An AI-powered WhatsApp chatbot that handled 85%
-              of inbound conversations autonomously for Artesa. Quick Metal Shop&rsquo;s marketing, built
-              from scratch as its sole marketer, down to a touchscreen gallery app for its stand. A
-              complete rebranding and content automation system for Dakoma Roofing.
+              of inbound conversations autonomously for Artesa. Quick Metal Shop&rsquo;s marketing,
+              built from scratch as its sole marketer, down to a touchscreen gallery app for its
+              stand. A complete rebranding and content automation system for Dakoma Roofing.
             </p>
             <p>
               What connects all of it is the same approach: start with the operational reality, find

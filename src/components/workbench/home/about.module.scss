@@ -101,11 +101,24 @@
   }
 }
 
+// From tablet the three columns (company, role, dates) belong to the list, not
+// to each row: every row takes them as a subgrid, so the dates column is as
+// wide as the longest dates in the list and each role starts in the same
+// column. (Until 2026-11-03 each row was its own grid with an `auto` dates
+// column, so the rows with one month, Dakoma and ATV Riders, gave their role
+// about 44 px more room and started it further right.) Where subgrid is not
+// supported, the rows fall back to a fixed dates column of the same width.
 .jobs {
   list-style: none;
   padding: 0;
   margin-top: 16px;
   border-top: 1px solid var(--wb-ink);
+
+  @include from-tablet {
+    display: grid;
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.3fr) auto;
+    column-gap: 24px;
+  }
 
   li {
     @include reveal;
@@ -115,7 +128,9 @@
     border-bottom: 1px solid var(--wb-line);
 
     @include from-tablet {
-      grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.3fr) auto;
+      grid-column: 1 / -1;
+      grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.3fr) 11em;
+      grid-template-columns: subgrid;
       align-items: baseline;
     }
   }

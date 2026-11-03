@@ -11,7 +11,7 @@ const FIGURES: Record<string, string[]> = {
   "atv-riders": ["200+"],
   "ai-powered-ad-creatives": ["35", "$23.04", "3.92x", "260", "$3.45"],
   "quick-metal-shop-viral-videos": ["110K", "125K", "103K", "338K+"],
-  "quick-metal-shop-arquiexpo": ["100%", "285"],
+  "quick-metal-shop-arquiexpo": ["100%"],
   "quick-metal-shop-marketing": [],
   "quick-metal-shop-the-brand-comes-to-life": [],
   "dakoma-roofing": [],
