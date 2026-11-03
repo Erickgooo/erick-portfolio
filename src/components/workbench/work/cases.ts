@@ -44,7 +44,7 @@ const CLIENT: Record<string, string> = {
   "scope-ios-launch": "Incentiva Group",
   "chatflow-whatsapp-ai-platform": "Incentiva Group",
   "directv-click-to-whatsapp": "Incentiva Group (DIRECTV dealership)",
-  "ai-cv-screening": "Incentiva Group",
+  "samsung-lifemiles-whatsapp": "Incentiva Group, for Samsung × LifeMiles",
   "incentiva-launch-campaign": "Incentiva Group",
   "incentiva-website-brand": "Incentiva Group",
 };

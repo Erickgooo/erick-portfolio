@@ -1,0 +1,77 @@
+---
+title: "Samsung × LifeMiles: A WhatsApp Promotion I Led at Incentiva Group"
+publishedAt: "2026-10-16"
+summary: "At Incentiva Group, I led the Samsung × LifeMiles campaign: buyers of a Galaxy S26-series phone earned LifeMiles miles through a WhatsApp assistant on ChatFlow. I took over the running assistant, rebuilt it, rewrote its prompt and directed the fraud controls. Buyers earned 2M+ LifeMiles miles."
+images:
+  - "/images/projects/incentiva/samsung-lifemiles-whatsapp.webp"
+team:
+  - name: "Erick Mahecha"
+    role: "Operations Manager, campaign lead"
+    avatar: "/images/avatar.jpg"
+    linkedIn: "https://www.linkedin.com/in/erick-mahecha/"
+metric: "2M+|LifeMiles miles in a Samsung campaign at Incentiva Group"
+---
+
+## Overview
+
+At Incentiva Group, I led the Samsung × LifeMiles campaign. Buyers of a Galaxy from the S26 family could earn LifeMiles miles for their purchase, and the way to claim them was a WhatsApp assistant running on [ChatFlow](/work/chatflow-whatsapp-ai-platform), Incentiva's own platform for WhatsApp AI assistants.
+
+The idea is simple for the buyer: open WhatsApp, send a photo of the invoice and the phone's IMEI, confirm who you are, and the miles arrive. Behind it, the assistant has to read invoices of every kind, check that the phone is real and eligible, confirm the buyer's identity and credit the miles, and it has to do that while some of the people writing to it are trying to claim miles they are not owed. A promotion that pays in something of real value attracts exactly that.
+
+The assistant was already running when the campaign came to me, and it was not ready for that. A regression had broken the reading of invoices, its closing summaries sometimes invented data, and raw data blocks could reach the customer's screen.
+
+**Result: buyers earned 2M+ LifeMiles miles, and the fraud controls were live before the promotion's peak.**
+
+## The Build
+
+### Leading the campaign
+
+My first job was the campaign itself, from Incentiva's side: owning the promotion's rules on the platform, deciding what had to be fixed before the peak and in what order, and being accountable for every mile the assistant credited. That order mattered. Fraud controls and correct validation came before anything cosmetic, because every error would cost real miles or a real buyer's trust.
+
+### Rebuilding the assistant
+
+I took the running assistant and rebuilt it instead of patching around its symptoms. The invoice validation flow, which reads each purchase by OCR, was reconstructed after the regression, so the assistant could again read the invoices buyers send and pass what it read to the checks.
+
+### Rewriting the prompt
+
+I rewrote the bot's prompt from the ground up. The new one follows the claim step by step, in the order the validation needs it, and keeps the conversation inside the promotion's rules, so the assistant explains what it can do instead of improvising what it cannot.
+
+### Validation the model cannot talk its way around
+
+The model is good at reading and at conversation. It should not be the one deciding whether a claim is valid, so the decisions moved to places a persuasive message cannot reach:
+
+- **Deterministic IMEI validation.** Every IMEI goes through the Luhn check in code, and it is cross-checked between the data blocks of the claim. An IMEI that fails the check is rejected, whatever the conversation says.
+- **A second, independent model for identity documents.** A single model's mistake cannot approve a claim on its own: a separate model verifies the identity document.
+- **Promotion-validity blocking.** Purchases that fall outside the promotion's terms are blocked before any mile is credited.
+
+### Keeping the conversation honest
+
+Two defects made the assistant say things it should not. A history window was producing invented data in the closing summaries, the message where the buyer reads what was registered; that was fixed. And raw data blocks, the assistant's internal working, were reaching customers; they are now filtered out before any message is sent.
+
+### Closing the channel cleanly
+
+A promotion ends, and its channel has to end well too. When it closed, every chat received a fixed notice once, and then the assistant went silent instead of answering claims it could no longer honour. I tested the closure on a real phone before switching it on.
+
+The technical work was built with AI coding agents (Claude Code) under my direction. I led the campaign, rewrote the prompt, set the validation rules and the order of the fixes, and supervised the operation until the channel closed.
+
+## Results
+
+- Buyers earned **2M+ LifeMiles miles** through the assistant.
+- The fraud controls (deterministic IMEI validation, a second model on identity documents and promotion-validity blocking) were **live before the promotion's peak**.
+- Closing summaries stopped inventing data, and raw data blocks no longer reached customers.
+- The channel closed cleanly when the promotion ended, with one notice per chat and then silence.
+- About **117 commits** on the assistant, all on the same platform that serves Incentiva's other WhatsApp lines.
+
+## What This Demonstrates
+
+A promotion with real value is a security problem as much as a marketing one. An AI assistant that decides everything by itself is the easiest door for anyone trying to game it, and the most likely to make an honest buyer's claim fail for no reason.
+
+The design puts each decision where it belongs. The model reads invoices and talks to buyers, which is what it is good at. Deterministic code validates the IMEI, a second model checks identity, and the promotion's rules block what falls outside them. That is what let buyers claim their miles from their phone and let the campaign credit 2M+ LifeMiles miles with confidence.
+
+It is also what leading a campaign on your own platform looks like: the business rules, the prompt and the controls are decided by the same person, and AI agents build them, under that direction, in the order the promotion needs.
+
+**Stack:**
+
+<TechStack data="Node.js, TypeScript, Anthropic Claude, OCR, Google Apps Script, WhatsApp Cloud API, Claude Code" />
+
+Running a promotion through WhatsApp? [Book a call](https://calendly.com/santiagomahecha2328/30min) and let's put the validation where a clever message cannot reach it.

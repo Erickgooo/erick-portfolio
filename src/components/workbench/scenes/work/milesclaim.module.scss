@@ -1,0 +1,222 @@
+// Scene: MilesClaim (see MilesClaim.tsx). Portrait (4:5, 100 x 125 cqi), laid
+// out as a column so nothing overlaps when the 12 px floor enlarges the text
+// on phones. Keep this file ASCII-only.
+@use "../../shared" as *;
+@use "../scene" as *;
+@use "incentiva" as *;
+
+.scene {
+  @include root;
+  @include still;
+}
+
+// The scene's content box (Scene.tsx wraps the pieces in it): a column.
+.scene > * {
+  display: flex;
+  flex-direction: column;
+  gap: 2.4cqi;
+  padding: 5cqi;
+
+  @include phone {
+    gap: 1.8cqi;
+    padding: 4cqi;
+  }
+}
+
+.label {
+  @include label;
+}
+
+.note {
+  @include muted;
+  display: block;
+  font-size: fs(2.9);
+  font-weight: 400;
+}
+
+.tick {
+  @include tick(3.4cqi);
+}
+
+.cross {
+  @include cross(3.4cqi);
+}
+
+// The purchase ---------------------------------------------------------------------------
+
+.purchase {
+  @include card;
+  @include enter(0);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2cqi;
+  padding: 2.6cqi 3.4cqi;
+}
+
+.chip {
+  @include chip;
+  font-size: fs(2.9);
+}
+
+// The phone: a generic handset, drawn ----------------------------------------------------
+
+.phone {
+  @include enter(1);
+  position: relative;
+  display: grid;
+  justify-items: end;
+  align-content: start;
+  gap: 1.8cqi;
+  width: 58cqi;
+  align-self: center;
+  padding: 6cqi 3cqi 3.4cqi;
+  border: 1px solid var(--wb-ink);
+  border-radius: 5cqi;
+  background: var(--sc-obj);
+}
+
+.notch {
+  position: absolute;
+  left: 50%;
+  top: 2cqi;
+  width: 12cqi;
+  height: 1.4cqi;
+  border-radius: 1cqi;
+  background: var(--wb-ink);
+  translate: -50% 0;
+}
+
+.bubble {
+  padding: 1.6cqi 2.2cqi;
+  border-radius: 2cqi;
+  border-bottom-right-radius: 0.6cqi;
+  background: var(--wb-accent);
+  color: #ffffff;
+  font-size: fs(3);
+  font-weight: 500;
+  line-height: 1.25;
+}
+
+.me {
+  display: inline-flex;
+  align-items: center;
+  gap: 1.6cqi;
+}
+
+.imei {
+  font-variant-numeric: tabular-nums;
+  transition:
+    opacity $dur-state $ease-soft,
+    translate $dur-enter $ease-soft;
+  transition-delay: 0.5s;
+
+  @include before(1) {
+    opacity: 0;
+    translate: 0 $reveal-travel;
+  }
+}
+
+// The corrected IMEI, sent once the first one is rejected (step 2).
+.retry {
+  transition-delay: 0.95s;
+
+  @include before(2) {
+    opacity: 0;
+    translate: 0 $reveal-travel;
+  }
+}
+
+// The invoice photo: a small sheet with lines.
+.photo {
+  display: grid;
+  gap: 0.6cqi;
+  width: 6cqi;
+  padding: 1cqi;
+  border-radius: 0.6cqi;
+  background: #ffffff;
+
+  i {
+    height: 0.6cqi;
+    border-radius: 1cqi;
+    background: var(--wb-accent);
+    opacity: 0.5;
+
+    &:nth-child(2) {
+      width: 70%;
+    }
+  }
+}
+
+// The checks -----------------------------------------------------------------------------
+
+.checks {
+  @include card;
+  @include enter(2);
+  display: grid;
+  gap: 1.6cqi;
+  margin: 0;
+  padding: 2.6cqi 3.4cqi;
+  list-style: none;
+}
+
+.check {
+  display: flex;
+  align-items: center;
+  gap: 2cqi;
+  font-size: fs(3);
+  transition:
+    opacity $dur-state $ease-soft,
+    translate $dur-enter $ease-soft;
+  transition-delay: calc(0.25s + var(--k) * 0.5s);
+
+  @include before(2) {
+    opacity: 0;
+    translate: 0 $reveal-travel;
+  }
+
+  // The identity check comes at step 3.
+  &:nth-child(4) {
+    transition-delay: 0.2s;
+
+    @include before(3) {
+      opacity: 0;
+      translate: 0 $reveal-travel;
+    }
+  }
+}
+
+.checkLabel {
+  display: block;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+// The rejected attempt stays readable but quiet once the right IMEI passes.
+.fail {
+  .checkLabel {
+    text-decoration: line-through;
+    text-decoration-color: var(--wb-ink-2);
+  }
+}
+
+// The result -----------------------------------------------------------------------------
+
+.result {
+  @include appear(4);
+  display: flex;
+  align-items: center;
+  gap: 3.4cqi;
+  margin-top: auto;
+  padding-top: 3cqi;
+  border-top: 1px solid var(--sc-line);
+}
+
+.value {
+  @include figure(11cqi);
+}
+
+.caption {
+  font-weight: 600;
+  line-height: 1.3;
+}

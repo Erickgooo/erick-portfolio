@@ -120,6 +120,13 @@ const nextConfig = {
     compiler: "modern",
     silenceDeprecations: ["legacy-js-api"],
   },
+  // /work/ai-cv-screening was public for a few hours on 2026-11-02 before the
+  // case was withdrawn; its address now leads to the Incentiva Group index.
+  async redirects() {
+    return [
+      { source: "/work/ai-cv-screening", destination: "/work/incentiva-group", permanent: true },
+    ];
+  },
   async headers() {
     return [
       {
