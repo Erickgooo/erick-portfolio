@@ -59,6 +59,10 @@
   font-size: clamp(44px, 6.4vw, 80px);
   line-height: 1;
   letter-spacing: -0.03em;
+
+  span {
+    display: block;
+  }
 }
 
 .role {

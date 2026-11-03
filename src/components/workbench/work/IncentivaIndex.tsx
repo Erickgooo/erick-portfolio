@@ -104,7 +104,16 @@ export function IncentivaIndex() {
       <header className={styles.head}>
         <div className={styles.headText}>
           <p className={styles.fileLabel}>Experience index</p>
-          <h1 className={styles.title}>{incentivaRole.company}</h1>
+          {/* One word per line at every width: the break never depends on
+              which font has arrived, so the lines below never move (CLS). */}
+          <h1 className={styles.title}>
+            {incentivaRole.company.split(" ").map((word, k, all) => (
+              <span key={word}>
+                {word}
+                {k < all.length - 1 ? " " : null}
+              </span>
+            ))}
+          </h1>
           <p className={styles.role}>
             {incentivaRole.title} · {incentivaRole.timeframe.replace(" - ", " – ")} ·{" "}
             {incentivaRole.place}
