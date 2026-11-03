@@ -7,11 +7,11 @@ import { expect, test } from "./fixtures";
 // four statuses.
 
 const PAGES: { path: string; figures: string[]; scrub?: boolean }[] = [
-  { path: "/work/scope-multi-client-platform", figures: ["11 days"] },
+  { path: "/work/scope-multi-client-platform", figures: ["146/146"] },
   { path: "/work/scope-ios-launch", figures: ["13"] },
   { path: "/work/chatflow-whatsapp-ai-platform", figures: ["3,177"] },
   { path: "/work/directv-click-to-whatsapp", figures: [] },
-  { path: "/work/ai-cv-screening", figures: [] },
+  { path: "/work/samsung-lifemiles-whatsapp", figures: ["2M+"] },
   { path: "/work/incentiva-launch-campaign", figures: [] },
   { path: "/work/incentiva-website-brand", figures: [], scrub: true },
   { path: "/work/incentiva-group", figures: ["13,000+"] },
@@ -63,9 +63,7 @@ for (const { path, figures, scrub } of PAGES) {
       .toBeGreaterThan(0);
   });
 
-  test(`${path} with reduced motion: the scene stands still on its last step`, async ({
-    page,
-  }) => {
+  test(`${path} with reduced motion: the scene stands still on its last step`, async ({ page }) => {
     await page.emulateMedia({ reducedMotion: "reduce" });
     await page.goto(path);
     const scene = page.locator("main [data-scene]").first();
@@ -94,7 +92,7 @@ test("the index lists every project of the role, with one of the four statuses",
 }) => {
   await page.goto("/work/incentiva-group");
   const cards = page.locator("main article");
-  await expect(cards).toHaveCount(32);
+  await expect(cards).toHaveCount(31);
   const statuses = await cards.evaluateAll((els) =>
     els.map((el) => el.querySelector("p")?.textContent?.trim() ?? ""),
   );
@@ -109,7 +107,20 @@ test("the index lists every project of the role, with one of the four statuses",
   }
 });
 
-test("the sitemap lists the index and the seven cases", async ({ request }) => {
+test("the sitemap lists the index and the seven cases, and not the withdrawn one", async ({
+  request,
+}) => {
   const xml = await (await request.get("/sitemap.xml")).text();
   for (const { path } of PAGES) expect(xml).toContain(path);
+  expect(xml).not.toContain("ai-cv-screening");
+});
+
+// The CV-screening case was public for a few hours on 2026-11-02 and was
+// withdrawn: its address answers with a permanent redirect to the index.
+test("the withdrawn case's address redirects with 308 to the Incentiva Group index", async ({
+  request,
+}) => {
+  const response = await request.get("/work/ai-cv-screening", { maxRedirects: 0 });
+  expect(response.status()).toBe(308);
+  expect(response.headers().location).toMatch(/\/work\/incentiva-group$/);
 });
