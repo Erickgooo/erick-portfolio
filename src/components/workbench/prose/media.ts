@@ -9,6 +9,9 @@ export type Size = { w: number; h: number };
 export const MEDIA_SIZE: Record<string, Size> = {
   "/images/og/home.jpg": { w: 1200, h: 750 },
   "/images/blog/PC.jpg": { w: 1200, h: 1600 },
+  "/images/blog/multi-client-platform.webp": { w: 1200, h: 1600 },
+  "/images/blog/whatsapp-ai-assistants.webp": { w: 1200, h: 1600 },
+  "/images/blog/projects-with-ai-agents.webp": { w: 1200, h: 1600 },
   "/images/projects/app-quick-metal-shop/qmsapp.webp": { w: 2400, h: 1357 },
   "/images/projects/app-quick-metal-shop/qmsapp2.webp": { w: 2400, h: 1357 },
   "/images/projects/app-quick-metal-shop/qmsapp3.webp": { w: 2400, h: 1340 },

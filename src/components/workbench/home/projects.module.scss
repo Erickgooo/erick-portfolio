@@ -75,8 +75,13 @@
   }
 
   @include from-desk {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 64px 32px;
+  }
+
+  // Four cases: two by two, then one row of four once each card has room.
+  @include from-wide {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 64px 24px;
   }
 }
 
@@ -119,6 +124,32 @@
   @include fine-pointer {
     &:hover {
       translate: 0 -4px;
+    }
+  }
+}
+
+// The kind of work the case stands for, over its cover: small tracked
+// capitals with a short accent rule, read before anything else on the card.
+.category {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--wb-ink);
+
+  &::before {
+    content: "";
+    width: 18px;
+    height: 2px;
+    background: var(--wb-accent);
+
+    @include dark {
+      background: #6688ff;
     }
   }
 }

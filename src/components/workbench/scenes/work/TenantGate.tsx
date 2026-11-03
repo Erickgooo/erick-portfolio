@@ -27,7 +27,7 @@ export function TenantGate() {
     <Scene className={s.scene} steps={[900, 1100, 1500, 2400, 4400]} loop>
       <div className={s.token}>
         <span className={s.tokenHead}>
-          <span className={s.label}>Signed token</span>
+          <span className={s.label}>Signed-in session</span>
           <span className={s.signed}>
             <i className={s.tick} />
             signed
@@ -47,7 +47,7 @@ export function TenantGate() {
 
       <div className={s.gate}>
         <span className={s.label}>Campaign resolver</span>
-        <span className={s.note}>reads the campaign from the token</span>
+        <span className={s.note}>reads the campaign from the session</span>
       </div>
 
       <i className={`${s.line} ${s.lineA}`} />

@@ -32,7 +32,7 @@ const BUILDS: {
   {
     key: "content",
     title: "Content engines",
-    text: "AI video pipelines and automated SEO publishing that keep shipping without a production crew.",
+    text: "AI video pipelines and automated SEO publishing that keep shipping week after week.",
     where: "Quick Metal Shop, Dakoma Roofing, Incentiva Group (website launch)",
     paper: "ink",
     scene: <ReelBuild />,
@@ -56,7 +56,7 @@ const BUILDS: {
   {
     key: "operations",
     title: "Operations software",
-    text: "Field apps, client portals and dashboards that run the operation, with releases, audits and tests behind them.",
+    text: "Field apps, client portals and dashboards that run the operation, with releases, reviews and tests behind them.",
     where: "Incentiva Group: Scope for Nequi and Wompi, the Incentiva Portal, ChatFlow",
     paper: "cobalt",
     scene: <InheritedPlatforms />,

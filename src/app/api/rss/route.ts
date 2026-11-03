@@ -3,6 +3,7 @@
 import { pages, profile, siteUrl } from "@/resources";
 import { isProtectedPath } from "@/resources/protectedRoutes";
 import { getPosts } from "@/utils/posts";
+import { fullTitle } from "@/utils/seo";
 import { NextResponse } from "next/server";
 
 const ENTITIES: Record<string, string> = {
@@ -54,7 +55,7 @@ export async function GET() {
     '<?xml version="1.0" encoding="UTF-8"?>',
     '<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">',
     "  <channel>",
-    `    <title>${xml(pages.blog.title)}</title>`,
+    `    <title>${xml(fullTitle(pages.blog.title))}</title>`,
     `    <link>${blogUrl}</link>`,
     `    <description>${xml(pages.blog.description)}</description>`,
     "    <language>en</language>",
@@ -64,7 +65,7 @@ export async function GET() {
     `    <webMaster>${author}</webMaster>`,
     "    <image>",
     `      <url>${siteUrl}${xml(profile.avatar)}</url>`,
-    `      <title>${xml(pages.blog.title)}</title>`,
+    `      <title>${xml(fullTitle(pages.blog.title))}</title>`,
     `      <link>${blogUrl}</link>`,
     "    </image>",
     ...items,

@@ -10,21 +10,21 @@ export const faqData: FAQItem[] = [
     id: "current",
     question: "What does Erick do currently?",
     answer:
-      "Erick is **Operations Manager at Incentiva Group**, a marketing agency in Medellín, where he has led projects for **Nequi, Wompi, Colmaíz and Samsung**. He runs the company's in-house software as product owner and technical lead (a field-sales app, a client portal and a WhatsApp AI-assistant platform), directing AI-assisted development from audit to App Store release, and leads brand and go-to-market work. Before that he built the complete marketing infrastructure for **Quick Metal Shop**.",
+      "Erick is a **Growth & AI Systems Lead**: he builds the systems behind business growth, from acquisition and CRM automation to AI assistants and production software. His current position is **Operations Manager at Incentiva Group**, a marketing agency in Medellín, where he has led projects for **Nequi, Wompi, Colmaíz and Samsung**. He runs the company's in-house software as product owner and technical lead (a field-sales app, a client portal and a WhatsApp AI-assistant platform), directing AI-assisted development from audit to App Store release, and leads brand and go-to-market work. Before that he was the sole marketer at **Quick Metal Shop**, where he built its marketing from zero.",
     relatedIds: ["incentiva", "notable-project", "contact"],
   },
   {
     id: "incentiva",
     question: "What has he built at Incentiva Group?",
     answer:
-      "Seven case studies, among them:\n\n• **Scope**: Incentiva's custom app for the **Nequi** and **Wompi** field teams, turned into a multi-client platform with Wompi live next to Nequi, and its first iOS launch with **13** production releases.\n• **ChatFlow**: the WhatsApp AI platform behind the **Colmaíz** (Ingredion) assistant, taken from backups to **3,177** automated tests.\n• **DIRECTV**: a click-to-WhatsApp funnel for Incentiva as an authorized DIRECTV dealer, with an AI assistant that pre-qualifies leads.\n• **Samsung × LifeMiles**: at Incentiva Group he led the WhatsApp chatbot through which **2M+ LifeMiles miles** were awarded to Galaxy S26 buyers.\n• The company's new brand and 28-page website.\n\nApart from the figures above and Colmaíz's (35,000+ contacts, 6,000+ served), client figures are confidential. Every project is in the [Incentiva Group index](/work/incentiva-group).",
+      "Seven case studies, among them:\n\n• **Scope**: Incentiva's custom app for the **Nequi** and **Wompi** field teams, turned into a multi-client platform with Wompi live next to Nequi, and its first iOS launch with **13** production releases.\n• **ChatFlow**: the WhatsApp AI platform behind the **Colmaíz** (Ingredion) assistant, from no tests to **3,177** automated tests, with CI/CD, observability and a client portal.\n• **DIRECTV**: a click-to-WhatsApp funnel for Incentiva as an authorized DIRECTV dealer, with an AI assistant that pre-qualifies leads.\n• **Samsung × LifeMiles**: at Incentiva Group he led the WhatsApp chatbot through which **2M+ LifeMiles miles** were awarded to Galaxy S26 buyers.\n• The company's new brand and 28-page website.\n\nApart from the figures above and Colmaíz's (35,000+ contacts, 6,000+ served), client figures are confidential. Every project is in the [Incentiva Group index](/work/incentiva-group).",
     relatedIds: ["current", "ai-tools", "contact"],
   },
   {
     id: "notable-project",
-    question: "What is his most notable project?",
+    question: "What is his most notable work?",
     answer:
-      "Erick's most notable project is the **QMS ArquiExpo App**, a custom-built, vertically-oriented interactive touchscreen web application showcasing 285 architectural panel variants. He designed, developed, and deployed it on Netlify for ArquiExpo 2026, resolving iOS Safari rendering quirks to ensure flawless vertical touchscreen performance.",
+      "The home features four recent cases, one for each part of his work:\n\n• **Acquisition**: [DIRECTV click-to-WhatsApp](/work/directv-click-to-whatsapp), a sales funnel for Incentiva as an authorized DIRECTV dealer, with **62** creatives and an AI assistant that pre-qualifies leads.\n• **Automation**: [Samsung × LifeMiles on WhatsApp](/work/samsung-lifemiles-whatsapp), the chatbot he led at Incentiva Group, through which **2M+ LifeMiles miles** were awarded.\n• **Product**: [Scope](/work/scope-multi-client-platform), turned from a single-client app into a multi-client platform.\n• **Operations**: [ChatFlow](/work/chatflow-whatsapp-ai-platform), a WhatsApp AI platform run in production with CI/CD, observability and **3,177** automated tests.\n\nEvery case, including his earlier work, is on the [Projects page](/work).",
     relatedIds: ["ai-tools", "chatbot-exp", "contact"],
   },
   {
@@ -63,6 +63,7 @@ export const faqData: FAQItem[] = [
   },
 ];
 
-export const initialGreeting = "Hi, I'm ErickBot! Ask me anything about Erick's background.";
+export const initialGreeting =
+  "Hi, I'm ErickBot. Ask me anything about Erick Mahecha, Growth & AI Systems Lead.";
 export const backButtonLabel = "Back to questions";
 export const chatbotTitle = "ErickBot";

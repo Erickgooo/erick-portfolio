@@ -21,38 +21,52 @@ export const pages = {
   home: {
     path: "/",
     label: "Home",
-    title: `${profile.name}'s Portfolio`,
+    title: `${profile.name} · ${profile.role}`,
     description:
-      "I build complete growth systems for founders: AI content pipelines, CRM automation and paid media. ROAS 3.92x · 338K+ organic views at $0 ad spend · $3.45 cost per lead in technical B2B.",
+      "Erick Mahecha, Growth & AI Systems Lead: acquisition, CRM automation, WhatsApp AI assistants and production software, built into systems teams can actually run.",
     image: "/images/og/social-preview.jpg",
   },
   about: {
     path: "/about",
     label: "About",
-    title: `About – ${profile.name}`,
-    description: `Meet ${profile.name}, ${profile.role} from ${profile.location}`,
+    title: "About",
+    description: `${profile.name}, ${profile.role} in ${profile.location}: experience, resume, skills and certifications.`,
   },
   work: {
     path: "/work",
     label: "Projects",
-    title: `Projects – ${profile.name}`,
+    title: "Projects",
     description:
-      "AI systems, automation workflows, and marketing infrastructure built by Erick Mahecha",
+      "Case studies by Erick Mahecha in acquisition, automation, product and operations: WhatsApp AI assistants, multi-client platforms, paid media and the software behind them.",
   },
   blog: {
     path: "/blog",
     label: "Blog",
-    title: "Insights & Setup",
-    description: `Read what ${profile.name} has been up to recently`,
+    title: "Insights",
+    description:
+      "Notes from building growth systems: multi-client platforms, WhatsApp AI assistants and running projects with AI agents",
   },
   gallery: {
     path: "/gallery",
     label: "Visual Work",
-    title: `Visual Work – ${profile.name}`,
+    title: "Visual Work",
     description:
-      "Cinematic video production used to require a crew, a budget, and days of shooting. These assets were built by one person, usually in hours. This section collects paid ad creatives, short-form video, and AI-generated content produced for real campaigns.",
+      "Paid ad creatives, short-form video and AI-generated content produced for real campaigns, with AI generation models and traditional editing tools.",
   },
 } satisfies Record<string, Page>;
+
+/**
+ * The route for someone reviewing Erick's profile (a recruiter, a hiring
+ * manager): the work experience on About, with the resume at its top. The
+ * header, the hero and every closing link to it; "Book a call" is the route
+ * for hiring him.
+ */
+export const experience = {
+  label: "Experience & Resume",
+  href: "/about#experience",
+  /** The id of the experience section on About. */
+  anchor: "experience",
+};
 
 /** The pages that are on. A page that is off answers as not found. */
 export const enabledRoutes: Record<PagePath, boolean> = {

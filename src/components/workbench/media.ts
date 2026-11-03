@@ -9,11 +9,13 @@ export const MEDIA = {
     h: 2048,
     alt: "Quick Metal Shop product ad for the laser-cut steel coquí wall piece",
   },
-  panettone: {
-    src: "/images/gallery/Artesa - Panettone 2x1.webp",
+  // The final state of the Samsung × LifeMiles case's scene (MilesClaim), as
+  // published on the case, cropped to the scene (scripts/design/covers.mjs).
+  milesClaim: {
+    src: "/images/projects/incentiva/samsung-lifemiles-whatsapp-scene.webp",
     w: 1080,
     h: 1350,
-    alt: "Artesa Panadería panettone 2-for-1 promotion creative",
+    alt: "The Samsung × LifeMiles claim on WhatsApp at Incentiva Group: the invoice read by OCR, an IMEI rejected and a valid one accepted, the identity verified, and 2M+ LifeMiles miles awarded through the chatbot",
   },
   arqui: {
     src: "/images/gallery/arqui.webp",

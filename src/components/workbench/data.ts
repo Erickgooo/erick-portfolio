@@ -1,5 +1,6 @@
 // Workbench: the curated content of the home. Every figure, name and path
 // below comes from src/resources (about.tsx, incentiva.ts) or the project MDX.
+import { type HomeCategory, homeFeatured } from "@/resources/home";
 import { isProtectedPath } from "@/resources/protectedRoutes";
 import { getPosts } from "@/utils/posts";
 
@@ -16,18 +17,22 @@ const COVER_SIZE: Record<string, { w: number; h: number }> = {
 };
 const DEFAULT_COVER = { w: 2400, h: 1357 };
 
-/** The order of the fan on the home (three Incentiva Group cases and the three strongest earlier ones), and the paper each card is printed on. */
-const FAN: { slug: string; paper: Paper }[] = [
-  { slug: "scope-multi-client-platform", paper: "cobalt" },
-  { slug: "directv-click-to-whatsapp", paper: "mist" },
-  { slug: "samsung-lifemiles-whatsapp", paper: "ink" },
-  { slug: "quick-metal-shop-viral-videos", paper: "ink" },
-  { slug: "leadbot-ai", paper: "cobalt" },
-  { slug: "ai-powered-ad-creatives", paper: "mist" },
-];
+/** The paper each kind of card is printed on. */
+const PAPER: Record<HomeCategory, Paper> = {
+  Acquisition: "mist",
+  Automation: "ink",
+  Product: "cobalt",
+  Operations: "mist",
+};
+
+/** The cases featured on the home, with their category (src/resources/home.tsx). */
+const FAN = homeFeatured.map((feature) => ({ ...feature, paper: PAPER[feature.category] }));
 
 export type FanCard = {
   slug: string;
+  category: HomeCategory;
+  /** What the card says the case is about, when it says more than the title. */
+  line?: string;
   client: string;
   title: string;
   value: string;
@@ -53,7 +58,7 @@ function getProjects() {
 export function getFanCards({ hideProtected }: { hideProtected: boolean }): FanCard[] {
   const posts = getProjects();
   const cards: FanCard[] = [];
-  for (const { slug, paper } of FAN) {
+  for (const { slug, paper, category, line } of FAN) {
     const href = `/work/${slug}`;
     if (hideProtected && isProtectedPath(href)) continue;
     const post = posts.find((p) => p.slug === slug);
@@ -63,6 +68,8 @@ export function getFanCards({ hideProtected }: { hideProtected: boolean }): FanC
     const coverSrc = post.metadata.images.find(isImage) ?? post.metadata.images[0];
     cards.push({
       slug,
+      category,
+      line,
       client: client.trim(),
       title: rest.join(":").trim() || post.metadata.title,
       value: value ?? "",

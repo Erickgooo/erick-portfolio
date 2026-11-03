@@ -54,11 +54,11 @@ export const about: About = {
       <br />
       <br />
       The answer has taken different shapes across different projects. An AI-powered WhatsApp
-      chatbot that handled <Metric>85%</Metric> of inbound conversations autonomously for Artesa. A
-      full marketing department built from scratch for Quick Metal Shop (brand identity, paid media,
-      SEO automation, CRM integration, and a custom-built trade show application showcasing{" "}
-      <Metric>285</Metric> panel variants). A complete rebranding and content automation system for
-      Dakoma Roofing, delivered as a one-person freelance engagement.
+      chatbot that handled <Metric>85%</Metric> of inbound conversations autonomously for Artesa.
+      Quick Metal Shop&apos;s marketing, built from scratch as its sole marketer (brand identity,
+      paid media, SEO automation, CRM integration, and a custom-built trade show application
+      showcasing <Metric>285</Metric> panel variants). A complete rebranding and content automation
+      system for Dakoma Roofing, delivered as a solo freelance engagement.
       <br />
       <br />
       What connects all of it is the same approach: start with the operational reality, identify
@@ -68,11 +68,10 @@ export const about: About = {
       <br />
       Today I work at the intersection of marketing strategy, AI tooling, and systems design. As
       Operations Manager at Incentiva Group, I lead the company's in-house software, a field-sales
-      app, a client portal and a WhatsApp AI platform, built and audited with AI agents under my
-      direction. I don't run campaigns in isolation. I build the ecosystems that make campaigns
+      app, a client portal and a WhatsApp AI platform, built and reviewed with AI agents under my
+      direction. I don't run campaigns in isolation. I build the systems that make campaigns
       compound over time: automated content pipelines, real-time lead qualification, full-funnel
-      tracking, and creative production workflows that let a one-person operation output at agency
-      scale.
+      tracking, and creative production workflows whose pipeline I run end to end.
       <br />
       <br />
       The work I find most interesting lives at the edge of what's currently possible with AI, which
@@ -92,9 +91,9 @@ export const about: About = {
         achievements: [
           <Fragment key="platforms">
             Took over three production platforms, among them ChatFlow, which runs the Colmaíz
-            (Ingredion) WhatsApp assistant, starting from little or no CI/CD and few or no tests. I
-            brought them under version control and automated pipelines, and grew their test suites
-            to more than <Metric>13,000</Metric> automated tests.
+            (Ingredion) WhatsApp assistant. I brought them under version control and automated
+            pipelines, and grew their test suites to more than <Metric>13,000</Metric> automated
+            tests.
           </Fragment>,
           <Fragment key="multi-client">
             Architected the move of Scope, Incentiva&apos;s custom app for the Nequi field teams,
@@ -108,7 +107,7 @@ export const about: About = {
             rejections.
           </Fragment>,
           "Launched a sales channel end to end for Incentiva as an authorized DIRECTV dealer: strategy, a Meta click-to-WhatsApp campaign with 7 ads and 62 creatives, and an AI sales assistant that pre-qualifies leads and reports conversions back to Meta.",
-          "Led code and security audits across the company's products, covering more than 170 findings. I had them fixed test-first and added tenant-isolation tests, two-factor login and Key Vault-managed secrets.",
+          "Led the security reviews of the company's products and their remediation, test-first: hardened sign-in with two-factor authentication, encrypted secrets and tenant-isolation tests.",
           <Fragment key="samsung">
             Led the Samsung × LifeMiles WhatsApp promotion: I took over its chatbot, rebuilt it for
             a high-volume promotion, rewrote its prompt and directed its fraud controls
@@ -159,7 +158,7 @@ export const about: About = {
         achievements: [
           "Executed a full rebranding initiative. I delivered a Brand Manual that redefined the color palette, typography system, and logo usage guidelines, then rolled it out across the company's website, social media profiles, and advertising assets.",
           "Integrated Soro AI to establish an autonomous SEO blog pipeline, enabling consistent keyword-targeted content publishing with zero ongoing manual effort.",
-          "Developed a suite of high-production video ad creatives using Higgsfield's Kling 3.0 for cinematic footage and Nano Banana Pro for AI avatar-driven spokesperson content, achieving output quality that matched the elevated brand standard at a one-person cost and timeline.",
+          "Developed a suite of high-production video ad creatives using Higgsfield's Kling 3.0 for cinematic footage and Nano Banana Pro for AI avatar-driven spokesperson content, matching the elevated brand standard in a solo freelance engagement.",
         ],
       },
       {
@@ -328,12 +327,12 @@ export const about: About = {
             <strong>Apps & APIs:</strong> Flutter / Dart, .NET / C# (EF Core), Angular, React,
             TypeScript, Node.js, Next.js
             <br />
-            <strong>Cloud:</strong> Azure (App Service, SQL, Key Vault, managed identity,
-            Application Insights), Netlify, Vercel
+            <strong>Cloud:</strong> Azure (App Service, SQL, Application Insights), Netlify,
+            Vercel
             <br />
-            <strong>Security & Compliance:</strong> Application security audits (OWASP ASVS and
-            MASVS), two-factor login, secret management, data-protection compliance under
-            Colombia&apos;s habeas data law
+            <strong>Security & Compliance:</strong> Security reviews and remediation, two-factor
+            authentication, secret management, data-protection compliance under Colombia&apos;s
+            habeas data law
           </>
         ),
       },

@@ -68,6 +68,12 @@
       top: auto;
       width: auto;
     }
+
+    // The tag with the longest caption takes the full row, so the grid of
+    // three leaves no gap.
+    .slot[data-wide] {
+      grid-column: 1 / -1;
+    }
   }
 }
 

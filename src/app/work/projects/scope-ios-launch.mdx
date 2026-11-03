@@ -14,11 +14,11 @@ metric: "13|production releases"
 
 ## Overview
 
-Scope is Incentiva's custom-built app to run the field teams it operates for Nequi and Wompi. Its field staff spend the working day in the street, logging merchant visits from their phones, and not all of those phones run Android. The app was on Google Play, but it had not shipped on iOS yet. Its Firebase project, which carries the push notifications, was still under the original vendor's account, so moving it to the company was part of the job.
+Scope is Incentiva's custom-built app to run the field teams it operates for Nequi and Wompi. Its field staff spend the working day in the street, logging merchant visits from their phones, and not all of those phones run Android. The app was on Google Play, but it had not shipped on iOS yet, and moving the app's Firebase project, which carries the push notifications, into the company's ownership was part of the job.
 
 I took over release management with two goals: get the app onto the App Store, and turn releasing from an event into a routine. A field app that is hard to update is a field app whose bugs stay in the street.
 
-**Result: the app's first iOS release, then 13 production versions (1.1.1 to 1.1.13) across the App Store and Google Play.**
+**Result: the app's first iOS release, then 13 production versions across the App Store and Google Play.**
 
 ## The Build
 
@@ -28,7 +28,7 @@ The first work was the unglamorous kind. iOS signing and builds had to work reli
 
 ### Owning the app's infrastructure
 
-Firebase moved from the vendor's project to a company-owned project, for the app and for the API. Users never see a change like that, and a company cannot skip it: whoever owns the project owns the app's notifications, its keys and its future releases. After the move, nothing about shipping Scope depended on a third party.
+Firebase moved to a company-owned project, for the app and for the API. Users never see a change like that, and a company cannot skip it: whoever owns the project owns the app's notifications, its keys and its future releases. After the move, nothing about shipping Scope depended on a third party.
 
 ### Three rejections, three fixes
 
@@ -43,17 +43,16 @@ Thirteen production versions only work if a release has no manual steps left to 
 - **A version-by-version publication guide**, so every release follows the same checklist and the next person can run it.
 - **Launch messages and a first-day guide** for field staff, so a change in the app arrives with an explanation instead of a surprise.
 
-### A launch crash, fixed at the root
+### Ready for the next iOS
 
-When a new iOS version changed how apps start, Scope crashed at launch on it. The fix was not a patch around the crash but a migration to Apple's UIScene lifecycle, the structure the system now expects, so the same failure does not come back with the next update.
+When a new iOS version changed how apps start, the app moved to Apple's UIScene lifecycle, the structure the system now expects, rather than being patched around the change, so the next iOS update finds it ready.
 
 The engineering was done with AI coding agents (Claude Code) under my direction. I owned the release decisions, handled App Store review and submitted every version to both stores myself.
 
 ## Results
 
 - The app's **first iOS release**, approved for unlisted distribution after **three App Store review rejections** were resolved.
-- **13 versions**, 1.1.1 to 1.1.13, released to production on both stores.
-- Build numbers went from **90 to 115**.
+- **13 versions** released to production on both stores.
 - Firebase now lives in a company-owned project, and every release follows a scripted, documented path.
 
 ## What This Demonstrates

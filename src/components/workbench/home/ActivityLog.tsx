@@ -9,7 +9,7 @@ import styles from "./activity.module.scss";
 
 const LINES = [
   "Every conversation sorted. Sales-ready leads passed to people.",
-  "AI video shipped, no production crew.",
+  "AI video shipped from one pipeline.",
   "SEO article published automatically.",
   "Meta Ads running for B2B and B2C.",
 ];

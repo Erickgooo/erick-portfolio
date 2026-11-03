@@ -4,12 +4,20 @@
 // Keep this file ASCII-only: a non-ASCII byte makes Sass emit a BOM.
 @use "../shared" as *;
 
+// #experience, the recruiter's route from the header, the hero and every
+// closing: an anchor lands with the section's top clear of the sticky header
+// on desktop (on phones the header floats at the bottom).
 .experience {
   @include below-fold(2200px, 1700px);
   position: relative;
   z-index: 1;
   overflow-x: clip;
   border-top: 1px solid var(--wb-line);
+  scroll-margin-top: 0;
+
+  @media (min-width: #{$bottom-nav + 1px}) {
+    scroll-margin-top: 72px;
+  }
 }
 
 .inner {

@@ -66,8 +66,8 @@ export function Film() {
             </p>
             <p>
               The answer has taken different shapes. An AI-powered WhatsApp chatbot that handled 85%
-              of inbound conversations autonomously for Artesa. A full marketing department built
-              from scratch for Quick Metal Shop, down to a touchscreen gallery app for its stand. A
+              of inbound conversations autonomously for Artesa. Quick Metal Shop&rsquo;s marketing, built
+              from scratch as its sole marketer, down to a touchscreen gallery app for its stand. A
               complete rebranding and content automation system for Dakoma Roofing.
             </p>
             <p>

@@ -1,0 +1,75 @@
+---
+title: "WhatsApp AI Assistants You Can Actually Operate: Consent, Checks Outside the Model and a Human Handoff"
+publishedAt: "2026-11-03"
+summary: "A WhatsApp assistant is easy to demo and hard to run. Three rules make one operable: ask for consent before capturing anything, keep every decision that matters out of the model, and hand off to a person on purpose."
+image: "/images/blog/whatsapp-ai-assistants.webp"
+---
+
+## A Demo Is Not an Operation
+
+Building a WhatsApp assistant that answers questions well takes an afternoon of prompting. Building one a business can run for months, in front of real customers, with real money or real data behind each conversation, is a different job.
+
+The difference shows up on the first busy day. Someone sends a blurry photo instead of a document. Someone asks for a price the assistant should not quote. Someone tries, politely and persistently, to talk it into approving something it should not. And somewhere a sales advisor is waiting for the conversations worth their time, not for every conversation.
+
+At Incentiva Group I lead ChatFlow, the company's platform for WhatsApp AI assistants, and the assistants that run on it: the Colmaíz (Ingredion) assistant, the sales assistant for Incentiva as an authorized DIRECTV dealer, and the chatbot of the Samsung × LifeMiles promotion. This post is what those assistants taught me about the difference between a bot that demos well and one you can operate.
+
+## Rule One: Consent First, and a No Is a No
+
+An assistant that captures personal data is a data-collection form with a personality. It needs the same care as any form, and in Colombia it works under the data-protection law (Law 1581), which asks for explicit authorization.
+
+So the assistant asks before it captures, and waits for a clear yes. A no is recorded as a no, and the conversation carries on without the data instead of asking again three messages later. The data policy the consent points to is published, so the person can read exactly what they are agreeing to.
+
+This sounds like legal housekeeping. In practice it shapes the whole conversation design: the assistant has to be useful before the person agrees to share anything, which forces it to answer real questions first.
+
+## Rule Two: The Model Reads and Talks, Code Decides
+
+Language models are very good at reading messy input and holding a conversation. They should not be the ones deciding whether a claim is valid, a lead qualifies or a purchase counts, because anything a model decides, a persuasive message can try to change.
+
+The Samsung × LifeMiles promotion made this concrete. Buyers claimed LifeMiles miles for a phone purchase by sending an invoice and the phone's IMEI through WhatsApp. A promotion that pays in something of real value attracts people trying to claim what they are not owed, so the decisions moved to places a conversation cannot reach:
+
+- **Deterministic checks in code.** Every IMEI goes through the Luhn check in code. An IMEI that fails is rejected, whatever the conversation says.
+- **An independent second opinion.** A separate model verifies the identity document, so one model's mistake cannot approve a claim on its own.
+- **Business rules as hard limits.** Purchases outside the promotion's terms are blocked before any mile is credited.
+
+The model still does what it is good at: reading invoices of every format and explaining the process in plain language. Through that chatbot, which I led at Incentiva Group, more than 2 million LifeMiles miles were awarded to Samsung buyers. The full story is in [the Samsung × LifeMiles case](/work/samsung-lifemiles-whatsapp).
+
+The same principle applies to what the assistant says. On the DIRECTV sales line, guards in the back end check every reply for length, prices and off-topic answers before it is sent, and plan details go out as official documents instead of being improvised. The assistant's internal working data is filtered out before any message, so customers only ever see the conversation.
+
+## Rule Three: Hand Off to a Person on Purpose
+
+Most assistants should not close the sale or solve every case. They should decide when a person is needed and make that person's job easier.
+
+That means defining the handoff before writing the prompt:
+
+- **When.** A qualified lead, a complaint, a request the assistant is not allowed to handle.
+- **What the person receives.** A summary built only on verified data, not a raw transcript to read from the top.
+- **What the customer is told.** Something true. If no human can take the chat right now, the assistant gives a direct contact instead of promising a handoff it cannot make.
+
+On the DIRECTV line, the assistant pre-qualifies each lead with consent, logs it where the advisor works, and the advisor closes the sale. The same qualification is reported back to Meta through the Conversions API, so the ads optimize for leads that qualify, not for anyone who taps an ad. The funnel is in [the DIRECTV case](/work/directv-click-to-whatsapp).
+
+## Operate It Like Software
+
+An assistant in production is software, and it needs what any production software needs.
+
+- **Tests for conversations.** A battery of scripted conversations runs against every change. On the Colmaíz assistant, the battery went from 270 to 318 of 320 passing.
+- **Prompts and knowledge in version control.** The prompt and the knowledge base live in the repository, and only reviewed, merged changes reach production.
+- **Observability without copying the conversation.** Usage tracked per client and per campaign, alerts on what breaks, and personal data masked in the telemetry.
+- **A clean ending.** Promotions end, and their channels have to end well. When the Samsung promotion closed, every chat received one fixed notice, and then the assistant went silent instead of answering claims it could no longer honour.
+
+All of this runs on one platform that serves several client lines, which is why the platform work matters as much as any single assistant. [The ChatFlow case](/work/chatflow-whatsapp-ai-platform) covers that side: CI/CD, observability, releases and a client portal.
+
+## A Short Checklist
+
+Before an assistant goes live, I want a yes to each of these:
+
+1. Does it ask for consent before capturing anything, and respect a no?
+2. Is every decision with consequences made in code or by an independent check, not by the conversation?
+3. Are its replies checked before they are sent?
+4. Is the handoff defined: when, to whom, with what summary, and what the customer is told?
+5. Is there a conversation test battery, and does it run on every change?
+6. Are the prompt and the knowledge base versioned, with personal data kept out of the logs?
+7. Is there a plan for the day the channel closes?
+
+None of these make a demo more impressive. All of them make the assistant something a business can leave running.
+
+Planning a WhatsApp assistant for your sales or support line? [Book a call](https://calendly.com/santiagomahecha2328/30min) and let's put the decisions where a clever message cannot reach them.

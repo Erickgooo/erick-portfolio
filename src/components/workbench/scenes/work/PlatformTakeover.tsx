@@ -1,19 +1,19 @@
-// Scene (type 1): taking over ChatFlow. A backup zip becomes a repository
-// (commits land on main), a pipeline lights its gates one by one, with the
-// approval gate held a moment before it passes, three audits tick, and the
-// test count grows from none to 3,177.
+// Scene (type 1): running ChatFlow. The platform as it was taken on (no
+// tests yet) becomes a repository (commits land on main), a pipeline lights
+// its gates one by one, with the approval gate held a moment before it
+// passes, the reviews tick, and the test count grows from none to 3,177.
 //
-// Facts: src/app/work/projects/chatflow-whatsapp-ai-platform.mdx ("existed
-// only as backups", "manual zip uploads", "no tests", "a CI/CD pipeline with
-// manual approval gates", "three audits with more than 100 findings", "3,177
-// passing tests"). Drawn in line: no product interface. Portrait (4:5) only.
+// Facts: src/app/work/projects/chatflow-whatsapp-ai-platform.mdx ("no
+// automated tests yet", "a CI/CD pipeline", "code and security reviews ...
+// remediated in regular releases", "3,177 passing tests"). Drawn in line: no
+// product interface. Portrait (4:5) only.
 import type { CSSProperties } from "react";
 import { CountUp, Scene } from "../Scene";
 import s from "./platformtakeover.module.scss";
 
 const COMMITS = ["c0", "c1", "c2", "c3", "c4", "c5"];
 const GATES = ["Build", "Test", "Approve", "Deploy"];
-const AUDITS = ["Multi-tenant", "Full code", "Security"];
+const AUDITS = ["Code review", "Security review", "Fixes shipped"];
 
 export function PlatformTakeover() {
   return (
@@ -22,8 +22,8 @@ export function PlatformTakeover() {
         <span className={s.file}>
           <i className={s.fileIcon} />
           <span>
-            <span className={s.label}>backup.zip</span>
-            <span className={s.note}>manual uploads, no tests</span>
+            <span className={s.label}>The platform, taken on</span>
+            <span className={s.note}>live with clients, no tests yet</span>
           </span>
         </span>
       </div>
@@ -65,7 +65,7 @@ export function PlatformTakeover() {
             {audit}
           </span>
         ))}
-        <span className={s.findings}>3 audits, 100+ findings</span>
+        <span className={s.reviewed}>remediated in regular releases</span>
       </div>
 
       <div className={s.tests}>
