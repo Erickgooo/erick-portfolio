@@ -69,6 +69,16 @@
   font-size: 17px;
   font-weight: 600;
   line-height: 1.4;
+
+  span {
+    display: block;
+  }
+}
+
+.roleMeta {
+  color: var(--wb-ink-2);
+  font-size: 16px;
+  font-weight: 500;
 }
 
 .summary {

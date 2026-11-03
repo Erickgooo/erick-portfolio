@@ -114,9 +114,12 @@ export function IncentivaIndex() {
               </span>
             ))}
           </h1>
+          {/* Two fixed lines, so the break never moves when the font arrives. */}
           <p className={styles.role}>
-            {incentivaRole.title} · {incentivaRole.timeframe.replace(" - ", " – ")} ·{" "}
-            {incentivaRole.place}
+            <span>{incentivaRole.title}</span>{" "}
+            <span className={styles.roleMeta}>
+              {`${incentivaRole.timeframe.replace(" - ", " – ")} · ${incentivaRole.place}`}
+            </span>
           </p>
           <p className={styles.summary}>{incentivaRole.summary}</p>
           <p className={styles.method}>{incentivaRole.method}</p>
