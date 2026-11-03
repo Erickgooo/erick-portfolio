@@ -41,6 +41,9 @@ export default async function RootLayout({
         />
       </head>
       <body className={`${styles.body} ${spotlightStyles.pageDots}`}>
+        <a href="#main" className="skip-link">
+          Skip to content
+        </a>
         <IntroLoader />
         <SpotlightBackground />
         <GlassController />

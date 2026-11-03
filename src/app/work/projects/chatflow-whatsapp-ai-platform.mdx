@@ -1,7 +1,7 @@
 ---
-title: "ChatFlow: Taking Over a WhatsApp AI Platform"
+title: "ChatFlow: Running and Scaling a WhatsApp AI Platform"
 publishedAt: "2026-11-02"
-summary: "At Incentiva Group, I led ChatFlow, the WhatsApp AI platform behind the Colmaíz (Ingredion) assistant: from backups, zip deploys and no tests yet to an audited platform with a gated pipeline and 3,177 automated tests, plus a client portal."
+summary: "At Incentiva Group, I lead ChatFlow, the WhatsApp AI platform behind the Colmaíz (Ingredion) assistant, and run it in production: CI/CD, observability, regular releases and a client portal, with the platform grown from no tests to 3,177 automated tests."
 images:
   - "/images/projects/incentiva/chatflow-whatsapp-ai-platform.webp"
 team:
@@ -14,59 +14,58 @@ metric: "3,177|automated tests, from none"
 
 ## Overview
 
-At Incentiva Group, I led ChatFlow, the company's platform for WhatsApp AI assistants, and on it the WhatsApp assistant of Colmaíz, Ingredion's brand. ChatFlow is a React panel, a Node API on Azure, Claude models and the WhatsApp Cloud API. One platform runs the assistants of several client lines, from Colmaíz and the [Samsung × LifeMiles promotion](/work/samsung-lifemiles-whatsapp) I led at Incentiva Group to the sales line of Incentiva as an authorized DIRECTV dealer, so a change in one place reaches every client at once.
+At Incentiva Group, I lead ChatFlow, the company's platform for WhatsApp AI assistants, and on it the WhatsApp assistant of Colmaíz, Ingredion's brand. ChatFlow is a React panel, a Node API on Azure, Claude models and the WhatsApp Cloud API. One platform runs the assistants of several client lines, from Colmaíz and the [Samsung × LifeMiles promotion](/work/samsung-lifemiles-whatsapp) I led at Incentiva Group to the sales line of Incentiva as an authorized DIRECTV dealer, so a change in one place reaches every client at once.
 
-When I took it on, ChatFlow lived as backups: there was no repository yet, deploys were zip uploads and there were no tests. That was the starting point. The platform was serving real conversations every day, and Colmaíz's team did not yet have a view of its own conversations.
+The job is operating that platform: keeping it running every day for real conversations, releasing changes safely, and scaling it to new client lines without any client noticing the work underneath. When I took it on, it had no automated tests yet, and Colmaíz's team did not yet have a view of its own conversations.
 
-**Result: a platform under version control, behind a gated pipeline, audited three times and covered by 3,177 automated tests, with a client portal that Colmaíz's commercial team uses daily.**
+**Result: a platform under version control, behind a CI/CD pipeline, observed in production and covered by 3,177 automated tests, with a client portal that Colmaíz's commercial team uses daily.**
 
 ## The Build
 
-### From backups to a repository
+### One source of truth
 
-The first job was knowing what was actually running. I imported the code into git and restored parity with production, which meant recovering files that existed only on the server and nowhere in the backups. From that point the repository was the truth, and every change had a history.
+The first job was knowing exactly what was running. I brought the platform under version control and made the repository match production. From that point the repository was the truth, and every change had a history.
 
-### A pipeline with gates
+### A pipeline every change goes through
 
-Deploys moved from zip uploads to a CI/CD pipeline that builds and tests every change, while production deploys wait behind manual approval gates, with a documented deploy recipe so a release does not depend on memory. A set of guard tests fails the build on secret leaks, unsafe calls or routes mounted without protection.
+Every change goes through a CI/CD pipeline that builds and tests it before it can reach production, and a release follows a documented recipe, so it does not depend on anyone's memory. Guard tests in the pipeline stop unsafe changes before they are merged.
 
-### Three audits, then the fixes
+### Security reviews, then the fixes
 
-I ran three audits: a multi-tenant risk audit, a full code audit and a security audit. Together they raised more than 100 findings. They were prioritized, fixed and deployed in releases, and the security audit's first remediation release came with a rotation of the platform's secrets.
+I led the code and security reviews of the platform and their remediation. The fixes were prioritized and shipped in regular releases, alongside the features, instead of waiting for a big rewrite.
 
 ### Seeing the platform run
 
-Observability came next: metrics and alerts, AI consumption tracked per client and per campaign, and personal data masked in telemetry, so the logs that help debug a conversation do not become a copy of it.
+Observability came next: metrics and alerts, AI usage tracked per client and per campaign, and personal data masked in telemetry, so the logs that help debug a conversation do not become a copy of it.
 
 ### Features the operation needed
 
-With the base stable, the platform grew where the operation needed it: message delivery states, a WhatsApp templates interface and quick replies, a metrics dashboard with Excel export and an audit module, reliable broadcasts with deduplication, retries, atomic claims and local time zones, and a contact identity for WhatsApp users who do not show a phone number.
+With the base stable, the platform grew where the operation needed it: message delivery states, a WhatsApp templates interface and quick replies, a metrics dashboard with Excel export and an audit module, reliable broadcasts with deduplication, retries and local time zones, and a contact identity for WhatsApp users who do not show a phone number.
 
 ### A portal for the client
 
-Colmaíz's team needed to see and act on its own conversations, so I led a client-role portal on top of the platform. The client role is isolated in every layer, from the interface to the API to the data. It gives Colmaíz's commercial team a dashboard with Excel export, read-only live chats, location KPIs that map each city to its department and its responsible technician, salesperson or distributor, and "who to call" lists. Before release, **643 dashboard figures were reconciled three ways**, against the API, the Excel export and SQL.
+Colmaíz's team needed to see and act on its own conversations, so I led a client-role portal on top of the platform. The client role is isolated in every layer, from the interface to the API to the data. It gives Colmaíz's commercial team a dashboard with Excel export, read-only live chats, and location views that tell the team who to call. Before release, **643 dashboard figures were reconciled three ways**, against the API, the Excel export and SQL.
 
-The Colmaíz assistant itself got sharper too. An audit of its answers against its sources led to knowledge loaded per turn by context, the assistant moved to a faster, lower-cost model, and it now gives a contact instead of promising a handoff it cannot make.
+The Colmaíz assistant itself got sharper too. Its answers were checked against its sources, its knowledge now loads per turn by context, it runs on a faster, lower-cost model, and it gives the person a direct contact when a human is needed.
 
-The work was built with AI coding agents (Claude Code) under my direction. I ran the takeover, decided what each audit meant for the roadmap, approved the releases and followed up the incidents.
+The work was built with AI coding agents (Claude Code) under my direction. I run the platform, decide what each review means for the roadmap, approve the releases and follow up the incidents.
 
 ## Results
 
-- The repository grew from **139 files and no tests to 831 files and 3,177 passing tests**.
-- **684 commits and more than 200 merged pull requests**.
-- **Three audits** with more than 100 findings, fixed and deployed in releases.
+- The platform went **from no tests to 3,177 passing tests**.
+- **Code and security reviews** led and remediated in regular releases.
 - The assistant's test battery improved from **270 to 318 of 320**, and **643 dashboard figures** were reconciled three ways before the portal shipped.
 - The Colmaíz assistant serves a community of **35,000+ contacts**, with **6,000+ served**.
 - The same platform ran the [Samsung × LifeMiles promotion](/work/samsung-lifemiles-whatsapp), whose chatbot awarded buyers **2M+ LifeMiles miles**.
 
 ## What This Demonstrates
 
-Taking over a running system is a different job from building one. You cannot stop it, you first have to learn exactly what is running, and every change has to land without breaking the conversations happening right now. The order mattered: first the truth (a repository that matches production), then a safe way to change it (gates and tests), then the audits, and only then new features.
+Running a platform that is already serving clients is a different job from building one. You cannot stop it, you first have to learn exactly what is running, and every change has to land without breaking the conversations happening right now. The order mattered: first the truth (a repository that matches production), then a safe way to change it (a pipeline and tests), then the reviews, and only then new features and new client lines.
 
 The 3,177 tests are not the goal in themselves. They are what lets a small team change a multi-client platform with confidence that no client will notice.
 
 **Stack:**
 
-<TechStack data="React, Vite, TypeScript, Tailwind, Node.js, Express, Azure App Service, Azure SQL, Key Vault, Application Insights, Azure DevOps, WhatsApp Cloud API, Anthropic Claude, Vitest, Claude Code" />
+<TechStack data="React, Vite, TypeScript, Tailwind, Node.js, Express, Azure App Service, Azure SQL, Application Insights, Azure DevOps, WhatsApp Cloud API, Anthropic Claude, Vitest, Claude Code" />
 
-Running a platform you inherited? [Book a call](https://calendly.com/santiagomahecha2328/30min) and let's put it under control without taking it offline.
+Running a platform that already has clients on it? [Book a call](https://calendly.com/santiagomahecha2328/30min) and let's put it under control without taking it offline.

@@ -1,0 +1,73 @@
+---
+title: "One Database per Client: Designing a Multi-Client Platform That Fails Closed"
+publishedAt: "2026-11-03"
+summary: "What I learned taking a product built for one client to many: separate the data where a mistake cannot reach it, take the client from the session and refuse anything unclear, and make isolation a test every route has to pass."
+image: "/images/blog/multi-client-platform.webp"
+---
+
+## The Second Client Changes Everything
+
+Most software is built for its first customer. That is the right call at the start: one client, one set of users, one set of data, and every decision gets simpler because there is nobody else to think about. Then a second client signs, and every one of those simplifications becomes a question.
+
+The question is not whether you will separate the two clients' data. Everyone agrees on that. The question is where the separation lives, and what happens on the day somebody forgets it.
+
+I went through this at Incentiva Group with Scope, the custom app that runs the field teams Incentiva operates for Nequi, when Wompi came on as a second client on the same platform. The full story is in [the Scope case study](/work/scope-multi-client-platform). This post is the general version: the decisions I would make again on any product that has to grow from one client to many.
+
+## Decide Where Isolation Lives
+
+There are three common ways to keep clients apart, and they differ in one thing: how far a single mistake can travel.
+
+- **A client column in shared tables.** The cheapest option. Every table gets a client identifier and every query filters by it. Isolation lives in discipline: one query without the filter, and one client sees another's data.
+- **A schema per client inside one database.** Better. The separation is structural, but the clients still share a server, credentials and, often, the same connection.
+- **A database per client.** The strictest. A connection is opened for one client, so a query can only ever see that client. Isolation lives in the connection, not in the query.
+
+For Scope I chose a database per client. Between two financial companies, a leak was not a risk anyone could accept, so the separation had to sit below the place where everyday mistakes happen.
+
+My rule of thumb: the worse the consequence of one client seeing another's data, the lower in the stack the isolation should live. A database per client has real costs. Migrations run once per client, reports across clients need a consolidated view built on purpose, and connections have to be managed carefully. Those costs are predictable and they stay in the engineering team. A leak does not stay anywhere.
+
+## Take the Client From Who Is Asking, Not From What They Send
+
+Once each client has its own database, something has to decide which database a request opens. That decision is the most important line of code in the platform, and it should not trust the request.
+
+A header, a parameter in the address or a field in the body is a claim. The signed-in session is the evidence. So the platform gets one layer, a campaign or tenant resolver, whose only job is to take the authenticated user, find the client that user belongs to and open that client's database. Nothing the request says about itself can change the answer.
+
+Roles move inside the client too. An admin is an admin of one client, not of the platform; a coordinator coordinates one campaign. A role that means the same thing everywhere is a role that eventually reaches somewhere it should not.
+
+## Fail Closed
+
+The resolver will meet cases it cannot decide. A user who belongs to no campaign, a user who belongs to two and has not chosen, a session that does not match anything the platform knows. In every one of them, the answer is a refusal.
+
+Defaults are where leaks come from. "If there is no tenant, use the first one" is convenient in development and dangerous in production. An unclear case is a denied case. At first this produces a few support requests from people who were refused. That is the design working: every one of those requests is a case where the platform refused to guess.
+
+## A Test for Every Route, Enforced by the Suite
+
+Architecture describes what you intend. Tests are what make it true next month, when someone adds a route in a hurry.
+
+The rule I set for the codebase was simple: every route has a cross-tenant isolation test, or a written exemption that explains why it does not need one, such as a health check. Each test signs in as one client and tries to reach another client's data, and the only passing result is a refusal.
+
+The part that matters most is that the suite checks coverage itself. It lists the routes and fails when a route has neither a test nor an exemption. A new route cannot quietly skip the check, because the build will not pass. That moves isolation from something a reviewer has to remember to something the pipeline checks every time, which is the only kind of rule that survives a busy quarter.
+
+## One Build for Every Client
+
+The tempting shortcut for a second client is a second app: a copy of the code with the other client's logo. It ships fast and doubles every release, every fix and every store review from then on.
+
+The better shape is one build that serves any client, chosen by the session. What differs between clients lives in configuration: the product lines a client runs, its roles, its guides. On Scope, coordinators got a campaign selector, management got a consolidated view of every campaign, and a client could run more than one product line, which is how Nequi's second line went live next to Wompi. A new campaign becomes configuration, not a project.
+
+## Roll Out in Steps You Can Reverse
+
+A platform that already has a client on it cannot stop while its architecture changes. So nothing goes live in one jump. Data is separated while there is still one client, then the second client is switched on, then new product lines follow, each step with its checks before the next one starts and a way back at every point.
+
+Write the checklist before the rollout, not during it. Scope's rollout ended with 146 of 146 checks passed, and that number meant something because the checks were decided before anyone knew whether they would pass.
+
+## What I Would Tell a Team Starting This
+
+- Choose the isolation level from the consequence of a leak, not from the cost of the migration.
+- Take the client from the signed-in session, and treat everything else in a request as a claim.
+- When the platform is unsure, refuse.
+- Make the test suite, not the reviewer, the place where isolation is checked, and make it check its own coverage.
+- Keep one build, and push the differences between clients into configuration.
+- Roll out in steps you can reverse, against a checklist written in advance.
+
+The engineering on Scope was done with AI coding agents under my direction. These rules are also what made their work checkable: an agent can add routes quickly, and the suite still refuses every one that does not prove it keeps clients apart.
+
+About to onboard your second client? [Book a call](https://calendly.com/santiagomahecha2328/30min) and let's look at your isolation model before they arrive.

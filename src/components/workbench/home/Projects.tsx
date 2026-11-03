@@ -1,7 +1,8 @@
-// Workbench: the projects (sober, 2026-10-22): straight cards in a grid of
-// three on desktop and two on tablets, rising one after another as they
-// enter (they used to fan out like a hand); a horizontal scroll-snap row on
-// phones.
+// Workbench: the featured work on the home (2026-11-03): four recent cases,
+// one per kind of work (acquisition, automation, product, operations), each
+// card with its category. Straight cards in a grid of two on tablets and
+// desktops and four from 1280 px, rising one after another as they enter; a
+// horizontal scroll-snap row on phones.
 import Image from "next/image";
 import Link from "next/link";
 import type { CSSProperties } from "react";
@@ -12,7 +13,6 @@ import styles from "./projects.module.scss";
 
 export function Projects({ hideProtected }: { hideProtected: boolean }) {
   const cards = getFanCards({ hideProtected });
-  const cases = inWords(cards.length);
 
   return (
     <section id="work" className={styles.work} aria-labelledby="work-title">
@@ -20,22 +20,23 @@ export function Projects({ hideProtected }: { hideProtected: boolean }) {
         <div className={styles.head} data-reveal="">
           <h2 id="work-title">Work on the bench</h2>
           <p>
-            {cases.charAt(0).toUpperCase() + cases.slice(1)} cases, each with the number it moved.
-            Pick one up.
+            Recent work, one case for each part of the job: acquisition, automation, product and
+            operations.
           </p>
         </div>
       </div>
       <ul className={styles.fan} data-reveal="">
         {cards.map((card, i) => (
           <li key={card.slug} className={styles.slot} style={{ "--i": i } as CSSProperties}>
-            <Link href={card.href} className={styles.card}>
+            <Link href={card.href} className={styles.card} data-category={card.category}>
+              <span className={styles.category}>{card.category}</span>
               <span className={styles.print}>
                 <Image
                   src={card.cover.src}
                   width={card.cover.w}
                   height={card.cover.h}
                   alt=""
-                  sizes="(min-width: 1024px) 380px, (min-width: 720px) 46vw, 78vw"
+                  sizes="(min-width: 1280px) 290px, (min-width: 720px) 46vw, 78vw"
                 />
               </span>
               <span className={styles.metric}>
@@ -43,7 +44,7 @@ export function Projects({ hideProtected }: { hideProtected: boolean }) {
                 <span>{card.label}</span>
               </span>
               <span className={styles.client}>{card.client}</span>
-              <span className={styles.title}>{card.title}</span>
+              <span className={styles.title}>{card.line ?? card.title}</span>
               <span className={styles.open}>
                 Read the case <FiArrowRight aria-hidden="true" />
               </span>

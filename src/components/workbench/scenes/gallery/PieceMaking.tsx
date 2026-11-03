@@ -5,7 +5,7 @@
 // new part moves: whatever an earlier step made is already in place. Drawn
 // in style A: hairlines, the presenter and the accents in cobalt.
 //
-// Facts: content.tsx `gallery.description` (one person, usually in hours);
+// Facts: the Visual Work lede (each production pipeline run end to end);
 // ai-powered-ad-creatives.mdx, "The AI Production Pipeline" (the presenter
 // generated in Higgsfield with Nano Banana Pro, animated with Kling 3.0, an
 // ElevenLabs voice, post-production in CapCut Pro); and

@@ -35,7 +35,7 @@ export const incentivaRole = {
   timeframe: "July 2026 - Present",
   place: "Medellín, hybrid",
   summary:
-    "At Incentiva Group, a marketing agency in Medellín, I led projects for Nequi, Wompi, Colmaíz and Samsung. As Operations Manager I report to the CEO, lead a team of two and run the company's in-house software as product owner and technical lead: Scope, the field app for the Nequi and Wompi field teams, a client portal and ChatFlow, the WhatsApp AI-assistant platform, directing AI-assisted development from audit to App Store release. I also lead brand and go-to-market work: the 2026 brand redesign and new corporate website, a click-to-WhatsApp sales channel for Incentiva as an authorized DIRECTV dealer, and commercial proposals and cost models.",
+    "At Incentiva Group, a marketing agency in Medellín, I led projects for Nequi, Wompi, Colmaíz and Samsung. As Operations Manager I report to the CEO, lead a team of two and run the company's in-house software as product owner and technical lead: Scope, the field app for the Nequi and Wompi field teams, a client portal and ChatFlow, the WhatsApp AI-assistant platform, directing AI-assisted development from review to App Store release. I also lead brand and go-to-market work: the 2026 brand redesign and new corporate website, a click-to-WhatsApp sales channel for Incentiva as an authorized DIRECTV dealer, and commercial proposals and cost models.",
   method:
     "The software, decks and media were produced with AI agents, mainly Claude Code, with Higgsfield for generative media. I define the requirements, approve specs and designs, make the product, legal and pricing decisions, and merge and release to production.",
 };
@@ -44,7 +44,7 @@ export const INCENTIVA_AREAS: IncentivaArea[] = [
   {
     id: "product",
     title: "Product and engineering leadership",
-    line: "Scope (the field-sales app), the Incentiva Portal and ChatFlow: roadmap, audits, releases and cloud operations.",
+    line: "Scope (the field-sales app), the Incentiva Portal and ChatFlow: roadmap, reviews, releases and cloud operations.",
     projects: [
       {
         id: "P14",
@@ -66,10 +66,10 @@ export const INCENTIVA_AREAS: IncentivaArea[] = [
       },
       {
         id: "P33",
-        title: "ChatFlow platform takeover, CI/CD and audits",
+        title: "ChatFlow platform: running and scaling it in production",
         client: "Incentiva (internal)",
         status: "In production",
-        line: "Took a WhatsApp AI platform from backups to version control, a gated pipeline, three audits and 3,177 tests.",
+        line: "Brought a WhatsApp AI platform under version control, a gated pipeline, observability and 3,177 automated tests.",
         stack: ["React", "Node.js", "Azure", "Azure DevOps", "Vitest"],
         caseSlug: "chatflow-whatsapp-ai-platform",
       },
@@ -78,16 +78,16 @@ export const INCENTIVA_AREAS: IncentivaArea[] = [
         title: "Colmaíz WhatsApp assistant and client portal (ChatFlow)",
         client: "Colmaíz (Ingredion)",
         status: "In production",
-        line: "An assistant for a community of 35,000+ contacts, 6,000+ served: lost messages fixed, structured capture, and a client-role portal reconciled against the API, Excel and SQL.",
+        line: "An assistant for a community of 35,000+ contacts, 6,000+ served: reliable delivery, structured capture, and a client-role portal reconciled against the API, Excel and SQL.",
         stack: ["React", "Node.js", "Azure SQL", "Anthropic Claude", "WhatsApp Cloud API"],
         caseSlug: "chatflow-whatsapp-ai-platform",
       },
       {
         id: "P27",
-        title: "Scope field reliability, bug audit and field-team features",
+        title: "Scope field reliability and field-team features",
         client: "Incentiva (internal), for field operations",
         status: "In production",
-        line: "Fixed lost records, failing photo uploads and broken sessions, fixed audited bugs test-first, and added tools to supervise the working day.",
+        line: "Reliability work for the field app, fixes shipped test-first, and tools to supervise the working day.",
         stack: ["Flutter", ".NET", "Angular", "Application Insights"],
       },
       {
@@ -95,8 +95,8 @@ export const INCENTIVA_AREAS: IncentivaArea[] = [
         title: "Azure cloud and DevOps for Scope and Portal",
         client: "Incentiva (internal)",
         status: "In production",
-        line: "The first CI/CD for the Scope API, fully verified Portal deploys, a QA environment beside production and secrets in Key Vault.",
-        stack: ["Azure App Service", "Azure SQL", "Key Vault", "Azure DevOps"],
+        line: "CI/CD for the Scope API and the Portal, a QA environment and encrypted secrets.",
+        stack: ["Azure App Service", "Azure SQL", "Azure DevOps"],
       },
       {
         id: "P29",
@@ -119,15 +119,15 @@ export const INCENTIVA_AREAS: IncentivaArea[] = [
         title: "Wompi manager dashboard with two-factor login",
         client: "Wompi",
         status: "In production",
-        line: "A read-only live dashboard for the client's manager, behind a default-deny gateway and a time-based second factor.",
-        stack: [".NET", "Angular", "Azure Key Vault", "xUnit"],
+        line: "A read-only live dashboard for the client's manager, behind hardened sign-in with two-factor authentication.",
+        stack: [".NET", "Angular", "xUnit"],
       },
       {
         id: "P21",
-        title: "Scope visit heat map, anti-fraud verification and client report",
+        title: "Scope visit heat map, visit verification and client report",
         client: "Nequi and Wompi",
         status: "In production",
-        line: "Reported versus GPS-verified visits on a custom canvas heat map, a fraud-signal risk score and a client PDF report.",
+        line: "A custom canvas heat map of the field work, a verification of reported visits and a client PDF report.",
         stack: ["Angular", ".NET", "Google Maps APIs", "Canvas"],
       },
       {
@@ -314,15 +314,15 @@ export const INCENTIVA_AREAS: IncentivaArea[] = [
   {
     id: "security",
     title: "Security, privacy and compliance",
-    line: "Code and security audits, multi-tenant isolation, two-factor login, and consent flows under Colombia's data-protection law.",
+    line: "Security reviews and their remediation, multi-tenant isolation, hardened sign-in, and consent flows under Colombia's data-protection law.",
     projects: [
       {
         id: "P12",
-        title: "Scope and Portal security audits and hardening",
+        title: "Scope and Portal security reviews and hardening",
         client: "Incentiva (internal)",
         status: "In production",
-        line: "Security audits, a threat model and a first remediation wave, from hashed refresh tokens to cross-tenant route isolation.",
-        stack: [".NET", "Flutter", "Angular", "OWASP ASVS and MASVS"],
+        line: "Hardened sign-in with two-factor authentication and encrypted secrets; I led the security reviews and their remediation.",
+        stack: [".NET", "Flutter", "Angular"],
       },
       {
         id: "P31",
@@ -363,9 +363,9 @@ export const incentivaCases: { slug: string; title: string; figure: string }[] =
   },
   {
     slug: "chatflow-whatsapp-ai-platform",
-    title: "ChatFlow: Taking Over a WhatsApp AI Platform",
+    title: "ChatFlow: Running and Scaling a WhatsApp AI Platform",
     figure:
-      "at Incentiva Group Erick led the platform and, on it, the WhatsApp assistant of Colmaíz (Ingredion): from no tests to 3,177 automated tests; the Colmaíz assistant serves a community of 35,000+ contacts, 6,000+ served",
+      "at Incentiva Group Erick led the platform and, on it, the WhatsApp assistant of Colmaíz (Ingredion): CI/CD, observability, releases and a client portal, from no tests to 3,177 automated tests; the Colmaíz assistant serves a community of 35,000+ contacts, 6,000+ served",
   },
   {
     slug: "directv-click-to-whatsapp",

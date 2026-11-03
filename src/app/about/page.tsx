@@ -1,3 +1,4 @@
+import { ScrollToHash } from "@/components/ScrollToHash";
 import { Closing } from "@/components/workbench/Closing";
 import { RevealObserver } from "@/components/workbench/RevealObserver";
 import { Credentials } from "@/components/workbench/about/Credentials";
@@ -45,6 +46,7 @@ export default function About() {
       <Closing />
       <RevealObserver />
       <SceneDriver />
+      <ScrollToHash />
     </>
   );
 }

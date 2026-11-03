@@ -44,6 +44,23 @@
   transition: translate $dur-micro $ease-soft;
 }
 
+// The secondary key: the same shape, unfilled, behind a hairline in the ink
+// colour, with the icon in the accent.
+.secondary {
+  --link-ink: var(--wb-ink);
+
+  background: var(--wb-page);
+  box-shadow: inset 0 0 0 1px var(--wb-ink);
+
+  .bookIcon {
+    color: var(--wb-accent);
+
+    @include dark {
+      color: #6688ff;
+    }
+  }
+}
+
 .small {
   min-height: 44px;
   gap: 10px;

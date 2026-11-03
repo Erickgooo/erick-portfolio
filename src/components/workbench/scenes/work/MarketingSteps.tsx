@@ -1,4 +1,4 @@
-// Scenes (type 4 steps): a marketing department built from zero, in the
+// Scenes (type 4 steps): a marketing function built from zero, in the
 // order of the case's "Strategic Solution". 1, the foundation: the brand manual
 // (palette, type, tone, usage); 2, SEO automation: Soro AI writes an article
 // and it is published on both storefronts, the Odoo site (B2B) and the

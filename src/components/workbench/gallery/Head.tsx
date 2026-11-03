@@ -31,8 +31,8 @@ export function Head({ bench }: { bench: GalleryBench }) {
           Visual Work
         </h1>
         <p className={styles.lede}>
-          Cinematic video production used to require a crew, a budget, and days of shooting. These
-          assets were built by one person, usually in hours.
+          Cinematic video without a film shoot: I ran each production pipeline end to end, with AI
+          generation models and traditional editing tools.
         </p>
         <p className={styles.more}>
           Paid ad creatives, short-form video and AI-generated content produced for real campaigns.

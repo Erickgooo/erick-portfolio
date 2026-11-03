@@ -212,8 +212,11 @@
   border-top: 1px solid var(--sc-line);
 }
 
+// The figure keeps its own width: with the longer caption (round 3) the row
+// squeezed it and the "+" ran into the caption.
 .value {
   @include figure(11cqi);
+  flex: none;
 }
 
 .caption {

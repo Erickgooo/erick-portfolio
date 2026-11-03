@@ -1,11 +1,20 @@
 // Search and sharing: a page's <head> metadata (title, description, the Open
 // Graph and X card) and its schema.org description as JSON-LD.
-import { siteUrl } from "@/resources";
+import { profile, siteUrl } from "@/resources";
 import type { Metadata } from "next";
 
 /** An absolute URL on the site for a path; an absolute URL stays as it is. */
 export function absoluteUrl(pathOrUrl: string): string {
   return /^https?:\/\//.test(pathOrUrl) ? pathOrUrl : `${siteUrl}${pathOrUrl}`;
+}
+
+/**
+ * A page's title in the browser tab, search results and shared links: its own
+ * title followed by Erick's name ("About · Erick Mahecha"), unless it already
+ * carries the name (the home's "Erick Mahecha · Growth & AI Systems Lead").
+ */
+export function fullTitle(title: string): string {
+  return title.includes(profile.name) ? title : `${title} · ${profile.name}`;
 }
 
 /** The picture /api/og/generate draws for a title. */
@@ -23,20 +32,23 @@ type PageInfo = {
 
 export function pageMetadata({ title, description, path, image }: PageInfo): Metadata {
   const url = path === "/" ? siteUrl : absoluteUrl(path);
+  // The drawn card takes the page's own title (the route only draws titles
+  // it knows); everything a person reads takes the full one.
   const picture = absoluteUrl(image || ogImage(title));
+  const full = fullTitle(title);
   return {
-    title,
+    title: full,
     description,
     openGraph: {
-      title,
+      title: full,
       description,
       url,
-      images: [{ url: picture, alt: title }],
+      images: [{ url: picture, alt: full }],
       type: "website",
     },
     twitter: {
       card: "summary_large_image",
-      title,
+      title: full,
       description,
       images: [picture],
     },

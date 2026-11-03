@@ -24,15 +24,15 @@ Then Wompi came on as a second client, and Nequi added a new product line. Every
 
 ### A read-only diagnosis before any change
 
-I started by commissioning a read-only diagnosis of the app, the API, the portal and the cloud setup. It mapped 87 endpoints one by one: who can call each of them, what it reads, and what stops a user from reaching someone else's data.
+I started by commissioning a read-only diagnosis of the app, the API, the portal and the cloud setup: for every route, who can call it, what it reads, and what keeps one client's data with that client.
 
-The starting point that shaped the whole project: built for one client, the API checked who you were, and had no need yet to know which client you belonged to or what role you had there. For a second client, that would have meant trusting every screen to filter correctly. I wanted a design where a missing filter could not become an incident.
+The starting point that shaped the whole project: Scope had been designed for one client, so separating data by client was new work in every layer. I did not want a design that trusted every screen to filter correctly. I wanted one where a missing filter could not become an incident.
 
 ### One database per client
 
 I chose the strictest separation available: a database per client, not one shared database with a client column. A shared schema is the usual shortcut, and it stays one forgotten filter away from a leak. With separate databases, a query can only ever see the client it was opened for.
 
-What makes it work is a campaign-resolution layer in the API. Every request carries a signed token. The layer reads the campaign from the token, never from the request body or the address, and opens that campaign's database. If the token does not resolve to a campaign the user belongs to, the request is refused. It fails closed: an unclear case is a denied case.
+What makes it work is a campaign-resolution layer in the API. It takes the campaign from the user's signed-in session, never from what the request says about itself, and opens that campaign's database. If the session does not resolve to a campaign the user belongs to, the request is refused. It fails closed: an unclear case is a denied case.
 
 Roles moved inside the campaign as well. An admin or a coordinator is an admin or a coordinator of one campaign, not of the whole platform.
 
@@ -44,11 +44,11 @@ I did not want one app per client in the stores. The Flutter app was changed so 
 
 The rule I set for the codebase: every route needs a cross-tenant isolation test, or a written exemption that explains why it does not. Each test signs in as one client and tries to reach another client's data, and the only passing result is a refusal. A new route cannot quietly skip the check, because the suite looks for it.
 
-### A staged rollout with a way back
+### A rollout with checks at every step
 
-Nothing went live in one jump. The rollout ran in stages, each with its own rollback package and its own checks before the next one started: data separated by campaign first, then Wompi switched on, then the first field staff of Nequi's new product line. Around it, coordinators got self-service for creating field staff, a guide per client, and Wompi's configuration, so the launch did not depend on me being in every step.
+Nothing went live in one jump. The rollout was staged, with checks before every step and a way back at each of them. Around it, coordinators got self-service for creating field staff, a guide per client, and Wompi's configuration, so the launch did not depend on me being in every step.
 
-The work was built with AI coding agents (Claude Code, in several coordinated sessions) under my direction. I commissioned the diagnosis, chose the architecture, approved each rollout stage and ran the production steps myself.
+The work was built with AI coding agents (Claude Code, in several coordinated sessions) under my direction. I commissioned the diagnosis, chose the architecture, approved each step of the rollout and ran the production steps myself.
 
 ## Results
 
@@ -61,7 +61,7 @@ The work was built with AI coding agents (Claude Code, in several coordinated se
 
 The shortcut was not the path to a second client. A client column and careful screens would have looked finished, and it would have stayed one mistake away from showing one client's data to another. Choosing the stricter architecture, and making isolation a rule the test suite enforces instead of something a review hopes to catch, is what made Wompi's arrival safe.
 
-It is also the shape of the role I hold: the product decision, the security posture and the rollout risk owned by one person, with AI agents doing the volume of engineering against a plan I approved and checks I can read.
+It is also the shape of the role I hold: I own the product decision, the security posture and the rollout risk, and AI agents do the volume of engineering against a plan I approved and checks I can read.
 
 **Stack:**
 

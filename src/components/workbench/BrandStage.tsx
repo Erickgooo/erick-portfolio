@@ -130,14 +130,17 @@ function Panel({ b, i, place }: { b: Brand; i: number; place: "home" | "index" }
       </h3>
       <p className={styles.line}>{b.line}</p>
       <p className={styles.result}>
-        {/* The final figure sizes the box; the live one counts inside it. */}
+        {/* The final figure sizes the box; the live one counts inside it. A
+            screen reader reads only the final figure, never a count on its
+            way up. */}
         <strong className={styles.value} data-count={b.value}>
           <span className={styles.sizer} aria-hidden="true">
             {b.value}
           </span>
-          <span className={styles.live} data-count-text="">
+          <span className={styles.live} data-count-text="" aria-hidden="true">
             {b.value}
           </span>
+          <span className={styles.hidden}>{b.value}</span>
         </strong>
         <span className={styles.measure}>{b.measure}</span>
       </p>

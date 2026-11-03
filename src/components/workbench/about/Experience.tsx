@@ -2,11 +2,11 @@
 // shows the dates, the company and the role; it opens (a native <details>, so
 // it needs no script and works from the keyboard) to what was done there. The
 // current role starts open, so the first row shows the way.
-import { about } from "@/resources";
+import { about, experience } from "@/resources";
 import type { CSSProperties } from "react";
 import { FiDownload } from "react-icons/fi";
 import { inWords } from "../data";
-import ui from "../ui.module.scss";
+import uiStyles from "../ui.module.scss";
 import styles from "./experience.module.scss";
 
 /** "July 2026 - Present" becomes ["July 2026", "Present"]; "May 2026" stays alone. */
@@ -20,20 +20,29 @@ export function Experience() {
   const resume = about.resumeUrl ?? "/resume/Erick_Mahecha_Resume.pdf";
   const firstYear = jobs.at(-1)?.timeframe.match(/\d{4}/)?.[0];
   const count = inWords(jobs.length);
+  const current = jobs[0];
 
   return (
-    <section className={styles.experience} aria-labelledby="experience-title">
+    <section
+      id={experience.anchor}
+      className={styles.experience}
+      aria-labelledby="experience-title"
+    >
       <div className={styles.inner}>
         <div className={styles.head} data-reveal="">
-          <h2 id="experience-title">Work experience</h2>
+          <h2 id="experience-title">Experience &amp; resume</h2>
           <div className={styles.headText}>
             <p>
               {count.charAt(0).toUpperCase() + count.slice(1)} roles
-              {firstYear ? ` since ${firstYear}` : ""}, from a support line to leading growth. Open
-              a ticket for what I did there.
+              {firstYear ? ` since ${firstYear}` : ""}, from a support line to{" "}
+              {current ? `${current.role} at ${current.company}` : "leading growth"}. Open a row
+              for what I did there.
             </p>
-            <a href={resume} className={ui.textLink} download>
-              The full resume (PDF) <FiDownload aria-hidden="true" />
+            <a href={resume} className={uiStyles.book} download>
+              <span className={uiStyles.bookIcon} aria-hidden="true">
+                <FiDownload />
+              </span>
+              Download the resume (PDF)
             </a>
           </div>
         </div>

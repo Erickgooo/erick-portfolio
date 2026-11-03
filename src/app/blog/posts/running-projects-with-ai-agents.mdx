@@ -1,0 +1,79 @@
+---
+title: "How I Run Projects With AI Agents: Specs, Decision Logs, Tests and Gates"
+publishedAt: "2026-11-03"
+summary: "AI coding agents do most of the typing in my projects. What I own is everything around it: the spec, the decisions and their reasons, the tests that prove the work, and the gates nothing skips on the way to production."
+image: "/images/blog/projects-with-ai-agents.webp"
+---
+
+## The Bottleneck Moves
+
+Most of the software I lead is written by AI coding agents, mainly Claude Code, under my direction. That is true of the field app, the client portal and the WhatsApp platform I run at Incentiva Group, and of this portfolio.
+
+When agents write the code, typing stops being the slow part. Two things take its place: deciding what should be built, and proving that what was built is right. An agent will produce a confident, plausible answer to any instruction, including a vague one. So the work that matters moves to the edges of the code: what goes in before the agent starts, and what has to be true before anything reaches production.
+
+This is the method I use. None of it is specific to one tool.
+
+## Start With a Spec Someone Else Could Check
+
+Every piece of work starts with a written brief, and the test of a good brief is whether a third person could read it and say whether the result meets it.
+
+A brief I can hand to an agent has four parts:
+
+- **The goal**, in one or two sentences, in terms of what changes for the user or the business.
+- **The constraints**: what must not change, which rules from earlier decisions still apply, what is confidential.
+- **What done means**, written as checks rather than impressions. "The page loads fast" is an impression. "Mobile Lighthouse performance does not drop more than three points against production, and layout shift stays at or below 0.01" is a check.
+- **What is out of scope**, so that the agent does not helpfully redesign something nobody asked about.
+
+Writing that last part is often where the project gets clearer. If I cannot say what is out of scope, I usually do not understand the task well enough to hand it off.
+
+## Keep a Decision Log
+
+Agents do not remember last week, and neither, reliably, do people. Without a record, the same questions get answered again, differently, every few sessions.
+
+So every project keeps a decision log in the repository, next to the code. Each entry is short: the decision, the reason, and who made it. "Logos are shown at equal area, not equal width, because a wide logo otherwise dominates." "Client figures are limited to the ones the client has authorized." When an agent proposes something that contradicts an earlier decision, the log is what makes that visible, and the reason is what lets me decide whether the old decision still holds.
+
+The log is also what lets work be picked up cold. A new session reads the brief, the log and the last notes, and starts from where the work actually is.
+
+## Tests Are the Contract
+
+An agent's summary of its own work is a claim, not evidence. Tests are the evidence.
+
+Where I can, tests come first: the behaviour is written as a failing test, then the agent makes it pass. For inherited systems, the first job is often to get any tests at all. On ChatFlow, the WhatsApp AI platform I lead at Incentiva Group, the suite went from no tests to 3,177 automated tests, and that is what lets a small team change a platform that several clients depend on.
+
+Two habits matter as much as the tests themselves. First, a test that fails is never weakened to make it pass without a written reason; that is the most common way an agent "finishes" a task it has not finished. Second, end-to-end tests run against the real build, in every browser that matters, because a feature that works in one engine and breaks in another is still broken.
+
+## Gates Before Production
+
+Between "the agent says it is done" and "it is live" sits a gate, and nothing skips it. Mine usually checks:
+
+1. **Types and lint** are clean.
+2. **The build** produces no new warnings compared with a build of the version in production.
+3. **Unit and end-to-end tests** pass in every browser project.
+4. **Performance** is measured against production with interleaved runs, comparing medians, so one lucky run cannot pass a regression.
+5. **The result is looked at.** Screenshots of the key pages, on desktop and phone, in light and dark, reviewed by eye. Automated checks miss what looks wrong.
+6. **There is a way back.** The commit that is in production now is written down before the merge, and so is the command that returns to it.
+7. **Production is verified after the deploy**, not assumed: the pages answer, the headers match what was there before, the key flows work.
+
+The gate is also where release management becomes routine instead of an event. On Scope, the field-sales app, scripted store uploads and a mandatory-update mechanism turned releasing into a checklist, and the app shipped 13 production releases across the App Store and Google Play.
+
+## What I Still Do Myself
+
+Directing agents is not the same as delegating responsibility. I define the requirements, approve specs and designs, make the product, legal and pricing decisions, merge and release to production, and run production steps that touch real data. When something goes wrong, the incident is mine.
+
+That is also how I describe the work: I led and directed AI-assisted development. I do not claim to have typed the code, and I do not need to. The value is in deciding what to build and being able to prove it works.
+
+## The Failure Modes I Watch For
+
+- **Confident, wrong summaries.** The countermeasure is evidence: test output, screenshots, numbers, never "it should work now."
+- **Quiet scope creep.** An agent improves things nobody asked about. The out-of-scope list in the brief is the reference.
+- **Weakened checks.** A test rewritten to pass, a threshold relaxed. Diffs to tests get read first.
+- **Stale context.** Old assumptions carried into new sessions. The decision log and session notes are the fix.
+- **"Done" without verification in production.** The gate does not end at the merge.
+
+## The Short Version
+
+Write a brief someone else could check. Keep the reasons for every decision where the next session will find them. Treat tests as the contract and the agent's summary as a claim. Put a gate between "done" and "live", and verify production after the deploy.
+
+Agents changed how fast software gets written. They did not change what makes it trustworthy. The [ChatFlow case](/work/chatflow-whatsapp-ai-platform) and [the Scope case](/work/scope-multi-client-platform) show this method on products with real clients.
+
+Leading a project with AI agents and not sure it is under control? [Book a call](https://calendly.com/santiagomahecha2328/30min) and let's set up the spec, the log and the gate.

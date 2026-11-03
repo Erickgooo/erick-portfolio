@@ -36,11 +36,14 @@ function Slot({
   place,
   index,
   kind,
+  wide = false,
   children,
 }: {
   place: Place;
   index: number;
   kind: "screen" | "print" | "tag";
+  /** A tag that takes the full row of the phone grid. */
+  wide?: boolean;
   children: ReactNode;
 }) {
   const style = {
@@ -56,7 +59,12 @@ function Slot({
     zIndex: index + 1,
   } as CSSProperties;
   return (
-    <div className={styles.slot} style={style} data-slot={kind}>
+    <div
+      className={styles.slot}
+      style={style}
+      data-slot={kind}
+      data-wide={wide ? "" : undefined}
+    >
       <div className={styles.rise}>
         <div className={styles.par}>
           <div className={styles.bob}>
@@ -252,14 +260,14 @@ export function Bench() {
         >
           <PrintImage piece={MEDIA.coqui} sizes="(min-width: 720px) 232px, 36vw" ready={ready} />
         </Slot>
-        {/* 2: a campaign creative */}
+        {/* 2: recent work at Incentiva Group, the final state of the Samsung × LifeMiles case's scene */}
         <Slot
           index={2}
           kind="print"
           place={{ x: 3, y: 65, w: 19, mx: 4, my: 64, mw: 27, depth: 0.9, bob: 4.8 }}
         >
           <PrintImage
-            piece={MEDIA.panettone}
+            piece={MEDIA.milesClaim}
             sizes="(min-width: 720px) 180px, 30vw"
             ready={ready}
           />
@@ -273,38 +281,34 @@ export function Bench() {
           <PrintImage piece={MEDIA.arqui} sizes="(min-width: 720px) 152px, 27vw" ready={ready} />
         </Slot>
       </div>
-      {/* 4-7: the figures, as plain tags: on the bench on desktop, a row of tags under it on phones */}
+      {/* 4-6: the figures, as plain tags: on the bench on desktop, a grid of tags under it on
+          phones, where the first (the Incentiva figure, the one with the accent) takes the full row */}
       <div className={styles.tags}>
         <Slot
           index={4}
           kind="tag"
-          place={{ x: 44, y: 52, w: 27, mx: 0, my: 0, mw: 100, depth: 0.8, bob: 4.6 }}
+          wide
+          place={{ x: 44, y: 50, w: 30, mx: 0, my: 0, mw: 100, depth: 0.8, bob: 4.6 }}
         >
-          <Tag value="85%" caption="of conversations automated by LeadBot AI" lead />
+          <Tag
+            value="2M+"
+            caption="LifeMiles miles awarded through a chatbot I led at Incentiva Group"
+            lead
+          />
         </Slot>
         <Slot
           index={5}
           kind="tag"
           place={{ x: 30, y: 0, w: 30, mx: 0, my: 0, mw: 100, depth: 1.5, bob: 5.2 }}
         >
-          <Tag value="338K+" caption="organic views at $0 ad spend" />
+          <Tag value="338K+" caption="organic views" />
         </Slot>
         <Slot
           index={6}
           kind="tag"
-          place={{ x: 26, y: 73, w: 26, mx: 0, my: 0, mw: 100, depth: 1.2, bob: 4.3 }}
+          place={{ x: 56, y: 80, w: 26, mx: 0, my: 0, mw: 100, depth: 1, bob: 4.9 }}
         >
-          <Tag value="13" caption="production releases, iOS and Android" />
-        </Slot>
-        <Slot
-          index={7}
-          kind="tag"
-          place={{ x: 56, y: 79, w: 27, mx: 0, my: 0, mw: 100, depth: 1, bob: 4.9 }}
-        >
-          <Tag
-            value="2M+"
-            caption="LifeMiles miles awarded through the WhatsApp chatbot I led for Samsung at Incentiva Group"
-          />
+          <Tag value="3,177" caption="automated tests" />
         </Slot>
       </div>
     </div>
