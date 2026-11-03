@@ -4,7 +4,8 @@ import { expect, test } from "./fixtures";
 
 // Round 6 (ajustes-cv-marcas-encargo.md): axe in both themes on the pages it
 // touched: the Home (hero, brand stage, tool wall), About (#experience), the
-// projects and the Incentiva index (its brands and its three statuses). It
+// projects and the Incentiva index (its brands and its three statuses); since
+// round 7 also the ArquiExpo case (its scene and results without the 285). It
 // uses the axe-core that Lighthouse already brings, so no new dependency.
 
 test.use({ bypassCSP: true });
@@ -12,7 +13,13 @@ const axePath = createRequire(__filename).resolve("axe-core/axe.min.js");
 const INTRO = '[class*="IntroLoader_overlay"]';
 
 for (const theme of ["light", "dark"] as const) {
-  for (const path of ["/", "/about", "/work", "/work/incentiva-group"]) {
+  for (const path of [
+    "/",
+    "/about",
+    "/work",
+    "/work/incentiva-group",
+    "/work/quick-metal-shop-arquiexpo",
+  ]) {
     test(`${theme} theme: no serious or critical violations on ${path}`, async ({ page }) => {
       test.setTimeout(60_000);
       await page.addInitScript((t) => localStorage.setItem("data-theme", t), theme);

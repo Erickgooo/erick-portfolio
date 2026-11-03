@@ -56,9 +56,10 @@ export const about: About = {
       The answer has taken different shapes across different projects. An AI-powered WhatsApp
       chatbot that handled <Metric>85%</Metric> of inbound conversations autonomously for Artesa.
       Quick Metal Shop&apos;s marketing, built from scratch as its sole marketer (brand identity,
-      paid media, SEO automation, CRM integration, and a custom-built trade show application
-      showcasing <Metric>285</Metric> panel variants). A complete rebranding and content automation
-      system for Dakoma Roofing, delivered as a solo freelance engagement.
+      paid media, SEO automation, CRM integration, and a custom-built touchscreen app that let its
+      sales team show the full catalog and real projects at its ArquiExpo 2026 stand). A complete
+      rebranding and content automation system for Dakoma Roofing, delivered as a solo freelance
+      engagement.
       <br />
       <br />
       What connects all of it is the same approach: start with the operational reality, identify
@@ -124,6 +125,11 @@ export const about: About = {
         description:
           "Joined as the company's first and sole marketing hire. There was no brand identity, no analytics infrastructure, and no digital strategy in place. I built everything from scratch and kept it running.",
         achievements: [
+          <Fragment key="ai-video">
+            Designed and ran an AI video production pipeline that turned the company&apos;s
+            before-and-after project photos into short-form reels: its three flagship reels reached{" "}
+            <Metric>338K+</Metric> organic views with $0 in ad spend.
+          </Fragment>,
           "Created the company's Brand Manual, defining the full visual identity (color palette, typography, tone of voice) that became the operational standard across the entire organization, including the ArquiExpo 2026 trade show stand, recognized as one of the strongest presences at the event.",
           "Deployed and configured Soro AI for automated SEO blog publishing across both the B2B site (Odoo CMS) and the B2C Shopify store, including custom code integration into each CMS. This established a compounding organic search engine that requires zero ongoing manual effort.",
           "Set up Google Analytics and Google Search Console from scratch, then linked Search Console directly to Soro AI to enable keyword-informed automated publishing.",
@@ -132,12 +138,7 @@ export const about: About = {
           "Deployed the Meta Pixel across both storefronts and independently built, configured, and launched Meta Ads campaigns, covering everything from creative concept to audience targeting and budget management, across separate B2B and B2C campaign structures.",
           "Built a Zapier-to-Odoo CRM automation to route B2B leads from Meta Instant Forms directly into the CRM in real time, eliminating manual data entry and closing a critical gap in the lead pipeline.",
           "Operated a high-velocity AI-augmented creative production workflow using Higgsfield (Kling 3.0, Seedance 2.0), ElevenLabs, Claude, CapCut, and DaVinci Resolve.",
-          <Fragment key="arquiexpo-app">
-            Designed, developed, and deployed a custom full-stack interactive gallery web
-            application for ArquiExpo 2026, showcasing <Metric>285</Metric> panel variants. Built
-            with Next.js, deployed on Netlify, optimized for a vertical touchscreen interface, and
-            fully responsive across all devices including iOS Safari.
-          </Fragment>,
+          "Designed and built a custom app for the company's ArquiExpo 2026 stand, so the sales team could show the full product catalog and its real-world projects on a vertical touchscreen. Built with Next.js, deployed on Netlify, and fully responsive across all devices, including iOS Safari.",
         ],
       },
       {
@@ -179,7 +180,11 @@ export const about: About = {
           "Configured automated re-engagement and pipeline closure logic to eliminate ghost leads and keep the funnel clean.",
           "Designed the full sales pipeline inside Kommo, mapping each stage to the team's actual commercial process identified during discovery sessions.",
           "After the handoff, the commercial team operates the system independently with no technical dependency. Every lead that enters via WhatsApp is automatically created, classified, and placed at the correct pipeline stage.",
-          "Sales advisors start their day with a prioritized queue of high-intent contacts, not 200 unsorted messages.",
+          <Fragment key="lead-queue">
+            The system organizes the <Metric>200+</Metric> WhatsApp leads that arrive every day into
+            a queue prioritized by intent, so sales advisors start with the contacts most ready to
+            buy.
+          </Fragment>,
         ],
       },
       {

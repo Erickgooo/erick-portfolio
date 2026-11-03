@@ -1,18 +1,18 @@
 // Scene (type 1): the ArquiExpo touchscreen alone, larger. A ring of checks
 // fills once as the app passes on every device (iOS Safari included); then the vertical screen comes on and
-// runs it: a header, the grid gallery filling with its 285 tiles (the panel
-// variants count up), a tap opens one panel in single-image mode, a swipe
-// shows the next, and the grid returns. Two keys under the clock mark the
-// mode on screen. (Until 2026-11-02 the ring was a build clock: the site
-// shows results, not how long the work took.)
+// runs it: a header, the grid gallery filling with its tiles, a tap opens one
+// panel in single-image mode, a swipe shows the next, and the grid returns.
+// Two keys under the clock mark the mode on screen. (Until 2026-11-02 the ring
+// was a build clock: the site shows results, not how long the work took. Until
+// 2026-11-03 the grid's tiles were also counted up beside the screen; Erick
+// took that count off the site, so the case tells the app by its purpose.)
 //
-// Facts: src/app/work/projects/quick-metal-shop-arquiexpo.mdx (metric
-// "285|panel variants on one touchscreen"; "Cross-Platform Compatibility:
-// 100% (iOS Safari Resolved)"; "Core Application Features": single-image mode and
-// grid gallery mode; 285 panel variants, drawn as 285 tiles). The screen is
-// KioskScreen (the canvas of the home's BoothApp), with its panels drawn in
-// line: it comes on at step 3 and plays the app from step 4, on its own
-// clock. Drawn in the site's palette, not the client's. Portrait (4:5) only.
+// Facts: src/app/work/projects/quick-metal-shop-arquiexpo.mdx ("Cross-Platform
+// Compatibility: 100% (iOS Safari Resolved)"; "Core Application Features":
+// single-image mode and grid gallery mode, built for the full catalog). The
+// screen is KioskScreen (the canvas of the home's BoothApp), with its panels
+// drawn in line: it comes on at step 3 and plays the app from step 4, on its
+// own clock. Drawn in the site's palette, not the client's. Portrait (4:5) only.
 import type { CSSProperties } from "react";
 import { CountUp, Scene } from "../Scene";
 import { KioskScreen } from "./KioskScreen";
@@ -67,11 +67,6 @@ export function KioskStand() {
         </span>
       </div>
       <span className={s.clockCaption}>cross-device, iOS Safari included</span>
-
-      <div className={s.count}>
-        <CountUp value="285" at={4} duration={3000} className={s.countValue} />
-        <span className={s.caption}>panel variants</span>
-      </div>
 
       <div className={s.modes}>
         <span className={s.mode}>

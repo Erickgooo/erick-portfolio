@@ -74,7 +74,9 @@ test("phones and tablets: no group of the tool wall leaves a hole", async ({ pag
   for (const width of [390, 800]) {
     await page.setViewportSize({ width, height: 900 });
     await page.goto("/");
-    const lists = page.locator('section[aria-labelledby="tools-title"] [class*="toolwall_tiles__"]');
+    const lists = page.locator(
+      'section[aria-labelledby="tools-title"] [class*="toolwall_tiles__"]',
+    );
     await expect(lists).toHaveCount(6);
     // Laid out for real (the wall skips rendering until it is near), every
     // list's last tile ends where its widest row ends, so its last row is
@@ -117,7 +119,8 @@ for (const theme of ["light", "dark"] as const) {
         await expect(shown).toHaveCount(1);
         const src = (await shown.getAttribute("src")) ?? "";
         const name = (await shown.getAttribute("alt")) ?? "";
-        if (theme === "dark" && name !== "Colmaíz") expect(src, name).toMatch(/on-dark/);
+        // Since round 7 Colmaíz has its own negative too (cv-estrategico.spec.ts).
+        if (theme === "dark") expect(src, name).toMatch(/on-dark/);
         if (theme === "light") expect(src, name).not.toMatch(/on-dark/);
       }
     }

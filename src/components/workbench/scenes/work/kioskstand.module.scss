@@ -15,7 +15,6 @@
 .kiosk,
 .clock,
 .clockCaption,
-.count,
 .modes {
   position: absolute;
   transition:
@@ -146,40 +145,17 @@
   transition-delay: 0.15s;
 }
 
-// The panel variants, counted as the grid fills ----------------------------------------
+// The two modes, under a hairline where the count of the tiles stood until
+// 2026-11-03; the one on screen outlined in cobalt ------------------------------------
 
-.count {
+.modes {
   left: 64cqi;
   top: 54cqi;
   width: 31cqi;
   display: grid;
-  gap: 0.8cqi;
+  gap: 1.8cqi;
   padding-top: 3cqi;
   border-top: 1px solid var(--sc-line);
-  transition-delay: 0.2s;
-}
-
-.countValue {
-  @include title;
-  font-size: 9cqi;
-  line-height: 1;
-  letter-spacing: -0.03em;
-  color: var(--wb-ink);
-}
-
-.caption {
-  font-weight: 500;
-  color: var(--wb-ink-2);
-}
-
-// The two modes; the one on screen outlined in cobalt ----------------------------------
-
-.modes {
-  left: 64cqi;
-  top: 86cqi;
-  width: 31cqi;
-  display: grid;
-  gap: 1.8cqi;
   transition-delay: 0.25s;
 }
 

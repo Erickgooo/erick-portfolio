@@ -35,6 +35,11 @@ const FONTS = path.join(root, "scripts/resume/fonts");
 // resume, where each role and school was, the years of the studies, and how
 // many of an earlier role's About bullets fit two pages (indices into its
 // achievements, in the order they print). The current role prints them all.
+// Each earlier role opens with its bullet of most business impact, with a
+// figure already published on the site where one exists (Erick, 2026-11-03):
+// Quick Metal Shop's 338K+ organic views, ATV Riders' 200+ leads a day,
+// Artesa's 85% and Concentrix's Top Performer award. Dakoma and Aseneg have no
+// published result, so their bullets stay as they were.
 const PHONE = "+57 313 468 7899";
 const PORTFOLIO = "https://erickmahecha.com";
 const PLACES = {
@@ -51,12 +56,12 @@ const SCHOOLS = {
   SENA: { place: "Bogotá, Colombia", years: "2017 – 2018" },
 };
 const PICK = {
-  "Quick Metal Shop": [8, 5, 6],
+  "Quick Metal Shop": [0, 1, 7, 9],
   "Dakoma Roofing": [0],
-  "Cuatrimotos ATV Riders": [0],
+  "Cuatrimotos ATV Riders": [4],
   "Artesa Panadería": [0],
   Aseneg: [0],
-  Concentrix: [0, 3],
+  Concentrix: [3, 0],
 };
 const SKILL_GROUPS = [
   "Product & Engineering Leadership",
@@ -69,7 +74,7 @@ const SKILL_GROUPS = [
 // frames Erick as the umbrella title, names the clients only as work done at
 // Incentiva Group, and cites only the three client figures Erick authorized.
 const PROFILE =
-  "As a Growth & AI Systems Lead, I design and run the systems that turn acquisition, sales and customer service into repeatable growth: paid-media funnels, CRM automation, WhatsApp AI assistants and the production software behind them. At Incentiva Group I lead that work for brands such as Samsung, Nequi, Wompi and Colmaíz (Ingredion): 2M+ LifeMiles miles were awarded to buyers through the WhatsApp chatbot of the Samsung × LifeMiles promotion, and the Colmaíz assistant serves a community of 35,000+ contacts, with 6,000+ served. My criterion is the same at every scale: start from how the operation really works, automate what a system can run reliably, measure it end to end, and keep people in control where the risk is. A marketing background and hands-on product and engineering leadership let me design the strategy and the systems that run it together.";
+  "As a Growth & AI Systems Lead, I design and run the systems that turn acquisition, sales and customer service into repeatable growth: paid-media funnels, CRM automation, WhatsApp AI assistants and the production software behind them. At Incentiva Group I lead that work for brands such as Samsung, Nequi, Wompi and Colmaíz (Ingredion): 2M+ LifeMiles miles were awarded to buyers through the WhatsApp chatbot of the Samsung × LifeMiles promotion, and the Colmaíz assistant has reached 35,000+ contacts and served 6,000+ of them. My criterion is the same at every scale: start from how the operation really works, automate what a system can run reliably, measure it end to end, and keep people in control where the risk is. A marketing background and hands-on product and engineering leadership let me design the strategy and the systems that run it together.";
 
 function compileData() {
   // Inside node_modules, so the compiled files resolve react from the repo.

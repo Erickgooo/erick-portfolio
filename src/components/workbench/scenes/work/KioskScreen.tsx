@@ -1,7 +1,7 @@
 "use client";
 
-// The touchscreen of BoothApp, drawn on a canvas (285 tiles are too many for
-// DOM nodes). It follows the scene around it: dark until step 3 (the stand is
+// The touchscreen of BoothApp, drawn on a canvas (a grid of 15 x 19 tiles is
+// too many for DOM nodes). It follows the scene around it: dark until step 3 (the stand is
 // set up), and from step 4 it plays the app on its own clock: header, the
 // grid filling in, a tap, one panel full screen, a swipe, back to the grid.
 // With reduced motion it shows the full grid. Sober (2026-10-22): the app
@@ -12,7 +12,7 @@ import { useRef } from "react";
 import { CanvasLoop, type Frame } from "../CanvasLoop";
 
 const COLS = 15;
-const ROWS = 19; // 15 x 19 = 285, the number of panel variants.
+const ROWS = 19; // The full catalog's grid; the site no longer states its count (2026-11-03).
 const TAPPED = { c: 8, r: 7 };
 
 // Timeline, in seconds from step 4.
@@ -89,13 +89,7 @@ function lerpRect(a: Rect, b: Rect, p: number): Rect {
  * drawn in line instead of filled: a hairline frame in its tone on the app's
  * paper, the holes as dots in its tone.
  */
-function panel(
-  ctx: CanvasRenderingContext2D,
-  r: Rect,
-  tone: Tone,
-  p: Palette,
-  line = false,
-) {
+function panel(ctx: CanvasRenderingContext2D, r: Rect, tone: Tone, p: Palette, line = false) {
   if (line) {
     ctx.fillStyle = p.paper;
     ctx.fillRect(r.x, r.y, r.w, r.h);
