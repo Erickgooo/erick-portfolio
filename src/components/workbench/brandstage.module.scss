@@ -1,0 +1,412 @@
+// Workbench: the brand stage (2026-11-02). Base styles are the phone and
+// reduced-motion layout (cards, nothing pinned); the pinned stage is one
+// media block, from the tool wall's breakpoint (1024 px) with motion allowed
+// and scripting on. Only transform and opacity move. Logos keep one visual
+// area (--w, --h at 16,000 px2) times --scale, on a white card, never
+// recoloured.
+// Keep this file ASCII-only.
+@use "./shared" as *;
+
+@mixin pinned {
+  @media (min-width: $desk) and (prefers-reduced-motion: no-preference) and (scripting: enabled) {
+    @content;
+  }
+}
+
+.stage {
+  position: relative;
+  z-index: 1;
+  --scale: 0.66;
+
+  @include from-tablet {
+    --scale: 0.8;
+  }
+}
+
+// The Home's section -----------------------------------------------------
+
+.onHome .inner {
+  @include wrap;
+  padding-top: 56px;
+  padding-bottom: 24px;
+
+  @include from-desk {
+    padding-top: 88px;
+  }
+}
+
+.title {
+  @include s-h2;
+  max-width: 18ch;
+  font-size: clamp(30px, 3.4vw, 46px);
+}
+
+// The rail exists on the pinned stage only.
+.rail {
+  display: none;
+}
+
+.panels {
+  display: grid;
+  gap: 16px;
+  margin-top: 28px;
+
+  @include from-tablet {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+
+    // An odd last card takes the whole row.
+    > :last-child:nth-child(odd) {
+      grid-column: 1 / -1;
+    }
+  }
+}
+
+// A brand: a card on phones and with reduced motion.
+.panel {
+  position: relative;
+  display: grid;
+  align-content: start;
+  justify-items: start;
+  gap: 14px;
+  padding: 22px;
+  border: 1px solid var(--wb-rule);
+  border-radius: 6px;
+  background: var(--wb-page);
+
+  // Phones: each card comes in as it reaches the screen.
+  @media (max-width: #{$desk - 1px}) and (scripting: enabled) and (prefers-reduced-motion: no-preference) {
+    opacity: 0;
+    translate: 0 $reveal-travel-lg;
+    transition:
+      opacity $dur-fade $ease-soft,
+      translate $dur-travel $ease-soft;
+
+    &[data-in] {
+      opacity: 1;
+      translate: 0 0;
+    }
+  }
+}
+
+// The logo's white card: the same height for every brand, so the lines
+// below start at the same place.
+.logoCard {
+  display: grid;
+  place-items: center;
+  height: calc(73px * var(--scale) + 32px);
+  padding: 16px 20px;
+  border: 1px solid var(--wb-rule);
+  border-radius: 6px;
+  background: #ffffff;
+
+  @include dark {
+    border-color: #ffffff;
+  }
+}
+
+.logo {
+  display: block;
+  width: calc(var(--w) * var(--scale) * 1px);
+  height: calc(var(--h) * var(--scale) * 1px);
+  max-width: none;
+}
+
+.line {
+  max-width: 40ch;
+  font-size: 17px;
+  line-height: 1.55;
+  color: var(--wb-ink);
+}
+
+.result {
+  display: grid;
+  gap: 4px;
+}
+
+// The figure: the final value (hidden) sizes the box and the live one counts
+// inside it, so counting never moves anything.
+.value {
+  @include title;
+  display: inline-grid;
+  justify-self: start;
+  font-size: clamp(40px, 9vw, 64px);
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  color: var(--wb-ink);
+}
+
+.sizer,
+.live {
+  grid-area: 1 / 1;
+  white-space: nowrap;
+}
+
+.sizer {
+  visibility: hidden;
+}
+
+.measure {
+  @include s-label;
+  max-width: 34ch;
+}
+
+.caseLink {
+  margin-top: 2px;
+}
+
+// "01 / 04": on the pinned stage only.
+.count {
+  display: none;
+}
+
+.hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+// The pinned stage -------------------------------------------------------
+
+@include pinned {
+  .onHome {
+    --scale: 1;
+  }
+
+  // 60 svh of scroll per brand (300 in all, the cap) past the pinned screen;
+  // --n, the number of brands, comes from the markup.
+  .onHome .track {
+    height: calc(100svh - 76px + 60svh * var(--n, 5));
+  }
+
+  .onHome .sticky {
+    position: sticky;
+    top: 76px;
+    display: flex;
+    align-items: center;
+    height: calc(100svh - 76px);
+    overflow: hidden;
+  }
+
+  .onHome .inner {
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    align-items: center;
+    gap: 72px;
+    padding-top: 32px;
+    padding-bottom: 32px;
+  }
+
+  .onHome .rail {
+    display: grid;
+    margin-top: 40px;
+    list-style: none;
+    padding: 0;
+  }
+
+  .onHome .railItem {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    width: 100%;
+    padding: 14px 0;
+    border: 0;
+    border-top: 1px solid var(--wb-rule);
+    background: none;
+    color: var(--wb-ink);
+    font-family: var(--font-wb-text), system-ui, sans-serif;
+    font-size: 20px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    text-align: left;
+    cursor: pointer;
+    opacity: 0.5;
+    transition: opacity $dur-state $ease-soft;
+
+    // The progress underline, as on the tool wall.
+    &::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: -1px;
+      width: 100%;
+      height: 2px;
+      background: var(--wb-accent);
+      transform-origin: left center;
+      scale: 0 1;
+      transition: scale $dur-enter $ease-soft;
+    }
+
+    &[aria-current] {
+      opacity: 1;
+
+      &::after {
+        scale: 1 1;
+      }
+    }
+
+    @include fine-pointer {
+      &:hover {
+        opacity: 1;
+      }
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--wb-accent);
+      outline-offset: 4px;
+    }
+  }
+
+  .onHome .railIndex {
+    min-width: 2ch;
+    font-size: 14px;
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+    color: var(--wb-ink-2);
+  }
+
+  // The stage: one sheet, the brands stacked in it, one on at a time.
+  .onHome .panels {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    margin-top: 0;
+    padding: 48px;
+    border: 1px solid var(--wb-rule);
+    border-radius: 6px;
+    background: var(--wb-page);
+  }
+
+  .onHome .panel {
+    grid-area: 1 / 1;
+    gap: 22px;
+    padding: 0;
+    border: 0;
+    background: none;
+
+    &:not([data-state="active"]) {
+      pointer-events: none;
+    }
+
+    // Each piece of the brand enters 20 px up and leaves 12 px up, the pieces
+    // 60 ms apart on the way in.
+    > * {
+      opacity: 0;
+      translate: 0 $reveal-travel-lg;
+      transition:
+        opacity $dur-enter $ease-soft,
+        translate $dur-travel $ease-soft;
+    }
+
+    &[data-state="before"] > * {
+      translate: 0 calc(-1 * #{$reveal-travel});
+    }
+
+    &[data-state="active"] > * {
+      opacity: 1;
+      translate: 0 0;
+
+      @for $k from 1 through 5 {
+        &:nth-child(#{$k}) {
+          transition-delay: calc(#{$k - 1} * #{$stagger});
+        }
+      }
+    }
+  }
+
+  .onHome .logoCard {
+    height: calc(73px + 44px);
+    padding: 22px 28px;
+  }
+
+  .onHome .line {
+    max-width: 32ch;
+    font-size: 22px;
+  }
+
+  // On stage the result is the protagonist: large, in the accent.
+  .onHome .value {
+    font-size: clamp(72px, 7.6vw, 120px);
+    color: var(--wb-accent);
+  }
+
+  .onHome .measure {
+    font-size: 18px;
+  }
+
+  .onHome .count {
+    position: absolute;
+    top: 0;
+    right: 0;
+    display: block;
+    font-size: 14px;
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+    color: var(--wb-ink-2);
+  }
+}
+
+// The index head: a compact grid, never pinned --------------------------
+
+.compact {
+  @include wrap;
+  display: grid;
+  gap: 14px;
+  padding-bottom: 64px;
+  --scale: 0.6;
+
+  @include from-desk {
+    --scale: 0.56;
+  }
+
+  .panel {
+    gap: 12px;
+    padding: 18px;
+  }
+
+  .line {
+    font-size: 15px;
+  }
+
+  .value {
+    font-size: 34px;
+  }
+
+  .measure {
+    font-size: 15px;
+  }
+}
+
+.compactTitle {
+  @include s-label;
+}
+
+.grid {
+  display: grid;
+  gap: 12px;
+
+  @include from-tablet {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+
+    > :last-child:nth-child(odd) {
+      grid-column: 1 / -1;
+    }
+  }
+
+  // Five brands: three cards over two, on a grid of six.
+  @include from-desk {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+
+    > * {
+      grid-column: span 2;
+    }
+
+    > :nth-child(n + 4),
+    > :last-child:nth-child(odd) {
+      grid-column: span 3;
+    }
+  }
+}

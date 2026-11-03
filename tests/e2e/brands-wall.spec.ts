@@ -2,17 +2,9 @@ import type { Locator, Page } from "@playwright/test";
 import { expect, test } from "./fixtures";
 
 // Round 3 of the Incentiva Group brief (2026-11-02,
-// docs/design/rediseno-2026/incentiva-encargo.md): the strip of brands Erick
-// led projects for at Incentiva Group, on the Home and in the head of the
-// index, and the tool wall with no tile left without a logo or pictogram.
-
-const STRIP = "[data-brand-strip]";
-const BRANDS: [string, string][] = [
-  ["Nequi", "/work/scope-multi-client-platform"],
-  ["Wompi", "/work/scope-multi-client-platform"],
-  ["Colmaíz", "/work/chatflow-whatsapp-ai-platform"],
-  ["Samsung", "/work/samsung-lifemiles-whatsapp"],
-];
+// docs/design/rediseno-2026/incentiva-encargo.md): the tool wall with no tile
+// left without a logo or pictogram. The brands now have their own stage
+// (brand-stage.spec.ts).
 
 /** Scrolls an image into view and waits until it has decoded a real picture. */
 async function expectLoaded(img: Locator) {
@@ -24,51 +16,15 @@ async function expectLoaded(img: Locator) {
     .toBeGreaterThan(0);
 }
 
-for (const path of ["/", "/work/incentiva-group"]) {
-  test(`${path}: the brand strip shows each logo, linked to its case`, async ({ page }) => {
-    await page.goto(path);
-    const strip = page.locator(STRIP);
-    await expect(strip).toHaveCount(1);
-    await expect(strip.getByRole("heading")).toHaveText(
-      "Brands I’ve led projects for at Incentiva Group",
-    );
-    const links = strip.locator("a");
-    await expect(links).toHaveCount(BRANDS.length);
-    for (const [k, [name, href]] of BRANDS.entries()) {
-      const link = links.nth(k);
-      await expect(link).toHaveAttribute("href", href);
-      const img = link.locator("img");
-      await expect(img).toHaveAttribute("alt", name);
-      await expectLoaded(img);
-      await expect(img).toBeVisible();
-      // Its accessible name says where it goes.
-      await expect(link).toHaveAccessibleName(new RegExp(`^${name} \\(the .+ case\\)$`));
-    }
-    // DIRECTV is named in the text only: Incentiva holds no logo file for it.
-    await expect(strip.locator('img[alt*="DIRECTV" i]')).toHaveCount(0);
-  });
-}
-
-test("the Home's brand strip comes right after the hero and before What I build", async ({
-  page,
-}) => {
-  await page.goto("/");
-  const order = await page.evaluate(() => {
-    const hero = document.querySelector("#hero-title")?.closest("section");
-    const strip = document.querySelector("[data-brand-strip]");
-    const builds = document.querySelector("#builds-title")?.closest("section");
-    return [hero?.nextElementSibling === strip, strip?.nextElementSibling === builds];
-  });
-  expect(order).toEqual([true, true]);
-});
-
 /** The tiles a visitor sees: the board's cells on desktop, the lists on phones. */
 async function visibleTiles(page: Page) {
   const desk = await page.evaluate(() => window.matchMedia("(min-width: 1024px)").matches);
   return {
     desk,
     tiles: page.locator(
-      desk ? '[class*="toolwall_face__"]:not([class*="toolwall_hot__"])' : '[class*="toolwall_tile__"]',
+      desk
+        ? '[class*="toolwall_face__"]:not([class*="toolwall_hot__"])'
+        : '[class*="toolwall_tile__"]',
     ),
   };
 }
