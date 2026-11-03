@@ -114,16 +114,16 @@ test("the builds stepper pins and changes scene on desktop, and stacks on phones
   await expect(page.locator(INTRO)).toHaveCount(0, { timeout: 9000 });
   const stepper = page.locator("[data-stepper]");
   const layers = stepper.locator("[data-scene-layer]");
-  await expect(layers).toHaveCount(4);
+  await expect(layers).toHaveCount(5);
   if ((page.viewportSize()?.width ?? 0) < 1024) {
     await expect(stepper).toHaveAttribute("data-active", "stack");
-    await expect(stepper.locator("[data-scene-layer][data-on]")).toHaveCount(4);
+    await expect(stepper.locator("[data-scene-layer][data-on]")).toHaveCount(5);
     return;
   }
-  // Six tenths of the way through the track: the third step.
+  // Half way through the track: the third of the five steps.
   const y = await stepper.locator("[data-track]").evaluate((track: HTMLElement) => {
     const top = track.getBoundingClientRect().top + window.scrollY;
-    return top + (track.offsetHeight - window.innerHeight) * 0.6;
+    return top + (track.offsetHeight - window.innerHeight) * 0.5;
   });
   await page.evaluate((top) => window.scrollTo(0, top), y);
   await expect(stepper).toHaveAttribute("data-active", "2");

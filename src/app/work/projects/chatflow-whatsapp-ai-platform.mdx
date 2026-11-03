@@ -1,0 +1,70 @@
+---
+title: "ChatFlow: Taking Over a WhatsApp AI Platform"
+publishedAt: "2026-11-02"
+summary: "I inherited a multi-client WhatsApp AI-assistant platform that existed only as backups, with manual zip deploys and no tests, and turned it into an audited platform with a gated pipeline and 3,177 automated tests, while shipping a client portal."
+images:
+  - "/images/projects/incentiva/chatflow-whatsapp-ai-platform.webp"
+team:
+  - name: "Erick Mahecha"
+    role: "Operations Manager, platform owner"
+    avatar: "/images/avatar.jpg"
+    linkedIn: "https://www.linkedin.com/in/erick-mahecha/"
+metric: "3,177|automated tests, from none"
+---
+
+## Overview
+
+ChatFlow is Incentiva's platform for WhatsApp AI assistants: a React panel, a Node API on Azure, Claude models and the WhatsApp Cloud API. One platform runs the assistants of several client lines, from a food-ingredients brand of Ingredion to Incentiva's own DIRECTV dealership, so a defect in one place can reach every client at once.
+
+It existed before I joined, but only as backups. There was no repository, deploys were manual zip uploads, and there were no tests. Nobody could say with certainty which version of the code was running in production. Meanwhile the platform kept serving real conversations every day, and one of its clients could not see or act on any of them.
+
+**Result: a platform under version control, behind a gated pipeline, audited three times and covered by 3,177 automated tests, with a client portal that the brand's commercial team uses daily.**
+
+## The Build
+
+### From backups to a repository
+
+The first job was knowing what was actually running. I imported the code into git and restored parity with production, which meant recovering files that existed only on the server and nowhere in the backups. From that point the repository was the truth, and every change had a history.
+
+### A pipeline with gates
+
+Manual zip uploads ended. A CI/CD pipeline now builds and tests every change, and production deploys wait behind manual approval gates, with a documented deploy recipe so a release does not depend on memory. A set of guard tests fails the build on secret leaks, unsafe calls or routes mounted without protection.
+
+### Three audits, then the fixes
+
+I ran three audits: a multi-tenant risk audit, a full code audit and a security audit. Together they raised more than 100 findings. They were prioritized, fixed and deployed in releases, and the security audit's first remediation release came with a rotation of the platform's secrets.
+
+### Seeing the platform run
+
+Observability came next: metrics and alerts, AI consumption tracked per client and per campaign, and personal data masked in telemetry, so the logs that help debug a conversation do not become a copy of it.
+
+### Features the operation needed
+
+With the base stable, the platform grew where the operation needed it: message delivery states, a WhatsApp templates interface and quick replies, a metrics dashboard with Excel export and an audit module, reliable broadcasts with deduplication, retries, atomic claims and local time zones, and a contact identity for WhatsApp users who do not show a phone number.
+
+### A portal for the client
+
+The client could not see its own conversations, so I led a client-role portal on top of the platform. The client role is isolated in every layer, from the interface to the API to the data. It gives the brand's commercial team a dashboard with Excel export, read-only live chats, location KPIs that map each city to its department and its responsible technician, salesperson or distributor, and "who to call" lists. Before release, **643 dashboard figures were reconciled three ways**, against the API, the Excel export and SQL.
+
+The assistant itself got stricter too. An audit of unsupported claims led to knowledge loaded per turn by context, the assistant moved to a faster, lower-cost model, and it now gives a contact instead of promising a handoff it cannot make.
+
+The work was built with AI coding agents (Claude Code) under my direction. I ran the takeover, decided what each audit meant for the roadmap, approved the releases and followed up the incidents.
+
+## Results
+
+- The repository grew from **139 files and no tests to 831 files and 3,177 passing tests**.
+- **684 commits and more than 200 merged pull requests** since August 5.
+- **Three audits** with more than 100 findings, fixed and deployed in releases.
+- The assistant's test battery improved from **270 to 318 of 320**, and **643 dashboard figures** were reconciled three ways before the portal shipped.
+
+## What This Demonstrates
+
+Inheriting a running system is a different job from building one. You cannot stop it, you cannot trust what you were told about it, and every fix has to land without breaking the conversations happening right now. The order mattered: first the truth (a repository that matches production), then a safe way to change it (gates and tests), then the audits, and only then new features.
+
+The 3,177 tests are not the goal in themselves. They are what lets a small team change a multi-client platform on a Tuesday afternoon and know by the evening that no client noticed.
+
+**Stack:**
+
+<TechStack data="React, Vite, TypeScript, Tailwind, Node.js, Express, Azure App Service, Azure SQL, Key Vault, Application Insights, Azure DevOps, WhatsApp Cloud API, Anthropic Claude, Vitest, Claude Code" />
+
+Running a platform you inherited? [Book a call](https://calendly.com/santiagomahecha2328/30min) and let's put it under control without taking it offline.

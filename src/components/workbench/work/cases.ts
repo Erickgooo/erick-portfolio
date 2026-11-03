@@ -1,5 +1,5 @@
 // Workbench, Projects: every case study as the pages need it. Every value comes
-// from the project MDX (frontmatter and body) or src/resources/content.tsx.
+// from the project MDX (frontmatter and body) or src/resources/about.tsx.
 import { isProtectedPath } from "@/resources/protectedRoutes";
 import { getPosts } from "@/utils/posts";
 import { type Size, isImage, isVideo, mediaSize } from "../prose/media";
@@ -40,6 +40,13 @@ const CLIENT: Record<string, string> = {
   "quick-metal-shop-marketing": "Quick Metal Shop",
   "quick-metal-shop-the-brand-comes-to-life": "Quick Metal Shop",
   "ai-portfolio": "Personal project",
+  "scope-multi-client-platform": "Incentiva Group",
+  "scope-ios-launch": "Incentiva Group",
+  "chatflow-whatsapp-ai-platform": "Incentiva Group",
+  "directv-click-to-whatsapp": "Incentiva Group (DIRECTV dealership)",
+  "ai-cv-screening": "Incentiva Group",
+  "incentiva-launch-campaign": "Incentiva Group",
+  "incentiva-website-brand": "Incentiva Group",
 };
 
 function media(src: string): CaseMedia {

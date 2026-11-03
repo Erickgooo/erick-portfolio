@@ -1,6 +1,7 @@
 // ErickBot's system prompt: everything the model may say about Erick, built
 // from the site's own data so the bot and the pages never disagree.
-import { about, homeCopy, profile, profileLinks } from "@/resources";
+import { about, homeCopy, profile, profileLinks, siteUrl } from "@/resources";
+import { INCENTIVA_AREAS, incentivaCases, incentivaRole } from "@/resources/incentiva";
 
 // ── helpers ─────────────────────────────────────────────────────────────────
 
@@ -50,6 +51,17 @@ export function buildSystemPrompt(): string {
   const { featured } = homeCopy;
   const featuredProject = `${featured.title} ${featured.label} — ${featured.href}`;
 
+  const incentivaCaseList = incentivaCases
+    .map((c) => `  - ${c.title}: ${c.figure}. ${siteUrl}/work/${c.slug}`)
+    .join("\n");
+
+  const incentivaAreas = INCENTIVA_AREAS.map((area) => {
+    const projects = area.projects
+      .map((p) => `    • ${p.title} (${p.client}; ${p.status}): ${p.line}`)
+      .join("\n");
+    return `  ${area.title}: ${area.line}\n${projects}`;
+  }).join("\n\n");
+
   return `You are ErickBot, an assistant on Erick Mahecha's portfolio website.
 
 ## ABOUT ERICK
@@ -57,7 +69,9 @@ Name: ${profile.name}
 Role: ${profile.role}
 Location: ${profile.location}
 Email: ${profile.email}
-Languages: ${profile.languages?.join(", ")}
+Languages: ${profile.languages
+  ?.map((l) => (profile.languageLevels?.[l] ? `${l} (${profile.languageLevels[l]})` : l))
+  .join(", ")}
 
 ## BIO
 ${jsxToText(about.intro)}
@@ -77,9 +91,20 @@ ${skills}
 ## FEATURED PROJECT
 ${featuredProject}
 
+## CURRENT ROLE: ${incentivaRole.title.toUpperCase()}, ${incentivaRole.company.toUpperCase()} (${incentivaRole.timeframe})
+${incentivaRole.summary}
+${incentivaRole.method}
+
+Case studies:
+${incentivaCaseList}
+
+Every project of the role, by area (index: ${siteUrl}/work/incentiva-group):
+${incentivaAreas}
+
 ## CONTACT LINKS
 ${contactLinks}
 
 ## RULES
-You can ONLY answer questions about Erick, his professional experience, skills, and projects, using EXCLUSIVELY the information provided above. If a question is unrelated to Erick or his portfolio, or if the answer is not in the context, politely say you do not have that information and suggest reaching out to Erick directly via email or LinkedIn. Never invent dates, achievements, or details not explicitly present in the context. Keep responses professional but approachable, and under 4 sentences.`;
+You can ONLY answer questions about Erick, his professional experience, skills, and projects, using EXCLUSIVELY the information provided above. If a question is unrelated to Erick or his portfolio, or if the answer is not in the context, politely say you do not have that information and suggest reaching out to Erick directly via email or LinkedIn. Never invent dates, achievements, or details not explicitly present in the context. Keep responses professional but approachable, and under 4 sentences.
+Erick's current title is Operations Manager at Incentiva Group. Clients' results and campaign performance, prices, budgets, costs, salaries, volumes and any other internal economics of Incentiva or its clients are confidential: if asked, say they are confidential and offer the public figures above instead. Only talk about the clients, projects and proposals listed above; for any other client, tender or proposal, say you have no information to share about it.`;
 }

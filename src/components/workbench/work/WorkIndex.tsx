@@ -9,16 +9,24 @@ import type { CSSProperties } from "react";
 import { FiArrowRight } from "react-icons/fi";
 import { inWords } from "../data";
 import { FigureCounter } from "../scenes/projects/FigureCounter";
+import ui from "../ui.module.scss";
 import { type Case, getCases } from "./cases";
 import styles from "./work.module.scss";
 
 /** The order the head's counter types the figures in (the scene map's). */
 const COUNTER_ORDER = [
+  "scope-multi-client-platform",
   "leadbot-ai",
+  "scope-ios-launch",
   "quick-metal-shop-viral-videos",
+  "chatflow-whatsapp-ai-platform",
   "ai-powered-ad-creatives",
+  "directv-click-to-whatsapp",
   "atv-riders",
+  "ai-cv-screening",
   "quick-metal-shop-arquiexpo",
+  "incentiva-website-brand",
+  "incentiva-launch-campaign",
   "ai-portfolio",
 ];
 
@@ -51,6 +59,9 @@ export function WorkIndex({ hideProtected }: { hideProtected: boolean }) {
             AI systems, automation workflows and marketing infrastructure, built and shipped.{" "}
             {count.charAt(0).toUpperCase() + count.slice(1)} cases, newest first.
           </p>
+          <Link href="/work/incentiva-group" className={ui.textLink}>
+            Every Incentiva Group project, in one index <FiArrowRight aria-hidden="true" />
+          </Link>
           <FigureCounter figures={counterFigures(cases)} />
         </div>
       </header>

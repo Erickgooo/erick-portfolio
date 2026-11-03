@@ -49,6 +49,15 @@ const SIZE: Record<string, { w: number; h: number }> = {
   "/images/gallery/arqui.webp": { w: 1357, h: 2400 },
   "/images/gallery/pared.webp": { w: 1357, h: 2400 },
   "/images/gallery/transform.webp": { w: 1744, h: 2336 },
+  "/images/projects/incentiva-website/cover.webp": { w: 2400, h: 1357 },
+  "/images/projects/incentiva-website/site-1.webp": { w: 2400, h: 1500 },
+  "/images/projects/incentiva-website/site-2.webp": { w: 2400, h: 1500 },
+  "/images/projects/incentiva-website/site-3.webp": { w: 2400, h: 1500 },
+  "/images/projects/incentiva-website/site-4.webp": { w: 1170, h: 2532 },
+  "/images/projects/incentiva-brand/manual-2.webp": { w: 2000, h: 1125 },
+  "/images/projects/incentiva-brand/manual-3.webp": { w: 2000, h: 1125 },
+  "/images/projects/incentiva-brand/manual-4.webp": { w: 2000, h: 1125 },
+  "/images/projects/incentiva-brand/manual-5.webp": { w: 2000, h: 1125 },
 };
 
 /** Every other gallery file is a 2048 px square; a new file falls back by its orientation tag. */
@@ -63,6 +72,7 @@ function sizeOf(image: RawImage) {
 /** The clients named at the start of the alt texts, and the paper of each one's divider. */
 const CLIENTS: { name: string; paper: Paper; caseSlug?: string }[] = [
   { name: "Quick Metal Shop", paper: "cobalt", caseSlug: "quick-metal-shop-marketing" },
+  { name: "Incentiva Group", paper: "ink", caseSlug: "incentiva-website-brand" },
   { name: "Artesa Panadería", paper: "mist", caseSlug: "leadbot-ai" },
   { name: "Aseneg", paper: "ink" },
   { name: "Dakoma Roofing", paper: "paper", caseSlug: "dakoma-roofing" },

@@ -27,8 +27,9 @@ export function Hero() {
             I build marketing infrastructure from zero.
           </h1>
           <p className={styles.offer}>
-            A one-person growth department for founders: AI content pipelines, CRM automation and
-            paid media, plus the software itself when nothing exists yet.
+            Growth systems and the software that runs them: AI content pipelines, WhatsApp
+            assistants and paid media, and the field and client platforms I lead as Operations
+            Manager at Incentiva Group.
           </p>
           <div className={styles.actions}>
             <BookCall />

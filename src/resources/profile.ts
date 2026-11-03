@@ -14,18 +14,21 @@ export type Profile = {
   /** IANA zone of the clock in the header. */
   timeZone: string;
   languages: string[];
+  /** The level of a language, where Erick has stated it (ErickBot reads it). */
+  languageLevels?: Record<string, string>;
 };
 
 export const profile: Profile = {
   firstName: "Erick Santiago",
   lastName: "Mahecha Tafur",
   name: "Erick Mahecha",
-  role: "Growth Marketing & AI Automation Specialist",
+  role: "Operations Manager · Growth & AI Systems",
   avatar: "/images/avatar.jpg",
   email: "santiagomahecha2328@gmail.com",
   location: "Medellín, Colombia",
   timeZone: "America/Bogota",
   languages: ["Spanish", "English"],
+  languageLevels: { English: "B2, upper intermediate" },
 };
 
 export type ProfileLink = { name: string; icon: IconName; href: string };

@@ -1,0 +1,71 @@
+---
+title: "Scope: First iOS Launch and 13 Store Releases"
+publishedAt: "2026-10-16"
+summary: "I took a Flutter field-sales app that had never shipped on iOS through signing, background GPS, a Firebase migration to company ownership and three App Store review rejections to its first iOS release, then ran 13 production versions across both stores in two months."
+images:
+  - "/images/projects/incentiva/scope-ios-launch.webp"
+team:
+  - name: "Erick Mahecha"
+    role: "Operations Manager, release manager and product owner"
+    avatar: "/images/avatar.jpg"
+    linkedIn: "https://www.linkedin.com/in/erick-mahecha/"
+metric: "13|store releases in two months"
+---
+
+## Overview
+
+Scope's field staff spend the working day in the street, logging merchant visits from their phones, and not all of those phones run Android. The app was on Google Play, but it had never shipped on iOS. Its Firebase project, which carries the push notifications, still belonged to the original external vendor, so the company did not fully own its own app.
+
+I took over release management with two goals: get the app onto the App Store, and turn releasing from an event into a routine. A field app that takes weeks to update is a field app whose bugs stay in the street for weeks.
+
+**Result: the app's first iOS release, then 13 production versions (1.1.1 to 1.1.13) across the App Store and Google Play between Aug 20 and Oct 16.**
+
+## The Build
+
+### Making iOS build at all
+
+The first work was the unglamorous kind. iOS signing and builds had to work reliably, from a clean checkout, every time. Background GPS had to work too, because visit tracking depends on it, and on iOS that meant a native location monitor that keeps reporting while the app is not on screen, within the limits Apple allows. None of it shows in a demo, and all of it decides whether a field worker with an iPhone can start the working day.
+
+### Owning the app's infrastructure
+
+Firebase moved from the vendor's project to a company-owned project, for the app and for the API. Users never see a change like that, and a company cannot skip it: whoever owns the project owns the app's notifications, its keys and its future releases. After the move, nothing about shipping Scope depended on a third party.
+
+### Three rejections, three fixes
+
+App Store review rejected the submission three times. Each rejection was read for what the reviewer actually needed, answered and resolved, and the app was approved for unlisted distribution: it is installed by the field team from a direct link, not found by the public in a search. Submissions went through the App Store Connect API rather than by hand, so every round could be repeated exactly.
+
+### Releasing as a routine
+
+Thirteen versions in two months only works if a release has no manual steps left to forget:
+
+- **Scripted uploads** through the App Store Connect and Google Play APIs, so both stores receive the same build the same way.
+- **A mandatory-update mechanism**, so nobody keeps working in the field on a version with a known defect.
+- **A version-by-version publication guide**, so every release follows the same checklist and the next person can run it.
+- **Launch messages and a first-day guide** for field staff, so a change in the app arrives with an explanation instead of a surprise.
+
+### A launch crash, fixed at the root
+
+When a new iOS version changed how apps start, Scope crashed at launch on it. The fix was not a patch around the crash but a migration to Apple's UIScene lifecycle, the structure the system now expects, so the same failure does not come back with the next update.
+
+The engineering was done with AI coding agents (Claude Code) under my direction. I owned the release decisions, handled App Store review and submitted every version to both stores myself.
+
+## Results
+
+- The app's **first iOS release**, approved for unlisted distribution after **three App Store review rejections** were resolved.
+- **13 versions**, 1.1.1 to 1.1.13, released to production on both stores between Aug 20 and Oct 16.
+- Build numbers went from **90 to 115**.
+- Firebase now lives in a company-owned project, and every release follows a scripted, documented path.
+
+## What This Demonstrates
+
+Release management is where product work meets the people using it. The code for a fix can be ready in an hour and still reach the field a month later if signing breaks, a review stalls or uploads depend on one person's laptop. Most of this project was removing those delays: owning the infrastructure, answering the reviewer precisely, and scripting the path to both stores until shipping became ordinary.
+
+The numbers are the proof of that routine. Thirteen production versions in two months is not a sprint; it is a release path that no longer needs heroics.
+
+It also changes what the operation can be promised. When a coordinator reports a problem from the field, the answer is no longer "in the next release, whenever that is", but a version and a date.
+
+**Stack:**
+
+<TechStack data="Flutter, Dart, Xcode, App Store Connect API, Google Play Developer API, Firebase Cloud Messaging, Azure DevOps, Claude Code" />
+
+Shipping a mobile app that your team depends on? [Book a call](https://calendly.com/santiagomahecha2328/30min) and let's make releasing boring.

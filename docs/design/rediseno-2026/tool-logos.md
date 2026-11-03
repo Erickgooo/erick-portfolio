@@ -1,6 +1,6 @@
 # Tool logos for the "tools I've shipped real work with" wall
 
-Files in `src/components/workbench/home/tools/` (in `public/images/tools/` until 2026-10-22; moved so the build serves them with a content hash and a long cache), one per brand, collected on 2026-10-22. All 24 are official (none uses the Simple Icons fallback), and none is missing.
+Files in `src/components/workbench/home/tools/` (in `public/images/tools/` until 2026-10-22; moved so the build serves them with a content hash and a long cache), one per brand: 24 collected on 2026-10-22 and 12 added on 2026-11-02. All 36 are official (none uses the Simple Icons fallback). App Store Connect has no file, because Apple does not allow its icons to be used this way (see "Not found"), and Claude Code reuses `claude.svg`.
 
 How they were prepared:
 
@@ -8,7 +8,7 @@ How they were prepared:
 - **Cropping.** Where the only file was a lockup, it was cropped to the symbol. Every SVG has a square `viewBox` around the mark with a 3 % margin, so all marks sit the same way in a square tile.
 - **SVG cleanup.** Removed scripts, event handlers, metadata, comments, editor attributes, `<style>` blocks (their rules are inlined as attributes) and unused ids. The remaining ids are prefixed with the slug (`gemini-1`, `meta-12`…), and no file has external references. All SVGs are under 8 KB.
 - **PNG.** Used only where the brand publishes no real vector: transparent, square, at least 128 px, downscaled to at most 256 px.
-- **Checks.** Each cleaned SVG was compared pixel by pixel with its source, over the same area. The difference is 0 except for Meta (rounding), Kling and CapCut, all at most 7/255. A contact sheet on white and on `#131316`, at large size and at 32 px, was checked by eye.
+- **Checks.** Each cleaned SVG was compared pixel by pixel with its source, over the same area. The difference is 0 except for Meta (rounding), Kling and CapCut, all at most 7/255; the 12 added on 2026-11-02 are all 0, on white and on black. A contact sheet on white and on `#131316`, at large size and at 32 px, was checked by eye.
 
 ## Logos
 
@@ -38,11 +38,23 @@ How they were prepared:
 | CapCut | `capcut.svg` | Symbol | [capcut.com](https://www.capcut.com/), inline header SVG (symbol plus "CapCut") | Official | **Black mark**, cropped to the symbol. The site draws it in `currentColor`, so it is set to black, as in CapCut's own favicon. |
 | Next.js | `nextjs.svg` | Symbol | [Vercel brand page](https://vercel.com/geist/brands) → `next-js-light.svg` | Official | **Black mark** (black circle, white N with a gradient fade). |
 | Netlify | `netlify.svg` | Symbol (monogram) | [Netlify press kit](https://www.netlify.com/press/) → `logo-netlify-monogram-fullcolor-lightmode.svg` | Official | Teal `#05BDBA` with a dark-teal `#014847` "n". This is the light-mode version, meant for the white tile; the dark "n" almost disappears on dark backgrounds. A dark-mode version exists. |
+| Flutter | `flutter.svg` | Symbol | [Flutter brand page](https://flutter.dev/brand); vector from the flutter.dev header lockup, `https://flutter.dev/assets/flutter-logo.0982ab0744cbcd305bfb59e364e0b006.svg` | Official | `#54C5F8`, `#29B6F6` and `#01579B`, cropped to the symbol (the "Flutter" wordmark was removed). The brand page's own logomark file (`icon_flutter.svg`, also in `flutter-brand-assets.zip`) embeds a 125×97 PNG for a 20 % shadow and would be 9.4 KB; the site's lockup draws the same shapes and colours as pure vector, only without that faint shadow. Flutter's trademark rules: never make Flutter "the most prominent element on your page", and centre the icon optically rather than by its bounding box (the tile centres the box). |
+| .NET | `dotnet.svg` | Logo (square) | [dotnet/brand](https://github.com/dotnet/brand) → `logo/dotnet-logo.svg` | Official | White ".NET" on purple `#512BD4`; the square is the logo, kept whole. The repo allows using the logo "to represent .NET in related content" under its style guide (`dotnet-styleGuide-2024.pdf`); the CC0 licence covers the illustrations, not the logo. The style guide sets a minimum on-screen size of 50 px for the square logo, and the wall shows logos at 28 px. |
+| Angular | `angular.svg` | Symbol (shield) | [Angular press kit](https://angular.dev/press-kit); vector from the angular.dev header (inline SVG, class `angular-logo`) | Official, **check the colour choice** | Current (v17 and later) mark in its gradient, `#E40035` to `#6C00F5` with a `#FF31D9` glow. The press kit's "SVG files" folder only has the black and white icons; its gradient icon (`angular_gradient.png`) is raster only and matches this one. The press kit says black and white "should be used in most circumstances" and the gradient "in cases where a color icon is required". Its logos are under CC BY 4.0, which asks for attribution. |
+| React | `react.svg` | Symbol | react.dev's brand file `https://react.dev/images/brand/logo_light.svg`, the same mark as the react.dev header | Official | `#087EA4`, react.dev's colour for light backgrounds; `logo_dark.svg` is the same mark in `#58C4DC`. React has no press kit or brand page. |
+| Node.js | `nodejs.svg` | Symbol (hexagon) | [Node.js branding](https://nodejs.org/en/about/branding) → `https://nodejs.org/static/logos/nodejsHex.svg` | Official | The "Node.js Hex Logo" in its green gradients; it is also the nodejs.org favicon. The page's outlined "JS icons" were not used: their thin lines are weak at 32 px. Use falls under the OpenJS Foundation trademark policy, which the branding page links. |
+| Microsoft Azure | `azure.svg` | Product icon | [Azure architecture icons](https://learn.microsoft.com/en-us/azure/architecture/icons/) → `Azure_Public_Service_Icons_V24.zip` → `Icons/other/10018-icon-service-Azure-A.svg` | Official, **licence limits use** | The Azure "A" in its blue gradients. The icon terms permit use "in architectural diagrams, training materials, or documentation" only, unless Microsoft grants explicit permission. They also say not to crop, flip or rotate the icons, and recommend showing the product name close to them. A tool wall is outside those uses: decide before showing it. |
+| Azure DevOps | `azure-devops.svg` | Product icon | Same zip → `Icons/devops/10261-icon-service-Azure-DevOps.svg` | Official, **licence limits use** | Blue gradient `#0078D4` to `#5EA0EF`. Same icon terms as Azure. |
+| Google Play | `google-play.svg` | Symbol (prism) | [play.google.com](https://play.google.com/store/games), inline header SVG ("Google Play logo"); rules on the Partner Marketing Hub, [Lockups, icons & badges](https://partnermarketinghub.withgoogle.com/brands/google-play/google-play/lockups-icons-badges/) | Official, **brand rule against this use** | The four-colour prism. An invisible 40×40 spacer path from the page was removed, with no visual change. Google says the icon "should only be used within the context of the Google Play lockup, or within home screen UI", "Don't use the icon in marketing materials", and don't use the lockup "as a badge or tile element". The hub's logo files need a partner application; only the "Get it on Google Play" badges are public, and those are for driving downloads. Show it only if Erick accepts this, or ask Google first. |
+| Remotion | `remotion.svg` | Symbol | remotion.dev logo menu, "Download brand assets (.zip)": `https://remotion.media/remotion-brand-assets.zip` → `svg/compact-blue.svg` ([brand page](https://remotion.dev/brand)) | Official | Blue `#0B84F3` play shape inside two translucent rings of the same blue. `compact-blue-on-white.svg` fills the outer ring with opaque white instead. |
+| Playwright | `playwright.svg` | Symbol (masks) | [playwright.dev](https://playwright.dev/) → `https://playwright.dev/img/playwright-logo.svg`, the site header logo | Official | Red and green masks. No press kit or brand page. |
+| Vitest | `vitest.svg` | Symbol (check) | [vitest.dev](https://vitest.dev/) site icon → `https://vitest.dev/logo-without-border.svg` | Official | Green check with blurred highlights, drawn with a mask and blur filters. No brand page. The full mark adds brackets, "(✓)": `logo.svg` draws them in white for dark backgrounds and the light-mode header draws them in black inside the "VITEST" lockup. The site icon is the check alone and works on both backgrounds. |
+| xUnit.net | `xunit.svg` | Symbol (X) | [xunit.net](https://xunit.net/) → `https://xunit.net/logo.svg`, identical to `logo-transparent.svg` in the project's [xunit/media](https://github.com/xunit/media) repo | Official | **Black mark** with white inner lines. The xunit/media README says the logos "may only be used in the context of xUnit.net", "may not be modified" and may only be used "to directly reference xUnit.net"; a tile naming xUnit.net does that. |
 
 ## Colour notes for the white tile
 
-- **Black marks:** OpenAI, ElevenLabs, Holo, Higgsfield, Kling, CapCut, Next.js. They need the white tile; on `#131316` they disappear.
-- **Low contrast on dark:** Netlify (its dark-teal "n") and Odoo (its grey letters).
+- **Black marks:** OpenAI, ElevenLabs, Holo, Higgsfield, Kling, CapCut, Next.js, xUnit.net. They need the white tile; on `#131316` they disappear (xUnit.net keeps only its thin white inner lines).
+- **Low contrast on dark:** Netlify (its dark-teal "n"), Odoo (its grey letters), React (`#087EA4` is react.dev's light-background blue) and Remotion (its translucent rings turn navy).
 - **Rasters (PNG):** Kommo, BotSL IA, Holo, Instagram, Facebook, DaVinci Resolve. Use them at no more than about 64 px (`kommo.png` is 190 px and `botsl.png` 166 px).
 
 ## Doubtful or open
@@ -57,7 +69,20 @@ How they were prepared:
 - **Kommo CRM:** soft source raster, with no vector symbol anywhere official. A sharper official file would need Kommo's press contact.
 - **BotSL IA:** raster only, 250 px, from the marketplace listing. The developer's site has no logo.
 - **Zapier:** the brand guidelines limit the app icon to icon contexts (see the row above).
+- **Microsoft Azure and Azure DevOps:** the icon terms only cover architecture diagrams, training materials and documentation. Showing them on the wall needs Erick's decision, or Microsoft's permission.
+- **Google Play:** Google's guidelines rule out both the prism in marketing materials and the lockup as a tile. `google-play.svg` is ready in case Erick decides to show it anyway; otherwise delete it.
+- **Angular:** the gradient icon was picked to match the other colour marks; the press kit prefers black or white in most cases. Swap to the black `icon_angular.svg` from the press kit's Drive folder if the wall should follow that.
+- **Flutter:** the press-kit logomark's faint raster shadow is not in `flutter.svg` (see the row above).
+- **.NET:** shown below the style guide's 50 px minimum.
 
 ## Not found
 
-Nothing. All 24 brands have an official mark.
+- **App Store Connect** (2026-11-02): skipped. Apple's [trademark guidelines](https://www.apple.com/legal/intellectual-property/guidelinesfor3rdparties.html) forbid using "any other Apple-owned graphic symbol, logo, or icon on or in connection with web sites" without an express written licence. The [App Store marketing guidelines](https://developer.apple.com/app-store/marketing/guidelines/) license the App Store badge and the App Store icon only "in connection with Your applications that are available for download on the App Store", as a call to download them. Neither covers naming App Store Connect on a tool wall, so the tile should show the name only.
+
+Every other brand has an official mark.
+
+## Decision of 2026-11-02 (Incentiva Group brief)
+
+- **Name-only tiles.** Azure, Azure DevOps, Google Play and App Store Connect go on the wall without their marks, because their brand terms do not allow them in a tool list: two tiles of text only, "Azure and Azure DevOps" and "App Store Connect and Google Play" (`Tool.logo` is optional in `src/components/workbench/data.ts`). `azure.svg`, `azure-devops.svg` and `google-play.svg` were prepared and then deleted, so they are not shipped; the rows above keep their sources for a later decision.
+- **Kept, with notes for Erick:** Angular (CC BY 4.0: credit "Angular logo by Google, CC BY 4.0"), .NET (its 50 px minimum against the wall's 28 px), Flutter (the shadowless vector cut from flutter.dev), Vitest (the site icon) and React (no press kit).
+- Claude Code reuses `claude.svg`.

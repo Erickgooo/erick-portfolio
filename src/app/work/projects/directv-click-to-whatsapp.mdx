@@ -1,0 +1,68 @@
+---
+title: "DIRECTV: A Click-to-WhatsApp Sales Funnel"
+publishedAt: "2026-10-31"
+summary: "I designed and launched an in-house sales channel for Incentiva's DIRECTV dealership: a break-even-gated Meta media plan, a live click-to-WhatsApp campaign with 7 ads and 62 creatives, and an AI assistant that pre-qualifies each lead with consent and hands off to a human closer."
+images:
+  - "/images/projects/incentiva/directv-click-to-whatsapp.webp"
+team:
+  - name: "Erick Mahecha"
+    role: "Operations Manager, strategist and campaign owner"
+    avatar: "/images/avatar.jpg"
+    linkedIn: "https://www.linkedin.com/in/erick-mahecha/"
+metric: "62|creatives across six rounds"
+---
+
+## Overview
+
+Incentiva is an authorized DIRECTV dealer, selling to consumers in Antioquia. The dealership had been enabled but had not sold yet, and the brand expected results. The CEO asked for a plan: where to compete, how to use Meta Ads with AI, and how a WhatsApp assistant could take the first conversation.
+
+I led the whole channel, from the strategy deck to the live campaign to the assistant answering the leads it brings in. The goal was not a burst of clicks but a funnel the company owns and can read: every lead arrives pre-qualified, with consent, and every sale reports back to the ad platform that produced it.
+
+**Result: a live click-to-WhatsApp campaign with 7 ads and 62 creatives across six rounds, feeding an AI assistant that pre-qualifies each lead and hands off to a human closer.**
+
+## The Build
+
+### The plan: compete where the lead is
+
+The strategy started with the competition. A competitor audit in the Meta Ad Library showed how the category advertised, and the plan argued for competing on Meta rather than on search. Its central insight: for a dealer, the quality and the speed of each lead matter more than its volume. The deck set KPIs with explicit rules to scale, adjust or stop, and I recommended starting with an in-house pilot.
+
+The media plan turned that into a deliberately small structure, a budget paced over the pilot and checked against Meta's learning phase, and naming and UTM conventions so every result could be traced. Its main rule: spend only scales when the cost per lead is below break-even. The plan also covered consumer-law and consent requirements, and ended with a reconciliation against the live account.
+
+### Creatives composed in code
+
+The ads are composites, not single AI images. Python compositors combine AI-generated scenes with the brand's assets in HTML and CSS, then render each piece for the feed and story placements. Every offer in the ad copy has a documented source, so nothing in an ad promises what the dealership cannot sell. Over six creative rounds the pipeline produced 62 images, 7 ads and 26 placement previews.
+
+### The assistant that answers first
+
+The ads open WhatsApp with a pre-filled message, and an assistant on ChatFlow, Incentiva's own WhatsApp AI platform, takes the conversation. Its prompt and knowledge base live in git, and the loader refuses any change that has not been merged. It knows coverage by municipality, Colombian holidays and opening hours, so it does not promise an installation where or when there is none.
+
+Lead data is captured only after explicit consent. Back-end guards check every reply for length, prices and off-topic answers before it is sent, and the assistant sends generated plan cards and the official PDFs through the WhatsApp API instead of improvising terms.
+
+### Closing the loop with Meta
+
+When the assistant qualifies a lead, ChatFlow sends a QualifiedLead event to the Meta Conversions API, and a Purchase event when a sale closes. A Google Sheets row sync keeps one shared log as the source of truth for the human advisor, who closes the sale. That way Meta can optimize for leads that qualify, not for anyone who taps an ad.
+
+### Optimizing like an owner
+
+A go-live checklist and a daily review log run the campaign. The calls so far: an offer that did not pay back was retired, a carousel that pointed to an outdated number was paused, and dated pieces were replaced before they expired.
+
+The assistant and the creative pipeline were built with AI agents (Claude Code), with Higgsfield for the AI scenes, under my direction. I set the sales rules and the legal limits, approved every creative round and made the optimization calls.
+
+## Results
+
+- **6 creative rounds** producing **62 images, 7 ads and 26 placement previews**.
+- The assistant's conversation test harness passes **400 of 414 scenarios**.
+- About **54 commits** and a **37-file service module** with tests behind the assistant.
+- **6 deck versions** and a briefing guide, and a plan that led directly to the live campaign.
+
+Campaign performance figures stay in the dealership's internal logs.
+
+## What This Demonstrates
+
+Paid media, conversation design and data plumbing usually live with three different vendors, and the funnel breaks at the handoffs between them. Here one plan connects them: the media plan defines what a good lead is, the assistant applies that definition in the conversation, and the Conversions API teaches Meta the same definition. A human still closes every sale, and gets only the conversations worth closing.
+
+**Stack:**
+
+<TechStack data="Meta Ads Manager, Meta Ad Library, Meta Conversions API, WhatsApp Cloud API, Anthropic Claude, Node.js, TypeScript, Google Sheets API, Apps Script, Higgsfield, Python, Vitest, Claude Code" />
+
+Want ads that send only qualified conversations to your team? [Book a call](https://calendly.com/santiagomahecha2328/30min).

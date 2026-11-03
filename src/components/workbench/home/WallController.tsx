@@ -5,7 +5,7 @@
 // It also fetches the wall's logos ahead of the scroll (see below).
 import { useEffect, useRef } from "react";
 
-const GROUPS = 4;
+const GROUPS = 6;
 
 export function WallController() {
   const ref = useRef<HTMLSpanElement>(null);

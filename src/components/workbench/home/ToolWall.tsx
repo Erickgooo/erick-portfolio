@@ -1,5 +1,5 @@
 // Workbench: the tool wall, the dark band of the page. On desktop the section
-// pins and scrolling advances through four groups; the tiles of each group
+// pins and scrolling advances through six groups; the tiles of each group
 // light up one by one (an icon grid, after foundable's). On phones nothing
 // pins: each group stacks with its own tiles, which light up as they enter.
 // Each tool shows its official logo (./tools), lazy in the markup since the
@@ -19,9 +19,12 @@ import bitrix24 from "./tools/bitrix24.svg";
 import botsl from "./tools/botsl.png";
 import capcut from "./tools/capcut.svg";
 import claude from "./tools/claude.svg";
+import angular from "./tools/angular.svg";
 import davinciResolve from "./tools/davinci-resolve.png";
+import dotnet from "./tools/dotnet.svg";
 import elevenlabs from "./tools/elevenlabs.svg";
 import facebook from "./tools/facebook.png";
+import flutter from "./tools/flutter.svg";
 import gemini from "./tools/gemini.svg";
 import googleAnalytics from "./tools/google-analytics.svg";
 import higgsfield from "./tools/higgsfield.svg";
@@ -32,17 +35,32 @@ import kommo from "./tools/kommo.png";
 import meta from "./tools/meta.svg";
 import netlify from "./tools/netlify.svg";
 import nextjs from "./tools/nextjs.svg";
+import nodejs from "./tools/nodejs.svg";
 import odoo from "./tools/odoo.svg";
 import openai from "./tools/openai.svg";
+import playwright from "./tools/playwright.svg";
+import react from "./tools/react.svg";
+import remotion from "./tools/remotion.svg";
 import searchConsole from "./tools/search-console.svg";
 import shopify from "./tools/shopify.svg";
 import soro from "./tools/soro.svg";
+import vitest from "./tools/vitest.svg";
 import whatsapp from "./tools/whatsapp.svg";
+import xunit from "./tools/xunit.svg";
 import zapier from "./tools/zapier.svg";
 import styles from "./toolwall.module.scss";
 
 /** The file each Tool.logo names. */
 const LOGOS: Record<string, StaticImageData> = {
+  "angular.svg": angular,
+  "dotnet.svg": dotnet,
+  "flutter.svg": flutter,
+  "nodejs.svg": nodejs,
+  "playwright.svg": playwright,
+  "react.svg": react,
+  "remotion.svg": remotion,
+  "vitest.svg": vitest,
+  "xunit.svg": xunit,
   "bitrix24.svg": bitrix24,
   "botsl.png": botsl,
   "capcut.svg": capcut,
@@ -73,14 +91,16 @@ function TileFace({ tool }: { tool: Tool }) {
   return (
     <>
       <span className={styles.glyph} aria-hidden="true">
-        <img
-          className={styles.logo}
-          src={LOGOS[tool.logo].src}
-          alt=""
-          height={28}
-          loading="lazy"
-          decoding="async"
-        />
+        {tool.logo ? (
+          <img
+            className={styles.logo}
+            src={LOGOS[tool.logo].src}
+            alt=""
+            height={28}
+            loading="lazy"
+            decoding="async"
+          />
+        ) : null}
       </span>
       <span className={styles.name}>{tool.name}</span>
     </>
@@ -124,6 +144,16 @@ export function ToolWall() {
                   </li>
                 ))}
               </ul>
+              {/* Desktop: the active group's line, in one slot under the list (six
+                  groups with their lines would not fit a 720 px screen). The lines
+                  above stay for screen readers. */}
+              <div className={styles.notes} aria-hidden="true">
+                {TOOL_GROUPS.map((group, g) => (
+                  <p key={group.id} className={styles.note} data-g={g}>
+                    {group.line}
+                  </p>
+                ))}
+              </div>
             </div>
             <div className={styles.board} aria-hidden="true">
               {WALL_ORDER.map(([g, k]) => {

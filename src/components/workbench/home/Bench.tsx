@@ -294,14 +294,14 @@ export function Bench() {
           kind="tag"
           place={{ x: 26, y: 73, w: 26, mx: 0, my: 0, mw: 100, depth: 1.2, bob: 4.3 }}
         >
-          <Tag value="3.92x" caption="ROAS on AI ad creatives" />
+          <Tag value="13" caption="store releases in two months" />
         </Slot>
         <Slot
           index={7}
           kind="tag"
           place={{ x: 56, y: 79, w: 27, mx: 0, my: 0, mw: 100, depth: 1, bob: 4.9 }}
         >
-          <Tag value="$3.45" caption="cost per lead in technical B2B" />
+          <Tag value="11 days" caption="to a second client on one platform" />
         </Slot>
       </div>
     </div>

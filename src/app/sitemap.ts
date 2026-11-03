@@ -18,10 +18,16 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: post.metadata.publishedAt,
     }));
 
+  // Pages under /work that are not case studies: the Incentiva Group index.
+  const workIndexes = enabledRoutes[pages.work.path]
+    ? [{ path: `${pages.work.path}/incentiva-group`, lastModified: "2026-11-02" }]
+    : [];
+
   return [
     ...pagesOn,
     ...entries(["src", "app", "blog", "posts"], pages.blog.path),
     ...entries(["src", "app", "work", "projects"], pages.work.path),
+    ...workIndexes,
   ]
     .filter((entry) => !isProtectedPath(entry.path))
     .map(({ path, lastModified }) => ({
