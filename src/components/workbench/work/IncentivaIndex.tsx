@@ -26,7 +26,7 @@ export const INCENTIVA_CASES = [
   "scope-ios-launch",
   "chatflow-whatsapp-ai-platform",
   "directv-click-to-whatsapp",
-  "ai-cv-screening",
+  "samsung-lifemiles-whatsapp",
   "incentiva-launch-campaign",
   "incentiva-website-brand",
 ];

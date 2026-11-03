@@ -17,14 +17,14 @@ export const faqData: FAQItem[] = [
     id: "incentiva",
     question: "What has he built at Incentiva Group?",
     answer:
-      "Seven case studies, among them:\n\n• **Scope**: a field-sales app turned into a multi-client platform, with a second fintech client live **11 days** after the diagnosis started, and its first iOS launch with **13** store releases in two months.\n• **ChatFlow**: a WhatsApp AI platform taken from backups to **3,177** automated tests.\n• **DIRECTV**: a click-to-WhatsApp funnel with an AI assistant that pre-qualifies leads.\n• An **AI CV-screening tool** shipped in one afternoon, and the company's new brand and 28-page website.\n\nClient figures are confidential. Every project is in the [Incentiva Group index](/work/incentiva-group).",
+      "Seven case studies, among them:\n\n• **Scope**: a field-sales app turned into a multi-client platform, with a second fintech client live on the same platform, and its first iOS launch with **13** production releases.\n• **ChatFlow**: a WhatsApp AI platform taken from backups to **3,177** automated tests.\n• **DIRECTV**: a click-to-WhatsApp funnel with an AI assistant that pre-qualifies leads.\n• **Samsung × LifeMiles**: at Incentiva Group he led the WhatsApp campaign where Galaxy S26 buyers earned **2M+ LifeMiles miles**.\n• The company's new brand and 28-page website.\n\nApart from the figures above and Colmaíz's (35,000+ contacts, 6,000+ served), client figures are confidential. Every project is in the [Incentiva Group index](/work/incentiva-group).",
     relatedIds: ["current", "ai-tools", "contact"],
   },
   {
     id: "notable-project",
     question: "What is his most notable project?",
     answer:
-      "Erick's most notable project is the **QMS ArquiExpo App**, a custom-built, vertically-oriented interactive touchscreen web application showcasing 285 architectural panel variants. He designed, developed, and deployed it on Netlify in **under 48 hours** for ArquiExpo 2026, resolving iOS Safari rendering quirks to ensure flawless vertical touchscreen performance.",
+      "Erick's most notable project is the **QMS ArquiExpo App**, a custom-built, vertically-oriented interactive touchscreen web application showcasing 285 architectural panel variants. He designed, developed, and deployed it on Netlify for ArquiExpo 2026, resolving iOS Safari rendering quirks to ensure flawless vertical touchscreen performance.",
     relatedIds: ["ai-tools", "chatbot-exp", "contact"],
   },
   {
@@ -57,7 +57,8 @@ export const faqData: FAQItem[] = [
   {
     id: "languages",
     question: "What languages does he speak?",
-    answer: "Erick works in **Spanish** and **English**. His English level is **B2** (upper intermediate).",
+    answer:
+      "Erick works in **Spanish** and **English**. His English level is **B2** (upper intermediate).",
     relatedIds: ["location", "current", "contact"],
   },
 ];

@@ -294,14 +294,17 @@ export function Bench() {
           kind="tag"
           place={{ x: 26, y: 73, w: 26, mx: 0, my: 0, mw: 100, depth: 1.2, bob: 4.3 }}
         >
-          <Tag value="13" caption="store releases in two months" />
+          <Tag value="13" caption="production releases, iOS and Android" />
         </Slot>
         <Slot
           index={7}
           kind="tag"
           place={{ x: 56, y: 79, w: 27, mx: 0, my: 0, mw: 100, depth: 1, bob: 4.9 }}
         >
-          <Tag value="11 days" caption="to a second client on one platform" />
+          <Tag
+            value="2M+"
+            caption="LifeMiles miles in a Samsung campaign I led at Incentiva Group"
+          />
         </Slot>
       </div>
     </div>

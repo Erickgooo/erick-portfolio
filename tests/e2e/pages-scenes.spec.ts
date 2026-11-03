@@ -34,17 +34,17 @@ test("with reduced motion the page scenes show their final text", async ({ page 
 
   await page.goto("/work");
   await expect(page.locator(INTRO)).toHaveCount(0, { timeout: 9000 });
-  // The counter's first figure is the Scope multi-client case's own (the
-  // Incentiva Group cases lead since 2026-11-02), shown with what it measures
-  // and the case's name; the link points at that case.
+  // The counter's first figure is the Samsung case's own (the
+  // Incentiva Group cases lead since 2026-11-02), shown with what it measures,
+  // which names Incentiva Group, and the case's name; the link points at it.
   const counter = page.locator('main [class*="figurecounter_counter"]');
-  await expect(counter.locator("[data-typed-text]")).toHaveText("11 days");
+  await expect(counter.locator("[data-typed-text]")).toHaveText("2M+");
   const caption = counter.locator("[data-phrase][data-shown]");
   await expect(caption).toHaveCount(1);
-  await expect(caption).toContainText("to a second client live");
-  await expect(caption).toContainText("Scope");
+  await expect(caption).toContainText("at Incentiva Group");
+  await expect(caption).toContainText("Samsung");
   await expect(caption).toHaveCSS("opacity", "1");
-  await expect(counter.locator("a")).toHaveAttribute("href", "/work/scope-multi-client-platform");
+  await expect(counter.locator("a")).toHaveAttribute("href", "/work/samsung-lifemiles-whatsapp");
   await expect(counter.locator("a")).toHaveAttribute("tabindex", "-1");
 
   await page.goto("/blog");

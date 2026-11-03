@@ -75,21 +75,12 @@ export const INCENTIVA_AREAS: IncentivaArea[] = [
       },
       {
         id: "P32",
-        title: "WhatsApp assistant and client portal (ChatFlow)",
-        client: "Ingredion",
+        title: "Colmaíz WhatsApp assistant and client portal (ChatFlow)",
+        client: "Colmaíz (Ingredion)",
         status: "In production",
-        line: "Fixed lost manual messages, added structured capture and shipped a client-role portal reconciled against the API, Excel and SQL.",
+        line: "An assistant for a community of 35,000+ contacts, 6,000+ served: lost messages fixed, structured capture, and a client-role portal reconciled against the API, Excel and SQL.",
         stack: ["React", "Node.js", "Azure SQL", "Anthropic Claude", "WhatsApp Cloud API"],
         caseSlug: "chatflow-whatsapp-ai-platform",
-      },
-      {
-        id: "P02",
-        title: "AI CV-screening tool",
-        client: "Incentiva (internal)",
-        status: "In production",
-        line: "Batch CV screening for field-sales vacancies: Claude reads, a fixed-weight rubric scores, nothing is stored.",
-        stack: ["React", "TypeScript", "Netlify Functions", "Anthropic SDK", "zod"],
-        caseSlug: "ai-cv-screening",
       },
       {
         id: "P27",
@@ -109,11 +100,12 @@ export const INCENTIVA_AREAS: IncentivaArea[] = [
       },
       {
         id: "P29",
-        title: "Samsung promotion assistant on WhatsApp (ChatFlow)",
+        title: "Samsung × LifeMiles WhatsApp promotion assistant (ChatFlow)",
         client: "Samsung",
         status: "In production",
-        line: "Stabilized an inherited invoice-validation assistant, added fraud controls before the promotion's peak and closed the channel cleanly when it ended.",
-        stack: ["Node.js", "TypeScript", "Anthropic Claude", "WhatsApp Cloud API"],
+        line: "Led the campaign: rebuilt the running assistant, rewrote its prompt and added fraud controls before the peak. Buyers earned 2M+ LifeMiles miles.",
+        stack: ["Node.js", "TypeScript", "Anthropic Claude", "OCR", "WhatsApp Cloud API"],
+        caseSlug: "samsung-lifemiles-whatsapp",
       },
     ],
   },
@@ -345,7 +337,7 @@ export const INCENTIVA_AREAS: IncentivaArea[] = [
         title: "In-app customer data authorization with signature (Scope)",
         client: "Nequi and Wompi operations",
         status: "In production",
-        line: "An on-device signed authorization for merchant data, from options to production API in four days.",
+        line: "An on-device signed authorization for merchant data, which replaced a costlier messaging approach.",
         stack: ["Flutter", ".NET", "Playwright"],
       },
     ],
@@ -361,17 +353,19 @@ export const incentivaCases: { slug: string; title: string; figure: string }[] =
   {
     slug: "scope-multi-client-platform",
     title: "Scope: From Single-Client App to Multi-Client Platform",
-    figure: "a second fintech client live 11 days after the diagnosis started",
+    figure:
+      "a second fintech client live on the same platform; the rollout passed 146 of 146 checks",
   },
   {
     slug: "scope-ios-launch",
     title: "Scope: First iOS Launch and 13 Store Releases",
-    figure: "13 production versions on the App Store and Google Play in two months",
+    figure: "the first iOS release and 13 production versions on the App Store and Google Play",
   },
   {
     slug: "chatflow-whatsapp-ai-platform",
     title: "ChatFlow: Taking Over a WhatsApp AI Platform",
-    figure: "from no tests to 3,177 automated tests",
+    figure:
+      "from no tests to 3,177 automated tests; its Colmaíz assistant serves a community of 35,000+ contacts, 6,000+ served",
   },
   {
     slug: "directv-click-to-whatsapp",
@@ -379,9 +373,10 @@ export const incentivaCases: { slug: string; title: string; figure: string }[] =
     figure: "7 ads and 62 creatives across six rounds",
   },
   {
-    slug: "ai-cv-screening",
-    title: "AI CV Screening: An Internal Tool Shipped in an Afternoon",
-    figure: "built, reviewed and deployed in one afternoon, with 265 tests",
+    slug: "samsung-lifemiles-whatsapp",
+    title: "Samsung: LifeMiles on WhatsApp, a Promotion I Led at Incentiva Group",
+    figure:
+      "Galaxy S26 buyers earned 2M+ LifeMiles miles, in a campaign Erick led at Incentiva Group",
   },
   {
     slug: "incentiva-launch-campaign",

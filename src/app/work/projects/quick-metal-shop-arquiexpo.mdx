@@ -1,7 +1,7 @@
 ---
 title: "Quick Metal Shop: ArquiExpo 2026 Interactive Gallery Application"
 publishedAt: "2026-06-07"
-summary: "Custom-built, vertically-oriented interactive touchscreen web application showcasing 285 architectural panel variants, designed, developed, and deployed in 48 hours for ArquiExpo 2026."
+summary: "Custom-built, vertically-oriented interactive touchscreen web application showcasing 285 architectural panel variants, designed, developed, and deployed for ArquiExpo 2026."
 images:
   - "/images/projects/app-quick-metal-shop/qmsapp.webp"
   - "/images/projects/app-quick-metal-shop/qmsapp2.webp"
@@ -11,20 +11,20 @@ team:
     role: "Full-Stack Developer & Creative Technologist"
     avatar: "/images/avatar.jpg"
     linkedIn: "https://www.linkedin.com/in/erick-mahecha/"
-metric: "48h|dev to deploy"
+metric: "285|panel variants on one touchscreen"
 ---
 
 ## Overview
 
 For **ArquiExpo 2026**, Puerto Rico's premier annual convention for the architecture and construction sector, Quick Metal Shop needed a high-impact digital experience for their stand. 
 
-I designed, developed, and deployed a custom-built, vertically-oriented interactive touchscreen web application in **under 48 hours**. The system allowed attendees to explore the company's full catalog of 285 architectural panel variants and real-world project portfolio in a tactile, visually impressive way on a large vertical touchscreen display.
+I designed, developed, and deployed a custom-built, vertically-oriented interactive touchscreen web application. The system allowed attendees to explore the company's full catalog of 285 architectural panel variants and real-world project portfolio in a tactile, visually impressive way on a large vertical touchscreen display.
 
 ## The Challenge
 
 The constraints were significant:
 - **No existing application** or base code to build on.
-- A hard deadline of **48 hours** before the convention.
+- A hard deadline: the opening of the convention.
 - A substantial catalog containing **285 product images** (all at 1080×1080 resolution).
 - A vertical touch interface context that had to perform flawlessly under heavy usage, including on mobile browsers.
 
@@ -33,17 +33,17 @@ Any lag or layout failure would be a public-facing brand embarrassment at the in
 ## Strategic Solution
 
 ### Ideation & Architecture
-I began by using **Gemini 3.1 Pro** to rapidly structure the application's conceptual architecture, defining the user experience flows, content hierarchy, and interaction model before writing a single line of code.
+I began by using **Gemini 3.1 Pro** to structure the application's conceptual architecture, defining the user experience flows, content hierarchy, and interaction model before writing a single line of code.
 
 ### Development Stack
-To compress the timeline and achieve high performance, I chose:
+To achieve high performance on a vertical touchscreen, I chose:
 
 <TechStack data="Google Antigravity, Claude, Next.js, JavaScript, Netlify" />
 
-- **Google Antigravity** (with Claude Sonnet 4.6 as the AI coding agent): leveraged for accelerated full-stack scaffolding and intelligent code generation.
+- **Google Antigravity** (with Claude Sonnet 4.6 as the AI coding agent): leveraged for full-stack scaffolding and intelligent code generation.
 - **Next.js:** framework for fast rendering and clean component architecture.
 - **CSS + JavaScript:** custom styling and vertical interaction logic.
-- **Netlify:** deployment platform, enabling instant continuous deployment.
+- **Netlify:** deployment platform, enabling continuous deployment.
 
 <img src="/images/projects/app-quick-metal-shop/qmsapp2.webp" alt="Quick Metal Shop Interactive Gallery UI" />
 
@@ -68,8 +68,8 @@ I diagnosed and resolved the iOS Safari-specific layout and rendering conflicts 
 <Grid columns={2} s={{ columns: 1 }} gap="16" fillWidth marginBottom="24">
   <Card padding="16" radius="m" background="neutral-alpha-weak" border="neutral-alpha-weak">
     <Column gap="4">
-      <Text variant="label-default-s" onBackground="neutral-weak">Development Timeline</Text>
-      <Text variant="heading-strong-m" onBackground="neutral-strong">Under 48 Hours</Text>
+      <Text variant="label-default-s" onBackground="neutral-weak">Event Recognition</Text>
+      <Text variant="heading-strong-m" onBackground="neutral-strong">One of the Strongest Stands</Text>
     </Column>
   </Card>
   <Card padding="16" radius="m" background="neutral-alpha-weak" border="neutral-alpha-weak">
@@ -98,7 +98,7 @@ I diagnosed and resolved the iOS Safari-specific layout and rendering conflicts 
   </Card>
 </Grid>
 
-- **Delivered a production-ready application in under 48 hours** from concept to live deployment, with no external development support.
+- **Delivered a production-ready application** from concept to live deployment, with no external development support.
 - **Showcased 285 architectural panel variants** in a polished, dual-mode gallery experience optimized for vertical touchscreen interaction.
 - **Contributed directly to ArquiExpo 2026 stand recognition** as one of the strongest presences at the event.
 - **Demonstrated full-stack agility**: ideation with Gemini, accelerated development with Claude as a coding agent, clean deployment on Netlify, an end-to-end modern development workflow executed under real event pressure.

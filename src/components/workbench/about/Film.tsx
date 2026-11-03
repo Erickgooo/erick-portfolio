@@ -25,8 +25,8 @@ const TAGS: { value: string; caption: string }[] = [
     caption: "of conversations handled by the bot, Artesa Panadería",
   },
   {
-    value: "48 h",
-    caption: "to design, build and deploy the ArquiExpo 2026 gallery app",
+    value: "285",
+    caption: "panel variants in the ArquiExpo 2026 touchscreen gallery app",
   },
   {
     value: "2023",
@@ -67,7 +67,7 @@ export function Film() {
             <p>
               The answer has taken different shapes. An AI-powered WhatsApp chatbot that handled 85%
               of inbound conversations autonomously for Artesa. A full marketing department built
-              from scratch for Quick Metal Shop, down to a trade show app deployed in 48 hours. A
+              from scratch for Quick Metal Shop, down to a touchscreen gallery app for its stand. A
               complete rebranding and content automation system for Dakoma Roofing.
             </p>
             <p>

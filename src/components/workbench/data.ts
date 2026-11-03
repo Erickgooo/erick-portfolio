@@ -20,7 +20,7 @@ const DEFAULT_COVER = { w: 2400, h: 1357 };
 const FAN: { slug: string; paper: Paper }[] = [
   { slug: "scope-multi-client-platform", paper: "cobalt" },
   { slug: "directv-click-to-whatsapp", paper: "mist" },
-  { slug: "ai-cv-screening", paper: "ink" },
+  { slug: "samsung-lifemiles-whatsapp", paper: "ink" },
   { slug: "quick-metal-shop-viral-videos", paper: "ink" },
   { slug: "leadbot-ai", paper: "cobalt" },
   { slug: "ai-powered-ad-creatives", paper: "mist" },

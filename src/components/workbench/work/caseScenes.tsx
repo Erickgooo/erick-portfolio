@@ -11,7 +11,6 @@ import { ArticleEngine } from "../scenes/work/ArticleEngine";
 import { BeatCuts } from "../scenes/work/BeatCuts";
 import { BrandWall } from "../scenes/work/BrandWall";
 import { ChatTriage } from "../scenes/work/ChatTriage";
-import { CvScreen } from "../scenes/work/CvScreen";
 import { KioskStand } from "../scenes/work/KioskStand";
 import { LaunchChain } from "../scenes/work/LaunchChain";
 import { LeadSort } from "../scenes/work/LeadSort";
@@ -24,6 +23,7 @@ import {
   SeoStep,
 } from "../scenes/work/MarketingSteps";
 import { MedalScroll } from "../scenes/work/MedalScroll";
+import { MilesClaim } from "../scenes/work/MilesClaim";
 import { PlatformTakeover } from "../scenes/work/PlatformTakeover";
 import { PresenterBuild } from "../scenes/work/PresenterBuild";
 import { PromptDeploy } from "../scenes/work/PromptDeploy";
@@ -54,7 +54,7 @@ const INCENTIVA_SCENES: Record<string, CaseScene[]> = {
   "directv-click-to-whatsapp": [
     { id: "whatsapp-funnel", part: BUILD, scene: sheet(<WhatsAppFunnel />) },
   ],
-  "ai-cv-screening": [{ id: "cv-screen", part: BUILD, scene: sheet(<CvScreen />) }],
+  "samsung-lifemiles-whatsapp": [{ id: "miles-claim", part: BUILD, scene: sheet(<MilesClaim />) }],
   "incentiva-launch-campaign": [{ id: "launch-chain", part: BUILD, scene: sheet(<LaunchChain />) }],
   "incentiva-website-brand": [{ id: "medal-scroll", part: BUILD, scene: sheet(<MedalScroll />) }],
 };
@@ -160,7 +160,7 @@ export const CASE_SCENES: Record<string, CaseScene[]> = {
             {
               key: "manual",
               label: "Brand manual",
-              anchor: { sel: "h3", text: "Week 1" },
+              anchor: { sel: "h3", text: "Laying the Brand Foundation" },
               scene: <BrandManualStep />,
             },
             {

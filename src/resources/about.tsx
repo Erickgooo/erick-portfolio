@@ -32,11 +32,11 @@ export type About = {
 export const about: About = {
   intro: (
     <>
-      I build growth systems and the software that runs them. I've built complete marketing infrastructures: brand
-      identity, paid media, CRM automation, SEO systems, and AI content production, for companies
-      across construction, food, and retail. Most recently, I generated <Metric>338K+</Metric>{" "}
-      organic video views for Quick Metal Shop with zero ad spend, using an AI production pipeline I
-      designed and ran myself.
+      I build growth systems and the software that runs them. I've built complete marketing
+      infrastructures: brand identity, paid media, CRM automation, SEO systems, and AI content
+      production, for companies across construction, food, and retail. Most recently, I generated{" "}
+      <Metric>338K+</Metric> organic video views for Quick Metal Shop with zero ad spend, using an
+      AI production pipeline I designed and ran myself.
       <br />
       <br />
       My entry point into marketing wasn't a campaign. It was a crisis line.
@@ -56,9 +56,9 @@ export const about: About = {
       The answer has taken different shapes across different projects. An AI-powered WhatsApp
       chatbot that handled <Metric>85%</Metric> of inbound conversations autonomously for Artesa. A
       full marketing department built from scratch for Quick Metal Shop (brand identity, paid media,
-      SEO automation, CRM integration, and a custom-built trade show application deployed in{" "}
-      <Metric>48</Metric> hours). A complete rebranding and content automation system for Dakoma
-      Roofing, delivered as a one-person freelance engagement.
+      SEO automation, CRM integration, and a custom-built trade show application showcasing{" "}
+      <Metric>285</Metric> panel variants). A complete rebranding and content automation system for
+      Dakoma Roofing, delivered as a one-person freelance engagement.
       <br />
       <br />
       What connects all of it is the same approach: start with the operational reality, identify
@@ -69,9 +69,10 @@ export const about: About = {
       Today I work at the intersection of marketing strategy, AI tooling, and systems design. As
       Operations Manager at Incentiva Group, I lead the company's in-house software, a field-sales
       app, a client portal and a WhatsApp AI platform, built and audited with AI agents under my
-      direction. I don't run campaigns in isolation. I build the ecosystems that make campaigns compound over
-      time: automated content pipelines, real-time lead qualification, full-funnel tracking, and
-      creative production workflows that let a one-person operation output at agency scale.
+      direction. I don't run campaigns in isolation. I build the ecosystems that make campaigns
+      compound over time: automated content pipelines, real-time lead qualification, full-funnel
+      tracking, and creative production workflows that let a one-person operation output at agency
+      scale.
       <br />
       <br />
       The work I find most interesting lives at the edge of what's currently possible with AI, which
@@ -90,23 +91,27 @@ export const about: About = {
         description: incentivaRole.summary,
         achievements: [
           <Fragment key="platforms">
-            Took over three inherited production platforms that had little or no CI/CD and few or
-            no tests. I brought them under version control and automated pipelines, and grew their
-            test suites to more than <Metric>13,000</Metric> automated tests.
+            Took over three inherited production platforms that had little or no CI/CD and few or no
+            tests. I brought them under version control and automated pipelines, and grew their test
+            suites to more than <Metric>13,000</Metric> automated tests.
           </Fragment>,
           <Fragment key="multi-client">
             Architected the move of a single-client field-sales app to a multi-client platform, with
             a database per client and fail-closed tenant isolation. A second fintech client went
-            live <Metric>11 days</Metric> after the diagnosis started.
+            live on the same platform, and the rollout passed <Metric>146</Metric> of 146 checks.
           </Fragment>,
           <Fragment key="releases">
             Shipped the field-sales app&apos;s first iOS release and <Metric>13</Metric> production
-            versions across the App Store and Google Play in two months, resolving three App Store
-            review rejections.
+            versions across the App Store and Google Play, resolving three App Store review
+            rejections.
           </Fragment>,
           "Launched a DIRECTV dealer sales channel end to end: strategy, a Meta click-to-WhatsApp campaign with 7 ads and 62 creatives, and an AI sales assistant that pre-qualifies leads and reports conversions back to Meta.",
           "Led code and security audits across the company's products, covering more than 170 findings. I had them fixed test-first and added tenant-isolation tests, two-factor login and Key Vault-managed secrets.",
-          "Directed an AI CV-screening tool from spec to production in one afternoon. It scores CVs with a fixed rubric, resists prompt injection, and was calibrated against reference CVs.",
+          <Fragment key="samsung">
+            Led the Samsung × LifeMiles WhatsApp campaign: I rebuilt the running assistant, rewrote
+            its prompt and directed its fraud controls (deterministic IMEI validation and a second
+            model on identity documents). Buyers earned <Metric>2M+</Metric> LifeMiles miles.
+          </Fragment>,
           "Redesigned Incentiva's brand identity (a 78-page manual and a 357-file kit) and designed and built the new 28-page corporate website. I rolled the brand into the company's software, removing about 750,000 lines of unused template code and halving the client portal's initial bundle.",
           "Built proposals and cost models for Samsung, Ingredion, Wompi, Nequi and Mall Indiana, with verification scripts that check every figure in a quote against its source table.",
         ],
@@ -118,7 +123,7 @@ export const about: About = {
         description:
           "Joined as the company's first and sole marketing hire. There was no brand identity, no analytics infrastructure, and no digital strategy in place. I built everything from scratch and kept it running.",
         achievements: [
-          "Created the company's Brand Manual in the first week, defining the full visual identity (color palette, typography, tone of voice) that became the operational standard across the entire organization, including the ArquiExpo 2026 trade show stand, recognized as one of the strongest presences at the event.",
+          "Created the company's Brand Manual, defining the full visual identity (color palette, typography, tone of voice) that became the operational standard across the entire organization, including the ArquiExpo 2026 trade show stand, recognized as one of the strongest presences at the event.",
           "Deployed and configured Soro AI for automated SEO blog publishing across both the B2B site (Odoo CMS) and the B2C Shopify store, including custom code integration into each CMS. This established a compounding organic search engine that requires zero ongoing manual effort.",
           "Set up Google Analytics and Google Search Console from scratch, then linked Search Console directly to Soro AI to enable keyword-informed automated publishing.",
           "Launched and managed the company's LinkedIn presence; deployed Holo AI to automate brand-aligned thought leadership content at scale.",
@@ -128,9 +133,9 @@ export const about: About = {
           "Operated a high-velocity AI-augmented creative production workflow using Higgsfield (Kling 3.0, Seedance 2.0), ElevenLabs, Claude, CapCut, and DaVinci Resolve.",
           <Fragment key="arquiexpo-app">
             Designed, developed, and deployed a custom full-stack interactive gallery web
-            application in under <Metric>48</Metric> hours for ArquiExpo 2026. Built with Next.js,
-            deployed on Netlify, optimized for a vertical touchscreen interface, and fully
-            responsive across all devices including iOS Safari.
+            application for ArquiExpo 2026, showcasing <Metric>285</Metric> panel variants. Built
+            with Next.js, deployed on Netlify, optimized for a vertical touchscreen interface, and
+            fully responsive across all devices including iOS Safari.
           </Fragment>,
         ],
       },

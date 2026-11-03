@@ -21,7 +21,7 @@ export const MEDIA_SIZE: Record<string, Size> = {
   "/images/projects/incentiva/scope-ios-launch.webp": { w: 2400, h: 1357 },
   "/images/projects/incentiva/chatflow-whatsapp-ai-platform.webp": { w: 2400, h: 1357 },
   "/images/projects/incentiva/directv-click-to-whatsapp.webp": { w: 2400, h: 1357 },
-  "/images/projects/incentiva/ai-cv-screening.webp": { w: 2400, h: 1357 },
+  "/images/projects/incentiva/samsung-lifemiles-whatsapp.webp": { w: 2400, h: 1357 },
   "/images/projects/incentiva/incentiva-launch-campaign.webp": { w: 2400, h: 1357 },
   "/images/projects/incentiva-website/cover.webp": { w: 2400, h: 1357 },
   "/images/projects/incentiva-website/site-1.webp": { w: 2400, h: 1500 },

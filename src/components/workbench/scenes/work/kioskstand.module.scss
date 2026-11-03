@@ -1,5 +1,5 @@
 // Scene: KioskStand (see KioskStand.tsx). Portrait (4:5, 100 x 125 cqi).
-// Drawn with hairlines on the sheet's tokens; the clock's hours light in
+// Drawn with hairlines on the sheet's tokens; the ring's ticks light in
 // cobalt, one tick at a time. Keep this file ASCII-only.
 @use "../../shared" as *;
 @use "../scene" as *;
@@ -71,7 +71,7 @@
   background: var(--sc-obj);
 }
 
-// The 48-hour clock: 48 ticks that light once, the hours counting up ----------------
+// The compatibility ring: 48 ticks that light once, the share counting up -----------
 
 .clock {
   left: 64cqi;

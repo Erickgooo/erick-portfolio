@@ -1,12 +1,12 @@
 // Scene (type 1): Scope's fail-closed tenant isolation. A signed token reaches
 // the campaign resolver, which reads the campaign from the token and opens
 // that client's own database; a request for the other client's data is
-// refused; then the days to the second client count up.
+// refused; then the rollout's passed checks count up.
 //
 // Facts: src/app/work/projects/scope-multi-client-platform.mdx ("one database
 // per client", "a campaign-resolution layer that picks the database from the
-// signed token and fails closed", "11 days", "146 checks passed and 0
-// failures"). The clients are placeholders ("Client A", "Client B"): no real
+// signed token and fails closed", "146 checks passed and 0 failures", "a
+// second fintech client went live on the same platform"). The clients are placeholders ("Client A", "Client B"): no real
 // campaign, screen or data. Portrait (4:5) only.
 import { CountUp, Scene } from "../Scene";
 import s from "./tenantgate.module.scss";
@@ -75,10 +75,10 @@ export function TenantGate() {
       </div>
 
       <div className={s.result}>
-        <CountUp value="11 days" at={4} className={s.value} duration={1300} />
+        <CountUp value="146/146" at={4} className={s.value} duration={1300} />
         <span className={s.caption}>
-          to a second client live
-          <span className={s.note}>146 checks passed, 0 failures</span>
+          rollout checks passed
+          <span className={s.note}>a second client live on one platform</span>
         </span>
       </div>
     </Scene>

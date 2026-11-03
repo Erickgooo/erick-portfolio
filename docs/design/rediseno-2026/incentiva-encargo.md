@@ -28,8 +28,8 @@ Estado: ☐ pendiente · ☑ hecho · ➖ fuera (con motivo).
 | T13 | ErickBot: cargo, proyectos nuevos, cifras confidenciales; snapshot | ☑ |
 | T14 | Visual Work: imágenes de P07 y P19 que pasen las reglas (P08: sus piezas finales no están en esta máquina, D6) | ☑ |
 | T15 | e2e: cada caso y el índice cargan, su escena arranca y queda quieta con movimiento reducido | ☑ |
-| T16 | Puerta: tsc, build, lint, unit, e2e ×4, Lighthouse intercalado, frames ≤ 50 ms, búsqueda de términos y cifras | ☐ |
-| T17 | Merge `--no-ff` a main, push y comprobaciones en producción | ☐ |
+| T16 | Puerta: tsc, build, lint, unit, e2e ×4, Lighthouse intercalado, frames ≤ 50 ms, búsqueda de términos y cifras | ☑ |
+| T17 | Merge `--no-ff` a main, push y comprobaciones en producción | ☑ |
 
 ## Decisiones
 
@@ -43,3 +43,38 @@ Estado: ☐ pendiente · ☑ hecho · ➖ fuera (con motivo).
 - **D8. Pared con seis grupos.** En escritorio cada grupo muestra solo su título y la línea del activo aparece en un hueco bajo la lista (fundido de opacidad); el tablero no es más ancho de lo que permite la altura de la pantalla. Con las seis líneas, en 720 px el título se recortaba y su aparición no llegaba nunca (lo cazó `motion.spec`).
 - **D9. Hero.** Antes: «Growth Marketing & AI Automation Specialist» · «A one-person growth department for founders: AI content pipelines, CRM automation and paid media, plus the software itself when nothing exists yet.» · cifras 85 %, 338K+, 3.92x, $3.45. Después: «Operations Manager · Growth & AI Systems» · «Growth systems and the software that runs them: AI content pipelines, WhatsApp assistants and paid media, and the field and client platforms I lead as Operations Manager at Incentiva Group.» · cifras 85 %, 338K+, 13 store releases, 11 days. El titular no cambia.
 - **D10. `content.tsx`.** El encargo lo nombra, pero el contenido vive en `src/resources/about.tsx` (experiencia, habilidades), `profile.ts` (cargo) y `incentiva.ts` (nuevo: índice y datos para ErickBot).
+- **D11. Inglés B2 (Erick, durante el encargo).** ErickBot lo sabe por `profile.languageLevels`; las páginas siguen diciendo «works in Spanish and English».
+
+## Resultados (2026-11-02)
+
+- **Puerta:** tsc limpio; build sin avisos (el de la raíz del workspace solo aparece en el worktree anidado; fuera del repo, 0 como main); lint 0 errores; unit 32/32; e2e 401/0 (39 saltos por navegador, los de siempre) en chromium, mobile-chromium, firefox y webkit, puerto 3100, `--workers=2`.
+- **Lighthouse móvil, 3 rondas intercaladas (local):** medianas main/rama iguales en Home 85, About 89, Projects 89, Visual Work 85, post 88 y LeadBot 85. Rutas nuevas 85–90 (índice 90). CLS ≤ 0,0005 en las nuevas (el índice tenía 0,023 por el corte del título y de la línea del cargo al llegar la fuente; corregido a 0).
+- **Frames (Chromium, LoAF + rAF):** 0 frames largos en las 8 rutas nuevas y la Home, a 1440 y 390; p95 16,7 ms, máximo 33,4 ms.
+- **Producción:** merge `d5c71ec` (punto de regreso `d34c3de`), Vercel en verde; 23 URLs del sitemap en 200; cabeceras idénticas; ErickBot responde con el cargo, el B2 y la confidencialidad; e2e de Incentiva 36/36 contra producción; Lighthouse en producción: Home 99, Projects 97, índice 97, Scope 95, web 94.
+
+## Ronda 2: correcciones de Erick (2026-11-02, tarde)
+
+Rama `feat/incentiva-ajustes` (worktree `.claude/worktrees/incentiva-ajustes`) desde `origin/main` `d5c71ec`, el punto de regreso de esta ronda. Las decisiones de Erick prevalecen sobre la base y sobre D4.
+
+- **D12. Samsung, siempre desde Incentiva Group.** Fuera del índice y de la entrada de About, la primera mención en cada superficie va en una frase que nombra a Incentiva Group: el título del caso («Samsung: LifeMiles on WhatsApp, a Promotion I Led at Incentiva Group»; el nombre corto evita que el título cambie de líneas al llegar la fuente, CLS 0,05 → 0), la etiqueta de su cifra («LifeMiles miles in a Samsung campaign at Incentiva Group», que es lo primero que lee la franja de `/work`), la cifra del hero, el caso ChatFlow y ErickBot.
+- **D13. Cifras de clientes autorizadas:** «2M+ LifeMiles miles» (Samsung × LifeMiles) y «35,000+ contacts», «6,000+ served» (Colmaíz). Colmaíz y LifeMiles se nombran. Cualquier otra cifra de cliente sigue fuera, también las demás de la tarjeta P29.
+- **D14. El caso de cribado de CV (P02) sale del sitio:** página, tarjetas, bullet de About, escena, portada, franja, sitemap y ErickBot. `/work/ai-cv-screening` redirige con 308 a `/work/incentiva-group` (`next.config.mjs`). El índice pasa a 31 tarjetas.
+- **D15. Caso nuevo `samsung-lifemiles-whatsapp`** en su puesto (siguen siendo 7). Escena `MilesClaim`: compra, WhatsApp en un teléfono genérico dibujado, factura por OCR, un IMEI que no pasa el algoritmo de Luhn y se rechaza, el IMEI válido (el número de ejemplo de los manuales, no el de un comprador), identidad verificada por un segundo modelo y, al final, las millas. Las marcas van solo en texto.
+- **D16. Resultados, no tiempo de construcción o entrega.** Se quitaron en todo el sitio las cifras y frases que miden la velocidad de construcción o de entrega. Los tiempos que vive el cliente final se quedan (por ejemplo, el seguimiento a los 60 minutos del bot de ATV). ArquiExpo pasa a su cifra de alcance publicada (285 variantes) y su reloj de 48 marcas se convierte en el anillo «100%» de compatibilidad entre dispositivos, también publicado en el caso. ai-portfolio no tiene otra cifra: se queda sin métrica y su escena termina en «Live».
+
+| Dónde | Antes | Después |
+|---|---|---|
+| Hero | 13 · store releases in two months | 13 · production releases, iOS and Android |
+| Hero | 11 days · to a second client on one platform | 2M+ · LifeMiles miles in a Samsung campaign I led at Incentiva Group |
+| Caso Scope multi-cliente | 11 days · to a second client live | 146/146 · rollout checks passed |
+| Caso Scope iOS | 13 · store releases in two months | 13 · production releases |
+| Caso CV (P02) | 265 · tests, shipped in one afternoon | fuera (redirige al índice) |
+| Caso Samsung × LifeMiles | — | 2M+ · LifeMiles miles in a Samsung campaign at Incentiva Group |
+| Caso ChatFlow (Results) | 3,177 tests; 643 cifras; 270 → 318 de 320 | lo mismo + 35,000+ contacts y 6,000+ served (Colmaíz) + 2M+ miles (Samsung) |
+| ArquiExpo | 48h · dev to deploy | 285 · panel variants on one touchscreen |
+| ai-portfolio | <2min · deploy time | sin métrica |
+| About, película | 48 h · to design, build and deploy the ArquiExpo app | 285 · panel variants in the ArquiExpo touchscreen gallery app |
+| About, Incentiva | 11 days; in two months; CV in one afternoon | 146 of 146 checks; sin plazo; Samsung × LifeMiles, 2M+ miles |
+| About, Quick Metal Shop | Brand Manual in the first week; app in under 48 hours | sin plazo; 285 panel variants |
+| Escenas | TenantGate 11 days; StoreReleases Aug 20 to Oct 16; KioskStand 48h; PromptDeploy <2min | 146/146; App Store and Google Play; 100%; Live |
+| ErickBot | 11 days, in two months, in one afternoon, under 48 hours | 13 production releases, 2M+ miles, cifras de Colmaíz; sin plazos |

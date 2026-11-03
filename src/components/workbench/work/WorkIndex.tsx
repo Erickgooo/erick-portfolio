@@ -15,7 +15,7 @@ import styles from "./work.module.scss";
 
 /** The order the head's counter types the figures in (the scene map's). */
 const COUNTER_ORDER = [
-  "scope-multi-client-platform",
+  "samsung-lifemiles-whatsapp",
   "leadbot-ai",
   "scope-ios-launch",
   "quick-metal-shop-viral-videos",
@@ -23,7 +23,7 @@ const COUNTER_ORDER = [
   "ai-powered-ad-creatives",
   "directv-click-to-whatsapp",
   "atv-riders",
-  "ai-cv-screening",
+  "scope-multi-client-platform",
   "quick-metal-shop-arquiexpo",
   "incentiva-website-brand",
   "incentiva-launch-campaign",

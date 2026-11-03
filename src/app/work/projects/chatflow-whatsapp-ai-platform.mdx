@@ -14,7 +14,7 @@ metric: "3,177|automated tests, from none"
 
 ## Overview
 
-ChatFlow is Incentiva's platform for WhatsApp AI assistants: a React panel, a Node API on Azure, Claude models and the WhatsApp Cloud API. One platform runs the assistants of several client lines, from a food-ingredients brand of Ingredion to Incentiva's own DIRECTV dealership, so a defect in one place can reach every client at once.
+ChatFlow is Incentiva's platform for WhatsApp AI assistants: a React panel, a Node API on Azure, Claude models and the WhatsApp Cloud API. One platform runs the assistants of several client lines, from Ingredion's Colmaíz brand and the [Samsung × LifeMiles promotion](/work/samsung-lifemiles-whatsapp) I led at Incentiva Group to Incentiva's own DIRECTV dealership, so a defect in one place can reach every client at once.
 
 It existed before I joined, but only as backups. There was no repository, deploys were manual zip uploads, and there were no tests. Nobody could say with certainty which version of the code was running in production. Meanwhile the platform kept serving real conversations every day, and one of its clients could not see or act on any of them.
 
@@ -53,15 +53,17 @@ The work was built with AI coding agents (Claude Code) under my direction. I ran
 ## Results
 
 - The repository grew from **139 files and no tests to 831 files and 3,177 passing tests**.
-- **684 commits and more than 200 merged pull requests** since August 5.
+- **684 commits and more than 200 merged pull requests**.
 - **Three audits** with more than 100 findings, fixed and deployed in releases.
 - The assistant's test battery improved from **270 to 318 of 320**, and **643 dashboard figures** were reconciled three ways before the portal shipped.
+- The Colmaíz assistant serves a community of **35,000+ contacts**, with **6,000+ served**.
+- The same platform ran the [Samsung × LifeMiles promotion](/work/samsung-lifemiles-whatsapp), where buyers earned **2M+ LifeMiles miles**.
 
 ## What This Demonstrates
 
 Inheriting a running system is a different job from building one. You cannot stop it, you cannot trust what you were told about it, and every fix has to land without breaking the conversations happening right now. The order mattered: first the truth (a repository that matches production), then a safe way to change it (gates and tests), then the audits, and only then new features.
 
-The 3,177 tests are not the goal in themselves. They are what lets a small team change a multi-client platform on a Tuesday afternoon and know by the evening that no client noticed.
+The 3,177 tests are not the goal in themselves. They are what lets a small team change a multi-client platform with confidence that no client will notice.
 
 **Stack:**
 

@@ -1,5 +1,5 @@
 // Scenes (type 4 steps): a marketing department built from zero, in the
-// order of the case's "Strategic Solution". 1, week 1: the brand manual
+// order of the case's "Strategic Solution". 1, the foundation: the brand manual
 // (palette, type, tone, usage); 2, SEO automation: Soro AI writes an article
 // and it is published on both storefronts, the Odoo site (B2B) and the
 // Shopify store (B2C); 3, LinkedIn with Holo AI: posts drafted and set into
@@ -20,7 +20,7 @@ const k = (n: number) => ({ "--k": n }) as CSSProperties;
 /** The tracker's events, lit one after another. */
 const EVENTS = Array.from({ length: 12 }, (_, n) => ({ id: `e${n}`, n }));
 
-/** Step 1: the brand manual, opened in week 1. */
+/** Step 1: the brand manual, the foundation. */
 export function BrandManualStep() {
   return (
     <Scene className={s.scene} steps={[700, 1000, 1100, 1100, 3200]} loop>
@@ -44,7 +44,7 @@ export function BrandManualStep() {
           </span>
         </div>
       </div>
-      <span className={s.week}>Week 1</span>
+      <span className={s.week}>Foundation</span>
     </Scene>
   );
 }

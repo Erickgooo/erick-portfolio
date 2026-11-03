@@ -1,7 +1,7 @@
 ---
 title: "Scope: First iOS Launch and 13 Store Releases"
 publishedAt: "2026-10-16"
-summary: "I took a Flutter field-sales app that had never shipped on iOS through signing, background GPS, a Firebase migration to company ownership and three App Store review rejections to its first iOS release, then ran 13 production versions across both stores in two months."
+summary: "I took a Flutter field-sales app that had never shipped on iOS through signing, background GPS, a Firebase migration to company ownership and three App Store review rejections to its first iOS release, then ran 13 production versions across both stores."
 images:
   - "/images/projects/incentiva/scope-ios-launch.webp"
 team:
@@ -9,16 +9,16 @@ team:
     role: "Operations Manager, release manager and product owner"
     avatar: "/images/avatar.jpg"
     linkedIn: "https://www.linkedin.com/in/erick-mahecha/"
-metric: "13|store releases in two months"
+metric: "13|production releases"
 ---
 
 ## Overview
 
 Scope's field staff spend the working day in the street, logging merchant visits from their phones, and not all of those phones run Android. The app was on Google Play, but it had never shipped on iOS. Its Firebase project, which carries the push notifications, still belonged to the original external vendor, so the company did not fully own its own app.
 
-I took over release management with two goals: get the app onto the App Store, and turn releasing from an event into a routine. A field app that takes weeks to update is a field app whose bugs stay in the street for weeks.
+I took over release management with two goals: get the app onto the App Store, and turn releasing from an event into a routine. A field app that is hard to update is a field app whose bugs stay in the street.
 
-**Result: the app's first iOS release, then 13 production versions (1.1.1 to 1.1.13) across the App Store and Google Play between Aug 20 and Oct 16.**
+**Result: the app's first iOS release, then 13 production versions (1.1.1 to 1.1.13) across the App Store and Google Play.**
 
 ## The Build
 
@@ -36,7 +36,7 @@ App Store review rejected the submission three times. Each rejection was read fo
 
 ### Releasing as a routine
 
-Thirteen versions in two months only works if a release has no manual steps left to forget:
+Thirteen production versions only work if a release has no manual steps left to forget:
 
 - **Scripted uploads** through the App Store Connect and Google Play APIs, so both stores receive the same build the same way.
 - **A mandatory-update mechanism**, so nobody keeps working in the field on a version with a known defect.
@@ -52,15 +52,15 @@ The engineering was done with AI coding agents (Claude Code) under my direction.
 ## Results
 
 - The app's **first iOS release**, approved for unlisted distribution after **three App Store review rejections** were resolved.
-- **13 versions**, 1.1.1 to 1.1.13, released to production on both stores between Aug 20 and Oct 16.
+- **13 versions**, 1.1.1 to 1.1.13, released to production on both stores.
 - Build numbers went from **90 to 115**.
 - Firebase now lives in a company-owned project, and every release follows a scripted, documented path.
 
 ## What This Demonstrates
 
-Release management is where product work meets the people using it. The code for a fix can be ready in an hour and still reach the field a month later if signing breaks, a review stalls or uploads depend on one person's laptop. Most of this project was removing those delays: owning the infrastructure, answering the reviewer precisely, and scripting the path to both stores until shipping became ordinary.
+Release management is where product work meets the people using it. A fix can be ready and still not reach the field if signing breaks, a review stalls or uploads depend on one person's laptop. Most of this project was removing those delays: owning the infrastructure, answering the reviewer precisely, and scripting the path to both stores until shipping became ordinary.
 
-The numbers are the proof of that routine. Thirteen production versions in two months is not a sprint; it is a release path that no longer needs heroics.
+The numbers are the proof of that routine. Thirteen production versions are not a sprint; they are a release path that no longer needs heroics.
 
 It also changes what the operation can be promised. When a coordinator reports a problem from the field, the answer is no longer "in the next release, whenever that is", but a version and a date.
 
