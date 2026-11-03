@@ -257,6 +257,9 @@ for (const path of ["/", "/about", "/work", "/work/leadbot-ai", "/gallery", "/bl
 // live (the others wait to start or hold where they are). On phones a
 // stepper's sheets stack, and the end of one scene used to play with the next.
 test("no more than one scene moves at a time", async ({ page }) => {
+  // It walks every page top to bottom; the Home's pinned brand stage
+  // (2026-11-02) adds 300 svh, and WebKit took 28 s of the default 30 before it.
+  test.setTimeout(90_000);
   for (const path of ["/", "/work/ai-powered-ad-creatives"]) {
     await page.goto(path);
     await expect(page.locator(INTRO)).toHaveCount(0, { timeout: 9000 });
