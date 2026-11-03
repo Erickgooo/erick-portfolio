@@ -9,7 +9,7 @@ import { StructuredData, pageMetadata } from "@/utils/seo";
 const PATH = `${pages.work.path}/incentiva-group`;
 const TITLE = "Incentiva Group";
 const DESCRIPTION =
-  "Every project of Erick Mahecha's role as Operations Manager at Incentiva Group: in-house software, client operations, paid media, proposals, brand and compliance, with seven case studies.";
+  "Every project of Erick Mahecha's role as Operations Manager at Incentiva Group: in-house software, client operations, paid media, brand and compliance, with seven case studies.";
 
 export async function generateMetadata() {
   return pageMetadata({ title: TITLE, description: DESCRIPTION, path: PATH });

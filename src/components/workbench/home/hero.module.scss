@@ -41,19 +41,6 @@
   }
 }
 
-// The kicker over the name: the three words of the umbrella title, small and
-// tracked in capitals, so it reads as a label and not a line of copy. Set in
-// the text face (the mono face is not preloaded and would swap in late).
-.kicker {
-  font-size: 13px;
-  font-weight: 600;
-  line-height: 1.2;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--wb-ink-2);
-  margin-bottom: -4px;
-}
-
 .who {
   display: flex;
   align-items: center;
@@ -118,12 +105,11 @@
   margin-top: 8px;
 
   // Phones: the two keys share one row from 360 px (stacked, they pushed the
-  // bench's tablet, the LCP element, below the first screen), and the text
-  // link takes the row under them.
+  // bench's tablet, the LCP element, below the first screen).
   @include phone {
     gap: 10px;
 
-    > a:not(:last-child) {
+    > a {
       gap: 8px;
       min-height: 48px;
       padding: 0 14px;

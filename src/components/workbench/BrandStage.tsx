@@ -11,21 +11,29 @@
 // four brands still, side by side. Every word is in the DOM from the server.
 // On /work/incentiva-group, `place="index"` is a compact grid, never pinned.
 //
-// The logos are the files Incentiva's own website shows (sources:
-// docs/design/rediseno-2026/tool-logos.md, "Brands"), at one visual area so
-// none weighs more than another: 16,000 px2 on stage, scaled down elsewhere.
-// Each sits on a white card, so its colours read on both themes; none is
-// recoloured. DIRECTV's is the wordmark DIRECTV Latin America serves on its own
-// Colombian site, and its line keeps the frame: Incentiva is an authorized dealer.
+// The logos (sources: docs/design/rediseno-2026/tool-logos.md, "Brands") sit
+// straight on the page, at one visual area so none weighs more than another:
+// 16,000 px2 on stage, scaled down elsewhere. Each brand has two files, one
+// per theme, shown by html[data-theme] (the site's own theme key, which a
+// prefers-color-scheme <picture> would ignore): its official colour logo on
+// the light theme and its official light version on the dark one (Nequi's
+// press kit, Wompi's brand assets, Samsung's site), or, where the brand
+// publishes none (DIRECTV), its official file in one white ink. Colmaiz has
+// one transparent file for both. DIRECTV's line keeps the frame: Incentiva is
+// an authorized dealer.
 import type { StaticImageData } from "next/image";
 import Link from "next/link";
 import type { CSSProperties } from "react";
 import { FiArrowRight } from "react-icons/fi";
 import { BrandStageController } from "./BrandStageController";
 import colmaiz from "./brands/colmaiz.webp";
+import directvOnDark from "./brands/directv-on-dark.svg";
 import directv from "./brands/directv.svg";
+import nequiOnDark from "./brands/nequi-on-dark.webp";
 import nequi from "./brands/nequi.webp";
+import samsungOnDark from "./brands/samsung-on-dark.svg";
 import samsung from "./brands/samsung.webp";
+import wompiOnDark from "./brands/wompi-on-dark.svg";
 import wompi from "./brands/wompi.webp";
 import styles from "./brandstage.module.scss";
 import ui from "./ui.module.scss";
@@ -33,6 +41,8 @@ import ui from "./ui.module.scss";
 type Brand = {
   name: string;
   file: StaticImageData;
+  /** The file for the dark theme (the same one where the brand has one). */
+  onDark: StaticImageData;
   /** On-stage size, in px, from the equal-area formula (16,000 px2). */
   w: number;
   h: number;
@@ -49,6 +59,7 @@ export const BRANDS: Brand[] = [
   {
     name: "Nequi",
     file: nequi,
+    onDark: nequiOnDark,
     w: 227,
     h: 70,
     line: "Scope, the custom field-sales app I lead at Incentiva Group for Nequi’s field teams.",
@@ -60,6 +71,7 @@ export const BRANDS: Brand[] = [
   {
     name: "Wompi",
     file: wompi,
+    onDark: wompiOnDark,
     w: 261,
     h: 61,
     line: "Wompi went live on the same Scope platform, with its own data and roles.",
@@ -71,6 +83,7 @@ export const BRANDS: Brand[] = [
   {
     name: "Colmaíz",
     file: colmaiz,
+    onDark: colmaiz,
     w: 218,
     h: 73,
     line: "The WhatsApp AI assistant I directed on ChatFlow for Colmaíz (Ingredion).",
@@ -82,6 +95,7 @@ export const BRANDS: Brand[] = [
   {
     name: "Samsung",
     file: samsung,
+    onDark: samsungOnDark,
     w: 322,
     h: 50,
     line: "The WhatsApp chatbot I led for the Samsung × LifeMiles campaign.",
@@ -95,6 +109,7 @@ export const BRANDS: Brand[] = [
     // own, never DIRECTV hiring Erick. The figure is the case's own output.
     name: "DIRECTV",
     file: directv,
+    onDark: directvOnDark,
     w: 292,
     h: 55,
     line: "The click-to-WhatsApp sales channel I led for Incentiva as an authorized DIRECTV dealer.",
@@ -116,17 +131,26 @@ function Panel({ b, i, place }: { b: Brand; i: number; place: "home" | "index" }
       data-reveal=""
       style={{ "--i": i } as CSSProperties}
     >
-      <h3 className={styles.logoCard}>
-        <img
-          className={styles.logo}
-          src={b.file.src}
-          width={b.w}
-          height={b.h}
-          style={{ "--w": b.w, "--h": b.h } as CSSProperties}
-          alt={b.name}
-          loading="lazy"
-          decoding="async"
-        />
+      <h3 className={styles.logoCard} style={{ "--w": b.w, "--h": b.h } as CSSProperties}>
+        {/* One file per theme; the hidden one is display: none, so a lazy
+            image is never fetched and the heading keeps one name. */}
+        {(
+          [
+            [styles.onLight, b.file],
+            [styles.onDark, b.onDark],
+          ] as const
+        ).map(([theme, file]) => (
+          <img
+            key={theme}
+            className={`${styles.logo} ${theme}`}
+            src={file.src}
+            width={b.w}
+            height={b.h}
+            alt={b.name}
+            loading="lazy"
+            decoding="async"
+          />
+        ))}
       </h3>
       <p className={styles.line}>{b.line}</p>
       <p className={styles.result}>

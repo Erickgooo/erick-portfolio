@@ -110,11 +110,8 @@
   text-align: left;
 }
 
-// The location and the time show where the bar has room for them beside the
-// pill: from 1024 px. Between the bottom bar and 1024 px the pill (with the
-// Experience & Resume key) would cover them.
 .desk {
-  @include below-desk {
+  @include bottom-nav {
     display: none;
   }
 }
@@ -279,20 +276,6 @@
   // On the bottom bar the keys show their icons only; the label stays the
   // key's name for screen readers.
   @include bottom-nav {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    overflow: hidden;
-    clip-path: inset(50%);
-    white-space: nowrap;
-  }
-}
-
-// A long label (Experience & Resume) shows only where the bar has room for
-// it next to the location and the time; below 1280 px its key is its icon,
-// and the label stays the key's name for screen readers.
-.long {
-  @include below-wide {
     position: absolute;
     width: 1px;
     height: 1px;

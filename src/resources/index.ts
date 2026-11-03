@@ -2,7 +2,7 @@
 // settings, the About content, the gallery and the protected routes.
 export { profile, profileLinks } from "./profile";
 export type { Profile, ProfileLink } from "./profile";
-export { enabledRoutes, experience, headerShows, pages, sameAs, sharing, siteUrl } from "./site";
+export { enabledRoutes, headerShows, pages, sameAs, sharing, siteUrl } from "./site";
 export type { Page, PagePath } from "./site";
 export { about } from "./about";
 export { homeFeatured } from "./home";

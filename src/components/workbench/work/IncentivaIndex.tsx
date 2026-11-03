@@ -36,7 +36,6 @@ const STATUS_KEY: Record<IncentivaStatus, string> = {
   "In production": "live",
   "Delivered to client": "delivered",
   Internal: "internal",
-  "Proposal / pitch": "proposal",
 };
 
 function ProjectCard({ p, i }: { p: IncentivaProject; i: number }) {
@@ -150,8 +149,8 @@ export function IncentivaIndex() {
       <div className={styles.areas}>
         <p className={styles.areasLede} data-reveal="">
           Every project of the role, {count} in all, grouped by area. Each one is marked In
-          production, Delivered to client, Internal, or Proposal / pitch. Client figures and
-          internal economics stay with the clients.
+          production, Delivered to client, or Internal. Client figures and internal economics stay
+          with the clients.
         </p>
         {INCENTIVA_AREAS.map((area) => (
           <section key={area.id} className={styles.area} aria-labelledby={`area-${area.id}`}>

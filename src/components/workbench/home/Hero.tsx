@@ -2,9 +2,8 @@
 // the bench beside it rise into place as the site intro lifts, over an
 // ambient layer of paper bits that rises with them (BenchAmbient).
 // Positioning of 2026-11-03: the umbrella title "Growth & AI Systems Lead";
-// the work is the primary action, the call the secondary one, and the
-// recruiter's route (Experience & Resume) a text link.
-import { experience, profile } from "@/resources";
+// the work is the primary action and the call the secondary one.
+import { profile } from "@/resources";
 import Image from "next/image";
 import Link from "next/link";
 import { FiArrowRight } from "react-icons/fi";
@@ -20,7 +19,6 @@ export function Hero() {
     <section className={styles.hero} aria-labelledby="hero-title">
       <div className={styles.inner}>
         <div className={styles.text}>
-          <p className={styles.kicker}>Growth / AI / Systems</p>
           <p className={styles.who}>
             <Image src={MEDIA.avatar.src} width={48} height={48} alt="" className={styles.avatar} />
             <span>
@@ -43,9 +41,6 @@ export function Hero() {
               </span>
             </Link>
             <BookCall variant="secondary" />
-            <Link href={experience.href} className={ui.textLink}>
-              {experience.label} <FiArrowRight aria-hidden="true" />
-            </Link>
           </div>
         </div>
         <div className={styles.benchCol}>

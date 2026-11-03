@@ -38,11 +38,12 @@ for (const theme of ["light", "dark"] as const) {
     const wall = page.locator('section[aria-labelledby="tools-title"]');
     await wall.scrollIntoViewIfNeeded();
     const { desk, tiles } = await visibleTiles(page);
-    // 38 tools: 34 official logos and 4 pictograms (Azure, Azure DevOps,
-    // App Store Connect and Google Play do not allow their marks here).
-    await expect(tiles).toHaveCount(38);
+    // 39 tools: 37 official logos and 2 pictograms (Azure and Azure DevOps do
+    // not allow their marks here; Xcode, App Store Connect and Google Play show
+    // theirs by Erick's decision of 2026-11-03).
+    await expect(tiles).toHaveCount(39);
     let pictograms = 0;
-    for (let i = 0; i < 38; i++) {
+    for (let i = 0; i < 39; i++) {
       const tile = tiles.nth(i);
       if (!desk) await tile.scrollIntoViewIfNeeded();
       const name = (await tile.textContent())?.trim() ?? "";
@@ -84,6 +85,6 @@ for (const theme of ["light", "dark"] as const) {
         }
       }
     }
-    expect(pictograms).toBe(4);
+    expect(pictograms).toBe(2);
   });
 }

@@ -1,14 +1,12 @@
-// Incentiva Group: every project of the role (P01 to P33, P24 left out), for
-// the index at /work/incentiva-group and for ErickBot. Source: the Incentiva
-// experience knowledge base of 2026-11-02 (outside the repo). Lines carry no
+// Incentiva Group: every project of the role (P01 to P33; P24 left out, and the
+// commercial proposals P05, P16, P22, P25 and P26 withdrawn by Erick on
+// 2026-11-03), for the index at /work/incentiva-group and for ErickBot.
+// Source: the Incentiva experience knowledge base of 2026-11-02 (outside the
+// repo). Lines carry no
 // client figures, prices or internal economics; a project that is part of a
 // case study links to it.
 
-export type IncentivaStatus =
-  | "In production"
-  | "Delivered to client"
-  | "Internal"
-  | "Proposal / pitch";
+export type IncentivaStatus = "In production" | "Delivered to client" | "Internal";
 
 export type IncentivaProject = {
   id: string;
@@ -35,7 +33,7 @@ export const incentivaRole = {
   timeframe: "July 2026 - Present",
   place: "Medellín, hybrid",
   summary:
-    "At Incentiva Group, a marketing agency in Medellín, I led projects for Nequi, Wompi, Colmaíz and Samsung. As Operations Manager I report to the CEO, lead a team of two and run the company's in-house software as product owner and technical lead: Scope, the field app for the Nequi and Wompi field teams, a client portal and ChatFlow, the WhatsApp AI-assistant platform, directing AI-assisted development from review to App Store release. I also lead brand and go-to-market work: the 2026 brand redesign and new corporate website, a click-to-WhatsApp sales channel for Incentiva as an authorized DIRECTV dealer, and commercial proposals and cost models.",
+    "At Incentiva Group, a marketing agency in Medellín, I led projects for Nequi, Wompi, Colmaíz and Samsung. As Operations Manager I report to the CEO, lead a team of two and run the company's in-house software as product owner and technical lead: Scope, the field app for the Nequi and Wompi field teams, a client portal and ChatFlow, the WhatsApp AI-assistant platform, directing AI-assisted development from review to App Store release. I also lead brand and go-to-market work: the 2026 brand redesign with the new corporate website, and a click-to-WhatsApp sales channel for Incentiva as an authorized DIRECTV dealer.",
   method:
     "The software, decks and media were produced with AI agents, mainly Claude Code, with Higgsfield for generative media. I define the requirements, approve specs and designs, make the product, legal and pricing decisions, and merge and release to production.",
 };
@@ -179,53 +177,6 @@ export const INCENTIVA_AREAS: IncentivaArea[] = [
         line: "Pre-qualifies each lead with consent, reports to the Conversions API and hands off to a human advisor.",
         stack: ["Node.js", "TypeScript", "WhatsApp Cloud API", "Anthropic Claude"],
         caseSlug: "directv-click-to-whatsapp",
-      },
-    ],
-  },
-  {
-    id: "commercial",
-    title: "Commercial proposals and cost models",
-    line: "Quotations and pitches, with cost models and scripts that check every figure against its source.",
-    projects: [
-      {
-        id: "P16",
-        title: "Samsung incentive-plan quotation",
-        client: "Samsung",
-        status: "Proposal / pitch",
-        line: "A quotation and a cost model whose every figure is checked by script against one master table.",
-        stack: ["Python", "openpyxl", "python-pptx"],
-      },
-      {
-        id: "P25",
-        title: "Field-team BPO proposals",
-        client: "Wompi and Nequi",
-        status: "Proposal / pitch",
-        line: "Two field-team proposals with cost models that compare coverage against cost across team sizes.",
-        stack: ["PowerPoint", "HTML/CSS"],
-      },
-      {
-        id: "P26",
-        title: "WhatsApp loyalty-program proposal",
-        client: "Mall Indiana",
-        status: "Proposal / pitch",
-        line: "A WhatsApp loyalty program on ChatFlow: strategy, pricing tiers and a check that keeps internal figures out of the deck.",
-        stack: ["Python", "python-pptx", "LibreOffice"],
-      },
-      {
-        id: "P05",
-        title: "WhatsApp leads in Salesforce: integration proposal",
-        client: "Ingredion",
-        status: "Proposal / pitch",
-        line: "A feasibility proposal in English for sending the WhatsApp assistant's leads to Salesforce.",
-        stack: ["HTML/CSS", "Playwright", "Python"],
-      },
-      {
-        id: "P22",
-        title: "Campaign results presentation",
-        client: "Ingredion",
-        status: "Proposal / pitch",
-        line: "A traceable results deck with a data annex and a methodology note, from data extracted read-only.",
-        stack: ["Azure SQL", "Python", "python-pptx", "Excel"],
       },
     ],
   },

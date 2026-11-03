@@ -115,7 +115,6 @@ export const about: About = {
             <Metric>2M+</Metric> LifeMiles miles were awarded to buyers through the chatbot.
           </Fragment>,
           "Redesigned Incentiva's brand identity (a 78-page manual and a 357-file kit) and designed and built the new 28-page corporate website. I rolled the brand into the company's software, removing about 750,000 lines of unused template code and halving the client portal's initial bundle.",
-          "Built proposals and cost models for Samsung, Ingredion, Wompi, Nequi and Mall Indiana, with verification scripts that check every figure in a quote against its source table.",
         ],
       },
       {
@@ -318,7 +317,7 @@ export const about: About = {
       {
         title: "Product & Engineering Leadership",
         description:
-          "Directing AI coding agents (Claude Code: spec, plan, test-first, review) · Multi-Tenant SaaS Architecture · Mobile Release Management (App Store Connect, Google Play) · CI/CD (Azure DevOps Pipelines) · Incident Response & Reliability · Test Automation (Vitest, Playwright, xUnit, Flutter tests)",
+          "Directing AI coding agents (Claude Code: spec, plan, test-first, review) · Multi-Tenant SaaS Architecture · Mobile Release Management (Xcode, App Store Connect, Google Play) · CI/CD (Azure DevOps Pipelines) · Incident Response & Reliability · Test Automation (Vitest, Playwright, xUnit, Flutter tests)",
       },
       {
         title: "Software & Cloud",
@@ -327,8 +326,7 @@ export const about: About = {
             <strong>Apps & APIs:</strong> Flutter / Dart, .NET / C# (EF Core), Angular, React,
             TypeScript, Node.js, Next.js
             <br />
-            <strong>Cloud:</strong> Azure (App Service, SQL, Application Insights), Netlify,
-            Vercel
+            <strong>Cloud:</strong> Azure (App Service, SQL, Application Insights), Netlify, Vercel
             <br />
             <strong>Security & Compliance:</strong> Security reviews and remediation, two-factor
             authentication, secret management, data-protection compliance under Colombia&apos;s
@@ -339,12 +337,12 @@ export const about: About = {
       {
         title: "Automation, AI & Systems",
         description:
-          "AI Chatbot Design & Deployment · LLM Application Design (grounding, structured output, model calibration, prompt-injection defense) · WhatsApp Cloud API · Meta Conversions API · Lead Qualification Automation · CRM Workflow Design (Bitrix24, Kommo) · API & Integration Architecture (Salesforce, Google Sheets) · Zapier Automation · Prompt Engineering & AI-Assisted Workflows",
+          "AI Chatbot Design & Deployment · LLM Application Design (grounding, structured output, model calibration, prompt-injection defense) · WhatsApp Cloud API · Meta Conversions API · Lead Qualification Automation · CRM Workflow Design (Bitrix24, Kommo) · API & Integration Architecture (Salesforce, Google Sheets) · Zapier Automation · Prompt Engineering & AI-Assisted Workflows (ChatGPT 6.1 Sol, Claude, Gemini)",
       },
       {
-        title: "Marketing, Growth & Commercial",
+        title: "Marketing & Growth",
         description:
-          "Digital Marketing Strategy · Meta Ads (B2B, B2C and click-to-WhatsApp) · Media Planning & Unit Economics (break-even cost per lead) · Lead Generation & Funnel Optimization · Content Strategy & Social Planning · SEO Strategy & Implementation · Brand Systems & Asset Kits · Cost Modeling & Pricing · Proposals & Sales Decks · Automated Document Generation with Figure Checks",
+          "Digital Marketing Strategy · Meta Ads (B2B, B2C and click-to-WhatsApp) · Media Planning & Unit Economics (break-even cost per lead) · Lead Generation & Funnel Optimization · Content Strategy & Social Planning · SEO Strategy & Implementation · Brand Systems & Asset Kits",
       },
       {
         title: "Platforms & Tools",

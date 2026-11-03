@@ -2,7 +2,7 @@
 // shows the dates, the company and the role; it opens (a native <details>, so
 // it needs no script and works from the keyboard) to what was done there. The
 // current role starts open, so the first row shows the way.
-import { about, experience } from "@/resources";
+import { about } from "@/resources";
 import type { CSSProperties } from "react";
 import { FiDownload } from "react-icons/fi";
 import { inWords } from "../data";
@@ -23,20 +23,16 @@ export function Experience() {
   const current = jobs[0];
 
   return (
-    <section
-      id={experience.anchor}
-      className={styles.experience}
-      aria-labelledby="experience-title"
-    >
+    <section id="experience" className={styles.experience} aria-labelledby="experience-title">
       <div className={styles.inner}>
         <div className={styles.head} data-reveal="">
-          <h2 id="experience-title">Experience &amp; resume</h2>
+          <h2 id="experience-title">Experience</h2>
           <div className={styles.headText}>
             <p>
               {count.charAt(0).toUpperCase() + count.slice(1)} roles
               {firstYear ? ` since ${firstYear}` : ""}, from a support line to{" "}
-              {current ? `${current.role} at ${current.company}` : "leading growth"}. Open a row
-              for what I did there.
+              {current ? `${current.role} at ${current.company}` : "leading growth"}. Open a row for
+              what I did there.
             </p>
             <a href={resume} className={uiStyles.book} download>
               <span className={uiStyles.bookIcon} aria-hidden="true">

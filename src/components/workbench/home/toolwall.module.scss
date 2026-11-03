@@ -205,6 +205,25 @@
     }
   }
 
+  // The group of seven (it has no wide tile on the board): its first tile,
+  // Claude Code, takes a whole row of the three columns on phones (3 + 3 + 3
+  // cells, no gap) and two of the four columns on tablets (two rows of four).
+  &[data-count="7"] {
+    @include phone {
+      .tile:first-child {
+        grid-column: span 3;
+      }
+    }
+
+    @include from-tablet {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+
+      .tile:first-child {
+        grid-column: span 2;
+      }
+    }
+  }
+
   // On desktop the board shows the tiles; the lists stay for screen readers.
   @include from-desk {
     position: absolute;
@@ -314,7 +333,7 @@
   line-height: 1.2;
 }
 
-// Desktop board: 38 tiles in 6 columns by 7 rows (four wide tiles take two
+// Desktop board: 39 tiles in 6 columns by 7 rows (three wide tiles take two
 // cells each), groups scattered across it.
 .board {
   display: none;

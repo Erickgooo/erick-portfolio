@@ -55,19 +55,6 @@ export const pages = {
   },
 } satisfies Record<string, Page>;
 
-/**
- * The route for someone reviewing Erick's profile (a recruiter, a hiring
- * manager): the work experience on About, with the resume at its top. The
- * header, the hero and every closing link to it; "Book a call" is the route
- * for hiring him.
- */
-export const experience = {
-  label: "Experience & Resume",
-  href: "/about#experience",
-  /** The id of the experience section on About. */
-  anchor: "experience",
-};
-
 /** The pages that are on. A page that is off answers as not found. */
 export const enabledRoutes: Record<PagePath, boolean> = {
   "/": true,

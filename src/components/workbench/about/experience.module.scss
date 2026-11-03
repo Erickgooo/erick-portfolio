@@ -4,9 +4,9 @@
 // Keep this file ASCII-only: a non-ASCII byte makes Sass emit a BOM.
 @use "../shared" as *;
 
-// #experience, the recruiter's route from the header, the hero and every
-// closing: an anchor lands with the section's top clear of the sticky header
-// on desktop (on phones the header floats at the bottom).
+// #experience (ErickBot links it): an anchor lands with the section's top
+// clear of the sticky header on desktop (on phones the header floats at the
+// bottom).
 .experience {
   @include below-fold(2200px, 1700px);
   position: relative;

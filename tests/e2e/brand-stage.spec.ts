@@ -123,7 +123,7 @@ test("each brand's logo loads and its link opens its case", async ({ page, reque
     const panel = panels.nth(i);
     if (isDesk(page)) await scrollToBrand(page, i);
     else await panel.scrollIntoViewIfNeeded();
-    const img = panel.locator("img");
+    const img = panel.locator("img:visible");
     await expect(img).toHaveAttribute("alt", name);
     await expectLoaded(img);
     const link = panel.getByRole("link", { name: /^See the case/ });
@@ -196,8 +196,8 @@ test("the index keeps a compact version: every brand, never pinned", async ({ pa
   for (const [i, [name, href]] of BRANDS.entries()) {
     const panel = panels.nth(i);
     await panel.scrollIntoViewIfNeeded();
-    await expectLoaded(panel.locator("img"));
-    await expect(panel.locator("img")).toHaveAttribute("alt", name);
+    await expectLoaded(panel.locator("img:visible"));
+    await expect(panel.locator("img:visible")).toHaveAttribute("alt", name);
     await expect(panel.getByRole("link", { name: /^See the case/ })).toHaveAttribute("href", href);
     await expect(panel.locator("[data-count-text]")).toHaveText(FIGURES[i]);
   }
