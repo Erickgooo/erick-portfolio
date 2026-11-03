@@ -52,7 +52,13 @@ export const faqData: FAQItem[] = [
     id: "location",
     question: "Where is he based?",
     answer: "Erick is based in **Medellín, Colombia** (America/Bogota timezone).",
-    relatedIds: ["current", "contact"],
+    relatedIds: ["current", "languages", "contact"],
+  },
+  {
+    id: "languages",
+    question: "What languages does he speak?",
+    answer: "Erick works in **Spanish** and **English**. His English level is **B2** (upper intermediate).",
+    relatedIds: ["location", "current", "contact"],
   },
 ];
 

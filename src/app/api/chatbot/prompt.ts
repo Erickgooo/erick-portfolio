@@ -69,7 +69,9 @@ Name: ${profile.name}
 Role: ${profile.role}
 Location: ${profile.location}
 Email: ${profile.email}
-Languages: ${profile.languages?.join(", ")}
+Languages: ${profile.languages
+  ?.map((l) => (profile.languageLevels?.[l] ? `${l} (${profile.languageLevels[l]})` : l))
+  .join(", ")}
 
 ## BIO
 ${jsxToText(about.intro)}

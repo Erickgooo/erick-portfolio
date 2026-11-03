@@ -14,6 +14,8 @@ export type Profile = {
   /** IANA zone of the clock in the header. */
   timeZone: string;
   languages: string[];
+  /** The level of a language, where Erick has stated it (ErickBot reads it). */
+  languageLevels?: Record<string, string>;
 };
 
 export const profile: Profile = {
@@ -26,6 +28,7 @@ export const profile: Profile = {
   location: "Medellín, Colombia",
   timeZone: "America/Bogota",
   languages: ["Spanish", "English"],
+  languageLevels: { English: "B2, upper intermediate" },
 };
 
 export type ProfileLink = { name: string; icon: IconName; href: string };
