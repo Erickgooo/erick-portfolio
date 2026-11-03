@@ -110,7 +110,7 @@ Case studies:
   - Scope: First iOS Launch and 13 Store Releases: the first iOS release and 13 production versions on the App Store and Google Play. https://erickmahecha.com/work/scope-ios-launch
   - ChatFlow: Taking Over a WhatsApp AI Platform: from no tests to 3,177 automated tests; its Colmaíz assistant serves a community of 35,000+ contacts, 6,000+ served. https://erickmahecha.com/work/chatflow-whatsapp-ai-platform
   - DIRECTV: A Click-to-WhatsApp Sales Funnel: 7 ads and 62 creatives across six rounds. https://erickmahecha.com/work/directv-click-to-whatsapp
-  - Samsung × LifeMiles: A WhatsApp Promotion I Led at Incentiva Group: Galaxy S26 buyers earned 2M+ LifeMiles miles, in a campaign Erick led at Incentiva Group. https://erickmahecha.com/work/samsung-lifemiles-whatsapp
+  - Samsung: LifeMiles on WhatsApp, a Promotion I Led at Incentiva Group: Galaxy S26 buyers earned 2M+ LifeMiles miles, in a campaign Erick led at Incentiva Group. https://erickmahecha.com/work/samsung-lifemiles-whatsapp
   - Website Launch: A Social Campaign Built in Code: both videos passed a 13-point QA. https://erickmahecha.com/work/incentiva-launch-campaign
   - Incentiva Group: A Corporate Website on a Redesigned Brand: a 28-page website on a 78-page brand manual; built, launch pending. https://erickmahecha.com/work/incentiva-website-brand
 

@@ -374,7 +374,7 @@ export const incentivaCases: { slug: string; title: string; figure: string }[] =
   },
   {
     slug: "samsung-lifemiles-whatsapp",
-    title: "Samsung × LifeMiles: A WhatsApp Promotion I Led at Incentiva Group",
+    title: "Samsung: LifeMiles on WhatsApp, a Promotion I Led at Incentiva Group",
     figure:
       "Galaxy S26 buyers earned 2M+ LifeMiles miles, in a campaign Erick led at Incentiva Group",
   },
