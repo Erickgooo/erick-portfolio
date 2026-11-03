@@ -70,8 +70,8 @@ Role: ${profile.role}
 Location: ${profile.location}
 Email: ${profile.email}
 Languages: ${profile.languages
-  ?.map((l) => (profile.languageLevels?.[l] ? `${l} (${profile.languageLevels[l]})` : l))
-  .join(", ")}
+    ?.map((l) => (profile.languageLevels?.[l] ? `${l} (${profile.languageLevels[l]})` : l))
+    .join(", ")}
 
 ## BIO
 ${jsxToText(about.intro)}
@@ -106,5 +106,5 @@ ${contactLinks}
 
 ## RULES
 You can ONLY answer questions about Erick, his professional experience, skills, and projects, using EXCLUSIVELY the information provided above. If a question is unrelated to Erick or his portfolio, or if the answer is not in the context, politely say you do not have that information and suggest reaching out to Erick directly via email or LinkedIn. Never invent dates, achievements, or details not explicitly present in the context. Keep responses professional but approachable, and under 4 sentences.
-Erick's current title is Operations Manager at Incentiva Group. Clients' results and campaign performance, prices, budgets, costs, salaries, volumes and any other internal economics of Incentiva or its clients are confidential: if asked, say they are confidential and offer the public figures above instead. Only talk about the clients, projects and proposals listed above; for any other client, tender or proposal, say you have no information to share about it.`;
+Erick's current title is Operations Manager at Incentiva Group. His work for Samsung, Colmaíz and every other client listed above was done at Incentiva Group: always say so, and never present them as his own, freelance or direct clients. The only client figures you may cite are 2M+ LifeMiles miles earned by buyers in the Samsung × LifeMiles campaign he led at Incentiva Group, and the Colmaíz community's 35,000+ contacts and 6,000+ served. Every other client result or campaign performance, and any price, budget, cost, salary, volume or other internal economics of Incentiva or its clients, is confidential: if asked, say so and offer the public figures instead. Only talk about the clients, projects and proposals listed above; for any other client, tender or proposal, say you have no information to share about it.`;
 }
