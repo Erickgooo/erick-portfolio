@@ -1,4 +1,4 @@
-import { BrandStrip } from "@/components/workbench/BrandStrip";
+import { BrandStage } from "@/components/workbench/BrandStage";
 import { Closing } from "@/components/workbench/Closing";
 import { RevealObserver } from "@/components/workbench/RevealObserver";
 import { About } from "@/components/workbench/home/About";
@@ -37,7 +37,7 @@ export default function Home() {
         }}
       />
       <Hero />
-      <BrandStrip place="home" />
+      <BrandStage place="home" />
       <Builds />
       <ToolWall />
       <Projects hideProtected={!isProtectedPath("/")} />

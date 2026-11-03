@@ -15,7 +15,7 @@ import Link from "next/link";
 import type { CSSProperties } from "react";
 import { FiArrowLeft, FiArrowRight } from "react-icons/fi";
 import { BookCall } from "../BookCall";
-import { BrandStrip } from "../BrandStrip";
+import { BrandStage } from "../BrandStage";
 import { SceneSheet } from "../scenes/Scene";
 import { InheritedPlatforms } from "../scenes/work/InheritedPlatforms";
 import { type Case, getCase } from "./cases";
@@ -122,7 +122,6 @@ export function IncentivaIndex() {
               {`${incentivaRole.timeframe.replace(" - ", " – ")} · ${incentivaRole.place}`}
             </span>
           </p>
-          <BrandStrip place="index" />
           <p className={styles.summary}>{incentivaRole.summary}</p>
           <p className={styles.method}>{incentivaRole.method}</p>
           <BookCall />
@@ -133,6 +132,9 @@ export function IncentivaIndex() {
           </SceneSheet>
         </div>
       </header>
+
+      {/* The brands, compact and never pinned, right under the head. */}
+      <BrandStage place="index" />
 
       <section className={styles.cases} aria-labelledby="incentiva-cases">
         <h2 id="incentiva-cases" className={styles.h2} data-reveal="">
