@@ -11,9 +11,14 @@
 // on every visit). The imports live here, not in ../data, because Next also
 // ships an imported image's details to the browser on every route whose
 // server components import that module, and only the Home shows the wall.
+// A tool whose brand does not allow its mark here gets a neutral pictogram
+// from the site's own icon set (Feather, the arrows and links everywhere
+// else), drawn in the tile's ink.
 import type { StaticImageData } from "next/image";
 import type { CSSProperties } from "react";
-import { TOOL_GROUPS, type Tool, WALL_ORDER } from "../data";
+import type { IconType } from "react-icons";
+import { FiCloud, FiGitMerge, FiPackage, FiSmartphone } from "react-icons/fi";
+import { type Pictogram, TOOL_GROUPS, type Tool, WALL_ORDER } from "../data";
 import { WallController } from "./WallController";
 import bitrix24 from "./tools/bitrix24.svg";
 import botsl from "./tools/botsl.png";
@@ -87,20 +92,39 @@ const LOGOS: Record<string, StaticImageData> = {
   "zapier.svg": zapier,
 };
 
+/** The pictogram each Tool.pictogram names (sources: tool-logos.md). */
+const PICTOGRAMS: Record<Pictogram, IconType> = {
+  cloud: FiCloud,
+  pipeline: FiGitMerge,
+  phone: FiSmartphone,
+  package: FiPackage,
+};
+
+function Glyph({ tool }: { tool: Tool }) {
+  if (tool.logo) {
+    return (
+      <img
+        className={styles.logo}
+        src={LOGOS[tool.logo].src}
+        alt=""
+        height={28}
+        loading="lazy"
+        decoding="async"
+      />
+    );
+  }
+  const Icon = tool.pictogram ? PICTOGRAMS[tool.pictogram] : null;
+  return Icon ? <Icon className={styles.pictogram} data-pictogram={tool.pictogram} /> : null;
+}
+
 function TileFace({ tool }: { tool: Tool }) {
   return (
     <>
+      {/* The chip is the light card a logo sits on in the dark theme. */}
       <span className={styles.glyph} aria-hidden="true">
-        {tool.logo ? (
-          <img
-            className={styles.logo}
-            src={LOGOS[tool.logo].src}
-            alt=""
-            height={28}
-            loading="lazy"
-            decoding="async"
-          />
-        ) : null}
+        <span className={styles.chip}>
+          <Glyph tool={tool} />
+        </span>
       </span>
       <span className={styles.name}>{tool.name}</span>
     </>
@@ -129,11 +153,12 @@ export function ToolWall() {
                       {group.title}
                     </h3>
                     <p className={styles.line}>{group.line}</p>
-                    <ul className={styles.tiles}>
+                    <ul className={styles.tiles} data-count={group.tools.length}>
                       {group.tools.map((tool, k) => (
                         <li
                           key={tool.name}
                           className={styles.tile}
+                          data-wide={tool.wide ? "" : undefined}
                           data-reveal=""
                           style={{ "--i": k } as CSSProperties}
                         >
@@ -164,6 +189,7 @@ export function ToolWall() {
                     key={tool.name}
                     className={styles.cell}
                     data-g={g}
+                    data-wide={tool.wide ? "" : undefined}
                     style={{ "--k": k } as CSSProperties}
                   >
                     <span className={styles.face}>

@@ -78,3 +78,25 @@ Rama `feat/incentiva-ajustes` (worktree `.claude/worktrees/incentiva-ajustes`) d
 | About, Quick Metal Shop | Brand Manual in the first week; app in under 48 hours | sin plazo; 285 panel variants |
 | Escenas | TenantGate 11 days; StoreReleases Aug 20 to Oct 16; KioskStand 48h; PromptDeploy <2min | 146/146; App Store and Google Play; 100%; Live |
 | ErickBot | 11 days, in two months, in one afternoon, under 48 hours | 13 production releases, 2M+ miles, cifras de Colmaíz; sin plazos |
+
+## Ronda 3: correcciones de Erick (2026-11-02, noche)
+
+Rama `feat/incentiva-ronda3` (worktree `.claude/worktrees/incentiva-ronda3`) desde `origin/main` `6291a0a`, el punto de regreso de esta ronda. Las decisiones de Erick prevalecen sobre D4, D7 y, solo para la franja de marcas, D15.
+
+- **D17. Fin del anonimato de D4.** Los clientes con los que Erick dirigió proyectos desde Incentiva se nombran: Nequi, Wompi, Colmaíz (Ingredion) y Samsung, y DIRECTV con su marco exacto (Incentiva es distribuidor autorizado; la campaña fue para ese canal de venta, no para un cliente que contrató a Erick). «A second fintech client» pasa a Wompi y «the existing client», a Nequi. Scope se presenta como la app hecha a medida de Incentiva para operar los equipos de campo de Nequi y Wompi (no como «construida en casa»: su Firebase era del proveedor original). En ChatFlow, el resumen y la primera frase dicen que Erick dirigió la plataforma y, en ella, el asistente de Colmaíz.
+- **D18. La cifra de Samsung dice lo que pasó:** más de 2 millones de millas LifeMiles otorgadas a compradores de Samsung a través del chatbot de WhatsApp que Erick dirigió desde Incentiva. ErickBot lo explica así y nunca como millas «ganadas» por Erick.
+- **D19. Evolución, no fallos.** El caso Samsung cuenta lo que Erick llevó al asistente para una promoción de alto valor y alto volumen (los hechos de la tarjeta P29): OCR reconstruido para leer cualquier factura, resúmenes de cierre solo con datos verificados, mensajes sin datos internos, IMEI con Luhn, un segundo modelo para la identidad, bloqueo por vigencia y cierre limpio del canal. ChatFlow y Scope cuentan su punto de partida (sin repositorio, sin tests, una API pensada para un solo cliente) sin adjetivos que culpen a nadie.
+- **D20. Franja de marcas** («Brands I've led projects for at Incentiva Group»): en la Home, entre el hero y «What I build», y en la cabecera del índice, bajo el cargo. Logos oficiales de la web de Incentiva (Nequi, Wompi, Colmaíz normal sin Ingredion, Samsung) con la fórmula de área igual del bloque `incentiva/marcas`, sobre tarjeta blanca en los dos temas, cada uno enlazado a su caso. DIRECTV queda fuera de la franja: no hay archivo de su logo en las carpetas de Incentiva de esta máquina. Fuentes en `tool-logos.md`, «Brands».
+- **D21. Muro sin casillas vacías.** Las dos casillas de solo texto pasan a cuatro (Azure, Azure DevOps, App Store Connect, Google Play), cada una con un pictograma neutro de Feather (el juego de iconos del sitio), porque sus condiciones de marca no permiten sus iconos en una lista de herramientas. Con 38 herramientas, el tablero de escritorio pasa a 6 × 7 con cuatro casillas anchas y celdas 7:6, del mismo tamaño total. En oscuro cada logo va sobre una tarjeta blanca en sus colores (antes eran siluetas claras, y Bitrix24, Kommo, Zapier, Facebook, .NET, DaVinci y Next.js quedaban como manchas); las casillas apagadas muestran el logo en gris, sin perder sus formas internas.
+- **D22. Línea de rol de la Home:** la frase de Incentiva en la sección «Growth, and the systems behind it» («At Incentiva Group, I led projects for Nequi, Wompi, Colmaíz and Samsung…»). La oferta del hero no cambia, para no mover el primer pantallazo; la franja de marcas va justo debajo.
+
+| Dónde | Antes | Después |
+|---|---|---|
+| Hero | 2M+ · LifeMiles miles in a Samsung campaign I led at Incentiva Group | 2M+ · LifeMiles miles awarded through the WhatsApp chatbot I led for Samsung at Incentiva Group |
+| Caso Samsung (cifra, franja de `/work`) | LifeMiles miles in a Samsung campaign at Incentiva Group | LifeMiles miles awarded through the WhatsApp chatbot I led at Incentiva Group |
+| Caso Samsung («Result») | buyers earned 2M+ LifeMiles miles | more than 2 million LifeMiles miles were awarded to Samsung buyers through the chatbot |
+| Escena `MilesClaim` | LifeMiles miles earned by buyers | LifeMiles miles awarded through the chatbot |
+| ChatFlow (Results) | buyers earned 2M+ LifeMiles miles | whose chatbot awarded buyers 2M+ LifeMiles miles |
+| About, Incentiva | Buyers earned 2M+ LifeMiles miles | 2M+ LifeMiles miles were awarded to buyers through the chatbot |
+| Scope multi-cliente | a second fintech client | Wompi, next to Nequi |
+| ErickBot | 2M+ LifeMiles miles earned by buyers | 2M+ LifeMiles miles awarded to Samsung buyers through the chatbot he led; Nequi, Wompi y Colmaíz con el marco de Incentiva |

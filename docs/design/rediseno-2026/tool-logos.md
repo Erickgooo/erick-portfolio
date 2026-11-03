@@ -1,6 +1,6 @@
 # Tool logos for the "tools I've shipped real work with" wall
 
-Files in `src/components/workbench/home/tools/` (in `public/images/tools/` until 2026-10-22; moved so the build serves them with a content hash and a long cache), one per brand: 24 collected on 2026-10-22 and 12 added on 2026-11-02. All 36 are official (none uses the Simple Icons fallback). App Store Connect has no file, because Apple does not allow its icons to be used this way (see "Not found"), and Claude Code reuses `claude.svg`.
+Files in `src/components/workbench/home/tools/` (in `public/images/tools/` until 2026-10-22; moved so the build serves them with a content hash and a long cache), one per brand: 24 collected on 2026-10-22 and 12 added on 2026-11-02. All 36 are official (none uses the Simple Icons fallback). App Store Connect has no file, because Apple does not allow its icons to be used this way (see "Not found"), and Claude Code reuses `claude.svg`. Since round 3 of the Incentiva brief (2026-11-02), the wall has 38 tiles: 34 with an official logo and 4 with a neutral pictogram (see "Pictograms"). The last two sections list the client brands of the Home's brand strip.
 
 How they were prepared:
 
@@ -53,6 +53,7 @@ How they were prepared:
 
 ## Colour notes for the white tile
 
+- **Dark theme (since 2026-11-02, round 3):** every logo sits on a small white card (the tile's "chip") in its own colours. Until then the dark theme drew every logo as a flat light silhouette, and the marks with white inner shapes (Bitrix24, Kommo, Zapier, Facebook, .NET, DaVinci Resolve, Next.js) read as blank squares or circles. Unlit board tiles, in both themes, now show the logo greyed and darkened (`grayscale(1) brightness(0.6)`, chip at 55 %) instead of a black silhouette, so their inner shapes stay.
 - **Black marks:** OpenAI, ElevenLabs, Holo, Higgsfield, Kling, CapCut, Next.js, xUnit.net. They need the white tile; on `#131316` they disappear (xUnit.net keeps only its thin white inner lines).
 - **Low contrast on dark:** Netlify (its dark-teal "n"), Odoo (its grey letters), React (`#087EA4` is react.dev's light-background blue) and Remotion (its translucent rings turn navy).
 - **Rasters (PNG):** Kommo, BotSL IA, Holo, Instagram, Facebook, DaVinci Resolve. Use them at no more than about 64 px (`kommo.png` is 190 px and `botsl.png` 166 px).
@@ -83,6 +84,39 @@ Every other brand has an official mark.
 
 ## Decision of 2026-11-02 (Incentiva Group brief)
 
-- **Name-only tiles.** Azure, Azure DevOps, Google Play and App Store Connect go on the wall without their marks, because their brand terms do not allow them in a tool list: two tiles of text only, "Azure and Azure DevOps" and "App Store Connect and Google Play" (`Tool.logo` is optional in `src/components/workbench/data.ts`). `azure.svg`, `azure-devops.svg` and `google-play.svg` were prepared and then deleted, so they are not shipped; the rows above keep their sources for a later decision.
+- **Name-only tiles** (replaced the same evening by four tiles with pictograms, see "Pictograms"). Azure, Azure DevOps, Google Play and App Store Connect go on the wall without their marks, because their brand terms do not allow them in a tool list: two tiles of text only, "Azure and Azure DevOps" and "App Store Connect and Google Play" (`Tool.logo` is optional in `src/components/workbench/data.ts`). `azure.svg`, `azure-devops.svg` and `google-play.svg` were prepared and then deleted, so they are not shipped; the rows above keep their sources for a later decision.
 - **Kept, with notes for Erick:** Angular (CC BY 4.0: credit "Angular logo by Google, CC BY 4.0"), .NET (its 50 px minimum against the wall's 28 px), Flutter (the shadowless vector cut from flutter.dev), Vitest (the site icon) and React (no press kit).
 - Claude Code reuses `claude.svg`.
+
+## Pictograms (round 3, 2026-11-02)
+
+Erick's decision: no tile without a glyph. Each tile shows the official icon where the brand's guidelines allow it in a tool list, and otherwise a neutral pictogram. The terms recorded above still rule out all four (Microsoft's Azure icon terms: architecture diagrams, training materials and documentation only; Google Play: not in marketing materials, not as a tile; Apple: no icon on web sites without a written licence), and no guideline turned up that allows them here, so the four former name-only tiles are now four tiles with a pictogram. "Azure and Azure DevOps" and "App Store Connect and Google Play" were split into four tiles.
+
+| Tile | Pictogram | Origin |
+|---|---|---|
+| Azure | a cloud | `FiCloud` |
+| Azure DevOps | a merge of two branches (the pipeline) | `FiGitMerge` |
+| App Store Connect | a phone (an iOS build) | `FiSmartphone` |
+| Google Play | a package (the app bundle) | `FiPackage` |
+
+- **Source:** [Feather Icons](https://feathericons.com/) (MIT licence), through `react-icons/fi` (react-icons 5), the same set the site uses for its arrows and links. They are not drawn after any brand mark: none resembles the Azure "A", the Azure DevOps ribbon, the App Store "A" or the Google Play prism.
+- **Style:** a 1.75 px line in the tile's ink, 26 px (22 px on the dark theme's white chip), so they read like the black marks of the wall. `data-pictogram` on the SVG names it (the e2e test counts four).
+- `azure.svg`, `azure-devops.svg` and `google-play.svg` stay out of the repo.
+
+## Brands: the Home's brand strip (round 3, 2026-11-02)
+
+"Brands I've led projects for at Incentiva Group", after the Home's hero and in the head of `/work/incentiva-group` (`src/components/workbench/BrandStrip.tsx`). Erick's decision replaces D15 for this strip only: the official logos of the brands he led projects for at Incentiva Group, each linked to its case. Scenes still carry no brand logo.
+
+Files in `src/components/workbench/brands/`, copied from Incentiva's own website (read-only: `D:\Incentiva Group\Página Web\wp-content\uploads`, the files of its `incentiva/marcas` block "Marcas que confían"). Sizes follow that block's equal-area formula (`themes/incentiva/blocks/marcas/render.php`, 2026-10-21): 3,740 px² of visible logo, at most 200 px wide, 64 px tall and half the file's natural width. Each file is saved at twice its on-screen size (WebP, lossless for the transparent ones), so it is sharp on 2x screens. Nothing was redrawn or recoloured.
+
+| Brand | File | On screen | Source | Notes |
+|---|---|---|---|---|
+| Nequi | `nequi.webp` (220×68) | 110×34 | `uploads/2026/10/incentiva-logo-nequi.png` (1248×387, transparent) | Wordmark with its pink square, dark purple `#200020`. |
+| Wompi | `wompi.webp` (252×60) | 126×30 | `uploads/2026/10/incentiva-logo-wompi.png` (1709×400, transparent) | Symbol and wordmark in charcoal `#2C2A29`. |
+| Colmaíz | `colmaiz.webp` (212×70) | 106×35 | `uploads/2026/09/incentiva-logo-colmaiz.jpg` (447×447, on white) | The normal logo with its line "La calidad por tradición", not the "cinta" version, and without any Ingredion mark. Cropped to its visible pixels (41, 160 to 408, 283) because the file has a wide white margin; the white ground is kept. |
+| Samsung | `samsung.webp` (312×48) | 156×24 | `uploads/2026/09/incentiva-logo-samsung.png` (1389×214, transparent) | Blue wordmark `#13289F`. |
+
+- **Cards.** Every logo sits on a white card with a hairline, on both themes, as Incentiva's site does for a logo on white: Nequi, Wompi and Samsung are dark marks that do not read on the dark theme, and Colmaíz has a white ground. No logo is turned into a single ink. Where the row is too narrow (phones under 400 px), all four scale by the same factor (80 %), so they stay equal.
+- **Links.** Nequi and Wompi open `/work/scope-multi-client-platform`, Colmaíz `/work/chatflow-whatsapp-ai-platform`, Samsung `/work/samsung-lifemiles-whatsapp`.
+- **DIRECTV: left out of the strip.** Incentiva's website has no DIRECTV file, and its DIRECTV folders on this machine (`D:\Incentiva Group\Direct TV`) hold only PDFs (a strategy deck and a support guide), with no logo file; the campaign's source folder named in the knowledge base (`~/Downloads/Incentiva Group/DirecTV/Pauta Meta/`) is not on this machine. DIRECTV stays named in the text, always as the channel of Incentiva as an authorized DIRECTV dealer, not as a client that hired Erick.
+- **Not in the strip:** the proposals (Mall Indiana, the Samsung quotation, the Salesforce proposal to Ingredion, the BPO proposals to Wompi and Nequi), which stay "Proposal / pitch" in the index.

@@ -15,6 +15,7 @@ import Link from "next/link";
 import type { CSSProperties } from "react";
 import { FiArrowLeft, FiArrowRight } from "react-icons/fi";
 import { BookCall } from "../BookCall";
+import { BrandStrip } from "../BrandStrip";
 import { SceneSheet } from "../scenes/Scene";
 import { InheritedPlatforms } from "../scenes/work/InheritedPlatforms";
 import { type Case, getCase } from "./cases";
@@ -121,6 +122,7 @@ export function IncentivaIndex() {
               {`${incentivaRole.timeframe.replace(" - ", " – ")} · ${incentivaRole.place}`}
             </span>
           </p>
+          <BrandStrip place="index" />
           <p className={styles.summary}>{incentivaRole.summary}</p>
           <p className={styles.method}>{incentivaRole.method}</p>
           <BookCall />

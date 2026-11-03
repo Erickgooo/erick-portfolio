@@ -7,7 +7,8 @@
 //
 // Facts: src/app/work/projects/samsung-lifemiles-whatsapp.mdx (OCR invoice
 // validation, deterministic IMEI validation with the Luhn check, a second
-// independent model for identity documents, "2M+ LifeMiles miles"). The
+// independent model for identity documents, "2M+ LifeMiles miles awarded
+// through the chatbot"). The
 // IMEIs are the textbook example number, not a buyer's: 49 015420 323751 8
 // passes the Luhn check, and the same digits ending in 3 fail it. Brands in
 // text only: no logo, no product image, no real chat interface. Portrait (4:5).
@@ -68,8 +69,8 @@ export function MilesClaim() {
       <div className={s.result}>
         <CountUp value="2M+" at={4} className={s.value} duration={1500} />
         <span className={s.caption}>
-          LifeMiles miles earned by buyers
-          <span className={s.note}>miles credited once every check passes</span>
+          LifeMiles miles awarded through the chatbot
+          <span className={s.note}>credited once every check passes</span>
         </span>
       </div>
     </Scene>

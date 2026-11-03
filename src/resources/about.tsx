@@ -91,26 +91,29 @@ export const about: About = {
         description: incentivaRole.summary,
         achievements: [
           <Fragment key="platforms">
-            Took over three inherited production platforms that had little or no CI/CD and few or no
-            tests. I brought them under version control and automated pipelines, and grew their test
-            suites to more than <Metric>13,000</Metric> automated tests.
+            Took over three production platforms, among them ChatFlow, which runs the Colmaíz
+            (Ingredion) WhatsApp assistant, starting from little or no CI/CD and few or no tests. I
+            brought them under version control and automated pipelines, and grew their test suites
+            to more than <Metric>13,000</Metric> automated tests.
           </Fragment>,
           <Fragment key="multi-client">
-            Architected the move of a single-client field-sales app to a multi-client platform, with
-            a database per client and fail-closed tenant isolation. A second fintech client went
-            live on the same platform, and the rollout passed <Metric>146</Metric> of 146 checks.
+            Architected the move of Scope, Incentiva&apos;s custom app for the Nequi field teams,
+            from one client to a multi-client platform, with a database per client and fail-closed
+            tenant isolation. Wompi went live on the same platform, and the rollout passed{" "}
+            <Metric>146</Metric> of 146 checks.
           </Fragment>,
           <Fragment key="releases">
             Shipped the field-sales app&apos;s first iOS release and <Metric>13</Metric> production
             versions across the App Store and Google Play, resolving three App Store review
             rejections.
           </Fragment>,
-          "Launched a DIRECTV dealer sales channel end to end: strategy, a Meta click-to-WhatsApp campaign with 7 ads and 62 creatives, and an AI sales assistant that pre-qualifies leads and reports conversions back to Meta.",
+          "Launched a sales channel end to end for Incentiva as an authorized DIRECTV dealer: strategy, a Meta click-to-WhatsApp campaign with 7 ads and 62 creatives, and an AI sales assistant that pre-qualifies leads and reports conversions back to Meta.",
           "Led code and security audits across the company's products, covering more than 170 findings. I had them fixed test-first and added tenant-isolation tests, two-factor login and Key Vault-managed secrets.",
           <Fragment key="samsung">
-            Led the Samsung × LifeMiles WhatsApp campaign: I rebuilt the running assistant, rewrote
-            its prompt and directed its fraud controls (deterministic IMEI validation and a second
-            model on identity documents). Buyers earned <Metric>2M+</Metric> LifeMiles miles.
+            Led the Samsung × LifeMiles WhatsApp promotion: I took over its chatbot, rebuilt it for
+            a high-volume promotion, rewrote its prompt and directed its fraud controls
+            (deterministic IMEI validation and a second model on identity documents).{" "}
+            <Metric>2M+</Metric> LifeMiles miles were awarded to buyers through the chatbot.
           </Fragment>,
           "Redesigned Incentiva's brand identity (a 78-page manual and a 357-file kit) and designed and built the new 28-page corporate website. I rolled the brand into the company's software, removing about 750,000 lines of unused template code and halving the client portal's initial bundle.",
           "Built proposals and cost models for Samsung, Ingredion, Wompi, Nequi and Mall Indiana, with verification scripts that check every figure in a quote against its source table.",
