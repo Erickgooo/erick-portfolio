@@ -1,7 +1,7 @@
 ---
 title: "Scope: From Single-Client App to Multi-Client Platform"
 publishedAt: "2026-10-21"
-summary: "I re-architected Incentiva's field-sales app and client portal so one platform serves several clients, each in its own database behind fail-closed tenant isolation. A second fintech client went live 11 days after the diagnosis started."
+summary: "I re-architected Incentiva's field-sales app and client portal so one platform serves several clients, each in its own database behind fail-closed tenant isolation. A second fintech client went live on the same platform, and the rollout passed 146 of 146 checks."
 images:
   - "/images/projects/incentiva/scope-multi-client-platform.webp"
 team:
@@ -9,16 +9,16 @@ team:
     role: "Operations Manager, architect and rollout lead"
     avatar: "/images/avatar.jpg"
     linkedIn: "https://www.linkedin.com/in/erick-mahecha/"
-metric: "11 days|to a second client live"
+metric: "146/146|rollout checks passed"
 ---
 
 ## Overview
 
 Scope is the field-sales system Incentiva's teams use in the street. Field staff log merchant visits, photos and placements in a Flutter app, and coordinators follow the operation from the Incentiva Portal, a web portal with its own API. When I took it over, Scope had been built for one client. There was no concept of a campaign anywhere in the stack: one database, one set of users, one client's data.
 
-Then the company sold Scope to a second client, a fintech, and the existing client added a new product line. Every layer of the product had to separate data by client. Between two financial clients, a leak was not a risk anyone could accept, and a slow rollout was not something the commercial side could wait for.
+Then the company sold Scope to a second client, a fintech, and the existing client added a new product line. Every layer of the product had to separate data by client. Between two financial clients, a leak was not a risk anyone could accept, and the existing operation could not stop while the platform changed under it.
 
-**Result: a second fintech client went live 11 days after the diagnosis started, on a platform where every route is tested for cross-tenant isolation.**
+**Result: a second fintech client went live on the same platform, where every route is tested for cross-tenant isolation, and the rollout passed 146 of 146 checks.**
 
 ## The Build
 
@@ -52,14 +52,14 @@ The work was built with AI coding agents (Claude Code, in several coordinated se
 
 ## Results
 
-- A second fintech client went live **11 days** after the diagnosis started.
+- A **second fintech client** went live on the same platform.
 - The rollout QA checklist ended with **146 checks passed and 0 failures**.
 - One platform now serves several clients and product lines from the same app build, with data separated by database and isolation tested route by route.
 - Coordinators create their own field staff and follow their own client's guide, so a new campaign is configuration, not a project.
 
 ## What This Demonstrates
 
-The fastest path to a second client was not the shortcut. A client column and careful screens would have looked done sooner, and it would have stayed one mistake away from showing one client's data to another. Choosing the stricter architecture, and making isolation a rule the test suite enforces instead of something a review hopes to catch, is what made the 11 days safe.
+The shortcut was not the path to a second client. A client column and careful screens would have looked finished, and it would have stayed one mistake away from showing one client's data to another. Choosing the stricter architecture, and making isolation a rule the test suite enforces instead of something a review hopes to catch, is what made the second client safe.
 
 It is also the shape of the role I hold: the product decision, the security posture and the rollout risk owned by one person, with AI agents doing the volume of engineering against a plan I approved and checks I can read.
 

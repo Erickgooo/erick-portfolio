@@ -230,8 +230,9 @@
   border-top: 1px solid var(--sc-line);
 }
 
+// "146/146" is wider than the figure that stood here, so it is set smaller.
 .value {
-  @include figure(10.5cqi);
+  @include figure(8cqi);
   white-space: nowrap;
 }
 

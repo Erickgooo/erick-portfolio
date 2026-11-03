@@ -1,11 +1,11 @@
 // Scene (type 2): building this site with AI agents. A prompt window types
 // the four steps of the method, one per line, and each is answered and
-// ticked; then a deploy line runs to its end and the deploy time pops.
+// ticked; then a deploy line runs to its end and the site is live.
 //
 // Facts: src/app/work/projects/ai-portfolio.mdx (the four ### steps of "The
 // Methodology: AI as a Development Team": Foundation Selection, Prompt
 // Engineering as Specification Writing, Iterative Debugging, Continuous
-// Deployment; metric "<2min|deploy time"). Set in Poppins: no monospace, no
+// Deployment: "every approved change deploys automatically"). Set in Poppins: no monospace, no
 // tool's interface or logo. Portrait (4:5) only.
 import type { CSSProperties } from "react";
 import { Scene, Typed, typeTime } from "../Scene";
@@ -59,8 +59,8 @@ export function PromptDeploy() {
           <i />
         </span>
         <span className={s.time}>
-          <span className={s.value}>&lt;2min</span>
-          <span className={s.caption}>deploy time</span>
+          <span className={s.value}>Live</span>
+          <span className={s.caption}>on every approved change</span>
         </span>
       </div>
     </Scene>

@@ -1,12 +1,14 @@
-// Scene (type 1): the ArquiExpo touchscreen alone, larger. A 48-hour clock
-// fills once while the app is built; then the vertical screen comes on and
+// Scene (type 1): the ArquiExpo touchscreen alone, larger. A ring of checks
+// fills once as the app passes on every device (iOS Safari included); then the vertical screen comes on and
 // runs it: a header, the grid gallery filling with its 285 tiles (the panel
 // variants count up), a tap opens one panel in single-image mode, a swipe
 // shows the next, and the grid returns. Two keys under the clock mark the
-// mode on screen.
+// mode on screen. (Until 2026-11-02 the ring was a build clock: the site
+// shows results, not how long the work took.)
 //
 // Facts: src/app/work/projects/quick-metal-shop-arquiexpo.mdx (metric
-// "48h|dev to deploy"; "Core Application Features": single-image mode and
+// "285|panel variants on one touchscreen"; "Cross-Platform Compatibility:
+// 100% (iOS Safari Resolved)"; "Core Application Features": single-image mode and
 // grid gallery mode; 285 panel variants, drawn as 285 tiles). The screen is
 // KioskScreen (the canvas of the home's BoothApp), with its panels drawn in
 // line: it comes on at step 3 and plays the app from step 4, on its own
@@ -16,7 +18,7 @@ import { CountUp, Scene } from "../Scene";
 import { KioskScreen } from "./KioskScreen";
 import s from "./kioskstand.module.scss";
 
-/** The 48 hours, one tick each, every twelfth one longer. */
+/** The ring's 48 ticks, every twelfth one longer. */
 const TICKS = Array.from({ length: 48 }, (_, k) => {
   const a = (k / 48) * Math.PI * 2 - Math.PI / 2;
   const inner = k % 12 === 0 ? 34 : 39;
@@ -61,10 +63,10 @@ export function KioskStand() {
           ))}
         </svg>
         <span className={s.hours}>
-          <CountUp value="48h" at={1} duration={2500} className={s.value} />
+          <CountUp value="100%" at={1} duration={2500} className={s.value} />
         </span>
       </div>
-      <span className={s.clockCaption}>dev to deploy</span>
+      <span className={s.clockCaption}>cross-device, iOS Safari included</span>
 
       <div className={s.count}>
         <CountUp value="285" at={4} duration={3000} className={s.countValue} />

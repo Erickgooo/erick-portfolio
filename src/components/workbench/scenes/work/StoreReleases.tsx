@@ -4,8 +4,8 @@
 // on both stores, one after another, and the count comes up.
 //
 // Facts: src/app/work/projects/scope-ios-launch.mdx ("three App Store review
-// rejections", "unlisted distribution", "13 versions (1.1.1 to 1.1.13)",
-// "between Aug 20 and Oct 16"). Drawn in line: no store interface or logo.
+// rejections", "unlisted distribution", "13 versions (1.1.1 to 1.1.13)").
+// Drawn in line: no store interface or logo.
 // Portrait (4:5) only.
 import type { CSSProperties } from "react";
 import { CountUp, Scene } from "../Scene";
@@ -68,8 +68,8 @@ export function StoreReleases() {
         <span className={s.total}>
           <CountUp value="13" at={4} className={s.value} duration={1200} />
           <span className={s.caption}>
-            store releases
-            <span className={s.note}>Aug 20 to Oct 16</span>
+            production releases
+            <span className={s.note}>App Store and Google Play</span>
           </span>
         </span>
       </div>
