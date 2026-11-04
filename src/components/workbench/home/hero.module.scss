@@ -69,14 +69,18 @@
 
 // The headline in Montserrat Black, sized from the text column in viewport
 // units (the column's width per layout) rather than as a size container, so
-// the first frame needs no extra container pass. Its longest word,
-// "infrastructure", is 7.24 em wide; 11 % of the column keeps it on one line
-// on phones with room to spare, and keeps the headline's area under the
-// bench tablet's, so the tablet stays the LCP element. It breaks evenly on its own, so it skips text-wrap:
-// balance (several line-breaking passes in the first frame).
+// the first frame needs no extra container pass. On phones its longest line,
+// "I build and run the", is 9.57 em wide: 10.2 % of the column keeps it whole,
+// so the headline takes three lines, the bench starts as high as before and
+// the headline's area stays under the bench tablet's, so the tablet stays the
+// LCP element. On desktop its longest line, "behind business", is 8.51 em wide:
+// the desktop size keeps it whole in the 389 px column of a 1024 px window, so
+// the headline takes four lines at every desktop width. It breaks evenly on its
+// own, so it skips text-wrap: balance (several line-breaking passes in the
+// first frame).
 .title {
   @include title;
-  font-size: clamp(34px, calc((100vw - 32px) * 0.11), 64px);
+  font-size: clamp(32px, calc((100vw - 32px) * 0.102), 64px);
   line-height: 1.04;
   letter-spacing: -0.025em;
 
@@ -87,7 +91,7 @@
   }
 
   @include from-desk {
-    font-size: clamp(34px, calc((min(100vw, 1280px) - 144px) * 0.054), 64px);
+    font-size: clamp(34px, calc((min(100vw, 1280px) - 144px) * 0.051), 64px);
     text-wrap: wrap;
   }
 }
@@ -95,6 +99,8 @@
 .offer {
   @include s-lede;
   max-width: 38ch;
+  // No last line of a single word at 375 px ("on.").
+  text-wrap: pretty;
 }
 
 .actions {

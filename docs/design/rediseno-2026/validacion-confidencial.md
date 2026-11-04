@@ -94,6 +94,7 @@ También salió el cuarto indicador del héroe (85 %) y la Home ya no destaca Qu
 | «a database per client… a campaign-resolution layer… takes the campaign from the user's signed-in session… It fails closed» | arquitectura, seguridad | CEO de Incentiva | pendiente |
 | «every route needs a cross-tenant isolation test, or a written exemption» | seguridad, proceso | CEO de Incentiva | pendiente |
 | «The rollout was staged, with checks before every step and a way back at each of them.» · «146 checks passed and 0 failures» | proceso, indicador | CEO de Incentiva | pendiente |
+| «What the business gained: Incentiva can now serve a second financial client on the platform it already runs, with each client's data kept apart. Adding a campaign became configuration instead of a project.» | indicador | CEO de Incentiva | pendiente |
 
 ### `/work/scope-ios-launch`
 
@@ -102,6 +103,7 @@ También salió el cuarto indicador del héroe (85 %) y la Home ya no destaca Qu
 | «13 production versions across the App Store and Google Play» · «three App Store review rejections» · «approved for unlisted distribution» | indicador, proceso | CEO de Incentiva | pendiente |
 | «moving the app's Firebase project… into the company's ownership» | arquitectura | CEO de Incentiva | pendiente |
 | «Background GPS… a native location monitor» · «a mandatory-update mechanism» · «the app moved to Apple's UIScene lifecycle» | arquitectura | CEO de Incentiva | pendiente |
+| «What the business gained: Field staff on iPhones can now work in the app, and Incentiva owns what it needs to keep shipping it. When a coordinator reports a problem from the field, the answer is a version and a date.» | indicador | CEO de Incentiva | pendiente |
 
 ### `/work/chatflow-whatsapp-ai-platform`
 
@@ -114,6 +116,7 @@ También salió el cuarto indicador del héroe (85 %) y la Home ya no destaca Qu
 | «a dashboard with Excel export, read-only live chats, and location views that tell the team who to call» · «643 dashboard figures were reconciled three ways» | cliente, indicador | CEO de Incentiva; contacto de Colmaíz (Ingredion) | pendiente |
 | «it runs on a faster, lower-cost model» · «from 270 to 318 of 320» | indicador | CEO de Incentiva | pendiente |
 | «a community of 35,000+ contacts, with 6,000+ served» | cifra | contacto de Colmaíz (Ingredion) | pendiente |
+| «What the business gained: Incentiva runs several client lines on one platform, and a small team can change it with confidence that no client will notice. Colmaíz's commercial team now has its own view of its conversations and uses it daily.» | indicador, cliente | CEO de Incentiva; contacto de Colmaíz (Ingredion) | pendiente |
 
 ### `/work/directv-click-to-whatsapp`
 
@@ -124,6 +127,7 @@ También salió el cuarto indicador del héroe (85 %) y la Home ya no destaca Qu
 | «Its prompt and knowledge base live in git, and the loader refuses any change that has not been merged.» · «Back-end guards check every reply for length, prices and off-topic answers» | arquitectura | CEO de Incentiva | pendiente |
 | «ChatFlow sends a QualifiedLead event to the Meta Conversions API, and a Purchase event when a sale closes. A Google Sheets row sync…» | arquitectura | CEO de Incentiva | pendiente |
 | «62 images, 7 ads and 26 placement previews» | indicador | CEO de Incentiva | pendiente |
+| «What the business gained: Incentiva owns a digital sales channel it can read: each lead arrives pre-qualified and with consent, and each sale reports back to the ad platform that produced it. The advisor who closes the sale gets only the conversations worth closing.» | indicador | CEO de Incentiva | pendiente |
 | Sin indicador de negocio del canal | indicador | CEO de Incentiva | **indicador de impacto por obtener** |
 
 ### `/work/samsung-lifemiles-whatsapp`
@@ -185,6 +189,6 @@ Estas cifras ya estaban publicadas antes de esta ronda y quedaron fuera del pase
 ## Acciones de Erick fuera del sitio
 
 - Validar cada fila con su responsable.
-- Conseguir los indicadores de impacto marcados como «por obtener».
+- Conseguir los indicadores de impacto marcados como «por obtener»; la tabla de `mensaje-impacto-encargo.md` dice quién podría darlos.
 - Correo con dominio propio (por ejemplo, en erickmahecha.com): hoy el sitio, el CV y ErickBot usan el de Gmail.
 - La versión en español del sitio queda como siguiente fase.

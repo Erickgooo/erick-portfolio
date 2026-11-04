@@ -23,7 +23,7 @@ export const pages = {
     label: "Home",
     title: `${profile.name} · ${profile.role}`,
     description:
-      "Erick Mahecha, Growth & AI Systems Lead: acquisition, CRM automation, WhatsApp AI assistants and production software, built into systems teams can actually run.",
+      "Erick Mahecha, Growth & AI Systems Lead. From growth operations and AI automation to production software: strategy, architecture and delivery.",
     image: "/images/og/social-preview.jpg",
   },
   about: {
