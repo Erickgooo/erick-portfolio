@@ -66,4 +66,45 @@ Hoy no hay indicadores verificados para estos casos, y D35 prohíbe publicar cif
 
 ## Resultados (2026-11-04)
 
-Pendientes de la puerta.
+La puerta corrió sobre `0ddb3cf`. Después de ese commit solo cambió este documento. Los resultados de producción no van aquí, porque cada push a `main` vuelve a publicar: están en el reporte y en la nota de memoria.
+
+- **Tipos, lint y build** (en copias fuera del repo, con LF, porque dentro de `.claude/worktrees` Next ve dos lockfiles y ESLint dos configuraciones):
+  - `tsc` limpio;
+  - lint con 0 errores y los mismos 5 avisos `<img>` de siempre;
+  - build con los mismos 5 avisos que `55eb85b` y ninguno nuevo.
+- **Biome:**
+  - `biome check src` sale con código 0 sobre la copia LF del commit (D56), con 2 avisos que ya estaban;
+  - `biome-gate` OK contra `origin/main` (7 archivos). Contra `HEAD` ya no compara nada tras el commit (0 archivos); antes del commit y de los 3 arreglos de D56 dio OK con 5 archivos.
+- **Batería completa** (unit, chromium, mobile-chromium, firefox y webkit; puerto 3100, `--workers=2`, con el optimizador precalentado: 575 URL, 0 fallos):
+  - unit: 32 de 32;
+  - e2e: **669 pasan, 47 se omiten y 0 fallan**, en 11,8 minutos. Chromium 176, mobile-chromium 169, Firefox 164 y WebKit 160;
+  - de las omitidas, 45 son las de siempre y 2 son la medida a 360 × 780 de la spec nueva en Firefox y WebKit, porque se mide en un contexto de teléfono en Chromium.
+- **Spec nueva**, `tests/e2e/mensaje-impacto.spec.ts`. Contra `55eb85b` en Chromium, 12 pruebas:
+  - fallan las 7 que deben fallar: titular y entradilla, descripción, entradilla de `/work` y las 4 líneas de negocio;
+  - pasan las 5 de lo que no cambia: el título de la Home, las dos teclas del héroe, ningún «Experience & Resume» en `/` ni en `/work`, y el banco dentro de la primera pantalla a 360 × 780.
+- **Pruebas actualizadas:** `posicionamiento.spec.ts`, `ssr-content.spec.ts`, `axe-themes.spec.ts` (suma los 4 casos) y la instantánea de ErickBot, cuya diferencia es solo la paráfrasis.
+- **axe** (WCAG 2.0 y 2.1, A y AA): 0 violaciones serias o críticas en Home, About, `/work`, `/work/incentiva-group`, ArquiExpo y los 4 casos cambiados, en claro y en oscuro y en los cuatro navegadores (72 de 72).
+- **Lighthouse móvil**, 5 rondas intercaladas contra `55eb85b`, dos builds locales. Son datos de laboratorio, no de usuarios reales.
+
+  | Página | Rondas main | Rondas rama | Mediana main | Mediana rama | CLS máx. (rama) | LCP mediano, main → rama |
+  |---|---|---|---|---|---|---|
+  | Home | 97 95 95 95 96 | 95 96 97 97 95 | 95 | 96 | 0,0001 | 2.785 → 2.710 ms |
+  | `/work` | 89 89 89 89 89 | 89 89 89 89 89 | 89 | 89 | 0,0003 | 3.542 → 3.539 ms |
+  | `scope-multi-client-platform` | 85 85 85 85 85 | 85 85 85 85 85 | 85 | 85 | 0 | 3.840 → 3.840 ms |
+  | `chatflow-whatsapp-ai-platform` | 85 85 85 85 85 | 85 85 85 85 85 | 85 | 85 | 0 | 3.841 → 3.838 ms |
+
+- **El héroe medido** (build final; movimiento reducido y contexto de teléfono hasta 412 px):
+
+  | Ventana | Tipografía, main → rama | Líneas | Borde del banco | Tablet visible | LCP, main → rama |
+  |---|---|---|---|---|---|
+  | 360 × 780 | 36,1 → 33,5 px | 3 → 3 | 472,5 → 464,3 px | entera en las dos | tablet → tablet |
+  | 375 × 812 | 37,7 → 35,0 px | 3 → 3 | 477,6 → 469,1 px | entera en las dos | tablet → tablet |
+  | 412 × 915 | 41,8 → 38,8 px | 3 → 3 | 463,2 → 453,7 px | entera en las dos | tablet → tablet |
+  | 768 × 1024 | 64 px, igual | 3 → 3 | 584,4 px, igual | entera en las dos | tablet → tablet |
+  | 1024 × 768 | 47,5 → 44,9 px | 5 → 4 | 106 px, igual | entera en las dos | tablet → tablet |
+  | 1280 × 800 | 61,3 → 57,9 px | 4 → 4 | 132,3 px, igual | entera en las dos | titular → titular |
+
+  A 360 × 640 y 375 × 667 la tablet queda cortada y el LCP es la entradilla, también en `55eb85b`. A 320 × 568 la tablet queda fuera de la primera pantalla en las dos builds; el banco sí entra ahora (de 586,6 a 551 px).
+- **Búsquedas** en `src/` y `scripts/`: 0 de «Experience & Resume» y de «Growth / AI / Systems». «serves a community» sigue en `chatflow-whatsapp-ai-platform.mdx` e `incentiva.ts`, sin cambios.
+- **Imágenes:** solo cambia `public/images/og/social-preview.jpg`.
+- **Hojas de capturas**, fuera de git, revisadas a ojo: la Home y el caso ChatFlow a 360 px, 375 px y escritorio, en claro y oscuro, y la imagen OG. El titular se lee completo, las dos teclas comparten fila, la línea de negocio queda justo bajo el resultado, y en la imagen OG el titular no toca el retrato.
