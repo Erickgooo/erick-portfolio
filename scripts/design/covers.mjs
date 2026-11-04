@@ -169,17 +169,14 @@ const SOCIAL = `
 html, body { width: 1200px; height: 630px; }
 body { background: #0b0b0f; color: #ffffff; }
 .og { width: 1200px; height: 630px; padding: 72px 80px; display: grid; grid-template-columns: 1fr 240px; gap: 56px; align-items: center; }
-.og .kicker { color: #a6a6b0; font-size: 22px; }
-.og .kicker::before { background: #6688ff; }
-.og h1 { font-family: "Montserrat", sans-serif; font-weight: 900; font-size: 64px; line-height: 1.04; letter-spacing: -0.025em; margin: 26px 0 30px; }
+.og h1 { font-family: "Montserrat", sans-serif; font-weight: 900; font-size: 64px; line-height: 1.04; letter-spacing: -0.025em; margin: 0 0 30px; }
 .og .who { font-size: 28px; font-weight: 600; }
 .og .who span { display: block; font-weight: 400; color: #a6a6b0; font-size: 24px; margin-top: 4px; }
 .og img { width: 240px; height: 240px; border-radius: 50%; object-fit: cover; }
 </style>
 <div class="og">
   <div>
-    <p class="kicker">Growth / AI / Systems</p>
-    <h1>I build the systems behind business growth.</h1>
+    <h1>I build and run the systems behind business growth.</h1>
     <p class="who">Erick Mahecha<span>Growth &amp; AI Systems Lead</span></p>
   </div>
   <img src="${avatar}" alt="">

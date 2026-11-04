@@ -27,11 +27,11 @@ export function Hero() {
             </span>
           </p>
           <h1 id="hero-title" className={styles.title}>
-            I build the systems behind business growth.
+            I build and run the systems behind business growth.
           </h1>
           <p className={styles.offer}>
-            From acquisition and CRM automation to AI assistants and production software. I turn
-            disconnected tools and workflows into systems teams can actually run.
+            From growth operations and AI automation to production software. I lead the strategy,
+            architecture and delivery of systems businesses depend on.
           </p>
           <div className={styles.actions}>
             <Link href="/work" className={ui.book}>

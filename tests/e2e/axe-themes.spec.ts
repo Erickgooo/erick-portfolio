@@ -19,6 +19,11 @@ for (const theme of ["light", "dark"] as const) {
     "/work",
     "/work/incentiva-group",
     "/work/quick-metal-shop-arquiexpo",
+    // The cases with a line on what the business gained (mensaje-impacto-encargo.md).
+    "/work/scope-multi-client-platform",
+    "/work/chatflow-whatsapp-ai-platform",
+    "/work/scope-ios-launch",
+    "/work/directv-click-to-whatsapp",
   ]) {
     test(`${theme} theme: no serious or critical violations on ${path}`, async ({ page }) => {
       test.setTimeout(60_000);

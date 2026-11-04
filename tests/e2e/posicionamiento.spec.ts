@@ -25,10 +25,10 @@ test("the hero carries the umbrella title, the headline and the two routes", asy
   await expect(hero.getByText("Growth / AI / Systems")).toHaveCount(0);
   await expect(hero.getByText(ROLE, { exact: true })).toBeVisible();
   await expect(page.locator("#hero-title")).toHaveText(
-    "I build the systems behind business growth.",
+    "I build and run the systems behind business growth.",
   );
   await expect(hero).toContainText(
-    "From acquisition and CRM automation to AI assistants and production software. I turn disconnected tools and workflows into systems teams can actually run.",
+    "From growth operations and AI automation to production software. I lead the strategy, architecture and delivery of systems businesses depend on.",
   );
   await expect(hero.getByRole("link", { name: "Explore my work" })).toHaveAttribute(
     "href",

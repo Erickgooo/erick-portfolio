@@ -56,7 +56,7 @@ export function WorkIndex({ hideProtected }: { hideProtected: boolean }) {
         <h1 className={styles.title}>Projects</h1>
         <div className={styles.headSide}>
           <p className={styles.lede}>
-            AI systems, automation workflows and marketing infrastructure, built and shipped.{" "}
+            AI automation, growth operations and production software, built and run.{" "}
             {count.charAt(0).toUpperCase() + count.slice(1)} cases, newest first.
           </p>
           <Link href="/work/incentiva-group" className={ui.textLink}>

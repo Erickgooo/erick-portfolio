@@ -10,7 +10,7 @@ export const faqData: FAQItem[] = [
     id: "current",
     question: "What does Erick do currently?",
     answer:
-      "Erick is a **Growth & AI Systems Lead**: he builds the systems behind business growth, from acquisition and CRM automation to AI assistants and production software. His current position is **Operations Manager at Incentiva Group**, a marketing agency in Medellín, where he has led projects for **Nequi, Wompi, Colmaíz and Samsung**. He runs the company's in-house software as product owner and technical lead (a field-sales app, a client portal and a WhatsApp AI-assistant platform), directing AI-assisted development from audit to App Store release, and leads brand and go-to-market work. Before that he was the sole marketer at **Quick Metal Shop**, where he built its marketing from zero.",
+      "Erick is a **Growth & AI Systems Lead**: he builds and runs the systems behind business growth, from growth operations and AI automation to production software. His current position is **Operations Manager at Incentiva Group**, a marketing agency in Medellín, where he has led projects for **Nequi, Wompi, Colmaíz and Samsung**. He runs the company's in-house software as product owner and technical lead (a field-sales app, a client portal and a WhatsApp AI-assistant platform), directing AI-assisted development from audit to App Store release, and leads brand and go-to-market work. Before that he was the sole marketer at **Quick Metal Shop**, where he built its marketing from zero.",
     relatedIds: ["incentiva", "notable-project", "contact"],
   },
   {

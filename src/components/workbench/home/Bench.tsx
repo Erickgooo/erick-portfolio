@@ -59,12 +59,7 @@ function Slot({
     zIndex: index + 1,
   } as CSSProperties;
   return (
-    <div
-      className={styles.slot}
-      style={style}
-      data-slot={kind}
-      data-wide={wide ? "" : undefined}
-    >
+    <div className={styles.slot} style={style} data-slot={kind} data-wide={wide ? "" : undefined}>
       <div className={styles.rise}>
         <div className={styles.par}>
           <div className={styles.bob}>
