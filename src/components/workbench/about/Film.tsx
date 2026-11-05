@@ -7,9 +7,16 @@ import { SupportQueue } from "../scenes/about/SupportQueue";
 import { FilmFrame } from "./FilmFrame";
 import styles from "./film.module.scss";
 
-/** The loop that used to open the home: 1280 x 720, H.264 (read from the file's headers). */
+/**
+ * The loop that used to open the home. `w` and `h` only reserve the 16:9 box;
+ * the file that plays is chosen on the first play() (FilmFrame.tsx).
+ */
 const FILM = {
-  src: "/videohome.mp4",
+  sources: {
+    wide: "/videohome-1080.mp4",
+    wideAv1: "/videohome-av1.mp4",
+    narrow: "/videohome-720.mp4",
+  },
   poster: "/images/videohome-poster.webp",
   w: 1280,
   h: 720,
@@ -39,7 +46,7 @@ export function Film() {
     <section className={styles.film} aria-labelledby="film-title">
       <div className={styles.screen}>
         <FilmFrame
-          src={FILM.src}
+          sources={FILM.sources}
           poster={FILM.poster}
           width={FILM.w}
           height={FILM.h}

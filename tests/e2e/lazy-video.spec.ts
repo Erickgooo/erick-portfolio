@@ -1,8 +1,15 @@
 import { expect, test } from "./fixtures";
 
-// The pre-task original of videohome.mp4 (see git show 6139e7e:public/videohome.mp4).
-// A recompressed video must never ship more bytes than this to the browser.
-const PRE_TASK_VIDEOHOME_BYTES = 3_611_663;
+// Most bytes the loop may send, by viewport. Viewports of 1024 px or more get up
+// to 8 MB (about 2.6 Mbps), approved by the owner. Narrower ones, phones held
+// sideways included, stay at the weight of the original (see
+// git show 6139e7e:public/videohome.mp4): on mobile data, more would take longer
+// and could stall.
+const WIDE_FROM = 1024;
+const WIDE_MAX_BYTES = 8_000_000;
+const NARROW_MAX_BYTES = 3_611_663;
+// videohome.mp4 and its versions: videohome-<label>.mp4 or .webm.
+const VIDEO_URL = /videohome(-[\w-]+)?\.(mp4|webm)/;
 
 // The loop that used to open the home now opens on About (Workbench, step 2):
 // a small print on the bench that opens into a wide frame once half of its box
@@ -16,10 +23,10 @@ test.describe("about video", () => {
     const videoRequests: string[] = [];
     const videoResponses: import("@playwright/test").Response[] = [];
     page.on("request", (r) => {
-      if (/videohome\.(mp4|webm)/.test(r.url())) videoRequests.push(r.url());
+      if (VIDEO_URL.test(r.url())) videoRequests.push(r.url());
     });
     page.on("response", (r) => {
-      if (/videohome\.(mp4|webm)/.test(r.url())) videoResponses.push(r);
+      if (VIDEO_URL.test(r.url())) videoResponses.push(r);
     });
     await page.goto("/about");
     await page.waitForLoadState("networkidle");
@@ -44,9 +51,25 @@ test.describe("about video", () => {
     const contentRange = videoResponses[0].headers()["content-range"];
     const totalBytes = Number(contentRange?.split("/").pop());
     expect(totalBytes).toBeGreaterThan(0);
-    expect(totalBytes).toBeLessThanOrEqual(PRE_TASK_VIDEOHOME_BYTES);
+    const wide = (page.viewportSize()?.width ?? 0) >= WIDE_FROM;
+    expect(totalBytes).toBeLessThanOrEqual(wide ? WIDE_MAX_BYTES : NARROW_MAX_BYTES);
 
     await expect.poll(() => video.evaluate((v: HTMLVideoElement) => !v.paused)).toBe(true);
+  });
+
+  test("gives each viewport and engine its file", async ({ page, browserName }) => {
+    const fileAt = async (width: number) => {
+      await page.setViewportSize({ width, height: 900 });
+      await page.goto("/about");
+      const video = page.locator('[data-testid="about-video"] video');
+      await video.scrollIntoViewIfNeeded();
+      await expect.poll(() => video.getAttribute("src")).toBeTruthy();
+      return video.getAttribute("src");
+    };
+    // WebKit reports AV1 as "probably" too, so only the vendor keeps it on H.264.
+    const wide = browserName === "webkit" ? "/videohome-1080.mp4" : "/videohome-av1.mp4";
+    expect(await fileAt(1024)).toBe(wide);
+    expect(await fileAt(1023)).toBe("/videohome-720.mp4");
   });
 
   test("respects prefers-reduced-motion: no autoplay, accessible play button", async ({

@@ -10,12 +10,16 @@
 //  - WebM: only kept as a sibling if it ends up at least 10% smaller than the
 //    final MP4. One retry at a higher CRF (+14 instead of +8) is allowed; if
 //    that still isn't >=10% smaller, the WebM is deleted and not referenced.
+//
+// The About loop (public/videohome-1080.mp4, -av1.mp4 and -720.mp4) is not listed
+// here on purpose: it is encoded once from the 4K source, because recompressing
+// these files only loses quality. Its commands and weight limits are in
+// docs/design/rediseno-2026/video-about-encargo.md.
 import { spawnSync } from "node:child_process";
 import { existsSync, renameSync, rmSync, statSync } from "node:fs";
 import sharp from "sharp";
 
 const VIDEOS = [
-  { file: "public/videohome.mp4", mutedNoControls: true, targetMB: 1.2, poster: false },
   {
     file: "public/images/projects/project-01/leadbot.mp4",
     mutedNoControls: true,
