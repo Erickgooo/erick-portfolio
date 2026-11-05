@@ -91,8 +91,8 @@ Respuestas crudas del servidor, sin JavaScript, sobre `dd4ace9`.
   - `WebSite` va solo en la Home, así que las demás páginas no llevan `isPartOf` hacia un nodo que no contienen.
 - **D70. Texto alternativo solo desde texto ya publicado.**
   - `lab-contrato.md` (Erick, 2026-10-21) dice que las piezas de Visual Work y de los casos no se abren, describen ni evalúan, y el encargo pide `alt` descriptivo. Las dos cosas se cumplen usando lo que el código ya tiene: el `alt` nombra la imagen, pero no describe lo que muestra.
-  - Portadas de casos y artículos en índices y tarjetas: «Cover of {título}». Miniaturas de YouTube: el título del video. Piezas del banco: el `alt` que ya tenían en `piece.alt`. Retrato en el héroe y en los artículos: «Portrait of Erick Mahecha», como en About.
-  - Se quedan vacíos: los 36 logos del muro y de las escenas, dentro de un `aria-hidden`, y el póster del video de About, que está en lugar de un video con nombre accesible propio.
+  - Portadas de casos y artículos en índices y tarjetas: «Cover of {título}». Miniaturas de YouTube: el título del video. Retrato en el héroe y en los artículos: «Portrait of Erick Mahecha», como en About.
+  - Se quedan vacíos: los 36 logos del muro y de las escenas, dentro de un `aria-hidden`; el póster del video de About, que está en lugar de un video con nombre accesible propio; y las piezas del banco, cuyo marco ya lleva el nombre con `role="img"`. Ponerles `alt` las nombraba dos veces, y `posicionamiento.spec.ts` lo detectó.
   - **Error de esta ronda, corregido:** abrí una hoja con las portadas y escribí descripciones a partir de ella antes de encontrar esa regla. Se borró la hoja y se retiraron esas descripciones, que nunca llegaron a un commit. Para tener `alt` que digan lo que cada imagen muestra, Erick tendría que levantar la regla o escribirlos él.
 - **D71. Otros arreglos que salieron de la auditoría.**
   - Enlace `alternate` al RSS en cada página indexable.

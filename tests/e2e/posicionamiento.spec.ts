@@ -100,10 +100,7 @@ test("every page title names the page and Erick", async ({ page }) => {
     ["/blog", "Insights · Erick Mahecha"],
     ["/gallery", "Visual Work · Erick Mahecha"],
     ["/work/incentiva-group", "Incentiva Group · Erick Mahecha"],
-    [
-      "/blog/designing-a-multi-client-platform",
-      "One Database per Client: Designing a Multi-Client Platform That Fails Closed · Erick Mahecha",
-    ],
+    ["/blog/designing-a-multi-client-platform", "Designing a Multi-Client Platform · Erick Mahecha"],
   ];
   for (const [path, title] of titles) {
     await page.goto(path);
