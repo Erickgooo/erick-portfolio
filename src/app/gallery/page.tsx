@@ -7,16 +7,12 @@ import { Viewer } from "@/components/workbench/gallery/Viewer";
 import { getGalleryBench, piecesIn } from "@/components/workbench/gallery/data";
 import styles from "@/components/workbench/gallery/gallery.module.scss";
 import { SceneDriver } from "@/components/workbench/scenes/SceneDriver";
-import { pages, profile, protectedRoutes, siteUrl } from "@/resources";
+import { pages } from "@/resources";
 import { isProtectedPath } from "@/resources/protectedRoutes";
 import { StructuredData, pageMetadata } from "@/utils/seo";
 
 export async function generateMetadata() {
-  return pageMetadata({
-    title: pages.gallery.title,
-    description: pages.gallery.description,
-    path: pages.gallery.path,
-  });
+  return pageMetadata(pages.gallery);
 }
 
 /** A client with this many pieces or fewer is laid out compact. */
@@ -35,17 +31,7 @@ export default function Gallery() {
 
   return (
     <>
-      <StructuredData
-        type="WebPage"
-        title={pages.gallery.title}
-        description={pages.gallery.description}
-        path={pages.gallery.path}
-        author={{
-          name: profile.name,
-          url: `${siteUrl}${pages.gallery.path}`,
-          image: `${siteUrl}${profile.avatar}`,
-        }}
-      />
+      <StructuredData type="CollectionPage" page={pages.gallery} />
       <div className={styles.page}>
         <Head bench={bench} />
         {large.map((shelf) => (

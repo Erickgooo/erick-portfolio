@@ -35,7 +35,7 @@ export function Projects({ hideProtected }: { hideProtected: boolean }) {
                   src={card.cover.src}
                   width={card.cover.w}
                   height={card.cover.h}
-                  alt=""
+                  alt={`Cover of ${card.fullTitle}`}
                   sizes="(min-width: 1280px) 290px, (min-width: 720px) 46vw, 78vw"
                 />
               </span>

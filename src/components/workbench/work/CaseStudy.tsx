@@ -201,7 +201,7 @@ export function NextCase({ next }: { next: Case }) {
                 src={next.cover.src}
                 width={next.cover.w}
                 height={next.cover.h}
-                alt=""
+                alt={`Cover of ${next.title}`}
                 sizes="(min-width: 1024px) 460px, 84vw"
               />
               {next.metric ? (

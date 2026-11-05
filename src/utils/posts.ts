@@ -12,6 +12,15 @@ export type PostMetadata = {
   title: string;
   /** YYYY-MM-DD. */
   publishedAt: string;
+  /**
+   * When the entry's content last changed, YYYY-MM-DD; the publication date when
+   * absent. See `modifiedAt` on Page in resources/site.ts for what counts.
+   */
+  modifiedAt: string;
+  /** The title in search results, published as it is, for a title too long for them. */
+  seoTitle?: string;
+  /** The description in search results, for a summary too long for them. */
+  seoDescription?: string;
   summary: string;
   /** Cover for posts and shared links ("" when none). */
   image: string;
@@ -50,6 +59,9 @@ function readPosts(dir: string): Post[] {
         metadata: {
           title: data.title ?? "",
           publishedAt: data.publishedAt,
+          modifiedAt: data.modifiedAt ?? data.publishedAt,
+          seoTitle: data.seoTitle,
+          seoDescription: data.seoDescription,
           summary: data.summary ?? "",
           image: data.image ?? "",
           images: data.images ?? [],

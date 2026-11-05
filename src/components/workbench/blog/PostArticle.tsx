@@ -56,7 +56,13 @@ export function PostArticle({
           <h1 className={styles.postTitle}>{title}</h1>
           {summary ? <p className={styles.summary}>{summary}</p> : null}
           <p className={styles.author}>
-            <Image src={profile.avatar} width={48} height={48} alt="" className={styles.avatar} />
+            <Image
+              src={profile.avatar}
+              width={48}
+              height={48}
+              alt={`Portrait of ${profile.name}`}
+              className={styles.avatar}
+            />
             <span>
               By <strong>{profile.name}</strong>
             </span>

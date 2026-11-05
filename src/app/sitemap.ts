@@ -1,27 +1,25 @@
 // /sitemap.xml: the pages that are on, every post and every case study.
 // Password-protected paths are never listed: a slug is content too.
-import { type PagePath, enabledRoutes, pages, siteUrl } from "@/resources";
+import { type Page, enabledRoutes, pages, siteUrl } from "@/resources";
 import { isProtectedPath } from "@/resources/protectedRoutes";
 import { getPosts } from "@/utils/posts";
 import type { MetadataRoute } from "next";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const today = new Date().toISOString().slice(0, 10);
+  const dated = (page: Page) => ({ path: page.path as string, lastModified: page.modifiedAt });
 
-  const pagesOn = (Object.keys(enabledRoutes) as PagePath[])
-    .filter((path) => enabledRoutes[path])
-    .map((path) => ({ path: path as string, lastModified: today }));
+  const pagesOn = [pages.home, pages.about, pages.work, pages.blog, pages.gallery]
+    .filter((page) => enabledRoutes[page.path])
+    .map(dated);
 
   const entries = (folder: string[], base: string) =>
     getPosts(folder).map((post) => ({
       path: `${base}/${post.slug}`,
-      lastModified: post.metadata.publishedAt,
+      lastModified: post.metadata.modifiedAt,
     }));
 
   // Pages under /work that are not case studies: the Incentiva Group index.
-  const workIndexes = enabledRoutes[pages.work.path]
-    ? [{ path: `${pages.work.path}/incentiva-group`, lastModified: "2026-11-02" }]
-    : [];
+  const workIndexes = enabledRoutes[pages.work.path] ? [dated(pages.incentiva)] : [];
 
   return [
     ...pagesOn,

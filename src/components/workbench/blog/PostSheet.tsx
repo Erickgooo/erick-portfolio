@@ -46,7 +46,7 @@ export function PostSheet({
             src={post.image.src}
             width={post.image.w}
             height={post.image.h}
-            alt=""
+            alt={`Cover of ${post.title}`}
             sizes={
               lead
                 ? "(min-width: 1024px) 400px, (min-width: 720px) 40vw, 80vw"

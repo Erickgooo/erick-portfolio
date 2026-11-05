@@ -103,7 +103,7 @@ export function ClientSection({
                       {/* eslint-disable-next-line @next/next/no-img-element -- a YouTube thumbnail: next/image proxies no remote host (next.config.mjs) */}
                       <img
                         src={youTubeThumbnail(video.videoId)}
-                        alt=""
+                        alt={video.title}
                         width={480}
                         height={360}
                         loading="lazy"
