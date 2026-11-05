@@ -91,6 +91,30 @@ Datos de laboratorio: Chromium, servidor local sin CDN, red limitada por CDP con
 - El salto del bucle es un corte duro entre dos tomas, también en la fuente: PSNR entre extremos de 10,46 dB en la fuente, 10,72 en el publicado y 10,49 a 10,57 en los nuevos.
 - Decodificación en un solo hilo, por bucle de 24,8 s, en la máquina de pruebas: 2,1 s AV1 1080p, 1,7 s H.264 1080p y 0,8 s H.264 720p.
 
+## Resultados de la puerta (2026-11-05)
+
+La puerta corrió sobre `ab0355d`. Después solo cambiaron `lazy-video.spec.ts` (`fa47eb3`), cuya spec se repitió, y este documento.
+
+- **Tipos, lint y build** (en copias fuera del repo, con LF):
+  - `tsc` limpio, en la rama y en `7cfbee5`, corrido después de `next build`, que genera `next-env.d.ts`;
+  - lint con 0 errores y los mismos 5 avisos de siempre;
+  - build con los mismos 5 avisos que `7cfbee5` y ninguno nuevo.
+- **Biome:** `biome check src` sale con código 0 sobre la copia LF, con los 2 avisos que ya estaban; `biome-gate` OK contra `origin/main` (2 archivos).
+- **Batería completa sobre `ab0355d`** (unit, chromium, mobile-chromium, firefox y webkit; puerto 3100, `--workers=2`, con el optimizador precalentado: 575 URL, 0 fallos):
+  - unit: 32 de 32;
+  - e2e: **671 pasan, 49 se omiten y 0 fallan**, en 12,2 minutos. Chromium 177, mobile-chromium 170, Firefox 164 y WebKit 160;
+  - frente a la ronda 8 (669 y 47), la diferencia es la prueba nueva de esa versión, que corría en Chromium y se omitía en Firefox y WebKit.
+- **`lazy-video.spec.ts` sobre `fa47eb3`:** 16 pasan y 4 se omiten (3 en WebKit y 1 en Firefox). La prueba `gives each viewport and engine its file` ya corre en los cuatro proyectos.
+- **Regla de Apple, rojo y verde:** sin ella, esa prueba falla solo en WebKit, que recibe `/videohome-av1.mp4` en vez de `/videohome-1080.mp4`.
+- **axe** (WCAG 2.0 y 2.1, A y AA): 72 de 72 en `axe-themes.spec.ts`.
+- **Lighthouse móvil**, 5 rondas intercaladas contra `7cfbee5`, dos builds locales. Son datos de laboratorio. Ninguna página descargó video.
+
+  | Página | Rondas main | Rondas rama | Mediana main | Mediana rama | CLS máx. (rama) | LCP mediano, main → rama |
+  |---|---|---|---|---|---|---|
+  | Home | 88 96 97 96 95 | 96 96 86 96 96 | 96 | 96 | 0,0001 | 2.712 → 2.710 ms |
+  | `/work` | 88 89 89 89 89 | 89 89 89 89 89 | 89 | 89 | 0,0003 | 3.543 → 3.540 ms |
+  | `/about` | 88 88 88 88 88 | 88 88 88 88 88 | 88 | 88 | 0,0001 | 3.690 → 3.688 ms |
+
 ## Sin comprobar
 
 - **Safari y iPhone reales:** WebKit en Windows no decodifica H.264, así que la reproducción no se pudo ver. Sí corre en su motor la prueba `gives each viewport and engine its file`: declara AV1 como `probably` y recibe el H.264.
