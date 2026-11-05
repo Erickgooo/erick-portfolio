@@ -186,6 +186,31 @@ Estas cifras ya estaban publicadas antes de esta ronda y quedaron fuera del pase
 | «85% · conversations automated» (Artesa, caso LeadBot y About) | cifra | contacto de Artesa Panadería | pendiente |
 | «200+ · leads/day» (Cuatrimotos ATV Riders, caso y About) | cifra | contacto de Cuatrimotos ATV Riders | pendiente |
 
+## Metadatos de búsqueda (ronda 10, 2026-11-05)
+
+Líneas nuevas que no se ven en la página, pero que Google y las tarjetas para compartir muestran. Cada una recorta un texto ya publicado en su misma página.
+
+| Pasaje publicado | Tipo | Valida | Estado |
+|---|---|---|---|
+| Título, `/work/atv-riders`: «ATV Riders: WhatsApp Lead Automation · Erick Mahecha» | cliente | contacto de Cuatrimotos ATV Riders | pendiente |
+| Descripción, `/work/atv-riders`: «WhatsApp automation for a high-volume ATV dealership: a chatbot filters 200+ daily Meta leads and routes only sales-ready prospects to the commercial team.» | cifra | contacto de Cuatrimotos ATV Riders | pendiente |
+| Título, `/work/dakoma-roofing`: «Dakoma Roofing: Rebranding & Automation · Erick Mahecha» | cliente | contacto de Dakoma Roofing | pendiente |
+| Títulos con Quick Metal Shop: «Quick Metal Shop: ArquiExpo 2026 App · Erick Mahecha», «Quick Metal Shop: The Marketing Function · Erick Mahecha», «Quick Metal Shop: Virality with AI · Erick Mahecha» | cliente | contacto de Quick Metal Shop | pendiente |
+| Descripción, `/work/quick-metal-shop-arquiexpo`: «A custom touchscreen app I designed and built for Quick Metal Shop's stand at ArquiExpo 2026, so the sales team could show the full catalog and real projects.» | cliente | contacto de Quick Metal Shop | pendiente |
+| Descripción, `/work/quick-metal-shop-marketing`: «As Quick Metal Shop's sole marketer, I built its marketing and digital infrastructure from scratch: brand manual, CRM automation, paid media and AI content.» | cliente | contacto de Quick Metal Shop | pendiente |
+| Descripción, `/work/quick-metal-shop-viral-videos`: «An AI video pipeline I ran end to end turned static before/after photos into short-form content: 338K+ organic views across 3 reels with zero ad spend.» | cifra | contacto de Quick Metal Shop | pendiente |
+| Título, `/work/samsung-lifemiles-whatsapp`: «Samsung × LifeMiles on WhatsApp · Erick Mahecha» | cliente | CEO de Incentiva; contacto de Samsung | pendiente |
+| Descripción, `/work/samsung-lifemiles-whatsapp`: «At Incentiva Group, I led the Samsung × LifeMiles promotion on WhatsApp: a rebuilt chatbot with OCR and fraud controls. 2M+ miles were awarded through it.» | cliente, cifra | CEO de Incentiva; contacto de Samsung | pendiente |
+| Descripción, `/work/chatflow-whatsapp-ai-platform`: «At Incentiva Group, I lead ChatFlow, the WhatsApp AI platform behind the Colmaíz (Ingredion) assistant: CI/CD, observability, releases and a client portal.» | cliente | CEO de Incentiva; contacto de Colmaíz (Ingredion) | pendiente |
+| Descripción, `/work/directv-click-to-whatsapp`: «I designed and launched an in-house sales channel for Incentiva's DIRECTV dealership: a click-to-WhatsApp campaign and an AI assistant that pre-qualifies leads.» | cliente | CEO de Incentiva (como distribuidor autorizado) | pendiente |
+| Descripción, `/work/scope-multi-client-platform`: «I re-architected Scope, Incentiva's custom app for the Nequi and Wompi field teams, so one platform serves several clients, each in its own database.» | cliente, arquitectura | CEO de Incentiva; contactos de Nequi y Wompi | pendiente |
+| Descripción, `/work/scope-ios-launch`: «I took a Flutter field-sales app that had never shipped on iOS through signing, background GPS and App Store review to its first iOS release and 13 versions.» | indicador | CEO de Incentiva | pendiente |
+| Descripción, `/work/incentiva-launch-campaign`: «A four-piece launch campaign I produced for Incentiva's new website: a reel, a carousel, a LinkedIn document and a LinkedIn video, edited in Remotion.» | cliente, cifra | CEO de Incentiva | pendiente |
+| Título y descripción, `/work/incentiva-website-brand`: «Incentiva Group: Website and Brand · Erick Mahecha»; «I redesigned Incentiva's brand identity and built the new website on it: a scroll story around the brand's 3D medal, in WebGL2. Built; launch pending.» | cliente | CEO de Incentiva | pendiente |
+| Descripción, `/work/incentiva-group`: «Erick Mahecha's role as Operations Manager at Incentiva Group: in-house software, client operations, paid media, brand and compliance, with seven case studies.» | cliente, cifra | CEO de Incentiva | pendiente |
+| Datos estructurados de todas las páginas: `worksFor`, «Incentiva Group» | cliente | CEO de Incentiva | pendiente |
+| Texto alternativo de las portadas: «Cover of {título del caso}», con los títulos ya publicados, también los que nombran a un cliente | cliente | los mismos responsables de cada caso | pendiente |
+
 ## Acciones de Erick fuera del sitio
 
 - Validar cada fila con su responsable.
