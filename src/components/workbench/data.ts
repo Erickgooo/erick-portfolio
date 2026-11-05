@@ -38,6 +38,8 @@ export type FanCard = {
   value: string;
   label: string;
   cover: { src: string; w: number; h: number };
+  /** The case's full title, for the cover's alt text. */
+  fullTitle: string;
   href: string;
   paper: Paper;
 };
@@ -75,6 +77,7 @@ export function getFanCards({ hideProtected }: { hideProtected: boolean }): FanC
       value: value ?? "",
       label: label ?? "",
       cover: { src: coverSrc, ...(COVER_SIZE[coverSrc] ?? DEFAULT_COVER) },
+      fullTitle: post.metadata.title,
       href,
       paper,
     });

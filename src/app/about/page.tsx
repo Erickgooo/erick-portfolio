@@ -7,15 +7,11 @@ import { Film } from "@/components/workbench/about/Film";
 import { Intro } from "@/components/workbench/about/Intro";
 import { Skills } from "@/components/workbench/about/Skills";
 import { SceneDriver } from "@/components/workbench/scenes/SceneDriver";
-import { about, pages, profile, sameAs, siteUrl } from "@/resources";
+import { pages } from "@/resources";
 import { StructuredData, pageMetadata } from "@/utils/seo";
 
 export async function generateMetadata() {
-  return pageMetadata({
-    title: pages.about.title,
-    description: pages.about.description,
-    path: pages.about.path,
-  });
+  return pageMetadata(pages.about);
 }
 
 // About, in Workbench: the name and the offer, then the loop that used to open
@@ -26,18 +22,7 @@ export async function generateMetadata() {
 export default function About() {
   return (
     <>
-      <StructuredData
-        type="WebPage"
-        title={pages.about.title}
-        description={pages.about.description}
-        path={pages.about.path}
-        sameAs={sameAs}
-        author={{
-          name: profile.name,
-          url: `${siteUrl}${pages.about.path}`,
-          image: `${siteUrl}${profile.avatar}`,
-        }}
-      />
+      <StructuredData type="ProfilePage" page={pages.about} />
       <Intro />
       <Film />
       <Experience />

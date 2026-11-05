@@ -20,7 +20,13 @@ export function Hero() {
       <div className={styles.inner}>
         <div className={styles.text}>
           <p className={styles.who}>
-            <Image src={MEDIA.avatar.src} width={48} height={48} alt="" className={styles.avatar} />
+            <Image
+              src={MEDIA.avatar.src}
+              width={48}
+              height={48}
+              alt={`Portrait of ${profile.name}`}
+              className={styles.avatar}
+            />
             <span>
               <strong>{profile.name}</strong>
               <span className={styles.role}>{profile.role}</span>

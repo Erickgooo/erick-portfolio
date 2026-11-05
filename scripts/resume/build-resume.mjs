@@ -41,7 +41,7 @@ const FONTS = path.join(root, "scripts/resume/fonts");
 // Artesa's 85% and Concentrix's Top Performer award. Dakoma and Aseneg have no
 // published result, so their bullets stay as they were.
 const PHONE = "+57 313 468 7899";
-const PORTFOLIO = "https://erickmahecha.com";
+const PORTFOLIO = "https://www.erickmahecha.com";
 const PLACES = {
   "Incentiva Group": "Medellín, Colombia (Hybrid)",
   "Quick Metal Shop": "Puerto Rico, USA (Remote)",

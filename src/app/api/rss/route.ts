@@ -17,6 +17,10 @@ const ENTITIES: Record<string, string> = {
 /** Text safe inside XML, so a title with & or < cannot break the feed. */
 const xml = (value: string) => value.replace(/[&<>"']/g, (char) => ENTITIES[char]);
 
+/** The media type of a cover, from its extension. */
+const imageType = (path: string) =>
+  path.endsWith(".webp") ? "image/webp" : path.endsWith(".png") ? "image/png" : "image/jpeg";
+
 /** Text kept verbatim inside CDATA (a literal "]]>" would end it early). */
 const cdata = (value: string) => `<![CDATA[${value.replace(/]]>/g, "]]&gt;")}]]>`;
 
@@ -41,7 +45,7 @@ export async function GET() {
       `      <pubDate>${new Date(metadata.publishedAt).toUTCString()}</pubDate>`,
       `      <description>${cdata(metadata.summary)}</description>`,
       metadata.image
-        ? `      <enclosure url="${siteUrl}${xml(metadata.image)}" type="image/jpeg" />`
+        ? `      <enclosure url="${siteUrl}${xml(metadata.image)}" type="${imageType(metadata.image)}" />`
         : "",
       metadata.tag ? `      <category>${xml(metadata.tag)}</category>` : "",
       `      <author>${author}</author>`,

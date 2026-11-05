@@ -5,10 +5,10 @@ import { PostArticle } from "@/components/workbench/blog/PostArticle";
 import { RecentPosts } from "@/components/workbench/blog/RecentPosts";
 import { getPostCards } from "@/components/workbench/blog/posts";
 import { SceneDriver } from "@/components/workbench/scenes/SceneDriver";
-import { pages, profile, protectedRoutes, siteUrl } from "@/resources";
+import { pages, siteUrl } from "@/resources";
 import { isProtectedPath } from "@/resources/protectedRoutes";
 import { getPosts } from "@/utils/posts";
-import { StructuredData, pageMetadata } from "@/utils/seo";
+import { StructuredData, entryPage, pageMetadata } from "@/utils/seo";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
@@ -34,12 +34,7 @@ export async function generateMetadata({
 
   if (!post) return {};
 
-  return pageMetadata({
-    title: post.metadata.title,
-    description: post.metadata.summary,
-    image: post.metadata.image,
-    path: `${pages.blog.path}/${post.slug}`,
-  });
+  return pageMetadata(entryPage(post, pages.blog.path));
 }
 
 // A post, in Workbench (see PostArticle), then the most recent other posts.
@@ -64,17 +59,8 @@ export default async function Blog({ params }: { params: Promise<{ slug: string 
     <>
       <StructuredData
         type="BlogPosting"
-        path={`${pages.blog.path}/${post.slug}`}
-        title={post.metadata.title}
-        description={post.metadata.summary}
-        datePublished={post.metadata.publishedAt}
-        dateModified={post.metadata.publishedAt}
-        image={post.metadata.image}
-        author={{
-          name: profile.name,
-          url: `${siteUrl}${pages.about.path}`,
-          image: `${siteUrl}${profile.avatar}`,
-        }}
+        page={entryPage(post, pages.blog.path)}
+        parent={pages.blog}
       />
       <PostArticle
         title={post.metadata.title}

@@ -4,10 +4,10 @@ import { RevealObserver } from "@/components/workbench/RevealObserver";
 import { SceneDriver } from "@/components/workbench/scenes/SceneDriver";
 import { CaseBody, CaseHeader, NextCase } from "@/components/workbench/work/CaseStudy";
 import { getCase, getNextCase } from "@/components/workbench/work/cases";
-import { pages, profile, protectedRoutes, siteUrl } from "@/resources";
+import { pages } from "@/resources";
 import { isProtectedPath } from "@/resources/protectedRoutes";
 import { getPosts } from "@/utils/posts";
-import { StructuredData, pageMetadata } from "@/utils/seo";
+import { StructuredData, entryPage, pageMetadata } from "@/utils/seo";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
@@ -33,12 +33,7 @@ export async function generateMetadata({
 
   if (!post) return {};
 
-  return pageMetadata({
-    title: post.metadata.title,
-    description: post.metadata.summary,
-    image: post.metadata.image,
-    path: `${pages.work.path}/${post.slug}`,
-  });
+  return pageMetadata(entryPage(post, pages.work.path));
 }
 
 // A case study, in Workbench: opened like a project folder (see CaseStudy).
@@ -64,20 +59,7 @@ export default async function Project({
 
   return (
     <>
-      <StructuredData
-        type="BlogPosting"
-        path={`${pages.work.path}/${post.slug}`}
-        title={post.metadata.title}
-        description={post.metadata.summary}
-        datePublished={post.metadata.publishedAt}
-        dateModified={post.metadata.publishedAt}
-        image={post.metadata.image}
-        author={{
-          name: profile.name,
-          url: `${siteUrl}${pages.about.path}`,
-          image: `${siteUrl}${profile.avatar}`,
-        }}
-      />
+      <StructuredData type="Article" page={entryPage(post, pages.work.path)} parent={pages.work} />
       <article>
         <CaseHeader c={c} />
         <CaseBody c={c} />

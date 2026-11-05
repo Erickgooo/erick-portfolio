@@ -8,19 +8,18 @@ import { SpotlightBackground } from "@/components/SpotlightBackground";
 import spotlightStyles from "@/components/SpotlightBackground.module.scss";
 import { GlassController } from "@/components/glass/GlassController";
 import { THEME_INIT } from "@/components/themeScript";
-import { pages } from "@/resources";
-import { pageMetadata } from "@/utils/seo";
+import { profile, siteUrl } from "@/resources";
 import { Analytics } from "@vercel/analytics/next";
+import type { Metadata } from "next";
 import styles from "./layout.module.scss";
 
-export async function generateMetadata() {
-  return pageMetadata({
-    title: pages.home.title,
-    description: pages.home.description,
-    path: pages.home.path,
-    image: pages.home.image,
-  });
-}
+// Only what every page shares. Each indexable page writes its own description,
+// canonical and share card (utils/seo.tsx), so a 404 or a noindex page never
+// inherits the home's.
+export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl),
+  title: profile.name,
+};
 
 export default async function RootLayout({
   children,

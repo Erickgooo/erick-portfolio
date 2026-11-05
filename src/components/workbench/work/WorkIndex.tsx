@@ -100,7 +100,7 @@ export function WorkIndex({ hideProtected }: { hideProtected: boolean }) {
                       src={c.cover.src}
                       width={c.cover.w}
                       height={c.cover.h}
-                      alt=""
+                      alt={`Cover of ${c.title}`}
                       sizes="(min-width: 1280px) 380px, (min-width: 1024px) 30vw, (min-width: 720px) 44vw, 92vw"
                       priority={i === 0}
                     />

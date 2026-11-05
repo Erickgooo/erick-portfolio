@@ -95,7 +95,9 @@ function PrintImage({ piece, sizes, ready }: { piece: Piece; sizes: string; read
       role="img"
       aria-label={piece.alt}
     >
-      {ready && <Image src={piece.src} width={piece.w} height={piece.h} alt="" sizes={sizes} />}
+      {ready && (
+        <Image src={piece.src} width={piece.w} height={piece.h} alt={piece.alt} sizes={sizes} />
+      )}
     </span>
   );
 }

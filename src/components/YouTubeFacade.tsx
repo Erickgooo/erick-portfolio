@@ -69,7 +69,7 @@ export function YouTubeFacade({
           <img
             className={styles.thumb}
             src={youTubeThumbnail(videoId)}
-            alt=""
+            alt={title}
             loading={eager ? "eager" : "lazy"}
             fetchPriority={eager ? "high" : undefined}
             decoding="async"
