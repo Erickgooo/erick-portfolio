@@ -58,7 +58,6 @@ test.describe("about video", () => {
   });
 
   test("gives each viewport and engine its file", async ({ page, browserName }) => {
-    test.skip(browserName !== "chromium", "the vendor is spoofed on one engine; its AV1 is real");
     const fileAt = async (width: number) => {
       await page.setViewportSize({ width, height: 900 });
       await page.goto("/about");
@@ -67,14 +66,9 @@ test.describe("about video", () => {
       await expect.poll(() => video.getAttribute("src")).toBeTruthy();
       return video.getAttribute("src");
     };
-    expect(await fileAt(1024)).toBe("/videohome-av1.mp4");
-    expect(await fileAt(1023)).toBe("/videohome-720.mp4");
-
     // WebKit reports AV1 as "probably" too, so only the vendor keeps it on H.264.
-    await page.addInitScript(() => {
-      Object.defineProperty(navigator, "vendor", { get: () => "Apple Computer, Inc." });
-    });
-    expect(await fileAt(1024)).toBe("/videohome-1080.mp4");
+    const wide = browserName === "webkit" ? "/videohome-1080.mp4" : "/videohome-av1.mp4";
+    expect(await fileAt(1024)).toBe(wide);
     expect(await fileAt(1023)).toBe("/videohome-720.mp4");
   });
 

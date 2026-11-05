@@ -93,6 +93,6 @@ Datos de laboratorio: Chromium, servidor local sin CDN, red limitada por CDP con
 
 ## Sin comprobar
 
-- **Safari y iPhone reales:** WebKit en Windows no decodifica H.264. Sí se comprobó en su motor que recibe el H.264, quitando la CSP solo en esa prueba, porque en `http://localhost` WebKit no hidrata la página por `upgrade-insecure-requests`, tampoco en la base.
+- **Safari y iPhone reales:** WebKit en Windows no decodifica H.264, así que la reproducción no se pudo ver. Sí corre en su motor la prueba `gives each viewport and engine its file`: declara AV1 como `probably` y recibe el H.264.
 - **AV1 en equipos sin decodificación por hardware.** En la máquina de pruebas, 0 fotogramas perdidos.
 - **Teléfonos y red reales.**
