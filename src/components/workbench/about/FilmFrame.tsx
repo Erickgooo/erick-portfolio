@@ -29,13 +29,13 @@ function canAutoplay(): boolean {
   return !connection?.saveData;
 }
 
-export type FilmSources = {
+type FilmSources = {
   /** H.264, for viewports of 1024 px or more. */
   wide: string;
+  /** AV1, lighter, for wide viewports whose browser can be trusted to decode it. */
+  wideAv1: string;
   /** H.264, for narrower viewports, phones held sideways included. */
   narrow: string;
-  /** AV1, for wide viewports whose browser can be trusted to decode it. */
-  wideAv1?: string;
 };
 
 /** The codec string of the AV1 file: main profile, level 4.0, 8 bits. */
@@ -44,20 +44,12 @@ const AV1 = 'video/mp4; codecs="av01.0.08M.08"';
 /**
  * Chosen once, on the first play(), so the element stays without a src until
  * then. Apple browsers always get H.264 (Chrome on iOS too, which is WebKit):
- * canPlayType can claim a support that WebKit does not deliver. ?v= is read
- * here, in the client, so it never touches the page's static render.
+ * canPlayType can claim a support that WebKit does not deliver.
  */
-function pickSource(
-  video: HTMLVideoElement,
-  options: Record<string, FilmSources>,
-  chosen: string,
-): string {
-  const asked = new URLSearchParams(window.location.search).get("v") ?? "";
-  const option = Object.hasOwn(options, asked) ? options[asked] : options[chosen];
-  if (!window.matchMedia("(min-width: 1024px)").matches) return option.narrow;
+function pickSource(video: HTMLVideoElement, sources: FilmSources): string {
+  if (!window.matchMedia("(min-width: 1024px)").matches) return sources.narrow;
   const apple = navigator.vendor === "Apple Computer, Inc.";
-  if (option.wideAv1 && !apple && video.canPlayType(AV1)) return option.wideAv1;
-  return option.wide;
+  return !apple && video.canPlayType(AV1) ? sources.wideAv1 : sources.wide;
 }
 
 /** Share of the stage that must be on screen to keep the loop playing. */
@@ -72,16 +64,14 @@ const PHONE = "(max-width: 719px)";
 const PHONE_ZONE = "0px 0px -30% 0px";
 
 export function FilmFrame({
-  options,
-  chosen,
+  sources,
   poster,
   width,
   height,
   label,
   testId,
 }: {
-  options: Record<string, FilmSources>;
-  chosen: string;
+  sources: FilmSources;
   poster: string;
   /** Intrinsic size of the file, so the stage reserves its exact ratio. */
   width: number;
@@ -102,11 +92,11 @@ export function FilmFrame({
 
   const play = useCallback(
     (video: HTMLVideoElement) => {
-      if (!video.src) video.src = pickSource(video, options, chosen);
+      if (!video.src) video.src = pickSource(video, sources);
       video.muted = true;
       return video.play();
     },
-    [options, chosen],
+    [sources],
   );
 
   useEffect(() => {
