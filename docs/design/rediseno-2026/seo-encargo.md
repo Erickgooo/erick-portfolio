@@ -117,6 +117,39 @@ Cambian lo que se ve, así que no se aplicaron.
 
 Ninguna URL necesitó excepción: todas tienen un solo `h1`.
 
-## Resultados de la puerta
+## Resultados de la puerta (2026-11-05)
 
-Se completan al correr la puerta sobre el commit final.
+La puerta corrió sobre `b5aed89`. Después de ese commit solo cambió este documento. Los resultados de producción no van aquí, porque cada push a `main` vuelve a publicar: están en el informe y en la nota de memoria.
+
+- **Tipos, lint y build** (en copias fuera del repo, con LF):
+  - `tsc` limpio;
+  - lint con 0 errores y los mismos 5 avisos de siempre;
+  - build con los mismos 5 avisos que `dd4ace9` y ninguno nuevo.
+- **Biome:** `biome check src` sale con código 0 sobre la copia LF, con los 2 avisos que ya estaban; `biome-gate` OK contra `origin/main` (24 archivos).
+- **Batería completa sobre `b5aed89`** (unit, chromium, mobile-chromium, firefox y webkit; puerto 3100, `--workers=2`, con el optimizador precalentado: 575 URL, 0 fallos):
+  - unit: 32 de 32;
+  - e2e: **698 pasan, 50 se omiten y 0 fallan**, en 13,2 minutos. Chromium 184, mobile-chromium 176, Firefox 171 y WebKit 167;
+  - frente a la ronda 9 (671 y 49), suma las 25 pruebas de `seo.spec.ts` que corren, 3 omitidas de esa spec (la imagen OG, que solo corre en chromium) y las 2 de la versión final de `lazy-video.spec.ts`, que ya no se omiten.
+- **Una corrida anterior, sobre `20717c8`, dio 8 fallos:** dos pruebas de `posicionamiento.spec.ts` en los cuatro navegadores.
+  - El nombre repetido de las piezas del banco era un error de esta rama, y se corrigió en el código (D70).
+  - El título del artículo multicliente cambió por lo que pide el encargo, y se actualizó ese valor esperado.
+- **Pruebas actualizadas:** ese valor de `posicionamiento.spec.ts` y la instantánea de ErickBot (D64).
+- **`seo.spec.ts` contra `dd4ace9`, en Chromium:** fallan las 6 pruebas que se corrieron. La de imágenes OG no se corrió ahí, para no gastar el límite de la ruta.
+- **axe** (WCAG 2.0 y 2.1, A y AA): 72 de 72 en `axe-themes.spec.ts`.
+- **Lighthouse móvil**, 5 rondas intercaladas contra `dd4ace9`, dos builds locales. Son datos de laboratorio. Ninguna mediana baja, y SEO da 100 en todas las rondas de las dos builds; en local tampoco falló la auditoría canonical.
+
+  | Página | Rondas main | Rondas rama | Mediana main | Mediana rama | CLS máx. (rama) | LCP mediano, main → rama |
+  |---|---|---|---|---|---|---|
+  | Home | 86 83 87 87 87 | 87 87 87 87 87 | 87 | 87 | 0,0001 | 3.607 → 3.607 ms |
+  | `/about` | 86 81 81 87 85 | 86 86 86 80 86 | 85 | 86 | 0,0001 | 3.685 → 3.686 ms |
+  | `leadbot-ai` | 84 86 84 84 85 | 85 84 85 84 85 | 84 | 85 | 0,0067 | 3.835 → 3.834 ms |
+
+- **Texto visible** (`innerText` de `body`) en las 26 URL del sitemap, a 1280 × 900 y 390 × 844, con el mismo estado del navegador y movimiento reducido: **52 comparaciones y 0 diferencias**, con la hora de la cabecera normalizada.
+  - La primera corrida marcó 2 diferencias en dos casos largos. Eran solo la burbuja de ErickBot, que aparece a los 2,5 s y se va 8 s después: la herramienta leía en momentos distintos, y el código del chatbot no cambió en esta rama.
+  - Se repitió leyendo después de que la burbuja se va. Se vio aparecer en las 52 cargas de cada build.
+- **Sobre el build final, con JavaScript:** un `h1` en las 26 URL. Quedan 37 imágenes distintas con `alt` vacío: 36 dentro de un `aria-hidden` y el póster de `/about` (D70). Las piezas del banco no cuentan en este total porque su `img` monta más tarde, y su nombre está en el marco.
+
+## Sin comprobar en esta puerta
+
+- **Canonical y redirecciones reales:** en local no hay dominio; se comprueban en producción.
+- **Cómo lo interpreta Google:** Search Console y la Prueba de resultados enriquecidos requieren la cuenta de Erick. Esta ronda valida que el JSON-LD se pueda parsear y tenga los tipos esperados, no lo que Google decida mostrar.
