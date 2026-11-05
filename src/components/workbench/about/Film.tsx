@@ -7,9 +7,24 @@ import { SupportQueue } from "../scenes/about/SupportQueue";
 import { FilmFrame } from "./FilmFrame";
 import styles from "./film.module.scss";
 
-/** The loop that used to open the home: 1280 x 720, H.264 (read from the file's headers). */
+/**
+ * The loop that used to open the home. `w` and `h` only reserve the 16:9 box;
+ * the file that plays is chosen on the first play() (FilmFrame.tsx).
+ *
+ * Temporary: the options being compared through ?v=. Without it, `chosen` plays.
+ */
 const FILM = {
-  src: "/videohome.mp4",
+  options: {
+    actual: { wide: "/videohome.mp4", narrow: "/videohome.mp4" },
+    a: { wide: "/videohome-a-1080.mp4", narrow: "/videohome-720.mp4" },
+    b: { wide: "/videohome-b-900.mp4", narrow: "/videohome-720.mp4" },
+    c: {
+      wide: "/videohome-a-1080.mp4",
+      wideAv1: "/videohome-c-av1.mp4",
+      narrow: "/videohome-720.mp4",
+    },
+  },
+  chosen: "c",
   poster: "/images/videohome-poster.webp",
   w: 1280,
   h: 720,
@@ -39,7 +54,8 @@ export function Film() {
     <section className={styles.film} aria-labelledby="film-title">
       <div className={styles.screen}>
         <FilmFrame
-          src={FILM.src}
+          options={FILM.options}
+          chosen={FILM.chosen}
           poster={FILM.poster}
           width={FILM.w}
           height={FILM.h}
