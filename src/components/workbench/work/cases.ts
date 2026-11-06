@@ -27,7 +27,7 @@ export type Case = {
 };
 
 /**
- * Who each case was for, as named in the experience list of content.tsx. A
+ * Who each case was for, as named in the experience list of about.tsx. A
  * case missing here shows the name from its title.
  */
 const CLIENT: Record<string, string> = {

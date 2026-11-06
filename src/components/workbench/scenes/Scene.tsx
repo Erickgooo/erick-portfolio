@@ -29,8 +29,8 @@ import styles from "./scenes.module.scss";
 import { TYPE_MS } from "./start";
 
 /** How long typing `text` takes, for sizing the step that types it. */
-export function typeTime(text: string, ms = TYPE_MS) {
-  return text.length * ms;
+export function typeTime(text: string) {
+  return text.length * TYPE_MS;
 }
 
 export function Scene({

@@ -25,6 +25,7 @@ test.describe("server-rendered content", () => {
 test("no class in the server HTML says undefined", async ({ request }) => {
   const sitemap = await (await request.get("/sitemap.xml")).text();
   const paths = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => new URL(m[1]).pathname);
+  expect(paths.length).toBeGreaterThan(0);
   const offenders: string[] = [];
   for (const path of [...paths, "/unauthorized", "/this-page-does-not-exist"]) {
     const html = await (await request.get(path)).text();
