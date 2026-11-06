@@ -1,5 +1,5 @@
-// Workbench prose: pixel sizes of the case-study and post media, read from the
-// files' headers (sharp for images, ffprobe for videos), never by looking at
+// Workbench: pixel sizes of the media of the cases, posts and gallery, read from
+// the files' headers (sharp for images, ffprobe for videos), never by looking at
 // them. Each frame keeps the piece's own proportions and reserves its box
 // before the file arrives. Plain data, safe for client components.
 // tests/unit/workbench-media.spec.ts checks this table against the files.
@@ -28,9 +28,14 @@ export const MEDIA_SIZE: Record<string, Size> = {
   "/images/projects/incentiva/incentiva-launch-campaign.webp": { w: 2400, h: 1357 },
   "/images/projects/incentiva-website/cover.webp": { w: 2400, h: 1357 },
   "/images/projects/incentiva-website/site-1.webp": { w: 2400, h: 1500 },
+  "/images/projects/incentiva-website/site-2.webp": { w: 2400, h: 1500 },
+  "/images/projects/incentiva-website/site-3.webp": { w: 2400, h: 1500 },
+  "/images/projects/incentiva-website/site-4.webp": { w: 1170, h: 2532 },
   "/images/projects/incentiva-website/medal-scroll.mp4": { w: 1026, h: 1080 },
   "/images/projects/incentiva-brand/manual-2.webp": { w: 2000, h: 1125 },
   "/images/projects/incentiva-brand/manual-3.webp": { w: 2000, h: 1125 },
+  "/images/projects/incentiva-brand/manual-4.webp": { w: 2000, h: 1125 },
+  "/images/projects/incentiva-brand/manual-5.webp": { w: 2000, h: 1125 },
   "/images/projects/project-01/whatsapp.webp": { w: 1466, h: 986 },
   "/images/projects/project-01/chatbot-artesa.mp4": { w: 640, h: 360 },
   "/images/projects/project-01/leadbot.mp4": { w: 1402, h: 720 },
@@ -48,13 +53,23 @@ export const MEDIA_SIZE: Record<string, Size> = {
   "/images/projects/quick-metal-shop-viral-videos/social-media1.webp": { w: 2400, h: 1357 },
   "/images/projects/quick-metal-shop-viral-videos/social-media2.webp": { w: 2400, h: 1357 },
   "/images/projects/quick-metal-shop-viral-videos/social-media3.webp": { w: 2400, h: 1357 },
+  "/images/gallery/Artesa - Wallpaper Diciembre.webp": { w: 1920, h: 1080 },
+  "/images/gallery/Artesa - Panettone 2x1.webp": { w: 1080, h: 1350 },
+  "/images/gallery/Artesa - Muffin ChocoMix.webp": { w: 1080, h: 1350 },
+  "/images/gallery/Artesa - Nuevos Sabores.webp": { w: 1587, h: 2245 },
+  "/images/gallery/Artesa - Magia de Diciembre.webp": { w: 1080, h: 1350 },
+  "/images/gallery/Artesa - Nuevo Menu.webp": { w: 1080, h: 1350 },
+  "/images/gallery/Artesa - Dia de la Madre.webp": { w: 1080, h: 1350 },
+  "/images/gallery/arqui.webp": { w: 1357, h: 2400 },
+  "/images/gallery/pared.webp": { w: 1357, h: 2400 },
+  "/images/gallery/transform.webp": { w: 1744, h: 2336 },
 };
 
 /** A wide print, for a file missing from the table: it still shows at its own ratio once loaded. */
 const FALLBACK: Size = { w: 1600, h: 900 };
 
-export function mediaSize(src: string): Size {
-  return MEDIA_SIZE[src] ?? FALLBACK;
+export function mediaSize(src: string, fallback: Size = FALLBACK): Size {
+  return MEDIA_SIZE[src] ?? fallback;
 }
 
 export function isVideo(src: string): boolean {

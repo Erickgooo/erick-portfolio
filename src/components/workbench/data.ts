@@ -3,18 +3,10 @@
 import { type HomeCategory, homeFeatured } from "@/resources/home";
 import { isProtectedPath } from "@/resources/protectedRoutes";
 import { getPosts } from "@/utils/posts";
+import { isImage, mediaSize } from "./prose/media";
 
 export type Paper = "cobalt" | "ink" | "mist" | "paper";
 
-/** Pixel sizes of the cover images, read from the files' headers. */
-const COVER_SIZE: Record<string, { w: number; h: number }> = {
-  "/images/projects/quick-metal-shop-viral-videos/social-media1.webp": { w: 2400, h: 1357 },
-  "/images/projects/qms-dakoma-ai-creative/creatives1.webp": { w: 2400, h: 1357 },
-  "/images/projects/project-01/whatsapp.webp": { w: 1466, h: 986 },
-  "/images/projects/cuatrimotos-project/portada-chatbot.webp": { w: 2400, h: 1357 },
-  "/images/projects/app-quick-metal-shop/qmsapp.webp": { w: 2400, h: 1357 },
-  "/images/og/home.jpg": { w: 1200, h: 750 },
-};
 const DEFAULT_COVER = { w: 2400, h: 1357 };
 
 /** The paper each kind of card is printed on. */
@@ -44,10 +36,6 @@ type FanCard = {
   paper: Paper;
 };
 
-function isImage(path: string) {
-  return /\.(webp|jpe?g|png|avif)$/i.test(path);
-}
-
 function getProjects() {
   return getPosts(["src", "app", "work", "projects"]);
 }
@@ -75,7 +63,7 @@ export function getFanCards({ hideProtected }: { hideProtected: boolean }): FanC
       title: rest.join(":").trim() || post.metadata.title,
       value: value ?? "",
       label: label ?? "",
-      cover: { src: coverSrc, ...(COVER_SIZE[coverSrc] ?? DEFAULT_COVER) },
+      cover: { src: coverSrc, ...mediaSize(coverSrc, DEFAULT_COVER) },
       fullTitle: post.metadata.title,
       href,
       paper,
