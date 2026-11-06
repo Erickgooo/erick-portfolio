@@ -85,29 +85,6 @@ export const enabledRoutes: Record<PagePath, boolean> = {
   "/gallery": true,
 };
 
-/** What the header shows besides the page keys. */
-export const headerShows = {
-  location: true,
-  time: true,
-  themeKey: true,
-};
-
-/** The share keys under a post. */
-export const sharing = {
-  enabled: true,
-  on: {
-    x: true,
-    linkedin: true,
-    facebook: false,
-    pinterest: false,
-    whatsapp: false,
-    reddit: false,
-    telegram: false,
-    email: true,
-    copyLink: true,
-  },
-};
-
 /** Erick's profile URLs for schema.org sameAs (web links only, no mailto). */
 export const sameAs: string[] = profileLinks
   .map((link) => link.href)

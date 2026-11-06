@@ -2,7 +2,7 @@
 
 // The site header (see Header.module.scss): location, the pill of page keys
 // with the theme key, and Erick's local time.
-import { enabledRoutes, headerShows, pages, profile } from "@/resources";
+import { enabledRoutes, pages, profile } from "@/resources";
 import { EMIcon } from "@/resources/EMIcon";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -62,7 +62,7 @@ export const Header = () => {
       <div className={styles.gap} />
       <header className={styles.bar}>
         <div className={`${styles.side} ${styles.start} ${styles.meta}`}>
-          {headerShows.location && <span className={styles.desk}>{profile.location}</span>}
+          <span className={styles.desk}>{profile.location}</span>
         </div>
         <div className={styles.middle}>
           {/* data-lg-glass: GlassController moves its light, sets data-lg-tone
@@ -101,20 +101,14 @@ export const Header = () => {
                 </Link>
               ),
             )}
-            {headerShows.themeKey && (
-              <>
-                <span className={styles.rule} />
-                <ThemeToggle className={styles.key} iconClassName={styles.icon} />
-              </>
-            )}
+            <span className={styles.rule} />
+            <ThemeToggle className={styles.key} iconClassName={styles.icon} />
           </nav>
         </div>
         <div className={`${styles.side} ${styles.end}`}>
-          {headerShows.time && (
-            <span className={`${styles.meta} ${styles.desk} ${styles.clock}`}>
-              <Clock timeZone={profile.timeZone} />
-            </span>
-          )}
+          <span className={`${styles.meta} ${styles.desk} ${styles.clock}`}>
+            <Clock timeZone={profile.timeZone} />
+          </span>
         </div>
       </header>
     </>
