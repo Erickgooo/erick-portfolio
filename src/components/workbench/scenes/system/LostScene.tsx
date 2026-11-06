@@ -3,7 +3,7 @@
 // Scene (types 2 and 3) of the 404: a field types the address the visitor
 // asked for, then "Nothing on the bench here." comes up under it; an empty
 // hairline frame marks where a piece would be, and a few quiet marks drift
-// past it. Nothing lands. Drawn in style A.
+// past it. Nothing lands. Drawn in hairlines.
 //
 // The address is only known in the browser (location.pathname), so this
 // small island writes it into the typed text and sizes the typing step

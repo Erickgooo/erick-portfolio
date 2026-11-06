@@ -104,13 +104,6 @@ $reveal-travel-lg: var(--wb-travel-lg);
   }
 }
 
-@mixin display($weight: 700) {
-  font-family: var(--font-wb-display), system-ui, sans-serif;
-  font-weight: $weight;
-  font-optical-sizing: auto;
-  letter-spacing: -0.025em;
-}
-
 // A scroll reveal driven by RevealObserver: hidden until [data-in] lands.
 // Only applied when scripting is on, so the page reads without JavaScript.
 // $travel: $reveal-travel, or $reveal-travel-lg for a big block.
@@ -145,28 +138,7 @@ $reveal-travel-lg: var(--wb-travel-lg);
   }
 }
 
-// Section headings.
-@mixin h2 {
-  @include display(750);
-  font-size: clamp(38px, 5.4vw, 76px);
-  line-height: 0.98;
-  letter-spacing: -0.04em;
-  text-wrap: balance;
-}
-
-@mixin lede {
-  max-width: 40ch;
-  font-size: 18px;
-  color: var(--wb-ink-2);
-
-  @include from-desk {
-    font-size: 20px;
-  }
-}
-
-// Sober Workbench (Erick, 2026-10-22; variant A, "Line", chosen the same day) -
-// Every page's type and shapes. The display mixins above are the first
-// Workbench style's; pages move off them as they take the sober style.
+// Sober Workbench (Erick, 2026-10-22): every page's type and shapes.
 
 // Titles: Montserrat Black. The face is wide and heavy, so sizes stay
 // moderate and the tracking only slightly tight.

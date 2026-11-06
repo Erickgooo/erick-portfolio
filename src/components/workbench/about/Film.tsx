@@ -1,5 +1,5 @@
 // Workbench About: the film, and the story that starts under it. The copy is
-// the About introduction from content.tsx, trimmed; every figure on the tags
+// the About introduction from about.tsx, trimmed; every figure on the tags
 // comes from it or from the work experience.
 import { about, profile } from "@/resources";
 import type { CSSProperties } from "react";

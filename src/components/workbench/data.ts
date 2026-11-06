@@ -2,19 +2,11 @@
 // below comes from src/resources (about.tsx, incentiva.ts) or the project MDX.
 import { type HomeCategory, homeFeatured } from "@/resources/home";
 import { isProtectedPath } from "@/resources/protectedRoutes";
-import { getPosts } from "@/utils/posts";
+import { WORK_DIR, getPosts } from "@/utils/posts";
+import { isImage, mediaSize } from "./prose/media";
 
 export type Paper = "cobalt" | "ink" | "mist" | "paper";
 
-/** Pixel sizes of the cover images, read from the files' headers. */
-const COVER_SIZE: Record<string, { w: number; h: number }> = {
-  "/images/projects/quick-metal-shop-viral-videos/social-media1.webp": { w: 2400, h: 1357 },
-  "/images/projects/qms-dakoma-ai-creative/creatives1.webp": { w: 2400, h: 1357 },
-  "/images/projects/project-01/whatsapp.webp": { w: 1466, h: 986 },
-  "/images/projects/cuatrimotos-project/portada-chatbot.webp": { w: 2400, h: 1357 },
-  "/images/projects/app-quick-metal-shop/qmsapp.webp": { w: 2400, h: 1357 },
-  "/images/og/home.jpg": { w: 1200, h: 750 },
-};
 const DEFAULT_COVER = { w: 2400, h: 1357 };
 
 /** The paper each kind of card is printed on. */
@@ -28,7 +20,7 @@ const PAPER: Record<HomeCategory, Paper> = {
 /** The cases featured on the home, with their category (src/resources/home.tsx). */
 const FAN = homeFeatured.map((feature) => ({ ...feature, paper: PAPER[feature.category] }));
 
-export type FanCard = {
+type FanCard = {
   slug: string;
   category: HomeCategory;
   /** What the card says the case is about, when it says more than the title. */
@@ -44,18 +36,13 @@ export type FanCard = {
   paper: Paper;
 };
 
-function isImage(path: string) {
-  return /\.(webp|jpe?g|png|avif)$/i.test(path);
-}
-
 function getProjects() {
-  return getPosts(["src", "app", "work", "projects"]);
+  return getPosts(WORK_DIR);
 }
 
 /**
  * The cards of the fan. With `hideProtected` (set when the page listing them is
- * public), a case whose own page is password-protected is left out, as the
- * project list on the previous home did.
+ * public), a case whose own page is password-protected is left out.
  */
 export function getFanCards({ hideProtected }: { hideProtected: boolean }): FanCard[] {
   const posts = getProjects();
@@ -76,7 +63,7 @@ export function getFanCards({ hideProtected }: { hideProtected: boolean }): FanC
       title: rest.join(":").trim() || post.metadata.title,
       value: value ?? "",
       label: label ?? "",
-      cover: { src: coverSrc, ...(COVER_SIZE[coverSrc] ?? DEFAULT_COVER) },
+      cover: { src: coverSrc, ...mediaSize(coverSrc, DEFAULT_COVER) },
       fullTitle: post.metadata.title,
       href,
       paper,
@@ -110,7 +97,7 @@ export function countProjects(): number {
  */
 export type Pictogram = "cloud" | "pipeline";
 export type Tool = { name: string; logo?: string; pictogram?: Pictogram; wide?: boolean };
-export type ToolGroup = {
+type ToolGroup = {
   id: string;
   title: string;
   line: string;

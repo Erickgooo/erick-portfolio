@@ -14,7 +14,7 @@
  * hidden either.
  */
 /** Path -> whether it needs the password. */
-export type ProtectedRoutes = Record<`/${string}`, boolean>;
+type ProtectedRoutes = Record<`/${string}`, boolean>;
 
 const protectedRoutes: ProtectedRoutes = {};
 

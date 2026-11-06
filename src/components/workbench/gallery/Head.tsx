@@ -1,5 +1,5 @@
-// Workbench, Visual Work: the head of the page (sober, 2026-10-22). The words
-// of the previous page beside an index in a hairline frame that counts what
+// Workbench, Visual Work: the head of the page. The page's
+// words beside an index in a hairline frame that counts what
 // is on the bench and jumps to each client's section.
 import type { CSSProperties } from "react";
 import { FiArrowDown } from "react-icons/fi";

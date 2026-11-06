@@ -16,7 +16,7 @@ import { TbMicrophone } from "react-icons/tb";
 import { Scene } from "../Scene";
 import s from "./presenterbuild.module.scss";
 
-export type PresenterStage = 0 | 1 | 2 | 3;
+type PresenterStage = 0 | 1 | 2 | 3;
 
 const STEPS: Record<PresenterStage, number[]> = {
   0: [700, 1300, 1000, 1300, 3400],

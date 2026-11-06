@@ -15,26 +15,17 @@
 //   the blur alone.
 // The chatbot's surfaces are found by their module classes, so its component
 // stays as it is.
+import { prefersReducedMotion } from "@/utils/motion";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import chat from "../FaqChatbot.module.scss";
 import { whenIntroLeaves } from "../workbench/scenes/intro";
+import { type Lens, lensFor, lensMap } from "./lens";
+import { readTone } from "./tone";
 
 const SCROLLED_AT = 4;
 /** How close (px) the pointer must come for a surface's light to follow it. */
 const REACH = 160;
-const MEDIA = new Set(["IMG", "VIDEO", "IFRAME", "PICTURE"]);
-
-type Lens = {
-  id: string;
-  w: number;
-  h: number;
-  r: number;
-  bezel: number;
-  scale: number;
-  /** The map's blob: URL, once drawn. */
-  href?: string;
-};
 
 function glassTargets(): HTMLElement[] {
   return Array.from(
@@ -43,160 +34,6 @@ function glassTargets(): HTMLElement[] {
     ),
   );
 }
-
-// ── What passes under the pill ──────────────────────────────────────────────
-
-let probe: CanvasRenderingContext2D | null = null;
-const colours = new Map<string, [number, number, number, number]>();
-
-/** Any computed CSS colour as sRGB 0-255 and alpha 0-1, through a 1x1 canvas. */
-function rgba(css: string): [number, number, number, number] {
-  const known = colours.get(css);
-  if (known) return known;
-  probe ??= document.createElement("canvas").getContext("2d", { willReadFrequently: true });
-  let out: [number, number, number, number] = [0, 0, 0, 0];
-  if (probe) {
-    probe.clearRect(0, 0, 1, 1);
-    probe.fillStyle = css;
-    probe.fillRect(0, 0, 1, 1);
-    const [r, g, b, a] = probe.getImageData(0, 0, 1, 1).data;
-    out = [r, g, b, a / 255];
-  }
-  colours.set(css, out);
-  return out;
-}
-
-function luminance([r, g, b]: [number, number, number, number]) {
-  const lin = (v: number) => {
-    const c = v / 255;
-    return c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
-  };
-  return 0.2126 * lin(r) + 0.7152 * lin(g) + 0.0722 * lin(b);
-}
-
-/** "dense" when media, or a fill that stands apart from the page, lies at (x, y). */
-function toneAt(x: number, y: number, page: number, skip: (el: Element) => boolean) {
-  for (const el of document.elementsFromPoint(x, y)) {
-    if (skip(el)) continue;
-    if (MEDIA.has(el.tagName)) return "dense";
-    const style = getComputedStyle(el);
-    if (style.backgroundImage.includes("url(")) return "dense";
-    const fill = rgba(style.backgroundColor);
-    if (fill[3] >= 0.4) return Math.abs(luminance(fill) - page) > 0.12 ? "dense" : "base";
-  }
-  return "base";
-}
-
-function readTone() {
-  const pill = document.querySelector<HTMLElement>('[data-lg-glass="pill"]');
-  if (!pill) return;
-  const box = pill.getBoundingClientRect();
-  if (box.width === 0) return;
-  const header = pill.closest("header");
-  const wrapper = document.querySelector(`.${chat.chatbotWrapper}`);
-  const skip = (el: Element) => !!(header?.contains(el) || wrapper?.contains(el));
-  const page = luminance(
-    rgba(getComputedStyle(document.documentElement).getPropertyValue("--wb-page").trim()),
-  );
-  const y = box.top + box.height / 2;
-  const dense = [0.2, 0.5, 0.8].some(
-    (at) => toneAt(box.left + box.width * at, y, page, skip) === "dense",
-  );
-  const tone = dense ? "dense" : "base";
-  if (pill.dataset.lgTone !== tone) pill.dataset.lgTone = tone;
-}
-
-// ── The lens ────────────────────────────────────────────────────────────────
-
-/**
- * A displacement map for a rounded box, drawn pixel by pixel (an SVG image
- * in feImage lost its inner shapes in Chromium): red moves the backdrop
- * sideways and green up and down, 128 leaves it in place. Within `bezel` of
- * the edge each pixel pulls the backdrop from further inside, along the
- * edge's normal and harder toward the edge, so the rim bends what lies
- * under it like the edge of a lens; the middle stays still. Only the band
- * along the edge is computed, and the PNG is encoded off the main thread.
- */
-const maps = new Map<string, Promise<string>>();
-
-function lensMap(lens: Lens) {
-  const key = `${lens.w}x${lens.h}r${lens.r}b${lens.bezel}`;
-  let map = maps.get(key);
-  if (!map) {
-    map = drawLensMap(lens);
-    maps.set(key, map);
-  }
-  return map;
-}
-
-function drawLensMap({ w, h, r, bezel }: Lens): Promise<string> {
-  const canvas = document.createElement("canvas");
-  canvas.width = w;
-  canvas.height = h;
-  const ctx = canvas.getContext("2d");
-  if (!ctx) return Promise.resolve("");
-  const img = ctx.createImageData(w, h);
-  // Every pixel still (128, 128, 128, opaque) to start with.
-  new Uint32Array(img.data.buffer).fill(0xff808080);
-  const hw = w / 2;
-  const hh = h / 2;
-  const rr = Math.min(r, hw, hh);
-  const band = Math.max(bezel, rr);
-  for (let y = 0; y < h; y++) {
-    const capRow = y < band || y >= h - band;
-    for (let x = 0; x < w; x++) {
-      // Along the straight sides only the outer `bezel` pixels bend.
-      if (!capRow && x >= bezel && x < w - bezel) {
-        x = w - bezel - 1;
-        continue;
-      }
-      const px = x + 0.5 - hw;
-      const py = y + 0.5 - hh;
-      const qx = Math.abs(px) - (hw - rr);
-      const qy = Math.abs(py) - (hh - rr);
-      const ox = Math.max(qx, 0);
-      const oy = Math.max(qy, 0);
-      const out = Math.hypot(ox, oy);
-      // Distance from the edge, inward (the rounded box's signed distance).
-      const depth = rr - out - Math.min(Math.max(qx, qy), 0);
-      if (depth >= bezel || depth < -1) continue;
-      const t = Math.min(1, 1 - depth / bezel);
-      const m = t * t;
-      let nx = 0;
-      let ny = 0;
-      if (out > 0) {
-        nx = ox / out;
-        ny = oy / out;
-      } else if (qx > qy) nx = 1;
-      else ny = 1;
-      const i = (y * w + x) * 4;
-      img.data[i] = Math.round(128 - 127 * Math.sign(px) * nx * m);
-      img.data[i + 1] = Math.round(128 - 127 * Math.sign(py) * ny * m);
-    }
-  }
-  ctx.putImageData(img, 0, 0);
-  return new Promise((resolve) =>
-    canvas.toBlob((blob) => resolve(blob ? URL.createObjectURL(blob) : ""), "image/png"),
-  );
-}
-
-/** The lens of each surface: a bezel deep enough for the refraction to show. */
-function lensFor(id: string, el: HTMLElement): Lens {
-  const w = Math.round(el.offsetWidth);
-  const h = Math.round(el.offsetHeight);
-  const radius = getComputedStyle(el).borderTopLeftRadius;
-  const r = Math.min(
-    radius.endsWith("%")
-      ? (Number.parseFloat(radius) / 100) * Math.min(w, h)
-      : Number.parseFloat(radius) || 0,
-    Math.min(w, h) / 2,
-  );
-  const panel = id === "lg-panel" || id === "lg-bubble";
-  const bezel = panel ? 16 : Math.min(14, Math.round(h * 0.34));
-  return { id, w, h, r, bezel, scale: panel ? 24 : 28 };
-}
-
-// ── The component ───────────────────────────────────────────────────────────
 
 const sameLens = (a: Lens, b: Lens) =>
   a.w === b.w && a.h === b.h && a.r === b.r && a.href === b.href;
@@ -280,7 +117,7 @@ export function GlassController() {
 
   // The light.
   useEffect(() => {
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (prefersReducedMotion()) return;
     const fine = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
     // How far a light catches up with its target each frame (it lags, like a
     // liquid).

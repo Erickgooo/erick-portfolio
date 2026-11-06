@@ -12,7 +12,7 @@ import { Scene, Typed } from "../Scene";
 import { CounterLink } from "./CounterLink";
 import styles from "./figurecounter.module.scss";
 
-export type CounterFigure = { value: string; label: string; name: string; href: string };
+type CounterFigure = { value: string; label: string; name: string; href: string };
 
 export function FigureCounter({ figures }: { figures: CounterFigure[] }) {
   if (figures.length === 0) return null;

@@ -11,8 +11,9 @@
 // `data-live` lets CSS loops run and `data-held` pauses them. With
 // reduced motion every scene is set to its last step, with its text and
 // figures complete, and nothing runs.
+import { prefersReducedMotion } from "@/utils/motion";
 import { useEffect } from "react";
-import { TYPE_MS, prefersReducedMotion, watchScene } from "./start";
+import { TYPE_MS, watchScene } from "./start";
 
 /** Typing rhythm (foundable.com, measured): hold a phrase, delete, pause, next. */
 const HOLD_MS = 1700;
@@ -44,7 +45,6 @@ function typer(el: HTMLElement): Part | null {
   }
   if (!out || phrases.length === 0) return null;
   const cycle = el.hasAttribute("data-cycle");
-  const speed = Number(el.dataset.speed) || TYPE_MS;
   let i = 0;
   let n = 0;
   let phase: "idle" | "type" | "hold" | "delete" | "gap" | "done" = "idle";
@@ -82,7 +82,7 @@ function typer(el: HTMLElement): Part | null {
   const onLeave = () => {
     if (!hover) return;
     hover = false;
-    if (live && !timer && phase !== "idle" && phase !== "done") later(speed);
+    if (live && !timer && phase !== "idle" && phase !== "done") later(TYPE_MS);
   };
   let listening = false;
   const listen = (on: boolean) => {
@@ -105,7 +105,7 @@ function typer(el: HTMLElement): Part | null {
     timer = window.setTimeout(tick, ms);
   };
   // A little unevenness, as hands type.
-  const pace = () => speed * (0.7 + Math.random() * 0.6);
+  const pace = () => TYPE_MS * (0.7 + Math.random() * 0.6);
 
   function tick() {
     timer = 0;
@@ -164,7 +164,7 @@ function typer(el: HTMLElement): Part | null {
       listen(true);
       el.dataset.typing = "";
       el.removeAttribute("data-typed");
-      if (live && !hover) later(speed);
+      if (live && !hover) later(TYPE_MS);
     },
     reset() {
       stop();
@@ -190,7 +190,7 @@ function typer(el: HTMLElement): Part | null {
     setLive(next) {
       live = next;
       if (!live) stop();
-      else if (!timer && !hover && phase !== "idle" && phase !== "done") later(speed);
+      else if (!timer && !hover && phase !== "idle" && phase !== "done") later(TYPE_MS);
     },
   };
 }
@@ -381,7 +381,6 @@ function drive(root: HTMLElement, reduced: boolean): () => void {
     root,
     {
       afterIntro: root.hasAttribute("data-after-intro"),
-      threshold: Number(root.dataset.threshold) || undefined,
     },
     ({ started, live: nowLive, layerOn }) => {
       live = nowLive;

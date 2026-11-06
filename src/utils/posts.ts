@@ -6,7 +6,7 @@ import path from "node:path";
 import matter from "gray-matter";
 import { notFound } from "next/navigation";
 
-export type TeamMember = { name: string; role: string; avatar: string; linkedIn: string };
+type TeamMember = { name: string; role: string; avatar: string; linkedIn: string };
 
 export type PostMetadata = {
   title: string;
@@ -28,12 +28,20 @@ export type PostMetadata = {
   images: string[];
   tag?: string;
   team: TeamMember[];
-  link: string;
   /** A case's headline figure, "value|label", e.g. "338K+|organic views" ("" when none). */
   metric: string;
 };
 
 export type Post = { slug: string; metadata: PostMetadata; content: string };
+
+/** The folders of the posts and of the case studies, as getPosts takes them. */
+export const BLOG_DIR = ["src", "app", "blog", "posts"];
+export const WORK_DIR = ["src", "app", "work", "projects"];
+
+/** For sorting: the latest publication date first. */
+export function byNewest(a: Post, b: Post) {
+  return new Date(b.metadata.publishedAt).getTime() - new Date(a.metadata.publishedAt).getTime();
+}
 
 /** Every .mdx entry in a folder, given as path segments from the project root. */
 export function getPosts(folder: string[]): Post[] {
@@ -67,7 +75,6 @@ function readPosts(dir: string): Post[] {
           images: data.images ?? [],
           tag: typeof data.tag === "string" ? data.tag : undefined,
           team: data.team ?? [],
-          link: data.link ?? "",
           metric: data.metric ?? "",
         },
       };

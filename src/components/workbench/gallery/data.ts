@@ -1,14 +1,15 @@
 import { galleryPieces, protectedRoutes } from "@/resources";
 // Workbench, Visual Work: the gallery's pieces, sorted onto the bench by client
-// and by format. The only source is `galleryPieces` in src/resources/content.tsx
-// (the list GalleryView read), unchanged: consecutive items sharing a `group`
+// and by format. The only source is `galleryPieces` in src/resources/gallery.ts,
+// unchanged: consecutive items sharing a `group`
 // are one carousel, YouTube links are videos, everything else is a single post.
 // The client of a piece is the name its alt text opens with. Server-only (it
 // reads the project MDX for the related cases).
 import { isProtectedPath } from "@/resources/protectedRoutes";
-import { getPosts } from "@/utils/posts";
+import { WORK_DIR, getPosts } from "@/utils/posts";
 import { extractYouTubeId } from "@/utils/youtube";
 import type { Paper } from "../data";
+import { MEDIA_SIZE } from "../prose/media";
 
 export type Slide = { src: string; w: number; h: number; alt: string };
 
@@ -37,32 +38,9 @@ export type ClientShelf = {
 
 type RawImage = (typeof galleryPieces)[number];
 
-/** Pixel sizes of the gallery files, read from their headers (sharp metadata). */
-const SIZE: Record<string, { w: number; h: number }> = {
-  "/images/gallery/Artesa - Wallpaper Diciembre.webp": { w: 1920, h: 1080 },
-  "/images/gallery/Artesa - Panettone 2x1.webp": { w: 1080, h: 1350 },
-  "/images/gallery/Artesa - Muffin ChocoMix.webp": { w: 1080, h: 1350 },
-  "/images/gallery/Artesa - Nuevos Sabores.webp": { w: 1587, h: 2245 },
-  "/images/gallery/Artesa - Magia de Diciembre.webp": { w: 1080, h: 1350 },
-  "/images/gallery/Artesa - Nuevo Menu.webp": { w: 1080, h: 1350 },
-  "/images/gallery/Artesa - Dia de la Madre.webp": { w: 1080, h: 1350 },
-  "/images/gallery/arqui.webp": { w: 1357, h: 2400 },
-  "/images/gallery/pared.webp": { w: 1357, h: 2400 },
-  "/images/gallery/transform.webp": { w: 1744, h: 2336 },
-  "/images/projects/incentiva-website/cover.webp": { w: 2400, h: 1357 },
-  "/images/projects/incentiva-website/site-1.webp": { w: 2400, h: 1500 },
-  "/images/projects/incentiva-website/site-2.webp": { w: 2400, h: 1500 },
-  "/images/projects/incentiva-website/site-3.webp": { w: 2400, h: 1500 },
-  "/images/projects/incentiva-website/site-4.webp": { w: 1170, h: 2532 },
-  "/images/projects/incentiva-brand/manual-2.webp": { w: 2000, h: 1125 },
-  "/images/projects/incentiva-brand/manual-3.webp": { w: 2000, h: 1125 },
-  "/images/projects/incentiva-brand/manual-4.webp": { w: 2000, h: 1125 },
-  "/images/projects/incentiva-brand/manual-5.webp": { w: 2000, h: 1125 },
-};
-
 /** Every other gallery file is a 2048 px square; a new file falls back by its orientation tag. */
 function sizeOf(image: RawImage) {
-  const known = SIZE[image.src];
+  const known = MEDIA_SIZE[image.src];
   if (known) return known;
   if (image.orientation === "vertical") return { w: 1080, h: 1350 };
   if (image.orientation === "horizontal") return { w: 1920, h: 1080 };
@@ -108,7 +86,7 @@ function slideOf(image: RawImage): Slide {
   return { src: image.src, alt: image.alt, ...sizeOf(image) };
 }
 
-/** The same grouping pass GalleryView made, in the data's own order. */
+/** Groups the pieces, in the data's own order. */
 function getPieces(): Piece[] {
   const images = galleryPieces;
   const pieces: Piece[] = [];
@@ -172,7 +150,7 @@ export type GalleryBench = {
  */
 export function getGalleryBench({ hideProtected }: { hideProtected: boolean }): GalleryBench {
   const pieces = getPieces();
-  const posts = getPosts(["src", "app", "work", "projects"]);
+  const posts = getPosts(WORK_DIR);
   const byName = new Map<string, ClientShelf>();
   const order: string[] = [];
 

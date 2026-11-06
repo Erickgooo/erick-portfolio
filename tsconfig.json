@@ -13,7 +13,6 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "incremental": true,
-    "typeRoots": ["./node_modules/@types"],
     "paths": {
       "@/*": ["./src/*"]
     },

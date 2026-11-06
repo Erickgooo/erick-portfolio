@@ -41,7 +41,7 @@ export function BeatCuts() {
     <Scene className={s.scene} steps={[700, 1300, 900, 1900, 4200, 2600]} loop>
       <div className={s.preview}>
         {/* One picture per clip; each later one is cut in as the playhead reaches its cut. */}
-        <span className={`${s.comp} ${s.hexes}`}>
+        <span className={s.comp}>
           <svg viewBox="0 0 64 36" aria-hidden="true">
             <polygon points={hex(20, 12, 7)} />
             <polygon points={hex(32.1, 12, 7)} className={s.accent} />
@@ -61,7 +61,7 @@ export function BeatCuts() {
           <i />
           <b />
         </span>
-        <span className={`${s.comp} ${s.close}`} style={v({ "--at": CUTS[3] })}>
+        <span className={s.comp} style={v({ "--at": CUTS[3] })}>
           <svg viewBox="0 0 64 36" aria-hidden="true">
             <polygon points={hex(32, 18, 12)} className={s.accent} />
           </svg>

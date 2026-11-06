@@ -28,11 +28,9 @@ import type { Paper } from "../data";
 import styles from "./scenes.module.scss";
 import { TYPE_MS } from "./start";
 
-export { TYPE_MS };
-
 /** How long typing `text` takes, for sizing the step that types it. */
-export function typeTime(text: string, ms = TYPE_MS) {
-  return text.length * ms;
+export function typeTime(text: string) {
+  return text.length * TYPE_MS;
 }
 
 export function Scene({
@@ -40,7 +38,6 @@ export function Scene({
   loop = false,
   afterIntro = false,
   scrub = false,
-  threshold,
   className,
   style,
   children,
@@ -50,8 +47,6 @@ export function Scene({
   afterIntro?: boolean;
   /** The scroll picks the step instead of the clock (see above). */
   scrub?: boolean;
-  /** Share of the scene on screen needed to start it (default 0.3). */
-  threshold?: number;
   className?: string;
   style?: CSSProperties;
   children: ReactNode;
@@ -66,7 +61,6 @@ export function Scene({
       data-loop={loop ? "" : undefined}
       data-after-intro={afterIntro ? "" : undefined}
       data-scrub={scrub ? "" : undefined}
-      data-threshold={threshold}
     >
       <div className={styles.content}>{children}</div>
     </div>
@@ -84,16 +78,12 @@ export function Typed({
   phrases,
   at = 0,
   cycle = false,
-  speed = TYPE_MS,
-  caret = true,
   className,
 }: {
   text?: string;
   phrases?: string[];
   at?: number;
   cycle?: boolean;
-  speed?: number;
-  caret?: boolean;
   className?: string;
 }) {
   const list = phrases ?? (text ? [text] : []);
@@ -103,7 +93,6 @@ export function Typed({
       data-type={JSON.stringify(list)}
       data-at={at}
       data-cycle={cycle ? "" : undefined}
-      data-speed={speed}
     >
       {list.map((phrase) => (
         <span key={phrase} className={styles.sizer}>
@@ -112,14 +101,14 @@ export function Typed({
       ))}
       <span className={styles.live}>
         <span data-typed-text="" />
-        {caret ? <span className={styles.caret} /> : null}
+        <span className={styles.caret} />
       </span>
     </span>
   );
 }
 
 /** The figure `value` as its zero ("$3.45" gives "$0.00"), the first frame of a count. */
-export function zeroOf(value: string) {
+function zeroOf(value: string) {
   return value.replace(/\d[\d,]*(\.\d+)?/, (n) => {
     const decimals = n.split(".")[1]?.length ?? 0;
     return (0).toFixed(decimals);

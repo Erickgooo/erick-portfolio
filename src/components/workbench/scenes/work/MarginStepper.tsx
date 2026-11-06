@@ -18,7 +18,7 @@ import type { CSSProperties, ReactNode } from "react";
 import { MarginStepperController } from "./MarginStepperController";
 import s from "./marginstepper.module.scss";
 
-export type MarginStep = {
+type MarginStep = {
   key: string;
   /** The step's short name, drawn on its sheet (words of the case's own text). */
   label: string;
@@ -53,7 +53,7 @@ export function MarginStepper({ steps }: { steps: MarginStep[] }) {
       {steps.map((step, i) => (
         <div
           key={step.key}
-          className={`${s.layer} ${i % 2 ? s.toneB : s.toneA}`}
+          className={`${s.layer} ${i % 2 ? s.toneB : ""}`}
           data-scene-layer=""
           data-step={i}
           data-on={i === 0 ? "" : undefined}

@@ -3,8 +3,7 @@
 // Workbench, post: the "On this page" index in the margin (desktop). The
 // headings come from the MDX source, so nothing is scanned from the page.
 //
-// The rule from the previous index (src/components/blog/OnThisPage.tsx): a
-// section is current once its heading crosses a line 150 px below the top,
+// The rule: a section is current once its heading crosses a line 150 px below the top,
 // and once the page is scrolled to the bottom the last section is current,
 // because a short last section can never reach that line.
 import { type CSSProperties, useEffect, useRef, useState } from "react";

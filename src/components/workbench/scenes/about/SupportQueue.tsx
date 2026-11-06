@@ -19,7 +19,7 @@ export function SupportQueue() {
     >
       <div className={styles.bar}>
         <span className={styles.mark} />
-        <span className={styles.name}>Support queue</span>
+        <span>Support queue</span>
         <span className={styles.count}>{TICKETS.length} open</span>
       </div>
       <ol className={styles.tickets}>

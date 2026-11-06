@@ -361,3 +361,44 @@ test("the pointer glow stops once it has reached the pointer", async ({ page }) 
   );
   expect(changes).toBe(0);
 });
+
+test("the pill reads what passes under it and, in Chromium, gets its lens", async ({
+  page,
+  browserName,
+  isMobile,
+}) => {
+  await page.goto("/work/leadbot-ai");
+  const pill = page.locator('[data-lg-glass="pill"]');
+  await expect(pill).toBeVisible();
+  // On a phone the pill already lies over the case's content at the top of the page.
+  if (!isMobile) {
+    await expect(pill).toHaveAttribute("data-lg-tone", "base");
+    await page.evaluate(() => {
+      const cover = document.querySelector("main img");
+      const glass = document.querySelector('[data-lg-glass="pill"]');
+      if (!cover || !glass) throw new Error("no cover or pill");
+      const a = cover.getBoundingClientRect();
+      const b = glass.getBoundingClientRect();
+      const top = window.scrollY + a.top + a.height / 2 - (b.top + b.height / 2);
+      window.scrollTo({ top, behavior: "instant" });
+    });
+    await expect(pill).toHaveAttribute("data-lg-tone", "dense");
+    await page.evaluate(() => window.scrollTo({ top: 0, behavior: "instant" }));
+    await expect(pill).toHaveAttribute("data-lg-tone", "base");
+  }
+  if (browserName !== "chromium") return;
+  await expect(pill).toHaveAttribute("data-lg-lens-on", "");
+  await expect(page.locator("svg filter#lg-pill feImage")).toHaveAttribute("href", /^blob:/);
+});
+
+// The glow's colour is a token whose name is built at run time, so a search for
+// var(--ui-glow) finds nothing, and removing it switched the glow off with no error.
+test("the pointer glow paints in cobalt", async ({ page }) => {
+  await page.goto("/about");
+  const image = await page
+    .locator(GLOW)
+    .first()
+    .evaluate((el) => getComputedStyle(el).backgroundImage);
+  expect(image).toContain("radial-gradient");
+  expect(image).toContain("45, 91, 255");
+});

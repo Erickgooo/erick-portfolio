@@ -13,7 +13,7 @@
 // yellow, or blue and cyan), set by the scene's CSS.
 import styles from "./incentivamedal.module.scss";
 
-export const MEDAL_VIEWBOX = "0 0 329.604 601.274";
+const MEDAL_VIEWBOX = "0 0 329.604 601.274";
 
 export function IncentivaMedal({
   className,

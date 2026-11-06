@@ -6,7 +6,7 @@ import type { Post } from "@/utils/posts";
 import type { Metadata } from "next";
 
 /** An absolute URL on the site for a path; an absolute URL stays as it is. */
-export function absoluteUrl(pathOrUrl: string): string {
+function absoluteUrl(pathOrUrl: string): string {
   if (/^https?:\/\//.test(pathOrUrl)) return pathOrUrl;
   return pathOrUrl === "/" ? siteUrl : `${siteUrl}${pathOrUrl}`;
 }
@@ -21,12 +21,12 @@ export function fullTitle(title: string): string {
 }
 
 /** The picture /api/og/generate draws for a title. */
-export function ogImage(title: string): string {
+function ogImage(title: string): string {
   return `/api/og/generate?title=${encodeURIComponent(title)}`;
 }
 
 /** What search results and share cards need to know about a page. */
-export type PageInfo = {
+type PageInfo = {
   /** The page's own title, on screen; the drawn share card takes this one. */
   title: string;
   /** The title in search results, published as it is, instead of the full title. */

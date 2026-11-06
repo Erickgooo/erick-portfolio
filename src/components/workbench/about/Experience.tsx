@@ -56,7 +56,7 @@ export function Experience() {
                   <summary>
                     <span className={styles.when}>
                       <span className={styles.from}>{from}</span>
-                      {to && <span className={styles.to}>to {to}</span>}
+                      {to && <span>to {to}</span>}
                     </span>
                     <span className={styles.what}>
                       <h3>{job.company}</h3>

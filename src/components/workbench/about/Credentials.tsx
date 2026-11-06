@@ -8,7 +8,7 @@ import styles from "./credentials.module.scss";
 
 type Cert = (typeof about.certifications.items)[number];
 
-/** Certifications grouped by issuer: most first, then in the order content.tsx lists them. */
+/** Certifications grouped by issuer: most first, then in the order about.tsx lists them. */
 function byIssuer(items: Cert[]) {
   const groups = new Map<string, Cert[]>();
   for (const item of items) {

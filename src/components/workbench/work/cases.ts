@@ -1,7 +1,7 @@
 // Workbench, Projects: every case study as the pages need it. Every value comes
 // from the project MDX (frontmatter and body) or src/resources/about.tsx.
 import { isProtectedPath } from "@/resources/protectedRoutes";
-import { getPosts } from "@/utils/posts";
+import { WORK_DIR, byNewest, getPosts } from "@/utils/posts";
 import { type Size, isImage, isVideo, mediaSize } from "../prose/media";
 import { bodyMediaPaths } from "../prose/source";
 
@@ -27,7 +27,7 @@ export type Case = {
 };
 
 /**
- * Who each case was for, as named in the experience list of content.tsx. A
+ * Who each case was for, as named in the experience list of about.tsx. A
  * case missing here shows the name from its title.
  */
 const CLIENT: Record<string, string> = {
@@ -54,10 +54,7 @@ function media(src: string): CaseMedia {
 }
 
 function readCases(): Case[] {
-  const posts = getPosts(["src", "app", "work", "projects"]).sort(
-    (a, b) =>
-      new Date(b.metadata.publishedAt).getTime() - new Date(a.metadata.publishedAt).getTime(),
-  );
+  const posts = getPosts(WORK_DIR).sort(byNewest);
   return posts.map((post) => {
     const { metadata, content, slug } = post;
     const [name, ...rest] = metadata.title.split(":");

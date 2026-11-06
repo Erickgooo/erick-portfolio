@@ -7,7 +7,7 @@
 // Facts: src/app/work/projects/ai-powered-ad-creatives.mdx ("3.92x" purchase
 // ROAS on the B2C webshop ad; "$3.45" cost per lead on the B2B ad; avatar-led
 // AI creatives). The ads are generic and drawn: no platform interface, logo or
-// frame of the real creatives. Sober (2026-10-22): drawn in line. With
+// frame of the real creatives. Drawn in line. With
 // `results` (the case page) the tags carry every figure of the two ads'
 // ResultsStats, the B2B ad's one step after the B2C ad's.
 import type { CSSProperties } from "react";
@@ -53,7 +53,7 @@ function Fig({
   main?: boolean;
 }) {
   return (
-    <span className={main ? `${s.fig} ${s.figMain}` : s.fig}>
+    <span className={s.fig}>
       <CountUp value={value} at={at} className={main ? s.value : s.small} duration={1500} />
       <span className={s.caption}>{caption}</span>
     </span>

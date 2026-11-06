@@ -2,7 +2,10 @@ import "@/resources/base.css";
 import "@/resources/custom.css";
 
 import { body, code, heading } from "@/app/fonts";
-import { FaqChatbot, Footer, Header, IntroLoader } from "@/components";
+import { FaqChatbot } from "@/components/FaqChatbot";
+import { Footer } from "@/components/Footer";
+import { Header } from "@/components/Header";
+import { IntroLoader } from "@/components/IntroLoader";
 import { SiteMain } from "@/components/SiteMain";
 import { SpotlightBackground } from "@/components/SpotlightBackground";
 import spotlightStyles from "@/components/SpotlightBackground.module.scss";

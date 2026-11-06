@@ -20,7 +20,7 @@ export type IncentivaProject = {
   caseSlug?: string;
 };
 
-export type IncentivaArea = {
+type IncentivaArea = {
   id: string;
   title: string;
   line: string;
@@ -342,5 +342,8 @@ export const incentivaCases: { slug: string; title: string; figure: string }[] =
   },
 ];
 
-/** Every project, in the order of the areas. */
-export const incentivaProjects = INCENTIVA_AREAS.flatMap((area) => area.projects);
+/**
+ * Every project, in the order of the areas. Marked pure because this call was the only thing
+ * keeping this file's data, and About's, in the client bundles that import the resources barrel.
+ */
+export const incentivaProjects = /*#__PURE__*/ INCENTIVA_AREAS.flatMap((area) => area.projects);

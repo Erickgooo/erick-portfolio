@@ -1,25 +1,20 @@
 "use client";
 
 // Workbench, post: the share key that copies the post's address.
-import { useEffect, useRef, useState } from "react";
 import { FiCheck, FiLink } from "react-icons/fi";
+import { useFlash } from "../useFlash";
 import styles from "./blog.module.scss";
 
 export function CopyPostLink({ url }: { url: string }) {
-  const [state, setState] = useState<"idle" | "copied" | "failed">("idle");
-  const timer = useRef<number | undefined>(undefined);
-
-  useEffect(() => () => window.clearTimeout(timer.current), []);
+  const [state, flash] = useFlash<"idle" | "copied" | "failed">("idle", 2000);
 
   const copy = async () => {
     try {
       await navigator.clipboard.writeText(url);
-      setState("copied");
+      flash("copied");
     } catch {
-      setState("failed");
+      flash("failed");
     }
-    window.clearTimeout(timer.current);
-    timer.current = window.setTimeout(() => setState("idle"), 2000);
   };
 
   return (

@@ -51,11 +51,7 @@ export function ChatTriage() {
           </div>
           <span className={s.buttons}>
             {BUTTONS.map((label, k) => (
-              <span
-                key={label}
-                className={k === 2 ? `${s.button} ${s.buy}` : s.button}
-                style={{ "--k": k } as CSSProperties}
-              >
+              <span key={label} className={s.button} style={{ "--k": k } as CSSProperties}>
                 {label}
                 {k === 2 ? <span className={s.ring} /> : null}
               </span>

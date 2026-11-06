@@ -1,8 +1,7 @@
 "use client";
 
-// Workbench: the hero's workbench, redrawn straight and flat (sober,
-// 2026-10-22): the same composition of objects, none tilted, taped or
-// pinned. Objects rise a short way into place one after another (CSS
+// Workbench: the hero's workbench, straight and flat: a composition
+// of objects, none tilted, taped or pinned. Objects rise a short way into place one after another (CSS
 // keyframes) once the site intro has lifted, and only once they have all
 // settled do they float, on long offset loops that pause off-screen. On
 // desktop the cluster follows the pointer a little; on touch, a tap brings an
@@ -18,6 +17,7 @@ import {
   useState,
 } from "react";
 import { MEDIA } from "../media";
+import { findIntro, introLeaving } from "../scenes/intro";
 import styles from "./bench.module.scss";
 
 /** Where an object lies: desktop (x, y, w) and phone (mx, my, mw), in % of the bench. */
@@ -63,7 +63,7 @@ function Slot({
       <div className={styles.rise}>
         <div className={styles.par}>
           <div className={styles.bob}>
-            <div className={`${styles.card} ${styles[kind]}`}>{children}</div>
+            <div className={`${styles.card} ${styles[kind] ?? ""}`}>{children}</div>
           </div>
         </div>
       </div>
@@ -103,19 +103,6 @@ function PrintImage({ piece, sizes, ready }: { piece: Piece; sizes: string; read
 /** How long the prints wait behind the site intro (it covers the page for 4 s). */
 const PRINTS_BEHIND_INTRO_MS = 2000;
 
-/**
- * The site intro (IntroLoader, kept exactly as it is) covers the home on a
- * first visit; the server always renders it on "/". It is found by its
- * CSS-module class, the same hook its e2e test uses.
- */
-function findIntro() {
-  return document.querySelector<HTMLElement>('[class*="IntroLoader_overlay"]');
-}
-
-function isLeaving(intro: HTMLElement) {
-  return !intro.isConnected || /IntroLoader_leaving/.test(intro.className);
-}
-
 export function Bench() {
   const ref = useRef<HTMLDivElement>(null);
   // `hold`: the objects wait in their final place, painted (so the first paint
@@ -136,14 +123,14 @@ export function Bench() {
   // objects at rest for a frame before they rise.
   useLayoutEffect(() => {
     const intro = findIntro();
-    if (!intro || isLeaving(intro)) {
+    if (!intro || introLeaving(intro)) {
       setHold(false);
       setReady(true);
       return;
     }
     const timer = window.setTimeout(() => setReady(true), PRINTS_BEHIND_INTRO_MS);
     const watch = new MutationObserver(() => {
-      if (!isLeaving(intro)) return;
+      if (!introLeaving(intro)) return;
       setVeil(true);
       setHold(false);
       setReady(true);

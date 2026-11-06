@@ -3,8 +3,8 @@
 import { slugify } from "transliteration";
 
 /**
- * The id of a heading, from its text. Same rule as the previous site's MDX
- * headings (src/components/mdx.tsx), so links to #the-build keep working.
+ * The id of a heading, from its text. The rule must not change: links to
+ * #the-build are already out there.
  */
 export function anchorId(text: string): string {
   return slugify(text.replace(/&/g, " and "), { lowercase: true, separator: "-" }).replace(
@@ -14,7 +14,7 @@ export function anchorId(text: string): string {
 }
 
 /** The visible text of a Markdown heading line: no emphasis marks, links or code ticks. */
-export function plainText(markdown: string): string {
+function plainText(markdown: string): string {
   return markdown
     .replace(/\[([^\]]*)\]\([^)]*\)/g, "$1")
     .replace(/[*_`]/g, "")
@@ -32,7 +32,7 @@ function scan(content: string) {
   });
 }
 
-export type Chapter = { heading: string; id: string; body: string };
+type Chapter = { heading: string; id: string; body: string };
 
 /**
  * Splits the MDX at its second-level headings, so a page can lay media beside

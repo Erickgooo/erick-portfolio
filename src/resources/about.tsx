@@ -5,7 +5,7 @@ import { Fragment, type ReactNode } from "react";
 import { Metric } from "./Metric";
 import { incentivaRole } from "./incentiva";
 
-export type Job = {
+type Job = {
   company: string;
   timeframe: string;
   role: string;
@@ -13,13 +13,13 @@ export type Job = {
   achievements: ReactNode[];
 };
 
-export type School = { name: string; description: ReactNode };
+type School = { name: string; description: ReactNode };
 
-export type Certification = { name: string; institution: string; link: string };
+type Certification = { name: string; institution: string; link: string };
 
-export type SkillGroup = { title: string; description: ReactNode };
+type SkillGroup = { title: string; description: ReactNode };
 
-export type About = {
+type About = {
   intro: ReactNode;
   bookingUrl: string;
   resumeUrl: string;

@@ -32,7 +32,7 @@ import { StoreReleases } from "../scenes/work/StoreReleases";
 import { TenantGate } from "../scenes/work/TenantGate";
 import { WhatsAppFunnel } from "../scenes/work/WhatsAppFunnel";
 
-export type CaseScene = { id: string; part: RegExp; scene: ReactNode };
+type CaseScene = { id: string; part: RegExp; scene: ReactNode };
 
 /** The Incentiva Group cases (2026-11-02): one scene each, beside The Build. */
 const BUILD = /^the build$/i;
@@ -59,7 +59,7 @@ const INCENTIVA_SCENES: Record<string, CaseScene[]> = {
   "incentiva-website-brand": [{ id: "medal-scroll", part: BUILD, scene: sheet(<MedalScroll />) }],
 };
 
-export const CASE_SCENES: Record<string, CaseScene[]> = {
+const CASE_SCENES: Record<string, CaseScene[]> = {
   ...INCENTIVA_SCENES,
   "leadbot-ai": [
     {

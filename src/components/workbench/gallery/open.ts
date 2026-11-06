@@ -2,7 +2,7 @@
 // is a small client button (PieceButton), so React replays a click made while
 // the page is still hydrating; if the viewer is not listening yet, the request
 // waits here until it is.
-export type OpenRequest = { id: string; trigger: HTMLElement };
+type OpenRequest = { id: string; trigger: HTMLElement };
 
 let listener: ((request: OpenRequest) => void) | null = null;
 let pending: OpenRequest | null = null;

@@ -1,5 +1,6 @@
 "use client";
 
+import { prefersReducedMotion } from "@/utils/motion";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
@@ -106,7 +107,7 @@ export const IntroLoader = () => {
     // [IntroLoader] diagnostics below that respecting it was the actual
     // cause of the animation not appearing on a real desktop machine). With
     // that preference the reveal is still: the finished mark, no motion.
-    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const reduced = prefersReducedMotion();
     const holdMs = reduced ? STILL_HOLD_MS : HOLD_MS;
     if (reduced) setStill(true);
     console.info("[IntroLoader] playing:", { holdMs, fadeMs: FADE_MS, still: reduced });

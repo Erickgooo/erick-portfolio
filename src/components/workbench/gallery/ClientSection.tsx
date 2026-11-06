@@ -1,4 +1,4 @@
-// Workbench, Visual Work: one client's part of the bench (sober, 2026-10-22).
+// Workbench, Visual Work: one client's part of the bench.
 // A header under a hairline with the client's name, then the pieces by
 // format: videos in thin 9:16 frames, carousels as straight stacks of hairline
 // sheets, single posts as framed prints on a wall of rows that keeps every

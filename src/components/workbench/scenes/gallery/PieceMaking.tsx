@@ -3,7 +3,7 @@
 // motion, a voice, an edit, and it is posted. The four scenes share one
 // composition, so as the stepper crossfades from one to the next only the
 // new part moves: whatever an earlier step made is already in place. Drawn
-// in style A: hairlines, the presenter and the accents in cobalt.
+// in hairlines, with the presenter and the accents in cobalt.
 //
 // Facts: the Visual Work lede (each production pipeline run end to end);
 // ai-powered-ad-creatives.mdx, "The AI Production Pipeline" (the presenter
@@ -95,10 +95,7 @@ export function PieceMaking({ stage }: { stage: MakingStage }) {
 
       <ol className={`${s.keys} ${stage === 0 ? s.in0 : ""}`}>
         {MAKING.map(({ title, Icon }, k) => (
-          <li
-            key={title}
-            className={`${s.key} ${k < stage ? s.done : k === stage ? s.now : s.later}`}
-          >
+          <li key={title} className={`${s.key} ${k < stage ? "" : k === stage ? s.now : s.later}`}>
             <Icon />
           </li>
         ))}

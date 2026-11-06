@@ -23,7 +23,7 @@ export function ActivityLog() {
     >
       <div className={styles.bar}>
         <span className={styles.mark} />
-        <span className={styles.name}>Activity</span>
+        <span>Activity</span>
         <span className={styles.live}>
           <i />
           Running
