@@ -44,7 +44,7 @@ function typer(el: HTMLElement): Part | null {
   }
   if (!out || phrases.length === 0) return null;
   const cycle = el.hasAttribute("data-cycle");
-  const speed = Number(el.dataset.speed) || TYPE_MS;
+  const speed = TYPE_MS;
   let i = 0;
   let n = 0;
   let phase: "idle" | "type" | "hold" | "delete" | "gap" | "done" = "idle";
@@ -381,7 +381,6 @@ function drive(root: HTMLElement, reduced: boolean): () => void {
     root,
     {
       afterIntro: root.hasAttribute("data-after-intro"),
-      threshold: Number(root.dataset.threshold) || undefined,
     },
     ({ started, live: nowLive, layerOn }) => {
       live = nowLive;

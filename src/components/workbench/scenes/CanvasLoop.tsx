@@ -4,15 +4,15 @@
 // only while it is started (start.ts), on screen and in a visible tab. Its
 // clock pauses with it and resumes where it stopped. The backing store
 // follows the element's size at devicePixelRatio capped at 2. With reduced
-// motion it draws one still frame (at `stillAt`) and never loops.
+// motion it draws one still frame and never loops.
 //
-// `className` and `style` go on an aria-hidden wrapper that gives the canvas
-// its box (the canvas fills it); the page reserves that size. A canvas is
-// never an LCP candidate.
+// `className` goes on an aria-hidden wrapper that gives the canvas its box
+// (the canvas fills it); the page reserves that size. A canvas is never an
+// LCP candidate.
 // `draw` must clear what it needs: the context is not cleared for it.
 //
 //   <CanvasLoop draw={drawBits} afterIntro className={s.layer} />
-import { type CSSProperties, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { prefersReducedMotion, watchScene } from "./start";
 
 export type Frame = {
@@ -37,37 +37,20 @@ type Draw = (ctx: CanvasRenderingContext2D, frame: Frame) => void;
 export function CanvasLoop({
   draw,
   afterIntro = false,
-  threshold = 0.1,
-  paused = false,
-  stillAt = 0,
   className,
-  style,
   onStart,
 }: {
   draw: Draw;
   afterIntro?: boolean;
-  threshold?: number;
-  /** Pause from outside (the clock stops too). */
-  paused?: boolean;
-  /** The time, in seconds, of the frame drawn with reduced motion. */
-  stillAt?: number;
   className?: string;
-  style?: CSSProperties;
   /** Called once when the loop first starts (e.g. to set a CSS entrance). */
   onStart?: () => void;
 }) {
   const ref = useRef<HTMLCanvasElement>(null);
   const drawRef = useRef(draw);
   drawRef.current = draw;
-  const pausedRef = useRef(paused);
-  const kick = useRef<() => void>(() => {});
   const onStartRef = useRef(onStart);
   onStartRef.current = onStart;
-
-  useEffect(() => {
-    pausedRef.current = paused;
-    kick.current();
-  }, [paused]);
 
   useEffect(() => {
     const canvas = ref.current;
@@ -78,7 +61,7 @@ export function CanvasLoop({
     let w = 0;
     let h = 0;
     let dpr = 1;
-    let t = stillAt;
+    let t = 0;
     let last = 0;
     let frame = 0;
     let live = false;
@@ -97,11 +80,11 @@ export function CanvasLoop({
       last = now;
       t += dt;
       paint(dt);
-      if (live && !pausedRef.current) frame = requestAnimationFrame(loop);
+      if (live) frame = requestAnimationFrame(loop);
     };
 
     const sync = () => {
-      const run = live && !pausedRef.current && !reduced;
+      const run = live && !reduced;
       if (run && !frame) {
         last = 0;
         frame = requestAnimationFrame(loop);
@@ -110,7 +93,6 @@ export function CanvasLoop({
         frame = 0;
       }
     };
-    kick.current = sync;
 
     const resize = () => {
       dpr = Math.min(2, window.devicePixelRatio || 1);
@@ -132,7 +114,7 @@ export function CanvasLoop({
     });
     theme.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
 
-    const unwatch = watchScene(canvas, { afterIntro, threshold }, (state) => {
+    const unwatch = watchScene(canvas, { afterIntro, threshold: 0.1 }, (state) => {
       if (state.started && !started) {
         started = true;
         onStartRef.current?.();
@@ -147,12 +129,11 @@ export function CanvasLoop({
       sizes.disconnect();
       theme.disconnect();
       if (frame) cancelAnimationFrame(frame);
-      kick.current = () => {};
     };
-  }, [afterIntro, threshold, stillAt]);
+  }, [afterIntro]);
 
   return (
-    <span className={className} style={style} aria-hidden="true">
+    <span className={className} aria-hidden="true">
       <canvas ref={ref} style={{ display: "block", width: "100%", height: "100%" }} />
     </span>
   );
