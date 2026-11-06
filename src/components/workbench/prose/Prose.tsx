@@ -182,42 +182,12 @@ function Pre({ children }: Props) {
   );
 }
 
-// Tables: native ones (from Markdown) and the <Table data={...}> some cases use.
+// Tables from Markdown.
 function TableWrap({ children }: Props) {
   return (
     <div className={styles.tableWrap}>
       <table className={styles.table}>{children}</table>
     </div>
-  );
-}
-
-function DataTable({
-  data,
-}: {
-  data?: { headers: { content: ReactNode; key: string }[]; rows: ReactNode[][] };
-}) {
-  if (!data) return null;
-  return (
-    <TableWrap>
-      <thead>
-        <tr>
-          {data.headers.map((head) => (
-            <th key={head.key} scope="col">
-              {head.content}
-            </th>
-          ))}
-        </tr>
-      </thead>
-      <tbody>
-        {data.rows.map((row) => (
-          <tr key={textOf(row)}>
-            {row.map((cell, i) => (
-              <td key={data.headers[i]?.key ?? i}>{cell}</td>
-            ))}
-          </tr>
-        ))}
-      </tbody>
-    </TableWrap>
   );
 }
 
@@ -248,10 +218,6 @@ function Card({ children }: Props) {
 
 function Column({ children }: Props) {
   return <div className={styles.col}>{children}</div>;
-}
-
-function Row({ children }: Props) {
-  return <div className={styles.row}>{children}</div>;
 }
 
 function Text({ children, variant = "" }: Props & { variant?: string }) {
@@ -301,7 +267,6 @@ const components = {
   code: InlineCodeText,
   pre: Pre,
   table: TableWrap,
-  Table: DataTable,
   Media: MediaPrint,
   YouTubeEmbed: VideoEmbed,
   ResultsStats: Figures,
@@ -309,7 +274,6 @@ const components = {
   Grid,
   Card,
   Column,
-  Row,
   Text,
 };
 
