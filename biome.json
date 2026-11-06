@@ -6,7 +6,8 @@
     "useIgnoreFile": false
   },
   "files": {
-    "ignoreUnknown": false
+    "ignoreUnknown": false,
+    "ignore": [".next", "test-results", ".claude", ".superpowers", "public"]
   },
   "formatter": {
     "enabled": true,

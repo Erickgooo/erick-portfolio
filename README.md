@@ -23,6 +23,8 @@ It shows his work as a bench of real artifacts: case studies with drawn, animate
 | `src/components/` | The header, footer, chatbot, intro and theme key |
 | `src/utils/` | Reading posts, dates, SEO metadata, auth and rate limits |
 | `public/` | Images, videos and the resume |
+| `docs/` | Every round's decisions, and an index of the docs and scripts: `docs/README.md` |
+| `scripts/` | Build, media, performance and quality tools |
 
 ## Run it
 

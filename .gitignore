@@ -2,19 +2,9 @@
 
 # dependencies
 /node_modules
-/.pnp
-.pnp.js
-.yarn/install-state.gz
-
-# testing
-/coverage
 
 # next.js
 /.next/
-/out/
-
-# production
-/build
 
 # misc
 .DS_Store
@@ -22,8 +12,6 @@
 
 # debug
 npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
 
 # local env files
 .env
@@ -51,7 +39,6 @@ next-env.d.ts
 /graphify-out/
 
 # security audit reports — never publish vulnerability notes in a public repo
-security-audit.local.md
 *.local.md
 
 # local agent state: personal permission allowlists and nested worktrees
