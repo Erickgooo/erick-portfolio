@@ -7,6 +7,7 @@
 // piece through open.ts. A video's player is
 // mounted only here, after the visitor asked for it; a carousel is a scroll-
 // snap track (swipe), with keys and the arrow keys to deal through it.
+import { prefersReducedMotion } from "@/utils/motion";
 import { youTubeEmbedUrl } from "@/utils/youtube";
 import Image from "next/image";
 import { type CSSProperties, useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -14,10 +15,6 @@ import { FiArrowLeft, FiArrowRight, FiX } from "react-icons/fi";
 import type { Piece, Slide } from "./data";
 import { onOpenPiece } from "./open";
 import styles from "./viewer.module.scss";
-
-function reducedMotion() {
-  return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-}
 
 function Deck({
   slides,
@@ -136,7 +133,7 @@ export function Viewer({ pieces }: { pieces: Piece[] }) {
       }
       track.scrollTo({
         left: next * track.clientWidth,
-        behavior: reducedMotion() ? "auto" : "smooth",
+        behavior: prefersReducedMotion() ? "auto" : "smooth",
       });
       setIndex(next);
     },

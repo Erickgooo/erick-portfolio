@@ -6,6 +6,7 @@
 // fetched once it is two screens away rather than with the page, where on a
 // phone network it took bandwidth from the first screen (LeadBot's two
 // videos pulled about 345 KB before the first paint).
+import { prefersReducedMotion } from "@/utils/motion";
 import { useEffect, useRef, useState } from "react";
 import { FiPause, FiPlay } from "react-icons/fi";
 import styles from "./case.module.scss";
@@ -44,7 +45,7 @@ export function VideoPrint({
   useEffect(() => {
     const video = ref.current;
     if (!video) return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) wanted.current = false;
+    if (prefersReducedMotion()) wanted.current = false;
 
     const io = new IntersectionObserver(
       ([entry]) => {

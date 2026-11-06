@@ -12,8 +12,9 @@
 // `draw` must clear what it needs: the context is not cleared for it.
 //
 //   <CanvasLoop draw={drawBits} afterIntro className={s.layer} />
+import { prefersReducedMotion } from "@/utils/motion";
 import { useEffect, useRef } from "react";
-import { prefersReducedMotion, watchScene } from "./start";
+import { watchScene } from "./start";
 
 export type Frame = {
   /** Seconds the loop has run (paused time excluded). */

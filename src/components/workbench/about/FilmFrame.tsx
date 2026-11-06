@@ -15,6 +15,7 @@
 //   play key instead;
 // - its box is reserved from the first paint: the stage holds the file's
 //   ratio, and the frame only ever transforms inside it.
+import { prefersReducedMotion } from "@/utils/motion";
 import Image from "next/image";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { FiPause, FiPlay } from "react-icons/fi";
@@ -24,7 +25,7 @@ type NetworkInformationLike = { saveData?: boolean };
 
 /** Autoplay is skipped for reduced-motion and data-saver users; they get a play key. */
 function canAutoplay(): boolean {
-  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return false;
+  if (prefersReducedMotion()) return false;
   const connection = (navigator as Navigator & { connection?: NetworkInformationLike }).connection;
   return !connection?.saveData;
 }
@@ -106,7 +107,7 @@ export function FilmFrame({
     const auto = canAutoplay();
     wanted.current = auto;
     setNeedsKey(!auto);
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) stage.dataset.open = "";
+    if (prefersReducedMotion()) stage.dataset.open = "";
 
     // Plays while open and on screen, pauses when it leaves.
     let visible = 0;

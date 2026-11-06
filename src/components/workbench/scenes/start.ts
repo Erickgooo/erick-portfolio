@@ -86,10 +86,6 @@ function listen(on: boolean) {
 /** Typing pace, measured on foundable.com: about 47 ms a character. */
 export const TYPE_MS = 47;
 
-export function prefersReducedMotion() {
-  return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-}
-
 type StartOptions = {
   /** Wait for the site intro to start fading (hero scenes). */
   afterIntro?: boolean;

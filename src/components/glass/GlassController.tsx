@@ -15,6 +15,7 @@
 //   the blur alone.
 // The chatbot's surfaces are found by their module classes, so its component
 // stays as it is.
+import { prefersReducedMotion } from "@/utils/motion";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import chat from "../FaqChatbot.module.scss";
@@ -280,7 +281,7 @@ export function GlassController() {
 
   // The light.
   useEffect(() => {
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (prefersReducedMotion()) return;
     const fine = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
     // How far a light catches up with its target each frame (it lags, like a
     // liquid).

@@ -11,8 +11,9 @@
 // `data-live` lets CSS loops run and `data-held` pauses them. With
 // reduced motion every scene is set to its last step, with its text and
 // figures complete, and nothing runs.
+import { prefersReducedMotion } from "@/utils/motion";
 import { useEffect } from "react";
-import { TYPE_MS, prefersReducedMotion, watchScene } from "./start";
+import { TYPE_MS, watchScene } from "./start";
 
 /** Typing rhythm (foundable.com, measured): hold a phrase, delete, pause, next. */
 const HOLD_MS = 1700;
