@@ -5,7 +5,7 @@ Encargo de Erick (vía Lyra): auditar, limpiar y optimizar todo el repo sin camb
 - **Rama:** `chore/limpieza-repo` (worktree `.claude/worktrees/limpieza`), creada desde `origin/main`.
 - **BASE y punto de regreso:** `032a634a3443bad843b69be0f25fd93bd461e654`.
 - **Plan:** `docs/superpowers/plans/2026-11-06-limpieza-repo.md`.
-- **Estado:** Erick aprobó las decisiones y todos los lotes el 2026-11-06, en la sesión de trabajo. Fase 2 en curso.
+- **Estado:** Erick aprobó las decisiones y todos los lotes el 2026-11-06, en la sesión de trabajo. Fases 1 a 3 terminadas: la puerta pasó sobre `f97ab29` (ver «Resultados de la puerta»). L7 se aplicó y se retiró (D77).
 - **Fuera de alcance:** cambios visibles, textos, diseño, funciones nuevas, URL, metadatos SEO, reescribir el historial, Vercel y DNS, y la tabla de propuestas de `seo-encargo.md`.
 
 ## Resumen
@@ -25,7 +25,7 @@ Encargo de Erick (vía Lyra): auditar, limpiar y optimizar todo el repo sin camb
 | `public/` | 3 | 1 | 0 | 2 |
 | Ramas y worktrees | 1 | 0 | 1 | 0 |
 
-De esos 71, 39 caen en un lote, 10 son propuestas que no se aplican y 22 no piden acción: se revisó el punto y no había nada que ganar.
+De esos 71, 39 caen en un lote, 10 son propuestas que no se aplican y 22 no piden acción: se revisó el punto y no había nada que ganar. Tres de los que caían en un lote son de L7, que se retiró, así que siguen sin resolver.
 
 **Lo que más se encontró es poco y concreto.** No hay `any` ni `@ts-ignore`, los 30 `"use client"` son necesarios, no hay clases CSS muertas, no hay `@keyframes` sin uso, ninguna librería pesada llega al cliente y los listeners ya están bien resueltos. Los restos de las rondas anteriores son sobre todo exportaciones, props sin llamador, tablas repetidas y 2 dependencias.
 
@@ -84,9 +84,9 @@ De esos 71, 39 caen en un lote, 10 son propuestas que no se aplican y 22 no pide
   - **La causa es una sola línea:** `INCENTIVA_AREAS.flatMap(...)` en `incentiva.ts:346`, la única llamada de nivel superior que impedía descartar esos datos. Con `/*#__PURE__*/` se resuelve.
   - Medido: **−2.987 a −3.000 B de JS en todas las rutas**, 0 cambios en CSS, ninguna función crece (−99.923 B en total) y los datos desaparecen del chunk del layout.
 
-- **D77. `cssChunking: false` (Erick: sí, 2026-11-06).** Es el cambio con más efecto de la ronda, y también el que más hay que vigilar.
+- **D77. `cssChunking: false`: aprobado, aplicado y retirado.** Erick lo aprobó el 2026-11-06 con una evidencia que resultó falsa. Se aplicó en `12c30bf` y se revirtió en `2b49615`, así que `next.config.mjs` sigue en `strict`.
   - **Causa, leída en `css-chunking-plugin.js` de Next:** en modo `strict`, un chunk de menos de 30 KB puede absorber módulos de otra ruta y seguir creciendo hasta 100 KB. Los 11 KB de CSS que necesita el layout arrastraban unos 90 KB de escenas a todas las páginas, incluida la 404. La hipótesis de la auditoría (orden de imports) quedó refutada: ver D82.
-  - **Efecto medido en el CSS de primera carga, con D76 aplicado:**
+  - **Lo que ganaba, medido en los archivos (CSS de primera carga, con D76 aplicado):**
 
     | Ruta | Antes (B gzip) | Después (B gzip) | Cambio |
     |---|---:|---:|---:|
@@ -101,10 +101,10 @@ De esos 71, 39 caen en un lote, 10 son propuestas que no se aplican y 22 no pide
     | `/unauthorized` | 26.811 | 12.510 | −53 % |
     | `/_not-found` | 26.811 | 10.784 | −60 % |
 
-  - **Coste:** el CSS total en disco sube de 381.263 a 479.526 B crudos (+26 %) y de 65.988 a 84.448 B gzip, porque algunos módulos se repiten en varias hojas. Alguien que recorra casi todo el sitio puede acabar bajando hasta 18 KB más en total, a cambio de una primera carga mucho menor. **Esto incumple la letra del punto 8 («el CSS total no sube»):** Erick aprobó medir el CSS de primera carga por ruta, que es lo que recibe cada visitante.
-  - **Aspecto, contra BASE, con la herramienta de la puerta:** 172 comparaciones (112 de página en 2 viewports y 2 temas, 4 de chatbot abierto, 56 de `animation-*` y `transition-*` sin movimiento reducido) y 90 más en navegación interna (88 pasos de 3 recorridos, en los que las hojas se acumulan de 8 a 11 sin recargar el documento, y 2 de contraseña incorrecta). **0 diferencias** de texto, `<head>` y estilos; 0,0010 % de píxeles en el peor caso.
-  - **Lighthouse móvil no mejora, y conviene no prometerlo:** Home 87 → 87, `/about` 87 → 87, `leadbot-ai` 85 → 85 (3 rondas intercaladas) y `/work` 88 → 88 (7 rondas). CLS igual y SEO 100. `/work` dio 88 → 76 en la primera tanda de 3 rondas; con 7 rondas, las dos builds tienen un solo 75: es la bimodalidad ya conocida. La ganancia es de bytes de CSS que bloquean el render en redes y móviles reales, y eso no lo he medido en un dispositivo.
-  - **Sin comprobar todavía:** el build de Linux de Vercel. Se revisa tras el push. Para volver atrás basta una línea.
+  - **Coste:** el CSS total en disco sube de 381.263 a 479.526 B crudos (+26 %) y de 65.988 a 84.448 B gzip, porque algunos módulos se repiten en varias hojas.
+  - **La evidencia con la que se aprobó era falsa.** Las «172 + 90 comparaciones con 0 diferencias» y el Lighthouse de la Fase 1 compararon BASE consigo misma: el servidor del candidato falló con `EADDRINUSE` y siguió respondiendo el anterior. Se le dijo a Erick el mismo día. Desde entonces, cada comparación comprueba el `BUILD_ID` que sirve cada puerto y se detiene si no coincide.
+  - **Al compararlo de verdad:** la cascada pasó a depender del camino del visitante. Tras navegar por el sitio, `.scene` quedaba en `position: absolute` y 484 px de alto en un orden de hojas y en `relative` y 0 px en otro (32 diferencias de estilo en los recorridos). No se movió ningún píxel porque esas escenas se anclan arriba, pero solo se probaron 3 recorridos de muchos posibles. En Lighthouse, el TBT de Home subió (de unos 95 ms a entre 119 y 581 ms) y su mediana dio 86 en una tanda y 79 en otra, contra 87 de BASE; `/about`, `/work` y `leadbot-ai` ganaron de 1 a 3 puntos.
+  - **Para retomarlo:** en una ronda propia, dándoles especificidad a las reglas que dependen del orden e investigando antes el TBT de Home. Mientras tanto, el CSS de sobra sigue ahí: ver las filas de `e2915`, `e12e` y `7b2e` en «Hallazgos».
 
 - **D78. Partir `GlassController.tsx` (Erick: sí, 2026-11-06).** Sus 516 líneas mezclan tres trabajos ya rotulados en el archivo: tono, lente y componente. Se sacan `tone.ts` y `lens.ts` moviendo el código tal cual. Riesgo medio por lo delicado de la lente, sin ganancia para el visitante. Es el único módulo grande que lo justifica: `SceneDriver`, `IntroLoader` y los archivos de datos son un solo motor o datos.
 
@@ -124,10 +124,11 @@ De esos 71, 39 caen en un lote, 10 son propuestas que no se aplican y 22 no pide
   - **Props de Once UI en los MDX:** es contenido y no se gana nada.
 
 - **D83. La puerta, ya escrita.** `look-gate.mjs` compara dos builds en todas las URL, a 1280 × 900 y 390 × 844, en claro y oscuro, con movimiento reducido y videos en pausa. Nunca escribe ni abre capturas: compara los píxeles en memoria.
-  - **Control negativo, porque una herramienta que nunca falla no prueba nada:** un `cursor` distinto en los enlaces (invisible) marca 140 elementos y 0 píxeles; una palabra de más hace fallar el texto y el título; 1 px de margen en los párrafos marca 57 elementos y todas las medidas de la página. Sin alterar nada, 0 diferencias.
+  - **Control negativo, porque una herramienta que nunca falla no prueba nada:** un `cursor` distinto en los enlaces (invisible) marca 140 elementos y 0 píxeles; una palabra de más hace fallar el texto y el título; 1 px de margen en los párrafos marca 57 elementos y todas las medidas de la página. Sin alterar nada, 0 diferencias. En la puerta final, el `cursor` volvió a marcar 140 elementos y 0 píxeles.
   - **Añadidos al encargo:** recorridos de navegación interna y contraseña incorrecta.
   - **No existe un menú móvil aparte:** la píldora se compara a 390 px.
-  - **Punto 8, ajustado por Erick:** se acepta el KB por función que suma Next (D74) y se mide el CSS de primera carga por ruta en vez del total en disco (D77).
+  - **Punto 8:** se acepta el KB por función que suma Next (D74). La otra excepción, medir el CSS por ruta en vez del total, cayó junto con L7: el CSS total baja.
+  - **Tres ajustes tras usarla:** cada comparación comprueba el `BUILD_ID` de los dos puertos (D77); la huella ignora por nombre los 14 tokens retirados, porque `getComputedStyle` en Chromium sí enumera las propiedades personalizadas; y la herramienta no espera a que un `<video>` pinte su primer cuadro, lo que explica las 2 capturas de «Resultados de la puerta».
 
 ## Lotes
 
@@ -142,12 +143,12 @@ Se ejecutan en este orden, solo los aprobados. El detalle está en el plan.
 | L4 | Props, entradas MDX, configuración apagada, tokens, mixins, comentarios, barril de componentes | bajo | pequeño |
 | L5 | Duplicados: tablas de tamaños, `findIntro`, lectura de posts, movimiento reducido, copiar enlace | medio | pequeño; la lectura de posts vigila `.nft.json` |
 | L6 | `GlassController` en tres módulos (D78) | medio | ninguno para el visitante |
-| L7 | `cssChunking: false` (D77) | **alto** | −29 a −71 % de CSS de primera carga |
+| L7 | `cssChunking: false` (D77) | **alto** | Aplicado y retirado: no queda nada en lo publicado |
 | L8 | `docs/README.md`, `biome.json`, `.gitignore`, `tsconfig.json`, un script cumplido | bajo | ninguno en el sitio |
 | L9 | 9 archivos de `public/` (D80) | medio | −7,9 MB en el repo; 0 para el visitante |
 | L10 | Ramas y worktrees (D81) | medio | solo disco local |
 
-Ahorro total esperado: **unos 3 KB de JS por ruta y de 14 a 31 KB de CSS por ruta**. Fuera de L7 apenas hay más CSS que ganar: los tokens muertos son 0,3 KiB.
+Ahorro total medido: **de 2.985 a 3.091 B de JS por ruta, de 216 a 228 B de CSS gzip por ruta y 7,9 MB en `public/`**. Sin L7 apenas hay CSS que ganar: los tokens muertos son 0,3 KiB.
 
 ## Propuestas para Erick
 
@@ -164,6 +165,7 @@ No se aplican: tocan zonas protegidas o cambian algo. Aparte queda la tabla pend
 | `next lint` | Migrar a ESLint CLI al subir a Next 16 | Salto de versión mayor |
 | `perf-report.md` | Traer a `main` los commits `c487be8` (`perf/carga-2026`) y `f013b91` (`perf/home-load`), que solo agregan notas a ese archivo | Es decisión de Erick; sin eso, esas ramas deben quedarse |
 | `CLAUDE.md` y `.claude/settings.json` | Decidir si deben estar en un repo público | Son herramientas locales, sin secretos |
+| CSS por ruta | Reintentar `cssChunking: false` en una ronda propia: de 14 a 31 KB menos de CSS de primera carga por ruta | Hoy la cascada depende del camino del visitante y sube el TBT de Home (D77) |
 
 ## Archivos de public/
 
@@ -189,7 +191,9 @@ Total: 113 archivos, 67.606.635 B. `images/gallery` 25,3 MB, `images/projects` 2
 
 ## Ramas y worktrees
 
-Inventario del 2026-11-06. «En `main`» quiere decir antepasado de BASE.
+**Resultado de L10:** 27 worktrees y 17 ramas borrados, ninguno rechazado, y la carpeta vacía `merge-carga`. Quedan la raíz, 9 worktrees fuera de `.claude/worktrees`, `limpieza` y 11 ramas.
+
+Inventario del 2026-11-06, antes de borrar. «En `main`» quiere decir antepasado de BASE.
 
 ### Worktrees
 
@@ -204,7 +208,7 @@ Inventario del 2026-11-06. «En `main`» quiere decir antepasado de BASE.
 | `incentiva` | `feat/incentiva-2026` | 1 commit, de contenido ya equivalente en `main` |
 | `perf-quick-wins` | `perf/quick-wins` | 32 commits, también en el remoto |
 
-**C. Tienen capturas sin seguimiento en `docs/design/screens/` (9).** `git worktree remove` sin `--force` se niega a quitarlos, y las capturas existen solo aquí. Erick aprobó moverlas a `C:SERSTH1AG0DOCUMENTSMAGIC-PORTFOLIO-CAPTURAS` Y QUITAR DESPUéS ESTOS WORKTREES. **Capturas en total: unos 2,6 GB.**
+**C. Tienen capturas sin seguimiento en `docs/design/screens/` (9).** `git worktree remove` sin `--force` se niega a quitarlos, y las capturas existen solo aquí. Erick aprobó moverlas a `C:\Users\Th1ag0\Documents\magic-portfolio-capturas\` y quitar después estos worktrees. **Capturas en total: unos 2,6 GB.** Al ejecutarlo aparecieron carpetas ignoradas por git que no estaban en este inventario (`.perf/` en 7 worktrees y `.superpowers/` en uno): se habrían perdido al borrar, así que se movieron al mismo sitio. Total movido: 3,0 GB.
 
 | Worktree | Capturas | `node_modules` | Nota |
 |---|---:|---|---|
@@ -332,11 +336,11 @@ Base del futuro `docs/README.md`. No se propone borrar ninguno: viven en git y e
 | código | `Header` es `"use client"` completo (123 líneas) por `usePathname` (clave activa) y el reloj, y a la vez importa el barrel `@/resources`, que reexporta `about.tsx` (JSX), `gallery.ts`, `protectedRoutes`, `homeFeatured`. | `src/components/Header.tsx:1,5` | `use-client.json`: imports `@/resources`, `@/resources/EMIcon`, `react-icons/pi` | No hace falta: la anotación de L2 ya saca esos datos del bundle (medido: 0 apariciones en el chunk del layout). | bajo | P3 | No aplica |
 | código | Barril `src/components/index.ts` con un solo consumidor (`app/layout.tsx:5`): cuatro re-exportaciones para un import. Barril `src/resources/index.ts` sí tiene ~30 consumidores y es útil (ver fila de tipos). | `src/components/index.ts` | grep `from "@/components"` = 1 | Opcional: importar directo en layout.tsx y borrar el barril. Atención: el comentario de `resources/Metric.tsx:5-7` justifica evitar el barril de componentes por un ciclo; si se borra, actualizar ese comentario. | bajo | P3 | L4 |
 | código | Menores fuera de area (de knip, verificados con grep): `src/resources/faqChatbot.ts:68 backButtonLabel` no se usa en ningun sitio (1 coincidencia, su definicion); `src/components/workbench/scenes/intro.ts` exporta `findIntro` pero `Bench.tsx:111` define su propia copia local de `findIntro`/`isLeaving` (duplicacion; el export `findIntro` de `intro.ts` no lo importa nadie, `whenIntroLeaves` si). Otros 13 «exports sin uso» y 35 tipos exportados son exports que solo se usan dentro de su archivo. | `src/resources/faqChatbot.ts`, `src/components/workbench/scenes/intro.ts`, `home/Bench.tsx` | grep `-w` | Para otro area (código). Sin efecto visible si se arregla. | bajo | P3 | No aplica |
-| estilos | El layout carga en cada ruta (también `/_not-found` y `/unauthorized`) el chunk `e2915df09e5d80b8.css` de 101.643 B crudos / 15,2 KiB gz. Contiene 15 módulos de escenas: marketingsteps 15,3 KB, adreturn 11,4, leadsort 10,9, chattriage 10,6, boothapp 8,2, medalscroll 7,2, milesclaim 6,1, inheritedplatforms 6,0, beatcuts 5,7, launchchain 5,3, locked 4,9, kioskstand 3,8, lost 3,0, scenes 1,9, scope 1,4. El layout solo necesita locked, lost, scenes y scope (11,2 KB). | `.next/static/css/e2915df09e5d80b8.css`; `.next/app-build-manifest.json` `pages["/layout"]`; entradas `src/app/not-found` y `src/app/layout` de `*_client-reference-manifest.js` | `entryCSSFiles` de la entrada `src/app/not-found` lista `e2915...` + `7b2e9...`, y la del layout `40a09 + e2915 + 7b2e9 + d567`. HTML prerenderizado: `_not-found.html`, `about.html`, `blog.html`, `gallery.html`, `work.html`, `index.html` enlazan `e2915`. Cálculo por alcance de imports desde cada ruta (`_graph.js`): reglas de módulos que la ruta no importa, sobre lo cargado: `/_not-found` 108,7 de 155,5 KB crudos (70 %), `/about` 186,5 de 260,3, `/blog` 204,9 de 266,8, `/work` 204,9 de 260,0. | **Hipótesis del auditor refutada por medición.** La causa no es el orden de imports: el plugin de Next deja a un chunk de menos de 30 KB absorber módulos de otras rutas, y luego crecer hasta 100 KB (`MIN_CSS_CHUNK_SIZE`, `MAX_CSS_CHUNK_SIZE` en `css-chunking-plugin.js`). `cssChunking: false` lo corrige en todas las rutas: ver D77. | alto (orden de cascada y chunks; el bug de fuentes viene de aquí) | P1 | L7 |
-| estilos | El chunk `e12e8e5027f5c6e1.css` (98.808 B crudos / 15,1 KiB gz) se carga entero en `/`, `/about`, `/blog`, `/blog/[slug]`, `/gallery`, `/work`, `/work/[slug]`, `/work/incentiva-group`. Mezcla gallery 16,5 KB, toolwall 13,0, prose 10,7, articleengine 8,9, brandwall 6,3, film 5,8, experience 5,2, projects 5,1, credentials 4,8, about 4,1, bench 3,8... Cada ruta usa una parte. | `.next/static/css/e12e8e5027f5c6e1.css`, `.next/app-build-manifest.json` | Ejemplos de lo que llega y la ruta no importa (`_graph.js`): `/` recibe gallery 16,5 KB y prose 10,7 KB; `/about` recibe gallery 16,5 y toolwall 13,0; `/blog` recibe gallery y toolwall; `/gallery` recibe toolwall 13,0 y prose 10,7. Estimación del total sin uso por ruta (proporcional a los gz medidos): `/` ~31 KiB, `/about` ~30, `/blog` ~34, `/gallery` ~31, `/work` ~34, `/work/incentiva-group` ~33. Cota superior, no ahorro real. | Misma causa y misma solución que la fila anterior: D77. | alto | P2 | L7 |
-| estilos | `7b2e93f361b99bc9.css` (17.917 B crudos / 3,8 KiB gz) va en el layout, y 10.874 B son de `case.module.scss`, que solo usan `CaseStudy` y `VideoPrint` (rutas `/work/*`). | `.next/static/css/7b2e93f361b99bc9.css`; `src/components/workbench/work/case.module.scss` | Importadores de `case.module`: `CaseStudy.tsx`, `VideoPrint.tsx` (css-modules.json). Aun así el chunk está en `_not-found.html`, `about.html`, `blog.html`, `gallery.html`, `work.html`. | Misma causa y misma solución: D77. | alto | P2 | L7 |
-| estilos | 15 custom properties definidas y sin ninguna lectura en `src`: `--ui-glass-line`, `--ui-surface`, `--ui-shadow`, `--ui-glow`, `--wb-ink-paper`, `--wb-tape`, `--wb-charcoal`, `--wb-band`, `--wb-band-ink`, `--wb-band-ink-2`, `--wb-band-tile`, `--wb-shadow-lift`, `--wb-raised`, `--wb-soft-in` (y `--wb-shadow`: las 4 menciones fuera son de `--wb-shadow-soft`/`-lift`, no leen `--wb-shadow`). | `src/resources/custom.css:8-12,18,21,26,28,35,188-190,197-202,206,212-217,265-266,273-274,282-283` | `grep -rn -- "--NOMBRE" src` fuera de `custom.css`: 0 resultados para cada una (también sin `"--NOMBRE"` ni plantillas en TSX). Sin lectura por JS. Unas ~28 declaraciones, ~1,2 KB crudos / ~0,3 KiB gz en `d567f9173b27d75f.css` (layout). | Borrarlas. La huella de la puerta enumera `getComputedStyle`, que no incluye propiedades personalizadas, así que no dan diferencias falsas; cualquier uso real sí aparecería como cambio de estilo. | bajo (medio si la puerta cuenta propiedades personalizadas) | P3 | L4 |
-| estilos | Clases que el TSX usa pero el SCSS no define: `s.pageLeft` en MarketingSteps y `s.figMain` en AdReturn (`undefinedUsed`). El `className` queda con la cadena literal `undefined`. | `src/components/workbench/scenes/work/MarketingSteps.tsx:28`, `src/components/workbench/scenes/work/AdReturn.tsx:56` | `grep -n pageLeft *.tsx *.scss` en esa carpeta: solo aparece en el TSX. `grep figMain`: solo en el TSX. Salida: `class="marketingsteps_page__x undefined"`. Los otros dos `undefinedUsed` (`ui.module`, `scope.module`: `module`) son falsos positivos del escáner. | Quitar la clase del TSX (o definirla vacía). No cambia ningún estilo computado, pero sí el atributo `class` del DOM: confirmar que la puerta no compara clases. | bajo | P3 | L4 |
+| estilos | El layout carga en cada ruta (también `/_not-found` y `/unauthorized`) el chunk `e2915df09e5d80b8.css` de 101.643 B crudos / 15,2 KiB gz. Contiene 15 módulos de escenas: marketingsteps 15,3 KB, adreturn 11,4, leadsort 10,9, chattriage 10,6, boothapp 8,2, medalscroll 7,2, milesclaim 6,1, inheritedplatforms 6,0, beatcuts 5,7, launchchain 5,3, locked 4,9, kioskstand 3,8, lost 3,0, scenes 1,9, scope 1,4. El layout solo necesita locked, lost, scenes y scope (11,2 KB). | `.next/static/css/e2915df09e5d80b8.css`; `.next/app-build-manifest.json` `pages["/layout"]`; entradas `src/app/not-found` y `src/app/layout` de `*_client-reference-manifest.js` | `entryCSSFiles` de la entrada `src/app/not-found` lista `e2915...` + `7b2e9...`, y la del layout `40a09 + e2915 + 7b2e9 + d567`. HTML prerenderizado: `_not-found.html`, `about.html`, `blog.html`, `gallery.html`, `work.html`, `index.html` enlazan `e2915`. Cálculo por alcance de imports desde cada ruta (`_graph.js`): reglas de módulos que la ruta no importa, sobre lo cargado: `/_not-found` 108,7 de 155,5 KB crudos (70 %), `/about` 186,5 de 260,3, `/blog` 204,9 de 266,8, `/work` 204,9 de 260,0. | **Hipótesis del auditor refutada por medición.** La causa no es el orden de imports: el plugin de Next deja a un chunk de menos de 30 KB absorber módulos de otras rutas, y luego crecer hasta 100 KB (`MIN_CSS_CHUNK_SIZE`, `MAX_CSS_CHUNK_SIZE` en `css-chunking-plugin.js`). `cssChunking: false` lo corregía, pero la cascada pasó a depender del camino del visitante y se retiró: ver D77. **Queda sin resolver.** | alto (orden de cascada y chunks; el bug de fuentes viene de aquí) | P1 | L7, retirado |
+| estilos | El chunk `e12e8e5027f5c6e1.css` (98.808 B crudos / 15,1 KiB gz) se carga entero en `/`, `/about`, `/blog`, `/blog/[slug]`, `/gallery`, `/work`, `/work/[slug]`, `/work/incentiva-group`. Mezcla gallery 16,5 KB, toolwall 13,0, prose 10,7, articleengine 8,9, brandwall 6,3, film 5,8, experience 5,2, projects 5,1, credentials 4,8, about 4,1, bench 3,8... Cada ruta usa una parte. | `.next/static/css/e12e8e5027f5c6e1.css`, `.next/app-build-manifest.json` | Ejemplos de lo que llega y la ruta no importa (`_graph.js`): `/` recibe gallery 16,5 KB y prose 10,7 KB; `/about` recibe gallery 16,5 y toolwall 13,0; `/blog` recibe gallery y toolwall; `/gallery` recibe toolwall 13,0 y prose 10,7. Estimación del total sin uso por ruta (proporcional a los gz medidos): `/` ~31 KiB, `/about` ~30, `/blog` ~34, `/gallery` ~31, `/work` ~34, `/work/incentiva-group` ~33. Cota superior, no ahorro real. | Misma causa que la fila anterior. Queda sin resolver: D77. | alto | P2 | L7, retirado |
+| estilos | `7b2e93f361b99bc9.css` (17.917 B crudos / 3,8 KiB gz) va en el layout, y 10.874 B son de `case.module.scss`, que solo usan `CaseStudy` y `VideoPrint` (rutas `/work/*`). | `.next/static/css/7b2e93f361b99bc9.css`; `src/components/workbench/work/case.module.scss` | Importadores de `case.module`: `CaseStudy.tsx`, `VideoPrint.tsx` (css-modules.json). Aun así el chunk está en `_not-found.html`, `about.html`, `blog.html`, `gallery.html`, `work.html`. | Misma causa. Queda sin resolver: D77. | alto | P2 | L7, retirado |
+| estilos | 14 custom properties definidas y sin ninguna lectura en `src`: `--ui-glass-line`, `--ui-surface`, `--ui-shadow`, `--wb-ink-paper`, `--wb-tape`, `--wb-charcoal`, `--wb-band`, `--wb-band-ink`, `--wb-band-ink-2`, `--wb-band-tile`, `--wb-shadow-lift`, `--wb-raised`, `--wb-soft-in` (y `--wb-shadow`: las 4 menciones fuera son de `--wb-shadow-soft`/`-lift`, no leen `--wb-shadow`). | `src/resources/custom.css:8-12,18,21,26,28,35,188-190,197-202,206,212-217,265-266,273-274,282-283` | `grep -rn -- "--NOMBRE" src` fuera de `custom.css`: 0 resultados para cada una (también sin `"--NOMBRE"` ni plantillas en TSX). Sin lectura por JS. Unas ~28 declaraciones, ~1,2 KB crudos / ~0,3 KiB gz en `d567f9173b27d75f.css` (layout). | Borrarlas. `getComputedStyle` en Chromium sí enumera las propiedades personalizadas, así que la huella de la puerta ignora estas 14 por nombre. **Corrección:** la auditoría listaba 15 con `--ui-glow`, que sí se lee: `SpotlightBackground.tsx:127` arma `var(--${glowColor})` en tiempo de ejecución, y `grep` no lo ve. Borrarlo apagó el brillo del puntero; lo detectó la primera comparación real y volvió con prueba propia (`94a3de0`, `69fbcad`). | bajo | P3 | L4 |
+| estilos | Clases que el TSX usa pero el SCSS no define: `s.pageLeft` en MarketingSteps y `s.figMain` en AdReturn (`undefinedUsed`). El `className` queda con la cadena literal `undefined`. | `src/components/workbench/scenes/work/MarketingSteps.tsx:28`, `src/components/workbench/scenes/work/AdReturn.tsx:56` | `grep -n pageLeft *.tsx *.scss` en esa carpeta: solo aparece en el TSX. `grep figMain`: solo en el TSX. Salida: `class="marketingsteps_page__x undefined"`. Los otros dos `undefinedUsed` (`ui.module`, `scope.module`: `module`) son falsos positivos del escáner. | Quitar la clase del TSX. No cambia ningún estilo computado, pero sí el atributo `class` del DOM; la puerta no compara clases. **Al limpiar salieron más:** 13 usos estáticos y 2 dinámicos en vez de 2. Se quitaron todos, con la prueba «no class in the server HTML says undefined» (`8313744`, `7002ac8`). | bajo | P3 | L4 |
 | estilos | Los 26 "sin uso" del escáner son falsos positivos en 24 de 26: acceso dinámico `styles[kind]` / `s[paper]` / `` styles[`row${level}`] `` / `` s[`in${at}`] ``. Los únicos reales son `.block` en `launchchain` y `platformtakeover`, base de `@extend`. | `scenes/work/launchchain.module.scss:33`, `scenes/work/platformtakeover.module.scss:40`; `home/Bench.tsx:66`, `prose/Prose.tsx:33-34`, `scenes/gallery/PieceMaking.tsx:50`, `scenes/work/BoothApp.tsx:20,38,55`, `scenes/system/LostScene.tsx:26-31,71` | Valores: Bench `screen/print/tag` usados (Bench.tsx:235-273), Prose nivel 2/3/4, PieceMaking `enter(k,1..3)`, `SWATCHES=["cobalt","ink","mist"]`, Lost `ring/dot/square/stroke/small/grey`, `Paper="cobalt"|"ink"|"mist"|"paper"` más `.ink .sheet` en `stepper.module.scss:210`. `.block` aparece una vez en el CSS compilado (`launchchain_block__taw2u`). | `.block` -> `%block` (placeholder). Ahorra decenas de bytes y el nombre de clase muerto. No vale un cambio por sí solo. | bajo | P3 | No aplica |
 | estilos | Duplicados en el CSS emitido: 44 bloques con cuerpo idéntico de más de 90 B repartidos entre módulos (~30,4 KB crudos), sobre todo el patrón de revelado (`@media(scripting:enabled)and (prefers-reduced-motion:no-preference){opacity:0;translate:0 var(--wb-travel)...}`: 34 copias, 8,9 KB; 43 copias con `--wb-travel-lg`, 4,6 KB). 5 pares de `@keyframes` de cuerpo igual (`wave` x3, `dot`, `tap`/`press`, `card-in`/`rise`, `lgPartIn`/`caseIn`) de 42-72 B. | `src/components/workbench/_shared.scss:117` (`@mixin reveal`), 21 usos de `scripting: enabled` | Ya está centralizado en el mixin `reveal`: lo repetido es la salida del mixin, no copia a mano. gzip del CSS junto: 56.189 B; quitando los cuerpos repetidos (cota superior) 54.981 B, es decir -1,2 KiB. En archivos separados el ahorro real es menor. | No centralizar. Un `@extend`/placeholder o una clase global moverían reglas entre chunks y cambiarían el orden de cascada; el ahorro máximo (~1,2 KiB gz) no compensa el riesgo. | alto | P3 | No aplica |
 | estilos | Mixins Sass sin uso: `@mixin h2` y `@mixin lede`. | `src/components/workbench/_shared.scss:149-165` | `sass-members.json` (uses: 0); `grep -rn "@include h2\b\|@include lede\b" src` = 0. | Borrar los dos mixins. 0 B en el CSS. | bajo | P3 | L4 |
@@ -377,4 +381,62 @@ Base del futuro `docs/README.md`. No se propone borrar ninguno: viven en git y e
 
 ## Resultados de la puerta
 
-Pendientes: se anotan aquí al terminar la Fase 3.
+Sobre `f97ab29`, el último commit con código o pruebas, contra BASE (`032a634`), con cada puerto comprobado por `BUILD_ID`. **Pasa,** con 2 capturas explicadas en el punto 5 y la excepción del punto 8 que Erick aprobó (D74).
+
+| Punto | Qué mide | Resultado |
+|---|---|---|
+| 1 | `tsc`, `lint`, `build` | 0 errores; los mismos 5 avisos `no-img-element` de BASE |
+| 2 | Biome y `biome-gate` | Código 0 con los mismos 2 avisos; `biome-gate` OK en 76 archivos |
+| 3 | Unit y e2e en 4 motores | Unit 34 de 34. E2e: **710 pasan, 50 se omiten, 0 fallan**, ninguna inestable, en 12,7 minutos (BASE: 698 y 50) |
+| 4 | Texto visible | 0 diferencias en 112 comparaciones de página y 88 de navegación interna |
+| 5 | Aspecto | 262 comparaciones con 0 diferencias de estilo, incluidas 56 de `animation-*` y `transition-*` sin movimiento reducido, chatbot abierto y contraseña incorrecta. Píxeles: 2 capturas sobre 0,1 %, explicadas abajo |
+| 6 | `<head>` y cabeceras | 0 diferencias de `<head>`; cabeceras iguales en 28 de 28 URL |
+| 7 | Lighthouse móvil, 5 rondas intercaladas | Medianas iguales a BASE en las 4 páginas (tabla abajo) |
+| 8 | Tamaños | JS y CSS bajan en todas las rutas; 10 funciones crecen por la excepción de D74 (tabla abajo) |
+
+**Las 2 capturas sobre el límite.** Las dos son de `/work/leadbot-ai` en los recorridos: escritorio oscuro con 0,1919 % y teléfono claro con 1,9898 %, ambas sin diferencias de estilo. La causa es el video `chatbot-artesa.mp4`, idéntico en las dos builds: `look-gate.mjs` espera a las imágenes, pero no a que un `<video>` pinte su primer cuadro.
+
+- **Reproducido solo con BASE, reteniendo ese video en un lado:** da exactamente 13.922 píxeles (0,1919 %) y 64.960 píxeles (1,9898 %), dentro de la caja del video.
+- **Repetición de los recorridos:** 5 veces contra BASE, 450 comparaciones y ninguna sobre el límite; 3 veces BASE contra BASE, 270 y ninguna. El peor caso fue 0,0381 % en las dos series.
+- Ninguna captura se escribió ni se abrió: todo se comparó en memoria.
+
+**Lighthouse móvil:**
+
+| Página | BASE | Rama | CLS máximo | SEO |
+|---|---:|---:|---:|---:|
+| Home | 87 | 87 | 0,0001 | 100 |
+| `/about` | 87 | 87 | 0,0001 | 100 |
+| `/work` | 88 | 88 | 0,0003 | 100 |
+| `/work/leadbot-ai` | 85 | 85 | 0,0067 | 100 |
+
+**Corridas lentas sueltas.** La rama tuvo 4 de 20 (`/about` 81 dos veces, `/work` 76 dos veces) y BASE 0 de 20 en esta tanda. Piden los mismos bytes que las corridas normales. En las 158 corridas guardadas de esta ronda, una corrida es lenta solo cuando el prefetch de otras rutas empieza antes del primer pintado observado: pasa en 19 de 19 lentas y en 0 de 139 normales. BASE también cae ahí, en 7 de sus 79 corridas. Es una carrera de tiempos en `localhost` dentro de la simulación de Lighthouse. Con estas muestras no se puede descartar que la rama caiga algo más seguido; la mediana no cambia.
+
+**JS y CSS de primera carga, en bytes gzip:**
+
+| Ruta | JS antes | JS después | Cambio | CSS antes | CSS después | Cambio |
+|---|---:|---:|---:|---:|---:|---:|
+| `/` | 154.065 | 150.974 | −3.091 | 56.171 | 55.943 | −228 |
+| `/about` | 143.231 | 140.242 | −2.989 | 43.472 | 43.244 | −228 |
+| `/work` | 140.308 | 137.317 | −2.991 | 43.641 | 43.413 | −228 |
+| `/work/[slug]` | 153.040 | 149.993 | −3.047 | 51.634 | 51.406 | −228 |
+| `/work/incentiva-group` | 142.947 | 139.962 | −2.985 | 45.952 | 45.724 | −228 |
+| `/blog` | 140.297 | 137.309 | −2.988 | 45.040 | 44.812 | −228 |
+| `/blog/[slug]` | 144.484 | 141.470 | −3.014 | 45.981 | 45.753 | −228 |
+| `/gallery` | 144.734 | 141.729 | −3.005 | 46.019 | 45.791 | −228 |
+| `/unauthorized` | 141.550 | 138.557 | −2.993 | 26.811 | 26.595 | −216 |
+| `/_not-found` | 139.434 | 136.445 | −2.989 | 26.811 | 26.595 | −216 |
+
+| Medida | Antes | Después |
+|---|---:|---:|
+| CSS total, crudo | 381.263 B | 380.391 B |
+| CSS total, gzip | 65.988 B | 65.760 B |
+| JS total en chunks, gzip | 331.232 B | 327.954 B |
+| Funciones (`.nft.json`), total | 41.105.657 B | 41.019.420 B |
+| Dependencias directas | 12 | 10 |
+| Paquetes en el lock | 637 | 635 |
+| Archivos en `src` | 296 | 299 |
+| `public/` | 113 archivos, 67.606.635 B | 104 archivos, 59.668.062 B |
+
+**Las 10 funciones que crecen (D74):** `/api/og/generate` +696 B; `/api/chatbot`, `/api/rss`, `robots.txt` y `sitemap.xml` +772 B; `/api/authenticate` y `/api/check-auth` +898 B; `apple-icon.png`, `favicon.ico` e `icon.png` +1.222 B.
+
+**Menores que quedan, sin efecto para el visitante:** `isImage` acepta `.gif`; `image-renames.json` lista 8 destinos ya borrados; la prueba de la píldora solo fija que la lente existe, y la de clases `undefined` no ve el marcado que solo se pinta en el cliente.
