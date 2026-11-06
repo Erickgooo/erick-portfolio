@@ -38,12 +38,6 @@ const VIDEOS = [
     targetMB: 1.0,
     poster: true,
   },
-  {
-    file: "public/images/projects/project-01/video-01.mp4",
-    mutedNoControls: false,
-    targetMB: 4,
-    poster: true,
-  },
 ];
 
 const WEBM_MIN_SAVINGS = 0.1; // WebM must be at least 10% smaller than the final MP4.
