@@ -1,9 +1,3 @@
-import createMDX from "@next/mdx";
-
-// .md and .mdx files can be pages too; the posts and case studies themselves
-// are read at build time and rendered with next-mdx-remote.
-const withMDX = createMDX({ extension: /\.mdx?$/ });
-
 const isDev = process.env.NODE_ENV === "development";
 
 /**
@@ -91,7 +85,6 @@ const securityHeaders = [
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  pageExtensions: ["ts", "tsx", "md", "mdx"],
   transpilePackages: ["next-mdx-remote"],
   poweredByHeader: false,
   // Route handlers that read MDX at request time need those files shipped with
@@ -137,4 +130,4 @@ const nextConfig = {
   },
 };
 
-export default withMDX(nextConfig);
+export default nextConfig;
