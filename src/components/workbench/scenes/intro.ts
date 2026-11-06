@@ -2,12 +2,12 @@
 // intro (the scenes, the pointer glow, the chatbot's greeting) asks here. Kept
 // apart from start.ts so the layout's islands load only this.
 
-/** The site intro overlay (IntroLoader, kept as it is), found by its CSS-module class like Bench does. */
+/** The site intro overlay (IntroLoader, kept as it is), found by its CSS-module class. */
 export function findIntro(): HTMLElement | null {
   return document.querySelector<HTMLElement>('[class*="IntroLoader_overlay"]');
 }
 
-function introLeaving(intro: HTMLElement) {
+export function introLeaving(intro: HTMLElement) {
   return !intro.isConnected || /IntroLoader_leaving/.test(intro.className);
 }
 
