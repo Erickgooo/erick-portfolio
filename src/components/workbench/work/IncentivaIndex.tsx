@@ -22,7 +22,7 @@ import { type Case, getCase } from "./cases";
 import styles from "./incentiva.module.scss";
 
 /** The case studies of the role, in the order they are featured. */
-export const INCENTIVA_CASES = [
+const INCENTIVA_CASES = [
   "scope-multi-client-platform",
   "scope-ios-launch",
   "chatflow-whatsapp-ai-platform",

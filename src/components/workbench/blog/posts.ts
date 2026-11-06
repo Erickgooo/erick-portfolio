@@ -13,7 +13,7 @@ export type PostCard = {
   image: (Size & { src: string }) | null;
 };
 
-export function readPosts() {
+function readPosts() {
   return getPosts(["src", "app", "blog", "posts"]).sort(
     (a, b) =>
       new Date(b.metadata.publishedAt).getTime() - new Date(a.metadata.publishedAt).getTime(),

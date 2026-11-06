@@ -18,7 +18,7 @@ import type { CSSProperties, ReactNode } from "react";
 import { MarginStepperController } from "./MarginStepperController";
 import s from "./marginstepper.module.scss";
 
-export type MarginStep = {
+type MarginStep = {
   key: string;
   /** The step's short name, drawn on its sheet (words of the case's own text). */
   label: string;

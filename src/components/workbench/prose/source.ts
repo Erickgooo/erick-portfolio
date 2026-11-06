@@ -14,7 +14,7 @@ export function anchorId(text: string): string {
 }
 
 /** The visible text of a Markdown heading line: no emphasis marks, links or code ticks. */
-export function plainText(markdown: string): string {
+function plainText(markdown: string): string {
   return markdown
     .replace(/\[([^\]]*)\]\([^)]*\)/g, "$1")
     .replace(/[*_`]/g, "")
@@ -32,7 +32,7 @@ function scan(content: string) {
   });
 }
 
-export type Chapter = { heading: string; id: string; body: string };
+type Chapter = { heading: string; id: string; body: string };
 
 /**
  * Splits the MDX at its second-level headings, so a page can lay media beside

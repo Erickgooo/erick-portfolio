@@ -28,8 +28,6 @@ import type { Paper } from "../data";
 import styles from "./scenes.module.scss";
 import { TYPE_MS } from "./start";
 
-export { TYPE_MS };
-
 /** How long typing `text` takes, for sizing the step that types it. */
 export function typeTime(text: string, ms = TYPE_MS) {
   return text.length * ms;
@@ -119,7 +117,7 @@ export function Typed({
 }
 
 /** The figure `value` as its zero ("$3.45" gives "$0.00"), the first frame of a count. */
-export function zeroOf(value: string) {
+function zeroOf(value: string) {
   return value.replace(/\d[\d,]*(\.\d+)?/, (n) => {
     const decimals = n.split(".")[1]?.length ?? 0;
     return (0).toFixed(decimals);

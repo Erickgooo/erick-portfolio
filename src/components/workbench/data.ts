@@ -28,7 +28,7 @@ const PAPER: Record<HomeCategory, Paper> = {
 /** The cases featured on the home, with their category (src/resources/home.tsx). */
 const FAN = homeFeatured.map((feature) => ({ ...feature, paper: PAPER[feature.category] }));
 
-export type FanCard = {
+type FanCard = {
   slug: string;
   category: HomeCategory;
   /** What the card says the case is about, when it says more than the title. */
@@ -110,7 +110,7 @@ export function countProjects(): number {
  */
 export type Pictogram = "cloud" | "pipeline";
 export type Tool = { name: string; logo?: string; pictogram?: Pictogram; wide?: boolean };
-export type ToolGroup = {
+type ToolGroup = {
   id: string;
   title: string;
   line: string;

@@ -6,7 +6,7 @@ import path from "node:path";
 import matter from "gray-matter";
 import { notFound } from "next/navigation";
 
-export type TeamMember = { name: string; role: string; avatar: string; linkedIn: string };
+type TeamMember = { name: string; role: string; avatar: string; linkedIn: string };
 
 export type PostMetadata = {
   title: string;

@@ -111,7 +111,7 @@ function A({ href = "", children }: ComponentPropsWithoutRef<"a">) {
 }
 
 /** A still image laid on the page as a print: behind a hairline, a caption under it. */
-export function MediaPrint({
+function MediaPrint({
   src,
   alt = "",
   caption,

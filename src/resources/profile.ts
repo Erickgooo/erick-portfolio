@@ -2,7 +2,7 @@
 // footer, About and schema.org's sameAs read them).
 import type { IconName } from "./icons";
 
-export type Profile = {
+type Profile = {
   firstName: string;
   lastName: string;
   name: string;
@@ -31,7 +31,7 @@ export const profile: Profile = {
   languageLevels: { English: "B2, upper intermediate" },
 };
 
-export type ProfileLink = { name: string; icon: IconName; href: string };
+type ProfileLink = { name: string; icon: IconName; href: string };
 
 export const profileLinks: ProfileLink[] = [
   {

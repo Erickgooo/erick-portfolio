@@ -90,14 +90,14 @@ export function prefersReducedMotion() {
   return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 }
 
-export type StartOptions = {
+type StartOptions = {
   /** Wait for the site intro to start fading (hero scenes). */
   afterIntro?: boolean;
   /** Share of the scene that must be on screen to start it. */
   threshold?: number;
 };
 
-export type SceneState = {
+type SceneState = {
   started: boolean;
   live: boolean;
   /** False while the scene's stepper layer is not the active one. */

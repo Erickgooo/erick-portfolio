@@ -7,7 +7,7 @@
 import { useEffect, useState } from "react";
 import { THEME_KEY } from "./themeScript";
 
-export type Theme = "light" | "dark";
+type Theme = "light" | "dark";
 
 const DARK_QUERY = "(prefers-color-scheme: dark)";
 

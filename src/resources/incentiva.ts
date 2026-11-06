@@ -20,7 +20,7 @@ export type IncentivaProject = {
   caseSlug?: string;
 };
 
-export type IncentivaArea = {
+type IncentivaArea = {
   id: string;
   title: string;
   line: string;

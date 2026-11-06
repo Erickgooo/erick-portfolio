@@ -169,7 +169,7 @@ function parseWidths(dict: string): Map<number, number> {
   return widths;
 }
 
-export type LineBox = {
+type LineBox = {
   page: number;
   text: string;
   x0: number;

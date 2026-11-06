@@ -1,6 +1,6 @@
 // The pieces of Visual Work, in order. A piece is an image under public/ or a
 // YouTube Shorts link; consecutive pieces with the same group are one carousel.
-export type GalleryPiece = {
+type GalleryPiece = {
   src: string;
   alt: string;
   orientation: "horizontal" | "vertical" | "square";

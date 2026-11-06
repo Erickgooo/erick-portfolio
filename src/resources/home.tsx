@@ -4,7 +4,7 @@
 // stay on /work.
 export type HomeCategory = "Acquisition" | "Automation" | "Product" | "Operations";
 
-export type HomeFeature = {
+type HomeFeature = {
   category: HomeCategory;
   /** The case, a slug under /work. */
   slug: string;

@@ -32,7 +32,7 @@ export type Frame = {
   el: HTMLCanvasElement;
 };
 
-export type Draw = (ctx: CanvasRenderingContext2D, frame: Frame) => void;
+type Draw = (ctx: CanvasRenderingContext2D, frame: Frame) => void;
 
 export function CanvasLoop({
   draw,

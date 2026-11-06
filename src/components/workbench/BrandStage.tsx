@@ -55,7 +55,7 @@ type Brand = {
   caseName: string;
 };
 
-export const BRANDS: Brand[] = [
+const BRANDS: Brand[] = [
   {
     name: "Nequi",
     file: nequi,
@@ -120,7 +120,7 @@ export const BRANDS: Brand[] = [
   },
 ];
 
-export const BRANDS_TITLE = "Brands I’ve led projects for at Incentiva Group";
+const BRANDS_TITLE = "Brands I’ve led projects for at Incentiva Group";
 
 function Panel({ b, i, place }: { b: Brand; i: number; place: "home" | "index" }) {
   return (

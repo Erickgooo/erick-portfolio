@@ -2,7 +2,7 @@
 // its sections is about, matched by the section's heading. Plain data, safe
 // for client components (PostIndex reads it while the visitor reads).
 
-export type DeskPart = "intro" | "machine" | "av" | "room" | "notion" | "all";
+type DeskPart = "intro" | "machine" | "av" | "room" | "notion" | "all";
 
 export const DESK_POST = "my-workspace";
 
