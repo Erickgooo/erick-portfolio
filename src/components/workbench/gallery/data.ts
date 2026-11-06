@@ -6,7 +6,7 @@ import { galleryPieces, protectedRoutes } from "@/resources";
 // The client of a piece is the name its alt text opens with. Server-only (it
 // reads the project MDX for the related cases).
 import { isProtectedPath } from "@/resources/protectedRoutes";
-import { getPosts } from "@/utils/posts";
+import { WORK_DIR, getPosts } from "@/utils/posts";
 import { extractYouTubeId } from "@/utils/youtube";
 import type { Paper } from "../data";
 import { MEDIA_SIZE } from "../prose/media";
@@ -150,7 +150,7 @@ export type GalleryBench = {
  */
 export function getGalleryBench({ hideProtected }: { hideProtected: boolean }): GalleryBench {
   const pieces = getPieces();
-  const posts = getPosts(["src", "app", "work", "projects"]);
+  const posts = getPosts(WORK_DIR);
   const byName = new Map<string, ClientShelf>();
   const order: string[] = [];
 

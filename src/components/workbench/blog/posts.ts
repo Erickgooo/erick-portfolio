@@ -1,6 +1,6 @@
 // Workbench, Blog: the posts as the pages list them, from the MDX frontmatter.
 import { isProtectedPath } from "@/resources/protectedRoutes";
-import { getPosts } from "@/utils/posts";
+import { BLOG_DIR, byNewest, getPosts } from "@/utils/posts";
 import { type Size, mediaSize } from "../prose/media";
 
 export type PostCard = {
@@ -14,10 +14,7 @@ export type PostCard = {
 };
 
 function readPosts() {
-  return getPosts(["src", "app", "blog", "posts"]).sort(
-    (a, b) =>
-      new Date(b.metadata.publishedAt).getTime() - new Date(a.metadata.publishedAt).getTime(),
-  );
+  return getPosts(BLOG_DIR).sort(byNewest);
 }
 
 /**

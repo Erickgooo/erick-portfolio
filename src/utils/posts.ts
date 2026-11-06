@@ -34,6 +34,15 @@ export type PostMetadata = {
 
 export type Post = { slug: string; metadata: PostMetadata; content: string };
 
+/** The folders of the posts and of the case studies, as getPosts takes them. */
+export const BLOG_DIR = ["src", "app", "blog", "posts"];
+export const WORK_DIR = ["src", "app", "work", "projects"];
+
+/** For sorting: the latest publication date first. */
+export function byNewest(a: Post, b: Post) {
+  return new Date(b.metadata.publishedAt).getTime() - new Date(a.metadata.publishedAt).getTime();
+}
+
 /** Every .mdx entry in a folder, given as path segments from the project root. */
 export function getPosts(folder: string[]): Post[] {
   return readPosts(path.join(process.cwd(), ...folder));

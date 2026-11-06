@@ -6,13 +6,13 @@ import { CaseBody, CaseHeader, NextCase } from "@/components/workbench/work/Case
 import { getCase, getNextCase } from "@/components/workbench/work/cases";
 import { pages } from "@/resources";
 import { isProtectedPath } from "@/resources/protectedRoutes";
-import { getPosts } from "@/utils/posts";
+import { WORK_DIR, getPosts } from "@/utils/posts";
 import { StructuredData, entryPage, pageMetadata } from "@/utils/seo";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
 export async function generateStaticParams(): Promise<{ slug: string }[]> {
-  const posts = getPosts(["src", "app", "work", "projects"]);
+  const posts = getPosts(WORK_DIR);
   return posts.map((post) => ({
     slug: post.slug,
   }));
@@ -28,7 +28,7 @@ export async function generateMetadata({
     ? routeParams.slug.join("/")
     : routeParams.slug || "";
 
-  const posts = getPosts(["src", "app", "work", "projects"]);
+  const posts = getPosts(WORK_DIR);
   const post = posts.find((post) => post.slug === slugPath);
 
   if (!post) return {};
@@ -47,7 +47,7 @@ export default async function Project({
     ? routeParams.slug.join("/")
     : routeParams.slug || "";
 
-  const post = getPosts(["src", "app", "work", "projects"]).find((post) => post.slug === slugPath);
+  const post = getPosts(WORK_DIR).find((post) => post.slug === slugPath);
   const c = getCase(slugPath);
 
   if (!post || !c) {

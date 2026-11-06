@@ -1,6 +1,6 @@
 import { pages, profile, siteUrl } from "@/resources";
 import { isProtectedPath } from "@/resources/protectedRoutes";
-import { getPosts } from "@/utils/posts";
+import { BLOG_DIR, WORK_DIR, getPosts } from "@/utils/posts";
 import { RateLimiter, getClientIp } from "@/utils/rateLimit";
 import { ImageResponse } from "next/og";
 import { EM_MARK_DATA_URI } from "./mark";
@@ -34,7 +34,7 @@ function getAllowedTitles(): Set<string> {
   let postTitles: string[] = [];
   try {
     postTitles = (["blog", "work"] as const).flatMap((section) =>
-      getPosts(["src", "app", section, section === "blog" ? "posts" : "projects"])
+      getPosts(section === "blog" ? BLOG_DIR : WORK_DIR)
         .filter((post) => !isProtectedPath(`/${section}/${post.slug}`))
         .map((post) => post.metadata.title),
     );

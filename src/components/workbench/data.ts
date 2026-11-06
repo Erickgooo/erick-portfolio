@@ -2,7 +2,7 @@
 // below comes from src/resources (about.tsx, incentiva.ts) or the project MDX.
 import { type HomeCategory, homeFeatured } from "@/resources/home";
 import { isProtectedPath } from "@/resources/protectedRoutes";
-import { getPosts } from "@/utils/posts";
+import { WORK_DIR, getPosts } from "@/utils/posts";
 import { isImage, mediaSize } from "./prose/media";
 
 export type Paper = "cobalt" | "ink" | "mist" | "paper";
@@ -37,7 +37,7 @@ type FanCard = {
 };
 
 function getProjects() {
-  return getPosts(["src", "app", "work", "projects"]);
+  return getPosts(WORK_DIR);
 }
 
 /**

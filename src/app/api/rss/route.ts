@@ -2,7 +2,7 @@
 // posts are left out: their titles and summaries are content too.
 import { pages, profile, siteUrl } from "@/resources";
 import { isProtectedPath } from "@/resources/protectedRoutes";
-import { getPosts } from "@/utils/posts";
+import { BLOG_DIR, byNewest, getPosts } from "@/utils/posts";
 import { fullTitle } from "@/utils/seo";
 import { NextResponse } from "next/server";
 
@@ -28,12 +28,9 @@ export async function GET() {
   const blogUrl = `${siteUrl}${pages.blog.path}`;
   const author = `${xml(profile.email)} (${xml(profile.name)})`;
 
-  const posts = getPosts(["src", "app", "blog", "posts"])
+  const posts = getPosts(BLOG_DIR)
     .filter((post) => !isProtectedPath(`${pages.blog.path}/${post.slug}`))
-    .sort(
-      (a, b) =>
-        new Date(b.metadata.publishedAt).getTime() - new Date(a.metadata.publishedAt).getTime(),
-    );
+    .sort(byNewest);
 
   const items = posts.map(({ slug, metadata }) => {
     const link = `${blogUrl}/${xml(slug)}`;

@@ -2,7 +2,7 @@
 // Password-protected paths are never listed: a slug is content too.
 import { type Page, enabledRoutes, pages, siteUrl } from "@/resources";
 import { isProtectedPath } from "@/resources/protectedRoutes";
-import { getPosts } from "@/utils/posts";
+import { BLOG_DIR, WORK_DIR, getPosts } from "@/utils/posts";
 import type { MetadataRoute } from "next";
 
 export default function sitemap(): MetadataRoute.Sitemap {
@@ -23,8 +23,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   return [
     ...pagesOn,
-    ...entries(["src", "app", "blog", "posts"], pages.blog.path),
-    ...entries(["src", "app", "work", "projects"], pages.work.path),
+    ...entries(BLOG_DIR, pages.blog.path),
+    ...entries(WORK_DIR, pages.work.path),
     ...workIndexes,
   ]
     .filter((entry) => !isProtectedPath(entry.path))

@@ -7,13 +7,13 @@ import { getPostCards } from "@/components/workbench/blog/posts";
 import { SceneDriver } from "@/components/workbench/scenes/SceneDriver";
 import { pages, siteUrl } from "@/resources";
 import { isProtectedPath } from "@/resources/protectedRoutes";
-import { getPosts } from "@/utils/posts";
+import { BLOG_DIR, getPosts } from "@/utils/posts";
 import { StructuredData, entryPage, pageMetadata } from "@/utils/seo";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
 export async function generateStaticParams(): Promise<{ slug: string }[]> {
-  const posts = getPosts(["src", "app", "blog", "posts"]);
+  const posts = getPosts(BLOG_DIR);
   return posts.map((post) => ({
     slug: post.slug,
   }));
@@ -29,7 +29,7 @@ export async function generateMetadata({
     ? routeParams.slug.join("/")
     : routeParams.slug || "";
 
-  const posts = getPosts(["src", "app", "blog", "posts"]);
+  const posts = getPosts(BLOG_DIR);
   const post = posts.find((post) => post.slug === slugPath);
 
   if (!post) return {};
@@ -44,7 +44,7 @@ export default async function Blog({ params }: { params: Promise<{ slug: string 
     ? routeParams.slug.join("/")
     : routeParams.slug || "";
 
-  const post = getPosts(["src", "app", "blog", "posts"]).find((post) => post.slug === slugPath);
+  const post = getPosts(BLOG_DIR).find((post) => post.slug === slugPath);
 
   if (!post) {
     notFound();
