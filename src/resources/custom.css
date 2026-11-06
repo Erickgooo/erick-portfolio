@@ -9,7 +9,7 @@
    - --ui-glass: blurred panels over the page.
    - --ui-cobalt, --ui-on-cobalt, --ui-cobalt-ink: the solid brand fill, the
      text on it, and Cobalto as text on the page; --ui-underline: a link's line.
-   - --ui-dots: the dot texture. */
+   - --ui-glow / --ui-dots: the pointer glow and the dot texture. */
 :root {
   --ui-ink: #0b0b0f;
   --ui-ink-weak: #6e7681;
@@ -21,6 +21,7 @@
   --ui-on-cobalt: #f4f5f7;
   --ui-cobalt-ink: #2549cb;
   --ui-underline: #c7ccd1;
+  --ui-glow: #2d5bff26;
   --ui-dots: #6e7681;
 }
 
