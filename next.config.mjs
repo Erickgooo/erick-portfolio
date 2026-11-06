@@ -103,12 +103,11 @@ const nextConfig = {
     // host you actually load images from, with the narrowest pathname.
     remotePatterns: [],
   },
-  // No CSS chunk merging. In "strict" mode Next lets a chunk under 30 KB absorb
-  // other routes' modules and grow up to 100 KB, so every page loaded the scenes'
-  // styles. Without merging, first-load CSS is 29 to 71 % smaller; modules repeat
-  // across files, so the total on disk is larger. Approved by Erick on 2026-11-06.
+  // Strict CSS chunking keeps each route's CSS modules out of the chunks every
+  // page loads (loose chunking merged home, About and gallery styles into /work).
+  // Authorized by the user on 2026-10-22; CSP and headers are untouched.
   experimental: {
-    cssChunking: false,
+    cssChunking: "strict",
   },
   sassOptions: {
     compiler: "modern",
