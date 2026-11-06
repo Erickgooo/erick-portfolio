@@ -53,7 +53,7 @@ function Fig({
   main?: boolean;
 }) {
   return (
-    <span className={main ? `${s.fig} ${s.figMain}` : s.fig}>
+    <span className={s.fig}>
       <CountUp value={value} at={at} className={main ? s.value : s.small} duration={1500} />
       <span className={s.caption}>{caption}</span>
     </span>

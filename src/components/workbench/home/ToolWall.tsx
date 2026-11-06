@@ -142,7 +142,7 @@ export function ToolWall() {
       <div className={styles.track} data-track="">
         <div className={styles.sticky}>
           <div className={styles.inner}>
-            <div className={styles.side}>
+            <div>
               <h2 id="tools-title" className={styles.title} data-reveal="">
                 What&rsquo;s on the bench
               </h2>

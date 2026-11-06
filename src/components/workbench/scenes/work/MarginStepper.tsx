@@ -53,7 +53,7 @@ export function MarginStepper({ steps }: { steps: MarginStep[] }) {
       {steps.map((step, i) => (
         <div
           key={step.key}
-          className={`${s.layer} ${i % 2 ? s.toneB : s.toneA}`}
+          className={`${s.layer} ${i % 2 ? s.toneB : ""}`}
           data-scene-layer=""
           data-step={i}
           data-on={i === 0 ? "" : undefined}

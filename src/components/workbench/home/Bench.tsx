@@ -63,7 +63,7 @@ function Slot({
       <div className={styles.rise}>
         <div className={styles.par}>
           <div className={styles.bob}>
-            <div className={`${styles.card} ${styles[kind]}`}>{children}</div>
+            <div className={`${styles.card} ${styles[kind] ?? ""}`}>{children}</div>
           </div>
         </div>
       </div>

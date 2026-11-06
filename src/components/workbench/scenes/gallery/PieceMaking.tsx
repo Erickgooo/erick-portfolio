@@ -97,7 +97,7 @@ export function PieceMaking({ stage }: { stage: MakingStage }) {
         {MAKING.map(({ title, Icon }, k) => (
           <li
             key={title}
-            className={`${s.key} ${k < stage ? s.done : k === stage ? s.now : s.later}`}
+            className={`${s.key} ${k < stage ? "" : k === stage ? s.now : s.later}`}
           >
             <Icon />
           </li>

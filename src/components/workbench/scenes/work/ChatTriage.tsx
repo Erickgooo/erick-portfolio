@@ -53,7 +53,7 @@ export function ChatTriage() {
             {BUTTONS.map((label, k) => (
               <span
                 key={label}
-                className={k === 2 ? `${s.button} ${s.buy}` : s.button}
+                className={s.button}
                 style={{ "--k": k } as CSSProperties}
               >
                 {label}

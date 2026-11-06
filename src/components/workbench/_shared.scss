@@ -145,25 +145,6 @@ $reveal-travel-lg: var(--wb-travel-lg);
   }
 }
 
-// Section headings.
-@mixin h2 {
-  @include display(750);
-  font-size: clamp(38px, 5.4vw, 76px);
-  line-height: 0.98;
-  letter-spacing: -0.04em;
-  text-wrap: balance;
-}
-
-@mixin lede {
-  max-width: 40ch;
-  font-size: 18px;
-  color: var(--wb-ink-2);
-
-  @include from-desk {
-    font-size: 20px;
-  }
-}
-
 // Sober Workbench (Erick, 2026-10-22; variant A, "Line", chosen the same day) -
 // Every page's type and shapes. The display mixins above are the first
 // Workbench style's; pages move off them as they take the sober style.

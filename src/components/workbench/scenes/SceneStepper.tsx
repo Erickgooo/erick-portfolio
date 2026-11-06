@@ -76,7 +76,7 @@ function StepParts({ step, i }: { step: SceneStep; i: number }) {
         <span className={styles.bar} aria-hidden="true" />
       </div>
       <div
-        className={`${styles.layer} ${styles[step.paper]}`}
+        className={`${styles.layer} ${styles[step.paper] ?? ""}`}
         data-scene-layer=""
         data-step={i}
         data-on={i === 0 ? "" : undefined}

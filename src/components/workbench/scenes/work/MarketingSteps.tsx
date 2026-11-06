@@ -25,7 +25,7 @@ export function BrandManualStep() {
   return (
     <Scene className={s.scene} steps={[700, 1000, 1100, 1100, 3200]} loop>
       <div className={s.book}>
-        <div className={`${s.page} ${s.pageLeft}`}>
+        <div className={s.page}>
           <span className={s.swatches}>
             <i className={s.cobalt} style={k(0)} />
             <i className={s.ink} style={k(1)} />

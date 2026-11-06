@@ -215,7 +215,7 @@ export function BrandStage({ place }: { place: "home" | "index" }) {
       <div className={styles.track} data-track="">
         <div className={styles.sticky}>
           <div className={styles.inner}>
-            <div className={styles.side}>
+            <div>
               <h2 id={titleId} className={styles.title}>
                 {BRANDS_TITLE}
               </h2>

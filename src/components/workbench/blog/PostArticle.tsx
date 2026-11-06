@@ -39,7 +39,7 @@ export function PostArticle({
   const cover = image ? { src: image, ...mediaSize(image) } : null;
 
   return (
-    <article className={styles.post}>
+    <article>
       <div className={styles.top}>
         <Link href="/blog" className={styles.back}>
           <FiArrowLeft aria-hidden="true" /> All posts
