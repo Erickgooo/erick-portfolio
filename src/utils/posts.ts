@@ -28,7 +28,6 @@ export type PostMetadata = {
   images: string[];
   tag?: string;
   team: TeamMember[];
-  link: string;
   /** A case's headline figure, "value|label", e.g. "338K+|organic views" ("" when none). */
   metric: string;
 };
@@ -67,7 +66,6 @@ function readPosts(dir: string): Post[] {
           images: data.images ?? [],
           tag: typeof data.tag === "string" ? data.tag : undefined,
           team: data.team ?? [],
-          link: data.link ?? "",
           metric: data.metric ?? "",
         },
       };
