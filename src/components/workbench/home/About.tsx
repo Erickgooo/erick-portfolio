@@ -1,5 +1,4 @@
-// Workbench: a short about, with the photo beside it (sober, 2026-10-22:
-// straight and flat, no tape).
+// Workbench: a short about, with the photo beside it, straight and flat.
 import { about, pages, profile } from "@/resources";
 import Image from "next/image";
 import Link from "next/link";

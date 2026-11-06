@@ -1,7 +1,7 @@
 "use client";
 
 // Home, scene (type 3): the hero's ambient layer, a canvas behind the bench.
-// A few quiet marks around the objects (sober, 2026-10-22): rings, dots,
+// A few quiet marks around the objects: rings, dots,
 // squares and short strokes, drawn in line, never tilted. Each mark drifts on
 // its own slow loop. It draws nothing else: the page dots and the pointer
 // glow show through everywhere around the marks. It holds behind the intro

@@ -1,8 +1,7 @@
 "use client";
 
-// Workbench: the hero's workbench, redrawn straight and flat (sober,
-// 2026-10-22): the same composition of objects, none tilted, taped or
-// pinned. Objects rise a short way into place one after another (CSS
+// Workbench: the hero's workbench, straight and flat: a composition
+// of objects, none tilted, taped or pinned. Objects rise a short way into place one after another (CSS
 // keyframes) once the site intro has lifted, and only once they have all
 // settled do they float, on long offset loops that pause off-screen. On
 // desktop the cluster follows the pointer a little; on touch, a tap brings an

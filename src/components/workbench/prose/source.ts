@@ -3,8 +3,8 @@
 import { slugify } from "transliteration";
 
 /**
- * The id of a heading, from its text. Same rule as the previous site's MDX
- * headings (src/components/mdx.tsx), so links to #the-build keep working.
+ * The id of a heading, from its text. The rule must not change: links to
+ * #the-build are already out there.
  */
 export function anchorId(text: string): string {
   return slugify(text.replace(/&/g, " and "), { lowercase: true, separator: "-" }).replace(

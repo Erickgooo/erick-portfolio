@@ -4,7 +4,7 @@
 // too many for DOM nodes). It follows the scene around it: dark until step 3 (the stand is
 // set up), and from step 4 it plays the app on its own clock: header, the
 // grid filling in, a tap, one panel full screen, a swipe, back to the grid.
-// With reduced motion it shows the full grid. Sober (2026-10-22): the app
+// With reduced motion it shows the full grid. The app
 // takes the page's tone in either theme; its tiles are outlined (cobalt ones
 // filled). With `line` (the case's larger screen) the full-screen panels are
 // drawn in line too; the home's BoothApp keeps the filled ones.

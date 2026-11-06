@@ -1,7 +1,7 @@
 import { galleryPieces, protectedRoutes } from "@/resources";
 // Workbench, Visual Work: the gallery's pieces, sorted onto the bench by client
-// and by format. The only source is `galleryPieces` in src/resources/content.tsx
-// (the list GalleryView read), unchanged: consecutive items sharing a `group`
+// and by format. The only source is `galleryPieces` in src/resources/gallery.ts,
+// unchanged: consecutive items sharing a `group`
 // are one carousel, YouTube links are videos, everything else is a single post.
 // The client of a piece is the name its alt text opens with. Server-only (it
 // reads the project MDX for the related cases).
@@ -108,7 +108,7 @@ function slideOf(image: RawImage): Slide {
   return { src: image.src, alt: image.alt, ...sizeOf(image) };
 }
 
-/** The same grouping pass GalleryView made, in the data's own order. */
+/** Groups the pieces, in the data's own order. */
 function getPieces(): Piece[] {
   const images = galleryPieces;
   const pieces: Piece[] = [];

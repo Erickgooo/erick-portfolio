@@ -54,8 +54,7 @@ function getProjects() {
 
 /**
  * The cards of the fan. With `hideProtected` (set when the page listing them is
- * public), a case whose own page is password-protected is left out, as the
- * project list on the previous home did.
+ * public), a case whose own page is password-protected is left out.
  */
 export function getFanCards({ hideProtected }: { hideProtected: boolean }): FanCard[] {
   const posts = getProjects();
