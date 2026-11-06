@@ -21,6 +21,20 @@ test.describe("server-rendered content", () => {
   }
 });
 
+// A style that doesn't exist in its module reads as the word "undefined" in the class.
+test("no class in the server HTML says undefined", async ({ request }) => {
+  const sitemap = await (await request.get("/sitemap.xml")).text();
+  const paths = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => new URL(m[1]).pathname);
+  const offenders: string[] = [];
+  for (const path of [...paths, "/unauthorized", "/this-page-does-not-exist"]) {
+    const html = await (await request.get(path)).text();
+    for (const m of html.matchAll(/class="[^"]*\bundefined\b[^"]*"/g)) {
+      offenders.push(`${path}: ${m[0]}`);
+    }
+  }
+  expect(offenders).toEqual([]);
+});
+
 test("home server HTML preloads a next/font woff2 file", async ({ request }) => {
   // Task 11b: next/font emits <link rel="preload" as="font" ...> for the
   // fonts it detects are used on the page. Guards against the Home route
